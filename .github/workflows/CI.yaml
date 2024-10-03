@@ -13,14 +13,14 @@ on:
       - reopened
 
 jobs:
-  bootcamp-ci:
-    name: CI-Bootcamp
+  pocketTutor-ci:
+    name: CI-PocketTutor
     # Execute the CI on the course's runners
     runs-on:
-      group: runners_v1
+      group: runners_v1 # TODO: update the runner (it will be given by the course staff)
 
     env:
-      app_name: BootcampDebug
+      app_name: PocketTutor
 
     defaults:
       run:
@@ -120,28 +120,3 @@ jobs:
         with:
           name: Coverage report
           path: app/build/reports/jacoco/jacocoTestReport
-
-  exercises:
-    name: Exercises
-    # Execute the CI on the course's runners
-    runs-on:
-      group: runners_v1
-
-    defaults:
-      run:
-        working-directory: ./${{ env.base_folder }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Check that userStories.txt exists
-        run: stat userStories.txt
-
-      # Counting non-empty lines https://stackoverflow.com/a/114861
-      - name: Check that userStories.txt has at least two lines
-        run: '[ $(grep -cve "^\s*$" userStories.txt) -ge "2" ]'
-
