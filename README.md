@@ -15,3 +15,6 @@ Designed for students seeking efficient academic help and tutors managing their 
 - **Cloud Messaging**: Real-time notifications for updates.
 - **Multi-User Support**: Students and tutors with role-based features.
 - **Offline Mode**: Access key features without an internet connection.
+
+## Figma
+https://www.figma.com/design/4z21D0ByC943Lvxq47SDwD/PocketTutor?node-id=0-1&m=dev&t=RYAVl6KFsXMwBt4y-1
