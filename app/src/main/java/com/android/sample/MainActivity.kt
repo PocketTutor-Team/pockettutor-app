@@ -41,7 +41,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
-  NavHost(navController = navController, startDestination = Route.AUTH) {
+  NavHost(navController = navController, startDestination = Route.WELCOME) {
     // Add dependencies when creating a screen
   }
 
