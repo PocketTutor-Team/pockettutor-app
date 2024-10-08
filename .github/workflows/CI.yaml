@@ -17,7 +17,7 @@ jobs:
     name: CI-PocketTutor
     # Execute the CI on the course's runners
     runs-on:
-      group: runners_v1 # TODO: update the runner (it will be given by the course staff)
+      group: ubuntu-latest
 
     env:
       app_name: PocketTutor
