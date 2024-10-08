@@ -180,6 +180,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.inline)
@@ -190,6 +191,9 @@ dependencies {
     androidTestImplementation(libs.kaspresso)
     androidTestImplementation(libs.kaspresso.allure.support)
     androidTestImplementation(libs.kaspresso.compose.support)
+    testImplementation(libs.kaspresso)
+    testImplementation(libs.kaspresso.allure.support)
+    testImplementation(libs.kaspresso.compose.support)
 
     testImplementation(libs.kotlinx.coroutines.test)
 

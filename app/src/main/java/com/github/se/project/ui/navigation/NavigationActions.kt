@@ -1,4 +1,4 @@
-package com.android.sample.ui.navigation
+package com.github.se.project.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
