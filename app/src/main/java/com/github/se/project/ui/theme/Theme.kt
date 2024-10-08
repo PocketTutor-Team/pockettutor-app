@@ -1,4 +1,4 @@
-package com.android.sample.ui.theme
+package com.github.se.project.ui.theme
 
 import android.app.Activity
 import android.os.Build
