@@ -15,9 +15,8 @@ on:
 jobs:
   pocketTutor-ci:
     name: CI-PocketTutor
-    # Execute the CI on the course's runners
-    runs-on:
-      group: ubuntu-latest
+    # Execute the CI on the github self-hosted runner
+    runs-on: ubuntu-latest
 
     env:
       app_name: PocketTutor
