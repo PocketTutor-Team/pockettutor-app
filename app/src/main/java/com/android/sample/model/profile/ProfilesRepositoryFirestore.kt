@@ -74,11 +74,11 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    task.addOnCompleteListener { task ->
-      if (task.isSuccessful) {
+    task.addOnCompleteListener { result ->
+      if (result.isSuccessful) {
         onSuccess()
       } else {
-        task.exception?.let { e ->
+        result.exception?.let { e ->
           Log.e("ProfilesRepositoryFirestore", "Error performing Firestore operation", e)
           onFailure(e)
         }
