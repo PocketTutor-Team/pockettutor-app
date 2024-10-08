@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.se.project"
+    namespace = "com.github.android.sample"
     compileSdk = 34
 
 
@@ -26,7 +26,7 @@ android {
 
 
     defaultConfig {
-        applicationId = "com.github.se.project"
+        applicationId = "com.github.android.sample"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
