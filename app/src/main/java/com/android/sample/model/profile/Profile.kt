@@ -1,6 +1,6 @@
 package com.android.sample.model.profile
 
-// TODO: profile picture
+
 data class Profile (
     val uid: String, // Unique string id for the profile
     val firstName: String, // First name of the profile
@@ -11,7 +11,7 @@ data class Profile (
 
     val schedule : List<List<Int>>, // Weekly schedule of the profile (7 days x 12 slots)
 
-    val email: String, // Email of the profile => TODO: link to google sign-in
+    val email: String, // Email of the profile
 )
 
 enum class Role {
