@@ -14,9 +14,9 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.github.se.project.resources.C
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
-import com.github.se.project.resources.C
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
