@@ -33,6 +33,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+
+  /* UNCOMMENT WHEN IMPLEMENTING SCREENS
+  // Navigation
+  val navController = rememberNavController()
+  val navigationActions = NavigationActions(navController)
+  NavHost(navController = navController, startDestination = Route.WELCOME) {
+    // Add dependencies when creating a screen
+    composable(Route.WELCOME) {  }
+  } */
+
   Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
 }
 

@@ -49,8 +49,10 @@ kaspressoAllureSupport = "1.4.3"
 kaspressoComposeSupport = "1.5.5"
 mockkAgent = "1.13.7"
 mockkAndroid = "1.13.7"
-navigationCompose = "2.7.7"
 robolectric = "4.11.1"
+sonar = "4.4.1.3373"
+navigationRuntimeKtx = "2.8.2"
+navigationCompose = "2.8.2"
 
 
 # AndroidX and Core Libraries
@@ -114,6 +116,7 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
 
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
