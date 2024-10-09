@@ -136,7 +136,7 @@ fun AvailabilityGrid(schedule: List<List<Int>>, onScheduleChange: (List<List<Int
                       .aspectRatio(1f)
                       .padding(4.dp)
                       .background(
-                          if (isSelected) Color(0xFFEDE7F6) else Color.LightGray,
+                          if (isSelected) Color(0xFF9B59B6) else Color.LightGray,
                           shape = RoundedCornerShape(8.dp))
                       .clickable {
                         val updatedSchedule =
@@ -166,7 +166,7 @@ fun DefaultPreview() {
           section = Section.IN,
           academicLevel = AcademicLevel.MA2,
           email = "john.doe@example.com",
-          schedule = List(7) { List(12) { 0 } } // Initial empty schedule
+          schedule = List(7) { List(12) { 1 } } // Initial empty schedule
           )
   MaterialTheme {
     AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */})
