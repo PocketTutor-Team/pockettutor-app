@@ -1,4 +1,4 @@
-package com.android.sample
+package com.android.sample.model.lesson
 
 data class Lesson(
     val id: String = "", // Unique identifier for the lesson
@@ -14,8 +14,8 @@ data class Lesson(
 
 // Enum class to define lesson status
 enum class LessonStatus {
-    PENDING, // Lesson is pending
-    CONFIRMED, // Lesson is confirmed
-    COMPLETED, // Lesson has been completed
-    CANCELLED // Lesson has been cancelled
+  PENDING, // Lesson is pending
+  CONFIRMED, // Lesson is confirmed
+  COMPLETED, // Lesson has been completed
+  CANCELLED // Lesson has been cancelled
 }

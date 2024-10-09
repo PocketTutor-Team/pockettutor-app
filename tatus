@@ -1,0 +1,354 @@
+[1mdiff --git a/app/src/main/java/com/android/sample/LessonRepository.kt b/app/src/main/java/com/android/sample/LessonRepository.kt[m
+[1mdeleted file mode 100644[m
+[1mindex 41ea4d2..0000000[m
+[1m--- a/app/src/main/java/com/android/sample/LessonRepository.kt[m
+[1m+++ /dev/null[m
+[36m@@ -1,22 +0,0 @@[m
+[31m-package com.android.sample[m
+[31m-[m
+[31m-interface LessonRepository {[m
+[31m-[m
+[31m-    // Method to initialize the repository[m
+[31m-    fun init(onSuccess: () -> Unit)[m
+[31m-[m
+[31m-    // Method to add a new lesson[m
+[31m-    fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)[m
+[31m-[m
+[31m-    // Method to retrieve a lesson by its ID[m
+[31m-    fun getLessonById(lessonId: String, onSuccess: (Lesson) -> Unit, onFailure: (Exception) -> Unit)[m
+[31m-[m
+[31m-    // Method to retrieve all lessons by tutor UID[m
+[31m-    fun getLessonsByUser(userUid: String, onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit)[m
+[31m-[m
+[31m-    // Method to update an existing lesson[m
+[31m-    fun updateLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)[m
+[31m-[m
+[31m-    // Method to delete a lesson by its ID[m
+[31m-    fun deleteLesson(lessonId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/app/src/main/java/com/android/sample/Lesson.kt b/app/src/main/java/com/android/sample/model/lesson/Lesson.kt[m
+[1msimilarity index 78%[m
+[1mrename from app/src/main/java/com/android/sample/Lesson.kt[m
+[1mrename to app/src/main/java/com/android/sample/model/lesson/Lesson.kt[m
+[1mindex 2dd0d09..5ff8bcd 100644[m
+[1m--- a/app/src/main/java/com/android/sample/Lesson.kt[m
+[1m+++ b/app/src/main/java/com/android/sample/model/lesson/Lesson.kt[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-package com.android.sample[m
+[32m+[m[32mpackage com.android.sample.model[m
+ [m
+ data class Lesson([m
+     val id: String = "", // Unique identifier for the lesson[m
+[36m@@ -14,8 +14,8 @@[m [mdata class Lesson([m
+ [m
+ // Enum class to define lesson status[m
+ enum class LessonStatus {[m
+[31m-    PENDING, // Lesson is pending[m
+[31m-    CONFIRMED, // Lesson is confirmed[m
+[31m-    COMPLETED, // Lesson has been completed[m
+[31m-    CANCELLED // Lesson has been cancelled[m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32m  PENDING, // Lesson is pending[m
+[32m+[m[32m  CONFIRMED, // Lesson is confirmed[m
+[32m+[m[32m  COMPLETED, // Lesson has been completed[m
+[32m+[m[32m  CANCELLED // Lesson has been cancelled[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/src/main/java/com/android/sample/model/lesson/LessonRepository.kt b/app/src/main/java/com/android/sample/model/lesson/LessonRepository.kt[m
+[1mnew file mode 100644[m
+[1mindex 0000000..395ff6a[m
+[1m--- /dev/null[m
+[1m+++ b/app/src/main/java/com/android/sample/model/lesson/LessonRepository.kt[m
+[36m@@ -0,0 +1,38 @@[m
+[32m+[m[32mpackage com.android.sample.model[m
+[32m+[m
+[32m+[m[32minterface LessonRepository {[m
+[32m+[m
+[32m+[m[32m  // Method to initialize the repository[m
+[32m+[m[32m  fun init(onSuccess: () -> Unit)[m
+[32m+[m
+[32m+[m[32m  // Method to retrieve all lessons by user UID[m
+[32m+[m[32m  fun getLessonsByUserId([m
+[32m+[m[32m    userUid: String,[m
+[32m+[m[32m    onSuccess: (List<Lesson>) -> Unit,[m
+[32m+[m[32m    onFailure: (Exception) -> Unit[m
+[32m+[m[32m  )[m
+[32m+[m
+[32m+[m[32m  // Method to add a new lesson[m
+[32m+[m[32m  fun addLessonByUserId([m
+[32m+[m[32m    userUid: String,[m
+[32m+[m[32m    lesson: Lesson,[m
+[32m+[m[32m    onSuccess: () -> Unit,[m
+[32m+[m[32m    onFailure: (Exception) -> Unit[m
+[32m+[m[32m  )[m
+[32m+[m
+[32m+[m[32m  // Method to update an existing lesson by its ID[m
+[32m+[m[32m  fun updateLessonByUserId([m
+[32m+[m[32m    userUid: String,[m
+[32m+[m[32m    lesson: Lesson,[m
+[32m+[m[32m    onSuccess: () -> Unit,[m
+[32m+[m[32m    onFailure: (Exception) -> Unit[m
+[32m+[m[32m  )[m
+[32m+[m
+[32m+[m[32m  // Method to delete a lesson by its ID[m
+[32m+[m[32m  fun deleteLessonByUserId([m
+[32m+[m[32m    userUid: String,[m
+[32m+[m[32m    lessonId: String,[m
+[32m+[m[32m    onSuccess: () -> Unit,[m
+[32m+[m[32m    onFailure: (Exception) -> Unit[m
+[32m+[m[32m  )[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/src/main/java/com/android/sample/model/lesson/LessonRepositoryFirestore.kt b/app/src/main/java/com/android/sample/model/lesson/LessonRepositoryFirestore.kt[m
+[1mnew file mode 100644[m
+[1mindex 0000000..77d7656[m
+[1m--- /dev/null[m
+[1m+++ b/app/src/main/java/com/android/sample/model/lesson/LessonRepositoryFirestore.kt[m
+[36m@@ -0,0 +1,120 @@[m
+[32m+[m[32mpackage com.android.sample.model[m
+[32m+[m
+[32m+[m[32mimport android.util.Log[m
+[32m+[m[32mimport com.google.android.gms.tasks.Task[m
+[32m+[m[32mimport com.google.firebase.firestore.FirebaseFirestore[m
+[32m+[m[32mimport com.google.firebase.firestore.DocumentSnapshot[m
+[32m+[m
+[32m+[m[32mclass LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepository {[m
+[32m+[m
+[32m+[m[32m    private val collectionPath = "lessons"[m
+[32m+[m
+[32m+[m[32m    // Initialize the repository[m
+[32m+[m[32m    override fun init(onSuccess: () -> Unit) {[m
+[32m+[m[32m        // Additional initialization logic if required[m
+[32m+[m[32m        onSuccess()[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Retrieve all lessons for a specific user by userUid[m
+[32m+[m[32m    override fun getLessonsByUserId([m
+[32m+[m[32m        userUid: String,[m
+[32m+[m[32m        onSuccess: (List<Lesson>) -> Unit,[m
+[32m+[m[32m        onFailure: (Exception) -> Unit[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m        db.collection("users").document(userUid).collection(collectionPath).get()[m
+[32m+[m[32m            .addOnCompleteListener { task ->[m
+[32m+[m[32m                if (task.isSuccessful) {[m
+[32m+[m[32m                    val lessons = task.result?.mapNotNull { document -> documentToLesson(document) } ?: emptyList()[m
+[32m+[m[32m                    onSuccess(lessons)[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    task.exception?.let { e ->[m
+[32m+[m[32m                        Log.e("LessonRepositoryFirestore", "Error getting lessons for user", e)[m
+[32m+[m[32m                        onFailure(e)[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Add a new lesson for a specific user[m
+[32m+[m[32m    override fun addLessonByUserId([m
+[32m+[m[32m        userUid: String,[m
+[32m+[m[32m        lesson: Lesson,[m
+[32m+[m[32m        onSuccess: () -> Unit,[m
+[32m+[m[32m        onFailure: (Exception) -> Unit[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m        db.collection("users").document(userUid).collection(collectionPath)[m
+[32m+[m[32m            .document(lesson.id).set(lesson)[m
+[32m+[m[32m            .addOnCompleteListener { task ->[m
+[32m+[m[32m                if (task.isSuccessful) {[m
+[32m+[m[32m                    onSuccess()[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    task.exception?.let { e ->[m
+[32m+[m[32m                        Log.e("LessonRepositoryFirestore", "Error adding lesson for user", e)[m
+[32m+[m[32m                        onFailure(e)[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Update an existing lesson for a specific user[m
+[32m+[m[32m    override fun updateLessonByUserId([m
+[32m+[m[32m        userUid: String,[m
+[32m+[m[32m        lesson: Lesson,[m
+[32m+[m[32m        onSuccess: () -> Unit,[m
+[32m+[m[32m        onFailure: (Exception) -> Unit[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m        db.collection("users").document(userUid).collection(collectionPath)[m
+[32m+[m[32m            .document(lesson.id).set(lesson)[m
+[32m+[m[32m            .addOnCompleteListener { task ->[m
+[32m+[m[32m                if (task.isSuccessful) {[m
+[32m+[m[32m                    onSuccess()[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    task.exception?.let { e ->[m
+[32m+[m[32m                        Log.e("LessonRepositoryFirestore", "Error updating lesson for user", e)[m
+[32m+[m[32m                        onFailure(e)[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Delete a lesson by its ID for a specific user[m
+[32m+[m[32m    override fun deleteLessonByUserId([m
+[32m+[m[32m        userUid: String,[m
+[32m+[m[32m        lessonId: String,[m
+[32m+[m[32m        onSuccess: () -> Unit,[m
+[32m+[m[32m        onFailure: (Exception) -> Unit[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m        db.collection("users").document(userUid).collection(collectionPath)[m
+[32m+[m[32m            .document(lessonId).delete()[m
+[32m+[m[32m            .addOnCompleteListener { task ->[m
+[32m+[m[32m                if (task.isSuccessful) {[m
+[32m+[m[32m                    onSuccess()[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    task.exception?.let { e ->[m
+[32m+[m[32m                        Log.e("LessonRepositoryFirestore", "Error deleting lesson for user", e)[m
+[32m+[m[32m                        onFailure(e)[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Converts a Firestore document to a Lesson object.[m
+[32m+[m[32m     *[m
+[32m+[m[32m     * @param document The Firestore document to convert.[m
+[32m+[m[32m     * @return The Lesson object, or null if the document could not be converted.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    private fun documentToLesson(document: DocumentSnapshot): Lesson? {[m
+[32m+[m[32m        return try {[m
+[32m+[m[32m            val id = document.id[m
+[32m+[m[32m            val title = document.getString("title") ?: return null[m
+[32m+[m[32m            val description = document.getString("description") ?: return null[m
+[32m+[m[32m            val date = document.getString("date") ?: return null[m
+[32m+[m
+[32m+[m[32m            Lesson(id, title, description, date)[m
+[32m+[m[32m        } catch (e: Exception) {[m
+[32m+[m[32m            Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)[m
+[32m+[m[32m            null[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/src/main/java/com/android/sample/model/LessonViewModel.kt b/app/src/main/java/com/android/sample/model/lesson/LessonViewModel.kt[m
+[1msimilarity index 69%[m
+[1mrename from app/src/main/java/com/android/sample/model/LessonViewModel.kt[m
+[1mrename to app/src/main/java/com/android/sample/model/lesson/LessonViewModel.kt[m
+[1mindex 6c22694..e8a574d 100644[m
+[1m--- a/app/src/main/java/com/android/sample/model/LessonViewModel.kt[m
+[1m+++ b/app/src/main/java/com/android/sample/model/lesson/LessonViewModel.kt[m
+[36m@@ -1,19 +1,21 @@[m
+ package com.android.sample.model.lesson[m
+ [m
+[32m+[m[32mimport android.util.Log[m
+ import androidx.lifecycle.ViewModel[m
+ import androidx.lifecycle.ViewModelProvider[m
+[31m-import com.android.sample.Lesson[m
+[31m-import com.android.sample.LessonRepository[m
+[32m+[m[32mimport com.android.sample.model.Lesson[m
+[32m+[m[32mimport com.android.sample.model.LessonRepository[m
+[32m+[m[32mimport com.android.sample.model.LessonRepositoryFirestore[m
+ import com.google.firebase.Firebase[m
+[32m+[m[32mimport com.google.firebase.auth.auth[m
+ import com.google.firebase.firestore.firestore[m
+ import kotlinx.coroutines.flow.MutableStateFlow[m
+ import kotlinx.coroutines.flow.StateFlow[m
+ import kotlinx.coroutines.flow.asStateFlow[m
+ [m
+ /**[m
+[31m- * ViewModel for managing lessons and interacting with the LessonRepository.[m
+[31m- * Handles the retrieval, addition, and deletion of lessons.[m
+[31m- *[m
+[32m+[m[32m * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,[m
+[32m+[m[32m * addition, and deletion of lessons.[m
+  */[m
+ class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+     private val lessons_ = MutableStateFlow<List<Lesson>>(emptyList())[m
+[36m@@ -22,10 +24,22 @@[m [mclass LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+     private val selectedLesson_ = MutableStateFlow<Lesson?>(null)[m
+     val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()[m
+ [m
+[32m+[m
+     init {[m
+[31m-        repository.init {[m
+[31m-            // Initialization logic for the repository can be added here[m
+[31m-        }[m
+[32m+[m[32m        repository.init { getLessonsByUser(Firebase.auth.currentUser?.uid ?: "") }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Factory for creating a LessonsViewModel.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    companion object {[m
+[32m+[m[32m        val Factory: ViewModelProvider.Factory =[m
+[32m+[m[32m            object : ViewModelProvider.Factory {[m
+[32m+[m[32m                @Suppress("UNCHECKED_CAST")[m
+[32m+[m[32m                override fun <T : ViewModel> create(modelClass: Class<T>): T {[m
+[32m+[m[32m                    return LessonsViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+     }[m
+ [m
+     /**[m
+[36m@@ -34,11 +48,9 @@[m [mclass LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+      * @param userUid The UID of the user whose lessons are to be retrieved.[m
+      */[m
+     fun getLessonsByUser(userUid: String) {[m
+[31m-        repository.getLessonsByUser([m
+[31m-            userUid,[m
+[31m-            onSuccess = { lessons_.value = it },[m
+[31m-            onFailure = { /* Handle failure if needed */ }[m
+[31m-        )[m
+[32m+[m[32m        repository.getLessonsByUserId([m
+[32m+[m[32m            userUid, onSuccess = { lessons_.value = it }, onFailure = { e ->[m
+[32m+[m[32m                Log.e("LessonViewModel", "Error loading user: $userUid's lessons", e)})[m
+     }[m
+ [m
+     /**[m
+[36m@@ -48,10 +60,13 @@[m [mclass LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+      * @param lesson The Lesson object to be added.[m
+      */[m
+     fun addLesson(userUid: String, lesson: Lesson) {[m
+[31m-        repository.addLesson([m
+[32m+[m[32m        repository.addLessonByUserId([m
+[32m+[m[32m            userUid = userUid,[m
+             lesson = lesson,[m
+             onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success[m
+[31m-            onFailure = { /* Handle failure if needed */ }[m
+[32m+[m[32m            onFailure = {[m
+[32m+[m[32m                Log.e("LessonViewModel", "Error adding lesson: $lesson", it)[m
+[32m+[m[32m            }[m
+         )[m
+     }[m
+ [m
+[36m@@ -62,11 +77,13 @@[m [mclass LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+      * @param lessonId The ID of the lesson to be deleted.[m
+      */[m
+     fun deleteLesson(userUid: String, lessonId: String) {[m
+[31m-        repository.deleteLesson([m
+[32m+[m[32m        repository.deleteLessonByUserId([m
+[32m+[m[32m            userUid = userUid,[m
+             lessonId = lessonId,[m
+             onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success[m
+[31m-            onFailure = { /* Handle failure if needed */ }[m
+[31m-        )[m
+[32m+[m[32m            onFailure = {[m
+[32m+[m[32m                Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it)[m
+[32m+[m[32m            })[m
+     }[m
+ [m
+     /**[m
+[36m@@ -78,16 +95,6 @@[m [mclass LessonsViewModel(private val repository: LessonRepository) : ViewModel() {[m
+         selectedLesson_.value = lesson[m
+     }[m
+ [m
+[31m-    // Uncomment once LessonRepository is implemented as LessonRepositoryFirestore[m
+[31m-    /*[m
+[31m-    companion object {[m
+[31m-        val Factory: ViewModelProvider.Factory =[m
+[31m-            object : ViewModelProvider.Factory {[m
+[31m-                @Suppress("UNCHECKED_CAST")[m
+[31m-                override fun <T : ViewModel> create(modelClass: Class<T>): T {[m
+[31m-                    return LessonsViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T[m
+[31m-                }[m
+[31m-            }[m
+[31m-    }[m
+[31m-    */[m
+[32m+[m
+[32m+[m
+ }[m
