@@ -32,26 +32,24 @@ class AuthenticationViewModel : ViewModel() {
     viewModelScope.launch {
       // Collect the result of the Google Sign-In process
       googleSignIn(context).collect { result ->
-        result
-            .fold( // It allows you to specify actions for both success and failure cases of the
-                   // operation, making it easy to manage the different outcomes.
-                onSuccess = { authResult ->
-                  // Handle successful sign-in
-                  val currentUser = authResult.user
-                  if (currentUser != null) {
-                    userId.value = currentUser.uid
+        result.fold( // It allows you to specify actions for both success and failure cases of the
+            // operation, making it easy to manage the different outcomes.
+            onSuccess = { authResult ->
+              // Handle successful sign-in
+              val currentUser = authResult.user
+              if (currentUser != null) {
+                userId.value = currentUser.uid
 
-                      Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG)
-                          .show()
+                Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
 
-                      onSuccess()
-                  }
-                },
-                onFailure = { e ->
-                  // Handle sign-in error
-                  Toast.makeText(context, "Authentication error: ${e.message}", Toast.LENGTH_LONG)
-                      .show()
-                })
+                onSuccess()
+              }
+            },
+            onFailure = { e ->
+              // Handle sign-in error
+              Toast.makeText(context, "Authentication error: ${e.message}", Toast.LENGTH_LONG)
+                  .show()
+            })
       }
     }
   }
@@ -79,18 +77,18 @@ class AuthenticationViewModel : ViewModel() {
             GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(
                     false) // To give the user the option to choose from any Google account on their
-                           // device, not just the ones they've used with your app before.
+                // device, not just the ones they've used with your app before.
                 .setServerClientId(
                     context.getString(
                         R.string
                             .web_client_id)) // This is required to identify the app on the backend
-                                             // server.
+                // server.
                 .setNonce(
                     hashedNonce) // A nonce is a unique, random string used to ensure that the ID
-                                 // token received is fresh and to prevent replay attacks.
+                // token received is fresh and to prevent replay attacks.
                 .setAutoSelectEnabled(
                     true) // Which allows the user to be automatically signed in without additional
-                          // user interaction if there is a single eligible account.
+                // user interaction if there is a single eligible account.
                 .build()
 
         // Create a credential request with the Google ID option
@@ -114,12 +112,12 @@ class AuthenticationViewModel : ViewModel() {
               firebaseAuth
                   .signInWithCredential(authCredential)
                   .await() // .await() -> allows the coroutine to wait for the result of the
-                           // authentication operation before proceeding.
+          // authentication operation before proceeding.
           // Send the successful result
           trySend(
               Result.success(
                   authResult)) // Is used to send the result of the Firebase sign-in operation to
-                               // the Flow's collectors.
+          // the Flow's collectors.
         } else {
           // Throw an exception if the credential type is invalid
           throw RuntimeException("Received an invalid credential type.")

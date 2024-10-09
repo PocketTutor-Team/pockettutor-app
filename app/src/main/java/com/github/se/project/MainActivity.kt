@@ -9,23 +9,22 @@ import com.github.se.project.screens.SignInScreen
 import com.github.se.project.viewmodels.AuthenticationViewModel
 
 class MainActivity : ComponentActivity() {
-    private lateinit var authenticationViewModel: AuthenticationViewModel
+  private lateinit var authenticationViewModel: AuthenticationViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        setContent {
-            val context = LocalContext.current
-            this.authenticationViewModel = viewModel()
-            SignInScreen(
-                onSignInClick = {
-                    this.authenticationViewModel.handleGoogleSignIn(
-                        context,
-                        {
-
-                            // navigate to home screen
-                        })
+    setContent {
+      val context = LocalContext.current
+      this.authenticationViewModel = viewModel()
+      SignInScreen(
+          onSignInClick = {
+            this.authenticationViewModel.handleGoogleSignIn(
+                context,
+                {
+                  // navigate to home screen
                 })
-        }
+          })
     }
+  }
 }
