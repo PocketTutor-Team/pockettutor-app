@@ -1,4 +1,4 @@
-package com.android.sample.resources
+package com.github.se.project.resources
 
 // Like R, but C
 object C {

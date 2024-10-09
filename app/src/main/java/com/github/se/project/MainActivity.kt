@@ -1,4 +1,4 @@
-package com.android.sample
+package com.github.se.project
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import com.android.sample.resources.C
-import com.android.sample.ui.theme.SampleAppTheme
+import com.github.se.project.resources.C
+import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +33,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+
+  /* UNCOMMENT WHEN IMPLEMENTING SCREENS
+  // Navigation
+  val navController = rememberNavController()
+  val navigationActions = NavigationActions(navController)
+  NavHost(navController = navController, startDestination = Route.WELCOME) {
+    // Add dependencies when creating a screen
+    composable(Route.WELCOME) {  }
+  } */
+
   Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
 }
 
