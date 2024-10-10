@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,7 +50,7 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
                   Modifier.size(200.dp) // Adjust size as needed
                       .padding(16.dp) // Padding from top and left
                       .align(Alignment.TopStart) // Align logo to top-left
-              )
+                      .testTag("logo"))
         }
 
         Column(
@@ -61,7 +62,7 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
               HorizontalPager(
                   state = pagerState,
                   count = 3, // Number of images to scroll through
-                  modifier = Modifier.height(400.dp).fillMaxWidth()) { page ->
+                  modifier = Modifier.height(400.dp).fillMaxWidth().testTag("images")) { page ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()) {
@@ -91,7 +92,7 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
                               text =
                                   when (page) {
                                     0 ->
-                                        "Simplify learning and teaching with instant connections to the university community."
+                                        "Welcome to Pocket Tutor, Simplify learning and teaching with instant connections to the university community."
                                     1 ->
                                         "Get help or share your expertise – whether you're a student or a tutor, Pocket Tutor works for both."
                                     else ->
@@ -122,7 +123,11 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
               Button(
                   onClick = onSignInClick,
                   shape = Shapes.medium, // Apply the custom shape from the theme
-                  modifier = Modifier.fillMaxWidth(0.8f).height(48.dp).clip(Shapes.medium),
+                  modifier =
+                      Modifier.fillMaxWidth(0.8f)
+                          .height(48.dp)
+                          .clip(Shapes.medium)
+                          .testTag("loginButton"),
                   colors =
                       ButtonColors(
                           MaterialTheme.colorScheme.secondary,

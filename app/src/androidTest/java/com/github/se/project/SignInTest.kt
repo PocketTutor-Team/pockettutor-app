@@ -2,7 +2,6 @@ package com.github.se.project
 
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -16,9 +15,10 @@ class SignInTest : TestCase() {
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @Test
-  fun titleAndButtonAreCorrectlyDisplayed() {
-    composeTestRule.onNodeWithTag("loginTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("loginTitle").assertTextEquals("Welcome to Pocket Tutor")
+  fun logoAndButtonAreCorrectlyDisplayed() {
+    composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("images").assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("loginButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").assertHasClickAction()
