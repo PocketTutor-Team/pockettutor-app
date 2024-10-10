@@ -1,5 +1,7 @@
 package com.github.se.project.model.profile
 
+import java.util.EnumSet
+
 /** Data class representing a user profile. */
 data class Profile(
     val uid: String, // Unique string id for the profile => TODO: link to google sign-in
@@ -9,6 +11,10 @@ data class Profile(
     val section: Section, // Section of the user
     val academicLevel: AcademicLevel, // Academic level of the user
 
+    val email: String, // Email of the user => TODO: link to google sign-in
+    val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
+    val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
+    var price: Int = 0,
     // TODO: profile picture
 )
 
@@ -51,4 +57,17 @@ enum class AcademicLevel {
   MA3,
   MA4,
   PhD,
+}
+
+enum class Language {
+  STUDENT,
+  FRENCH,
+  ENGLISH,
+  GERMAN,
+}
+
+enum class TutoringSubject {
+  ANALYSIS,
+  ALGEBRA,
+  PHYSICS,
 }
