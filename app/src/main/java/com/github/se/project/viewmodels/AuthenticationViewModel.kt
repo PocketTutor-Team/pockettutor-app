@@ -1,6 +1,7 @@
 package com.github.se.project.viewmodels
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -120,6 +121,7 @@ class AuthenticationViewModel : ViewModel() {
           // the Flow's collectors.
         } else {
           // Throw an exception if the credential type is invalid
+          Log.e("AuthenticationViewModel", "Invalid credential type received.")
           throw RuntimeException("Received an invalid credential type.")
         }
       } catch (e: GetCredentialCancellationException) {
@@ -127,6 +129,7 @@ class AuthenticationViewModel : ViewModel() {
         trySend(Result.failure(Exception("Sign-in was canceled.")))
       } catch (e: Exception) {
         // Handle other exceptions
+        Log.e("AuthenticationViewModel", "Error during authentication process", e)
         trySend(Result.failure(e))
       }
 
