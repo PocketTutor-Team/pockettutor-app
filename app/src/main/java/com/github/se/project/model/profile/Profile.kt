@@ -10,8 +10,6 @@ data class Profile(
     val role: Role, // Role of the user
     val section: Section, // Section of the user
     val academicLevel: AcademicLevel, // Academic level of the user
-
-    val email: String, // Email of the user => TODO: link to google sign-in
     val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
     val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
     var price: Int = 0,
