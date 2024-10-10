@@ -1,4 +1,4 @@
-package com.android.sample
+package com.github.se.project
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,13 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import com.android.project.model.profile.AcademicLevel
-import com.android.project.model.profile.Profile
-import com.android.project.model.profile.Role
-import com.android.project.model.profile.Section
-import com.android.project.ui.authentication.AvailabilityScreen
-import com.android.sample.resources.C
-import com.android.sample.ui.theme.SampleAppTheme
+import com.github.se.project.resources.C
+import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +24,7 @@ class MainActivity : ComponentActivity() {
         Surface(
             modifier = Modifier.fillMaxSize().semantics { testTag = C.Tag.main_screen_container },
             color = MaterialTheme.colorScheme.background) {
-              ProfilePreview()
+              Greeting("Android")
             }
       }
     }
@@ -38,24 +33,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+
+  /* UNCOMMENT WHEN IMPLEMENTING SCREENS
+  // Navigation
+  val navController = rememberNavController()
+  val navigationActions = NavigationActions(navController)
+  NavHost(navController = navController, startDestination = Route.WELCOME) {
+    // Add dependencies when creating a screen
+    composable(Route.WELCOME) {  }
+  } */
+
   Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProfilePreview() {
-    val initialProfile =
-        Profile(
-            uid = "12345",
-            firstName = "John",
-            lastName = "Doe",
-            role = Role.TUTOR,
-            section = Section.IN,
-            academicLevel = AcademicLevel.MA2,
-            email = "john.doe@example.com",
-            schedule = List(7) { List(12) { 1 } } // Initial empty schedule
-        )
-    MaterialTheme {
-        AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */})
-    }
+fun GreetingPreview() {
+  SampleAppTheme { Greeting("Android") }
 }
