@@ -122,6 +122,8 @@ android {
 
 
 dependencies {
+    // Accompanist pour le support SVG et pager
+    implementation (libs.accompanist.pager)
 
     // Core
     implementation(libs.core.ktx)
