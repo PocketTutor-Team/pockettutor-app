@@ -19,38 +19,36 @@ import com.github.se.project.resources.C
 import com.github.se.project.ui.authentication.AvailabilityScreen
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                // Initialize the profile state here
-                var profile by remember {
-                    mutableStateOf(
-                        Profile(
-                            uid = "12345",
-                            firstName = "John",
-                            lastName = "Doe",
-                            role = Role.TUTOR,
-                            section = Section.IN,
-                            academicLevel = AcademicLevel.MA2,
-                            email = "john.doe@example.com",
-                            schedule = List(7) { List(12) { 0 } } // Initialize empty schedule (7 days x 12 slots)
-                        )
-                    )
-                }
-
-                // Pass the profile to AvailabilityScreen and handle profile updates
-                AvailabilityScreen(
-                    profile = profile,
-                    onProfileUpdate = { updatedProfile ->
-                        profile = updatedProfile // Update the profile state when schedule changes
-                    }
-                )
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      MaterialTheme {
+        // Initialize the profile state here
+        var profile by remember {
+          mutableStateOf(
+              Profile(
+                  uid = "12345",
+                  firstName = "John",
+                  lastName = "Doe",
+                  role = Role.TUTOR,
+                  section = Section.IN,
+                  academicLevel = AcademicLevel.MA2,
+                  email = "john.doe@example.com",
+                  schedule =
+                      List(7) { List(12) { 0 } } // Initialize empty schedule (7 days x 12 slots)
+                  ))
         }
-    }
-}
 
+        // Pass the profile to AvailabilityScreen and handle profile updates
+        AvailabilityScreen(
+            profile = profile,
+            onProfileUpdate = { updatedProfile ->
+              profile = updatedProfile // Update the profile state when schedule changes
+            })
+      }
+    }
+  }
+}
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
@@ -70,19 +68,19 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    val initialProfile =
-        Profile(
-            uid = "12345",
-            firstName = "John",
-            lastName = "Doe",
-            role = Role.TUTOR,
-            section = Section.IN,
-            academicLevel = AcademicLevel.MA2,
-            email = "john.doe@example.com",
-            schedule = List(7) { List(12) { 0 } } // Initial empty schedule
-        )
+  val initialProfile =
+      Profile(
+          uid = "12345",
+          firstName = "John",
+          lastName = "Doe",
+          role = Role.TUTOR,
+          section = Section.IN,
+          academicLevel = AcademicLevel.MA2,
+          email = "john.doe@example.com",
+          schedule = List(7) { List(12) { 0 } } // Initial empty schedule
+          )
 
-    MaterialTheme {
-        AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */ })
-    }
+  MaterialTheme {
+    AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */})
+  }
 }

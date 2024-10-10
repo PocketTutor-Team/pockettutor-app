@@ -18,11 +18,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
