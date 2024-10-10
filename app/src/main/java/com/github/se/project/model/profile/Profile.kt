@@ -1,4 +1,4 @@
-package com.android.project.model.profile
+package com.github.se.project.model.profile
 
 data class Profile(
     val uid: String, // Unique string id for the profile
