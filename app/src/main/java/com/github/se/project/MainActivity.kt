@@ -12,19 +12,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import com.android.sample.TutorInfo
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
 import com.github.se.project.resources.C
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    val profile =
+        Profile(
+            uid = "test",
+            "Test",
+            "Testsson",
+            Role.TUTOR,
+            Section.AR,
+            academicLevel = AcademicLevel.BA1,
+            "test@test.test")
     setContent {
       SampleAppTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize().semantics { testTag = C.Tag.main_screen_container },
             color = MaterialTheme.colorScheme.background) {
-              Greeting("Android")
+              TutorInfo(profile = profile)
             }
       }
     }
