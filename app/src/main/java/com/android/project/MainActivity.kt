@@ -1,4 +1,4 @@
-package com.android.sample
+package com.android.project
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,9 +16,9 @@ import com.android.project.model.profile.AcademicLevel
 import com.android.project.model.profile.Profile
 import com.android.project.model.profile.Role
 import com.android.project.model.profile.Section
+import com.android.project.resources.C
 import com.android.project.ui.authentication.AvailabilityScreen
-import com.android.sample.resources.C
-import com.android.sample.ui.theme.SampleAppTheme
+import com.android.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
