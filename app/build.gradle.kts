@@ -122,8 +122,7 @@ android {
 
 
 dependencies {
-    // Accompanist pour le support SVG et pager
-    implementation (libs.accompanist.pager)
+
 
     // Core
     implementation(libs.core.ktx)
@@ -137,6 +136,7 @@ dependencies {
 
     // Jetpack Compose UI
     implementation(libs.androidx.ui)
+    implementation (libs.accompanist.pager)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material)
