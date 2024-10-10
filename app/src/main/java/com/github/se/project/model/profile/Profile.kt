@@ -1,4 +1,4 @@
-package com.android.sample.model.profile
+package com.github.se.project.model.profile
 
 /** Data class representing a user profile. */
 data class Profile(

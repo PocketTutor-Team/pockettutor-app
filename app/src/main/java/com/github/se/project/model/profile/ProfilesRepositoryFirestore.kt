@@ -1,4 +1,4 @@
-package com.android.sample.model.profile
+package com.github.se.project.model.profile
 
 import android.util.Log
 import com.google.android.gms.tasks.Task

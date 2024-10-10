@@ -1,4 +1,4 @@
-package com.android.sample.model.profile
+package com.github.se.project.model.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

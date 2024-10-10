@@ -1,4 +1,4 @@
-package com.android.sample.model.profile
+package com.github.se.project.model.profile
 
 interface ProfilesRepository {
   fun getNewUid(): String
