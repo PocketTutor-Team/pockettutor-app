@@ -38,9 +38,6 @@ enum class Section {
   SV, // School of Life Sciences (SV)
   NX, // Neuro-X Master (IC, STI, SV)
   SIQ, // Quantum Science and Engineering (IC, SB, STI)
-  UNKNOWN
-  // Note: Use "UNKNOWN" for base value before the user selects a section
-  // but we should not create a profile without a section
 }
 
 enum class AcademicLevel {
@@ -55,7 +52,4 @@ enum class AcademicLevel {
   MA3,
   MA4,
   PhD,
-  UNKNOWN
-  // Note: Use "UNKNOWN" for base value before the user selects an academic level
-  // but we should not create a profile without an academic level
 }
