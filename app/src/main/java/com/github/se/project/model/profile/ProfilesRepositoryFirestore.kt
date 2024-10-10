@@ -100,9 +100,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val role = Role.valueOf(document.getString("role") ?: return null)
       val section = Section.valueOf(document.getString("section") ?: return null)
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
-      val email = document.getString("email") ?: return null
 
-      Profile(uid, firstName, lastName, role, section, academicLevel, email)
+      Profile(uid, firstName, lastName, role, section, academicLevel)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null

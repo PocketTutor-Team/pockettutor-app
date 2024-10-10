@@ -1,5 +1,6 @@
 package com.github.se.project.model.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.Firebase
@@ -18,7 +19,7 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
 
   // The profile of the current user of the app (after log-in).
   private val currentProfile_ = MutableStateFlow<Profile?>(null)
-  open val selectedProfile: StateFlow<Profile?> = currentProfile_.asStateFlow()
+  open val currentProfile: StateFlow<Profile?> = currentProfile_.asStateFlow()
 
   init {
     repository.init { getProfiles() }
@@ -46,7 +47,9 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
 
   /** Gets all Profile documents and update the 'profiles' state flow. */
   fun getProfiles() {
-    repository.getProfiles(onSuccess = { profiles_.value = it }, onFailure = {})
+    repository.getProfiles(
+        onSuccess = { profiles_.value = it },
+        onFailure = { Log.e("ListProfilesViewModel", "Error getting profiles", it) })
   }
 
   /**
@@ -55,7 +58,10 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
    * @param profile The Profile document to be added.
    */
   fun addProfile(profile: Profile) {
-    repository.addProfile(profile, onSuccess = { getProfiles() }, onFailure = {})
+    repository.addProfile(
+        profile,
+        onSuccess = { getProfiles() },
+        onFailure = { Log.e("ListProfilesViewModel", "Error adding profile", it) })
   }
 
   /**
@@ -64,7 +70,10 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
    * @param profile The Profile document to be updated.
    */
   fun updateProfile(profile: Profile) {
-    repository.updateProfile(profile, onSuccess = { getProfiles() }, onFailure = {})
+    repository.updateProfile(
+        profile,
+        onSuccess = { getProfiles() },
+        onFailure = { Log.e("ListProfilesViewModel", "Error updating profile", it) })
   }
 
   /**
@@ -73,7 +82,10 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
    * @param id The ID of the Profile document to be deleted.
    */
   fun deleteProfileById(id: String) {
-    repository.deleteProfileById(id, onSuccess = { getProfiles() }, onFailure = {})
+    repository.deleteProfileById(
+        id,
+        onSuccess = { getProfiles() },
+        onFailure = { Log.e("ListProfilesViewModel", "Error deleting profile", it) })
   }
 
   /**

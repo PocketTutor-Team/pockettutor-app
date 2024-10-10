@@ -36,10 +36,14 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
+import com.google.firebase.firestore.FirebaseFirestoreException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProfileScreen(
+    navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory)
 ) {
@@ -49,7 +53,6 @@ fun CreateProfileScreen(
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   var section by remember { mutableStateOf("") }
   var academicLevel by remember { mutableStateOf("") }
-  val email = "test.default@epfl.ch" // TODO: link to google sign-in
 
   // Context for the Toast messages
   val context = LocalContext.current
@@ -81,7 +84,8 @@ fun CreateProfileScreen(
                   onValueChange = { firstName = it },
                   label = { Text("First Name") },
                   placeholder = { Text("Enter your first name") },
-                  modifier = Modifier.fillMaxWidth())
+                  modifier = Modifier.fillMaxWidth(),
+                  singleLine = true)
 
               // Last name input
               OutlinedTextField(
@@ -89,7 +93,8 @@ fun CreateProfileScreen(
                   onValueChange = { lastName = it },
                   label = { Text("Last Name") },
                   placeholder = { Text("Enter your last name") },
-                  modifier = Modifier.fillMaxWidth())
+                  modifier = Modifier.fillMaxWidth(),
+                  singleLine = true)
 
               // Role input
               Text("You are a :")
@@ -121,7 +126,7 @@ fun CreateProfileScreen(
                     label = { Text("Your Section") },
                     placeholder = { Text("Select your section") },
                     modifier = Modifier.fillMaxWidth(),
-                )
+                    singleLine = true)
 
                 DropdownMenu(
                     expanded = expandedSection,
@@ -155,7 +160,8 @@ fun CreateProfileScreen(
                     },
                     label = { Text("Your Academic Level") },
                     placeholder = { Text("Select your academic level") },
-                    modifier = Modifier.fillMaxWidth())
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true)
 
                 DropdownMenu(
                     expanded = expandedAcademicLevel,
@@ -194,17 +200,39 @@ fun CreateProfileScreen(
                 try {
                   listProfilesViewModel.addProfile(
                       Profile(
-                          listProfilesViewModel.getNewUid(),
+                          listProfilesViewModel.getNewUid(), // TODO: use google sign-in uid
                           firstName,
                           lastName,
                           role,
                           Section.valueOf(section),
-                          AcademicLevel.valueOf(academicLevel),
-                          email))
+                          AcademicLevel.valueOf(academicLevel)))
+
+                  // Navigate to the next screen => TODO: update the destination
+                  if (role == Role.TUTOR) {
+                    navigationActions.navigateTo(Screen.HOME)
+                  } else if (role == Role.STUDENT) {
+                    navigationActions.navigateTo(Screen.HOME)
+                  }
+
+                  return@Button
                 } catch (e: IllegalArgumentException) {
                   Toast.makeText(
                           context,
                           "Please select a section and an academic level from the dropdown menu!",
+                          Toast.LENGTH_SHORT)
+                      .show()
+                  return@Button
+                } catch (e: FirebaseFirestoreException) {
+                  Toast.makeText(
+                          context,
+                          "An error with Firestore occurred while creating your profile, please try again later!",
+                          Toast.LENGTH_SHORT)
+                      .show()
+                  return@Button
+                } catch (e: Exception) {
+                  Toast.makeText(
+                          context,
+                          "An unexpected error occurred while creating your profile, please try again later!",
                           Toast.LENGTH_SHORT)
                       .show()
                   return@Button

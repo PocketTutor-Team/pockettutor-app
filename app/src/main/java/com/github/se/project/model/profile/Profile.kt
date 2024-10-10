@@ -2,13 +2,12 @@ package com.github.se.project.model.profile
 
 /** Data class representing a user profile. */
 data class Profile(
-    val uid: String, // Unique string id for the profile
+    val uid: String, // Unique string id for the profile => TODO: link to google sign-in
     val firstName: String, // First name of the user
     val lastName: String, // Last name of the user
     val role: Role, // Role of the user
     val section: Section, // Section of the user
     val academicLevel: AcademicLevel, // Academic level of the user
-    val email: String, // Email of the user => TODO: link to google sign-in
 
     // TODO: profile picture
 )

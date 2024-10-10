@@ -12,9 +12,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.CreateProfileScreen
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Route
+import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -43,17 +50,17 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
 
-  // Create Profile Screen (for testing, after use navigation)
-  CreateProfileScreen(listProfilesViewModel)
+  // Navigation
+  val navController = rememberNavController()
+  val navigationActions = NavigationActions(navController)
 
-  /* UNCOMMENT WHEN IMPLEMENTING SCREENS
-    // Navigation
-    val navController = rememberNavController()
-    val navigationActions = NavigationActions(navController)
-    NavHost(navController = navController, startDestination = Route.WELCOME) {
-      // Add dependencies when creating a screen
-      composable(Route.WELCOME) {  }
-  } */
+  NavHost(navController = navController, startDestination = Route.AUTH) {
+    // Add dependencies when creating a screen
+    navigation(startDestination = Screen.AUTH, route = Route.AUTH) {
+      composable(Screen.AUTH) { CreateProfileScreen(navigationActions, listProfilesViewModel) }
+      composable(Screen.HOME) { Greeting("Android") }
+    }
+  }
 }
 
 @Composable
