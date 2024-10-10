@@ -130,7 +130,6 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val price = document.getDouble("price") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = document.getString("status")?.let { LessonStatus.valueOf(it) } ?: return null
-      val date = document.getString("date") ?: return null
       val language = document.getString("language") ?: return null
 
       Lesson(id, title, description, tutorUid, studentUid, price, timeSlot, status, language)
