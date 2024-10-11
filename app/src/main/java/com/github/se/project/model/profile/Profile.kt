@@ -13,6 +13,7 @@ data class Profile(
     val email: String, // Email of the user => TODO: link to google sign-in
     val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
     val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
+    val schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
     var price: Int = 0,
     // TODO: profile picture
 )
