@@ -22,6 +22,7 @@ import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
+import com.github.se.project.ui.theme.SampleAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,7 +169,7 @@ fun DefaultPreview() {
           email = "john.doe@example.com",
           schedule = List(7) { List(12) { 1 } } // Initial empty schedule
           )
-  MaterialTheme {
+  SampleAppTheme {
     AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */})
   }
 }

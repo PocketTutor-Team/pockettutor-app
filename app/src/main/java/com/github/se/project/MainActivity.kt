@@ -3,7 +3,6 @@ package com.github.se.project
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,12 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.se.project.model.profile.*
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentication.AvailabilityScreen
+import com.github.se.project.ui.theme.SampleAppTheme
+
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      MaterialTheme {
+      SampleAppTheme{
         // Initialize the profile state here
         var profile by remember {
           mutableStateOf(
@@ -80,7 +81,7 @@ fun DefaultPreview() {
           schedule = List(7) { List(12) { 0 } } // Initial empty schedule
           )
 
-  MaterialTheme {
+  SampleAppTheme {
     AvailabilityScreen(profile = initialProfile, onProfileUpdate = { /* Handle profile update */})
   }
 }
