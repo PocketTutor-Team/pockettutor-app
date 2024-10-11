@@ -123,6 +123,7 @@ android {
 
 dependencies {
 
+
     // Core
     implementation(libs.core.ktx)
     implementation(libs.androidx.core.ktx)
@@ -135,6 +136,7 @@ dependencies {
 
     // Jetpack Compose UI
     implementation(libs.androidx.ui)
+    implementation (libs.accompanist.pager)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material)
@@ -157,6 +159,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.maps.compose.utils)
     implementation(libs.play.services.auth)
+    implementation(libs.google.identity)
 
     // Firebase
     implementation(libs.firebase.database.ktx)

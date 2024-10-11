@@ -17,4 +17,4 @@ Designed for students seeking efficient academic help and tutors managing their 
 - **Offline Mode**: Access key features without an internet connection.
 
 ## Figma
-https://www.figma.com/design/4z21D0ByC943Lvxq47SDwD/PocketTutor?node-id=0-1&m=dev&t=RYAVl6KFsXMwBt4y-1
+https://www.figma.com/design/tVPWUZqvvIcr7MgOULXYO9/Pocket-Tutor-Design?node-id=2020-339&t=NxpQOF9cLSAnxrlx-1
