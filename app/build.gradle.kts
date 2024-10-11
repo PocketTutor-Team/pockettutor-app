@@ -123,6 +123,7 @@ android {
 
 dependencies {
 
+
     // Core
     implementation(libs.core.ktx)
     implementation(libs.androidx.core.ktx)
@@ -135,6 +136,7 @@ dependencies {
 
     // Jetpack Compose UI
     implementation(libs.androidx.ui)
+    implementation (libs.accompanist.pager)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material)
