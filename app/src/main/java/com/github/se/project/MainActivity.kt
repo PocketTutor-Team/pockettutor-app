@@ -17,7 +17,6 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       SampleAppTheme {
-
         val context = LocalContext.current
         this.authenticationViewModel = viewModel()
 
