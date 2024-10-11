@@ -13,12 +13,11 @@ import com.github.se.project.model.profile.*
 import com.github.se.project.ui.authentication.AvailabilityScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
-
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      SampleAppTheme{
+      SampleAppTheme {
         // Initialize the profile state here
         var profile by remember {
           mutableStateOf(
