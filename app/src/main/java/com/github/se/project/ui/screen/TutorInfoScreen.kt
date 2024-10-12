@@ -27,7 +27,7 @@ import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.TutoringSubject
 
-// Composable funtion to display the tutor sign up info screen
+// Composable function to display the tutor sign up info screen
 @Composable
 fun TutorInfo(profile: Profile) {
   val analyseChecked = remember { mutableStateOf(false) }
@@ -123,11 +123,11 @@ fun TutorInfo(profile: Profile) {
     val priceDifference = average - sliderValue.floatValue.toInt()
     if (priceDifference >= 0)
         Text(
-            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is $priceDifference.- less than the average price on PocketTutor.",
+            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is $priceDifference.- less than the average price on PocketTutor .",
             Modifier.padding(start = 16.dp, top = 8.dp))
     else
         Text(
-            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is ${-priceDifference}.- more than the average price on PocketTutor.",
+            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is ${-priceDifference}.- more than the average price on PocketTutor .",
             Modifier.padding(start = 16.dp, top = 8.dp))
 
     // Tutor sign up info confirmation
@@ -168,7 +168,8 @@ fun TutorInfo(profile: Profile) {
             profile.price = sliderValue.floatValue.toInt()
 
             // navController.navigate("Home Screen")
-            /*TODO: Finish navigation and save info to firebase*/ }
+            /*TODO: Finish navigation and save info to firebase*/
+          }
         },
         modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)) {
           Text("Confirm")
