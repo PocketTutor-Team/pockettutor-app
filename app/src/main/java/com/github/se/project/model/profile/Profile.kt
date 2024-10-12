@@ -1,6 +1,6 @@
 package com.github.se.project.model.profile
 
-// import java.util.EnumSet
+import java.util.EnumSet
 
 /** Data class representing a user profile. */
 data class Profile(
@@ -12,8 +12,8 @@ data class Profile(
     val section: Section, // Section of the user
     val academicLevel: AcademicLevel, // Academic level of the user
     // TODO: update languages and subjects to avoid using EnumSet
-    //    val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
-    //    val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
+    val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
+    val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
     var price: Int = 0,
     // TODO: profile picture
 )
