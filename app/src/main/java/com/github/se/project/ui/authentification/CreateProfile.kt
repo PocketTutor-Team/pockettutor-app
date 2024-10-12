@@ -50,6 +50,7 @@ fun CreateProfileScreen(
   // Profile details
   var firstName by remember { mutableStateOf("") }
   var lastName by remember { mutableStateOf("") }
+  var phoneNumber by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   var section by remember { mutableStateOf("") }
   var academicLevel by remember { mutableStateOf("") }
@@ -93,6 +94,15 @@ fun CreateProfileScreen(
                   onValueChange = { lastName = it },
                   label = { Text("Last Name") },
                   placeholder = { Text("Enter your last name") },
+                  modifier = Modifier.fillMaxWidth(),
+                  singleLine = true)
+
+              // Phone number input
+              OutlinedTextField(
+                  value = phoneNumber,
+                  onValueChange = { phoneNumber = it },
+                  label = { Text("Phone Number") },
+                  placeholder = { Text("Enter your phone number") },
                   modifier = Modifier.fillMaxWidth(),
                   singleLine = true)
 
@@ -194,15 +204,19 @@ fun CreateProfileScreen(
               // Create a new profile if all fields are completed
               if (firstName.isNotEmpty() &&
                   lastName.isNotEmpty() &&
+                  phoneNumber.isNotEmpty() &&
+                  isPhoneNumberValid(phoneNumber) &&
                   role != Role.UNKNOWN &&
                   section.isNotEmpty() &&
                   academicLevel.isNotEmpty()) {
+
                 try {
                   listProfilesViewModel.addProfile(
                       Profile(
                           listProfilesViewModel.getNewUid(), // TODO: use google sign-in uid
                           firstName,
                           lastName,
+                          phoneNumber,
                           role,
                           Section.valueOf(section),
                           AcademicLevel.valueOf(academicLevel)))
@@ -239,13 +253,30 @@ fun CreateProfileScreen(
                 }
               }
 
-              Toast.makeText(
-                      context,
-                      "Please complete all the fields before creating your account!",
-                      Toast.LENGTH_SHORT)
-                  .show()
+              if (phoneNumber.isNotEmpty() && isPhoneNumberValid(phoneNumber)) {
+                Toast.makeText(
+                        context,
+                        "Please complete all the fields before creating your account!",
+                        Toast.LENGTH_SHORT)
+                    .show()
+              } else {
+                Toast.makeText(context, "Please enter a valid phone number!", Toast.LENGTH_SHORT)
+                    .show()
+              }
             }) {
               Text("Confirm your details")
             }
       })
+}
+
+/**
+ * Checks if the phone number is valid. To be valid a phone number must be composed of 10 to 15
+ * digits with an optional '+' at the beginning and no other characters.
+ *
+ * @param phoneNumber The phone number to check.
+ * @return true if the phone number is valid, false otherwise.
+ */
+private fun isPhoneNumberValid(phoneNumber: String): Boolean {
+  val phoneNumberRegex = "^\\+?[0-9]{10,15}\$".toRegex()
+  return phoneNumber.matches(phoneNumberRegex)
 }
