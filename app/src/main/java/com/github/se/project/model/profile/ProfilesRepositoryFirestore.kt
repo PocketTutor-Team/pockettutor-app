@@ -2,25 +2,31 @@ package com.github.se.project.model.profile
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesRepository {
 
   private val collectionPath = "profiles"
+  private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
   override fun getNewUid(): String {
     return db.collection(collectionPath).document().id
   }
 
   override fun init(onSuccess: () -> Unit) {
-    Firebase.auth.addAuthStateListener {
-      if (it.currentUser != null) {
-        onSuccess()
-      }
-    }
+    authStateListener =
+        FirebaseAuth.AuthStateListener {
+          if (it.currentUser != null) {
+            onSuccess()
+          }
+        }
+    FirebaseAuth.getInstance().addAuthStateListener(authStateListener!!)
+  }
+
+  fun cleanup() {
+    authStateListener?.let { FirebaseAuth.getInstance().removeAuthStateListener(it) }
   }
 
   override fun getProfiles(onSuccess: (List<Profile>) -> Unit, onFailure: (Exception) -> Unit) {
