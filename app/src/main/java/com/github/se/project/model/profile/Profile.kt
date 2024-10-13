@@ -33,35 +33,39 @@ data class ProfileUpload(
 )
 
 fun profileUpload(profile: Profile): ProfileUpload {
-    return ProfileUpload(
-        uid = profile.uid,
-        firstName = profile.firstName,
-        lastName = profile.lastName,
-        phoneNumber = profile.phoneNumber,
-        role = profile.role.name,
-        section = profile.section.name,
-        academicLevel = profile.academicLevel.name,
-        languages = profile.languages.map { it.name }.toMutableList(),
-        subjects = profile.subjects.map { it.name }.toMutableList(),
-        scheduleFlat = profile.schedule.flatten(),
-        price = profile.price
-    )
+  return ProfileUpload(
+      uid = profile.uid,
+      firstName = profile.firstName,
+      lastName = profile.lastName,
+      phoneNumber = profile.phoneNumber,
+      role = profile.role.name,
+      section = profile.section.name,
+      academicLevel = profile.academicLevel.name,
+      languages = profile.languages.map { it.name }.toMutableList(),
+      subjects = profile.subjects.map { it.name }.toMutableList(),
+      scheduleFlat = profile.schedule.flatten(),
+      price = profile.price)
 }
 
 fun profileFromUpload(profileUpload: ProfileUpload): Profile {
-    return Profile(
-        uid = profileUpload.uid,
-        firstName = profileUpload.firstName,
-        lastName = profileUpload.lastName,
-        phoneNumber = profileUpload.phoneNumber,
-        role = Role.valueOf(profileUpload.role),
-        section = Section.valueOf(profileUpload.section),
-        academicLevel = AcademicLevel.valueOf(profileUpload.academicLevel),
-        languages = profileUpload.languages.map { Language.valueOf(it) }.toCollection(EnumSet.noneOf(Language::class.java)),
-        subjects = profileUpload.subjects.map { TutoringSubject.valueOf(it) }.toCollection(EnumSet.noneOf(TutoringSubject::class.java)),
-        schedule = profileUpload.scheduleFlat.chunked(12),
-        price = profileUpload.price
-    )
+  return Profile(
+      uid = profileUpload.uid,
+      firstName = profileUpload.firstName,
+      lastName = profileUpload.lastName,
+      phoneNumber = profileUpload.phoneNumber,
+      role = Role.valueOf(profileUpload.role),
+      section = Section.valueOf(profileUpload.section),
+      academicLevel = AcademicLevel.valueOf(profileUpload.academicLevel),
+      languages =
+          profileUpload.languages
+              .map { Language.valueOf(it) }
+              .toCollection(EnumSet.noneOf(Language::class.java)),
+      subjects =
+          profileUpload.subjects
+              .map { TutoringSubject.valueOf(it) }
+              .toCollection(EnumSet.noneOf(TutoringSubject::class.java)),
+      schedule = profileUpload.scheduleFlat.chunked(12),
+      price = profileUpload.price)
 }
 
 /** Enum classes representing the role, section, and academic level of a user. */
