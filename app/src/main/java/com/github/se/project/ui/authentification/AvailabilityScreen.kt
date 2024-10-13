@@ -1,4 +1,4 @@
-package com.github.se.project.ui.authentication
+package com.github.se.project.ui.authentification
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -163,10 +163,10 @@ fun DefaultPreview() {
           uid = "12345",
           firstName = "John",
           lastName = "Doe",
+          phoneNumber = "1234567890",
           role = Role.TUTOR,
           section = Section.IN,
           academicLevel = AcademicLevel.MA2,
-          email = "john.doe@example.com",
           schedule = List(7) { List(12) { 1 } } // Initial empty schedule
           )
   SampleAppTheme {
