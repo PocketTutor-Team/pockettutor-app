@@ -50,6 +50,9 @@ fun PocketTutorApp() {
       viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
 
+  // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
+  var googleUid = ""
+
   // Context
   val context = LocalContext.current
 
@@ -62,7 +65,8 @@ fun PocketTutorApp() {
               authenticationViewModel.handleGoogleSignIn(
                   context,
                   onSuccess = { uid ->
-                    val profile = profiles.value.find { it.uid == uid }
+                    googleUid = uid
+                    val profile = profiles.value.find { it.googleUid == googleUid }
 
                     if (profile != null) {
                       // If the user already has a profile, navigate to the home screen
@@ -79,7 +83,7 @@ fun PocketTutorApp() {
         Greeting("Android") // TODO: Replace with HomeScreen
       }
       composable(Screen.CREATE_PROFILE) {
-        CreateProfileScreen(navigationActions, listProfilesViewModel)
+        CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
       }
       composable(Screen.TUTOR_INFO) { TutorInfoScreen(navigationActions, listProfilesViewModel) }
       composable(Screen.CREATE_CALENDAR) {

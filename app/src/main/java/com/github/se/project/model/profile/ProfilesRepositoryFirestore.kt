@@ -95,6 +95,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
   private fun documentToProfile(document: DocumentSnapshot): Profile? {
     return try {
       val uid = document.id
+      val googleUid = document.getString("googleUid") ?: return null
       val firstName = document.getString("firstName") ?: return null
       val lastName = document.getString("lastName") ?: return null
       val phoneNumber = document.getString("phoneNumber") ?: return null
@@ -102,7 +103,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val section = Section.valueOf(document.getString("section") ?: return null)
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
 
-      Profile(uid, firstName, lastName, phoneNumber, role, section, academicLevel)
+      // TODO: update to retrieve language, subjects and calendar fields
+      Profile(uid, googleUid, firstName, lastName, phoneNumber, role, section, academicLevel)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null

@@ -45,7 +45,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 fun CreateProfileScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
-        viewModel(factory = ListProfilesViewModel.Factory)
+        viewModel(factory = ListProfilesViewModel.Factory),
+    googleUid: String
 ) {
   // Profile details
   var firstName by remember { mutableStateOf("") }
@@ -213,7 +214,8 @@ fun CreateProfileScreen(
                 try {
                   val newProfile =
                       Profile(
-                          listProfilesViewModel.getNewUid(), // TODO: use google sign-in uid
+                          listProfilesViewModel.getNewUid(),
+                          googleUid,
                           firstName,
                           lastName,
                           phoneNumber,
