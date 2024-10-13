@@ -16,15 +16,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
-import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.ui.profile.AvailabilityScreen
+import com.github.se.project.ui.profile.CreateProfileScreen
+import com.github.se.project.ui.profile.TutorInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
-import com.github.se.project.model.authentification.AuthenticationViewModel
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,11 +43,14 @@ fun PocketTutorApp() {
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
 
+  // View models
   val authenticationViewModel: AuthenticationViewModel = viewModel()
 
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
+  val profiles = listProfilesViewModel.profiles
 
+  // Context
   val context = LocalContext.current
 
   NavHost(navController = navController, startDestination = Route.AUTH) {
@@ -56,36 +61,35 @@ fun PocketTutorApp() {
             onSignInClick = {
               authenticationViewModel.handleGoogleSignIn(
                   context,
-                  onSuccess = {
-                    // On successful sign-in, navigate to the home screen
-                    navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                  onSuccess = { uid ->
+                    val profile = profiles.value.find { it.uid == uid }
+
+                    if (profile != null) {
+                      // If the user already has a profile, navigate to the home screen
+                      listProfilesViewModel.setCurrentProfile(profile)
+                      navigationActions.navigateTo(Screen.HOME)
+                    } else {
+                      // If the user doesn't have a profile, navigate to the profile creation screen
+                      navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                    }
                   })
             })
+      }
+      composable(Screen.HOME) {
+        Greeting("Android") // TODO: Replace with HomeScreen
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel)
       }
-      composable(Screen.HOME) { Greeting("Android") }
+      composable(Screen.TUTOR_INFO) { TutorInfoScreen(navigationActions, listProfilesViewModel) }
+      composable(Screen.CREATE_CALENDAR) {
+        AvailabilityScreen(navigationActions, listProfilesViewModel)
+      }
     }
-
-    // Home Screen or other screens after sign-in
-    // composable(Route.HOME) {
-    //      HomeScreen(navController) // Implement your home screen or other navigation destinations
-    // }
   }
 }
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-
-  /* UNCOMMENT WHEN IMPLEMENTING SCREENS
-  // Navigation
-  val navController = rememberNavController()
-  val navigationActions = NavigationActions(navController)
-  NavHost(navController = navController, startDestination = Route.WELCOME) {
-    // Add dependencies when creating a screen
-    composable(Route.WELCOME) {  }
-  } */
-
   Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
 }

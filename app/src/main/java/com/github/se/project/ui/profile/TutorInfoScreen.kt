@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,13 +24,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 
 // Composable function to display the tutor sign up info screen
 @Composable
-fun TutorInfoScreen(profile: Profile) {
+fun TutorInfoScreen(
+    navigationActions: NavigationActions,
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory)
+) {
+  val profile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+
   val analyseChecked = remember { mutableStateOf(false) }
   val algebreChecked = remember { mutableStateOf(false) }
   val physiqueChecked = remember { mutableStateOf(false) }
@@ -167,8 +179,11 @@ fun TutorInfoScreen(profile: Profile) {
             }
             profile.price = sliderValue.floatValue.toInt()
 
-            // navController.navigate("Home Screen")
-            /*TODO: Finish navigation and save info to firebase*/
+            // Update the profile in the database with the new information
+            listProfilesViewModel.updateProfile(profile)
+
+            // Navigate to the next screen (ie to enter availability information)
+            navigationActions.navigateTo(Screen.CREATE_CALENDAR)
           }
         },
         modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)) {

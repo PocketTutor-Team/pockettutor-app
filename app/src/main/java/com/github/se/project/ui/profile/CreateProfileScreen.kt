@@ -211,7 +211,7 @@ fun CreateProfileScreen(
                   academicLevel.isNotEmpty()) {
 
                 try {
-                  listProfilesViewModel.addProfile(
+                  val newProfile =
                       Profile(
                           listProfilesViewModel.getNewUid(), // TODO: use google sign-in uid
                           firstName,
@@ -219,11 +219,16 @@ fun CreateProfileScreen(
                           phoneNumber,
                           role,
                           Section.valueOf(section),
-                          AcademicLevel.valueOf(academicLevel)))
+                          AcademicLevel.valueOf(academicLevel))
 
-                  // Navigate to the next screen => TODO: update the destination
+                  listProfilesViewModel.addProfile(newProfile)
+
+                  // Set the current profile to the newly created profile
+                  listProfilesViewModel.setCurrentProfile(newProfile)
+
+                  // Navigate to the next screen
                   if (role == Role.TUTOR) {
-                    navigationActions.navigateTo(Screen.HOME)
+                    navigationActions.navigateTo(Screen.TUTOR_INFO)
                   } else if (role == Role.STUDENT) {
                     navigationActions.navigateTo(Screen.HOME)
                   }
