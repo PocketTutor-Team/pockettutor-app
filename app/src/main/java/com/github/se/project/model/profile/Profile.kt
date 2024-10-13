@@ -53,8 +53,8 @@ fun profileFromUpload(profileUpload: ProfileUpload): Profile {
       firstName = profileUpload.firstName,
       lastName = profileUpload.lastName,
       phoneNumber = profileUpload.phoneNumber,
-      role = Role.valueOf(profileUpload.role),
-      section = Section.valueOf(profileUpload.section),
+      role = enumValueOfOrNull<Role>(profileUpload.role) ?: throw IllegalArgumentException("Invalid role: ${profileUpload.role}"),
+      section = enumValueOfOrNull<Section>(profileUpload.section) ?: throw IllegalArgumentException("Invalid section: ${profileUpload.section}"),
       academicLevel = AcademicLevel.valueOf(profileUpload.academicLevel),
       languages =
           profileUpload.languages
@@ -119,4 +119,12 @@ enum class TutoringSubject {
   ANALYSIS,
   ALGEBRA,
   PHYSICS,
+}
+
+inline fun <reified T : Enum<T>> enumValueOfOrNull(roleString: String): T? {
+    return try {
+        enumValueOf<T>(roleString)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
 }

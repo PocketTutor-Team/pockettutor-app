@@ -95,7 +95,7 @@ fun TutorInfoScreen(profile: Profile) {
                 if (algebreChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("AlgÃ¨bre")
+                Text("Algebre")
               }
             },
             onClick = { algebreChecked.value = !algebreChecked.value })
