@@ -4,20 +4,65 @@ import java.util.EnumSet
 
 /** Data class representing a user profile. */
 data class Profile(
-    val uid: String, // Unique string id for the profile => TODO: link to google sign-in
-    val firstName: String, // First name of the user
-    val lastName: String, // Last name of the user
-    val phoneNumber: String, // Phone number of the user
-    val role: Role, // Role of the user
-    val section: Section, // Section of the user
-    val academicLevel: AcademicLevel, // Academic level of the user
-    // TODO: update languages and subjects to avoid using EnumSet
-    val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
+    val uid: String,
+    val firstName: String,
+    val lastName: String,
+    val phoneNumber: String,
+    val role: Role,
+    val section: Section,
+    val academicLevel: AcademicLevel,
+    val languages: EnumSet<Language> = EnumSet.noneOf(Language::class.java),
     val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
-    val schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
-    var price: Int = 0,
-    // TODO: profile picture
+    val schedule: List<List<Int>> = List(7) { List(12) { 0 } },
+    var price: Int = 0
+    /*TODO: Add profile picture*/
 )
+
+data class ProfileUpload(
+    val uid: String,
+    val firstName: String,
+    val lastName: String,
+    val phoneNumber: String,
+    val role: String,
+    val section: String,
+    val academicLevel: String,
+    val languages: MutableList<String> = mutableListOf(),
+    val subjects: MutableList<String> = mutableListOf(),
+    val scheduleFlat: List<Int> = List(7 * 12) { 0 }, // Flattened version of weekly schedule
+    var price: Int = 0
+)
+
+fun profileUpload(profile: Profile): ProfileUpload {
+    return ProfileUpload(
+        uid = profile.uid,
+        firstName = profile.firstName,
+        lastName = profile.lastName,
+        phoneNumber = profile.phoneNumber,
+        role = profile.role.name,
+        section = profile.section.name,
+        academicLevel = profile.academicLevel.name,
+        languages = profile.languages.map { it.name }.toMutableList(),
+        subjects = profile.subjects.map { it.name }.toMutableList(),
+        scheduleFlat = profile.schedule.flatten(),
+        price = profile.price
+    )
+}
+
+fun profileFromUpload(profileUpload: ProfileUpload): Profile {
+    return Profile(
+        uid = profileUpload.uid,
+        firstName = profileUpload.firstName,
+        lastName = profileUpload.lastName,
+        phoneNumber = profileUpload.phoneNumber,
+        role = Role.valueOf(profileUpload.role),
+        section = Section.valueOf(profileUpload.section),
+        academicLevel = AcademicLevel.valueOf(profileUpload.academicLevel),
+        languages = profileUpload.languages.map { Language.valueOf(it) }.toCollection(EnumSet.noneOf(Language::class.java)),
+        subjects = profileUpload.subjects.map { TutoringSubject.valueOf(it) }.toCollection(EnumSet.noneOf(TutoringSubject::class.java)),
+        schedule = profileUpload.scheduleFlat.chunked(12),
+        price = profileUpload.price
+    )
+}
 
 /** Enum classes representing the role, section, and academic level of a user. */
 enum class Role {
@@ -61,7 +106,6 @@ enum class AcademicLevel {
 }
 
 enum class Language {
-  STUDENT,
   FRENCH,
   ENGLISH,
   GERMAN,

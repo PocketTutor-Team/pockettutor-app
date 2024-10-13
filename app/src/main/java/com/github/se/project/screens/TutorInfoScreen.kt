@@ -143,10 +143,9 @@ fun TutorInfoScreen(profile: Profile) {
                     !physiqueChecked.value) { // Check if at least one subject is selected
                     languageflag.value = false
                     subjectflag.value = true
-                } else { // If all info is correct, save the info to the profile
+                }  else { // If all info is correct, save the info to the profile
                     languageflag.value = false
                     subjectflag.value = false
-                    profile.languages.remove(Language.STUDENT)
                     if (frenchChecked.value) {
                         profile.languages.add(Language.FRENCH)
                     }
