@@ -1,4 +1,4 @@
-package com.github.se.project.viewmodels
+package com.github.se.project.model.authentification
 
 import android.content.Context
 import android.util.Log

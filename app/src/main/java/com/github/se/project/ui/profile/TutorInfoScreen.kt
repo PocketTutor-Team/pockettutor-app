@@ -1,4 +1,4 @@
-package com.android.sample
+package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import com.github.se.project.model.profile.TutoringSubject
 
 // Composable function to display the tutor sign up info screen
 @Composable
-fun TutorInfo(profile: Profile) {
+fun TutorInfoScreen(profile: Profile) {
   val analyseChecked = remember { mutableStateOf(false) }
   val algebreChecked = remember { mutableStateOf(false) }
   val physiqueChecked = remember { mutableStateOf(false) }

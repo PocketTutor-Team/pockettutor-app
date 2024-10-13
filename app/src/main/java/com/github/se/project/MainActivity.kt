@@ -18,13 +18,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
-import com.github.se.project.screens.SignInScreen
-import com.github.se.project.ui.authentification.CreateProfileScreen
+import com.github.se.project.ui.authentification.SignInScreen
+import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.theme.SampleAppTheme
-import com.github.se.project.viewmodels.AuthenticationViewModel
+import com.github.se.project.model.authentification.AuthenticationViewModel
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

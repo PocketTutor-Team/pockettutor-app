@@ -1,4 +1,4 @@
-package com.github.se.project.screen
+package com.github.se.project.ui
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import com.github.se.project.resources.C

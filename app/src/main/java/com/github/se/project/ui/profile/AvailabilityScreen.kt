@@ -1,4 +1,4 @@
-package com.github.se.project.ui.authentification
+package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
