@@ -1,4 +1,4 @@
-package com.android.sample
+package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

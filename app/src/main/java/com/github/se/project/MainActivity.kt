@@ -25,7 +25,7 @@ import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.profile.AvailabilityScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
-import com.github.se.project.ui.authentification.TutorInfoScreen
+import com.github.se.project.ui.profile.TutorInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -79,6 +79,12 @@ fun PocketTutorApp() {
                   })
             })
       }
+      // For debugging purposes (when sign-in error)
+      // composable(Screen.AUTH) {
+      //   googleUid = "1234"
+      //   CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
+      // }
+
       composable(Screen.HOME) {
         Greeting("Android") // TODO: Replace with HomeScreen
       }
