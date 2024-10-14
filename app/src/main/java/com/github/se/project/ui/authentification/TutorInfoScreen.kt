@@ -30,9 +30,9 @@ import com.github.se.project.model.profile.TutoringSubject
 // Composable funtion to display the tutor sign up info screen
 @Composable
 fun TutorInfoScreen(profile: Profile) {
-  val analyseChecked = remember { mutableStateOf(false) }
-  val algebreChecked = remember { mutableStateOf(false) }
-  val physiqueChecked = remember { mutableStateOf(false) }
+  val analysisChecked = remember { mutableStateOf(false) }
+  val algebraChecked = remember { mutableStateOf(false) }
+  val physicsChecked = remember { mutableStateOf(false) }
   val frenchChecked = remember { mutableStateOf(false) }
   val englishChecked = remember { mutableStateOf(false) }
   val germanChecked = remember { mutableStateOf(false) }
@@ -82,33 +82,33 @@ fun TutorInfoScreen(profile: Profile) {
         DropdownMenuItem(
             text = {
               Row {
-                if (analyseChecked.value) {
+                if (analysisChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Analyse")
+                Text("Analysis")
               }
             },
-            onClick = { analyseChecked.value = !analyseChecked.value })
+            onClick = { analysisChecked.value = !analysisChecked.value })
         DropdownMenuItem(
             text = {
               Row {
-                if (algebreChecked.value) {
+                if (algebraChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Algebre")
+                Text("Algebra")
               }
             },
-            onClick = { algebreChecked.value = !algebreChecked.value })
+            onClick = { algebraChecked.value = !algebraChecked.value })
         DropdownMenuItem(
             text = {
               Row {
-                if (physiqueChecked.value) {
+                if (physicsChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Physique")
+                Text("Physics")
               }
             },
-            onClick = { physiqueChecked.value = !physiqueChecked.value })
+            onClick = { physicsChecked.value = !physicsChecked.value })
       }
     }
 
@@ -138,9 +138,9 @@ fun TutorInfoScreen(profile: Profile) {
               !germanChecked.value) { // Check if at least one language is selected
             languageflag.value = true
             subjectflag.value = false
-          } else if (!analyseChecked.value &&
-              !algebreChecked.value &&
-              !physiqueChecked.value) { // Check if at least one subject is selected
+          } else if (!analysisChecked.value &&
+              !algebraChecked.value &&
+              !physicsChecked.value) { // Check if at least one subject is selected
             languageflag.value = false
             subjectflag.value = true
           } else { // If all info is correct, save the info to the profile
@@ -155,13 +155,13 @@ fun TutorInfoScreen(profile: Profile) {
             if (germanChecked.value) {
               profile.languages.add(Language.GERMAN)
             }
-            if (analyseChecked.value) {
+            if (analysisChecked.value) {
               profile.subjects.add(TutoringSubject.ANALYSIS)
             }
-            if (algebreChecked.value) {
+            if (algebraChecked.value) {
               profile.subjects.add(TutoringSubject.ALGEBRA)
             }
-            if (physiqueChecked.value) {
+            if (physicsChecked.value) {
               profile.subjects.add(TutoringSubject.PHYSICS)
             }
             profile.price = sliderValue.floatValue.toInt()

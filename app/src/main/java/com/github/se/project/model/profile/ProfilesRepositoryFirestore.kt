@@ -64,6 +64,13 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
         db.collection(collectionPath).document(id).delete(), onSuccess, onFailure)
   }
 
+  /**
+   * Performs a Firestore operation and calls the appropriate callback based on the result.
+   *
+   * @param task The Firestore task to perform.
+   * @param onSuccess The callback to call if the operation is successful.
+   * @param onFailure The callback to call if the operation fails.
+   */
   private fun performFirestoreOperation(
       task: Task<Void>,
       onSuccess: () -> Unit,
