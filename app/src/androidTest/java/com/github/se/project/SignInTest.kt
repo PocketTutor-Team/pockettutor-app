@@ -23,4 +23,10 @@ class SignInTest : TestCase() {
     composeTestRule.onNodeWithTag("loginButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").assertHasClickAction()
   }
+
+  @Test
+  fun dotsAndTermsAreCorrectlyDisplayed() {
+    composeTestRule.onNodeWithTag("dots").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("terms").assertIsDisplayed()
+  }
 }
