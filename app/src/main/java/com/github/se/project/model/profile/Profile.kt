@@ -13,7 +13,7 @@ data class Profile(
     val section: Section, // Section of the user
     val academicLevel: AcademicLevel, // Academic level of the user
     // TODO: update languages and subjects to avoid using EnumSet
-    val languages: EnumSet<Language> = EnumSet.of(Language.STUDENT),
+    val languages: EnumSet<Language> = EnumSet.noneOf(Language::class.java),
     val subjects: EnumSet<TutoringSubject> = EnumSet.noneOf(TutoringSubject::class.java),
     val schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
     var price: Int = 0,
@@ -62,7 +62,6 @@ enum class AcademicLevel {
 }
 
 enum class Language {
-  STUDENT,
   FRENCH,
   ENGLISH,
   GERMAN,
