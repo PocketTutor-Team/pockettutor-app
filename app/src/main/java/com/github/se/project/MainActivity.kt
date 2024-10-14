@@ -91,8 +91,8 @@ fun PocketTutorApp() {
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
       }
-      composable(Screen.TUTOR_INFO) { TutorInfoScreen(navigationActions, listProfilesViewModel) }
-      composable(Screen.CREATE_CALENDAR) {
+      composable(Screen.CREATE_TUTOR_PROFILE) { TutorInfoScreen(navigationActions, listProfilesViewModel) }
+      composable(Screen.CREATE_TUTOR_SCHEDULE) {
         AvailabilityScreen(navigationActions, listProfilesViewModel)
       }
     }

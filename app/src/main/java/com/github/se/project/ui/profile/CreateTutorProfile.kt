@@ -182,7 +182,7 @@ fun TutorInfoScreen(
             listProfilesViewModel.updateProfile(profile)
 
             // Navigate to the next screen (ie to enter availability information)
-            navigationActions.navigateTo(Screen.CREATE_CALENDAR)
+            navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
           }
         },
         modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)) {

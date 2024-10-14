@@ -230,7 +230,7 @@ fun CreateProfileScreen(
 
                   // Navigate to the next screen
                   if (role == Role.TUTOR) {
-                    navigationActions.navigateTo(Screen.TUTOR_INFO)
+                    navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
                   } else if (role == Role.STUDENT) {
                     navigationActions.navigateTo(Screen.HOME)
                   }
