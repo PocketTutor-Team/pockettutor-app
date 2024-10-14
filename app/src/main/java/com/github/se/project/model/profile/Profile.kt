@@ -4,7 +4,8 @@ import java.util.EnumSet
 
 /** Data class representing a user profile. */
 data class Profile(
-    val uid: String, // Unique string id for the profile => TODO: link to google sign-in
+    val uid: String, // Unique string id for the profile
+    val googleUid: String, // Google unique user id
     val firstName: String, // First name of the user
     val lastName: String, // Last name of the user
     val phoneNumber: String, // Phone number of the user
