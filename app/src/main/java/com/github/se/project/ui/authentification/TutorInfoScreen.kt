@@ -1,4 +1,4 @@
-package com.github.se.project.ui.profile
+package com.github.se.project.ui.authentification
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

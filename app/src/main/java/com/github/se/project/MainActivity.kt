@@ -25,7 +25,7 @@ import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.profile.AvailabilityScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
-import com.github.se.project.ui.profile.TutorInfoScreen
+import com.github.se.project.ui.authentification.TutorInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
