@@ -7,7 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepository {
 
-  private val collectionPath = "lessons"
+  private val lessonsCollectionPath = "lessons"
 
   // Initialize the repository
   override fun init(onSuccess: () -> Unit) {
@@ -21,9 +21,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    db.collection("users")
-        .document(userUid)
-        .collection(collectionPath)
+    db.collection(lessonsCollectionPath)
+        .whereEqualTo("userUid", userUid) // Filter lessons by user ID
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -46,12 +45,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val task =
-        db.collection("users")
-            .document(userUid)
-            .collection(collectionPath)
-            .document(lesson.id)
-            .set(lesson)
+
+    val task = db.collection(lessonsCollectionPath).document(lesson.id).set(lesson)
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -63,12 +58,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val task =
-        db.collection("users")
-            .document(userUid)
-            .collection(collectionPath)
-            .document(lesson.id)
-            .set(lesson)
+
+    val task = db.collection(lessonsCollectionPath).document(lesson.id).set(lesson)
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -80,12 +71,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val task =
-        db.collection("users")
-            .document(userUid)
-            .collection(collectionPath)
-            .document(lessonId)
-            .delete()
+    // No need to filter by userUid because we're using the lesson ID to delete
+    val task = db.collection(lessonsCollectionPath).document(lessonId).delete()
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -107,7 +94,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
         onSuccess()
       } else {
         result.exception?.let { e ->
-          Log.e("ProfilesRepositoryFirestore", "Error performing Firestore operation", e)
+          Log.e("LessonRepositoryFirestore", "Error performing Firestore operation", e)
           onFailure(e)
         }
       }
