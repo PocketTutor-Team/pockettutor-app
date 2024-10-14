@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,
  * addition, and deletion of lessons.
  */
-class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
+class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
   private val lessons_ = MutableStateFlow<List<Lesson>>(emptyList())
   val lessons: StateFlow<List<Lesson>> = lessons_.asStateFlow()
 
@@ -31,7 +31,7 @@ class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LessonsViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T
+            return LessonViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T
           }
         }
   }
