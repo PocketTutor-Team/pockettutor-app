@@ -2,10 +2,10 @@ package com.github.se.project.model.profile
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.EnumSet
 
 class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesRepository {
 
@@ -16,7 +16,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
   }
 
   override fun init(onSuccess: () -> Unit) {
-    Firebase.auth.addAuthStateListener {
+    FirebaseAuth.getInstance().addAuthStateListener {
       if (it.currentUser != null) {
         onSuccess()
       }
@@ -40,10 +40,9 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
   }
 
   override fun addProfile(profile: Profile, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-    val uploadProfile = profileUpload(profile)
-    val task: Task<Void> =
-        db.collection(collectionPath).document(uploadProfile.uid).set(uploadProfile)
-    performFirestoreOperation(task, onSuccess, onFailure)
+    val profileAsMap = profileToMap(profile)
+    performFirestoreOperation(
+        db.collection(collectionPath).document(profile.uid).set(profileAsMap), onSuccess, onFailure)
   }
 
   override fun updateProfile(
@@ -51,11 +50,9 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    val uploadProfile = profileUpload(profile)
+    val profileAsMap = profileToMap(profile)
     performFirestoreOperation(
-        db.collection(collectionPath).document(uploadProfile.uid).set(uploadProfile),
-        onSuccess,
-        onFailure)
+        db.collection(collectionPath).document(profile.uid).set(profileAsMap), onSuccess, onFailure)
   }
 
   override fun deleteProfileById(
@@ -67,13 +64,6 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
         db.collection(collectionPath).document(id).delete(), onSuccess, onFailure)
   }
 
-  /**
-   * Performs a Firestore operation and calls the appropriate callback based on the result.
-   *
-   * @param task The Firestore task to perform.
-   * @param onSuccess The callback to call if the operation is successful.
-   * @param onFailure The callback to call if the operation fails.
-   */
   private fun performFirestoreOperation(
       task: Task<Void>,
       onSuccess: () -> Unit,
@@ -103,17 +93,64 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val firstName = document.getString("firstName") ?: return null
       val lastName = document.getString("lastName") ?: return null
       val phoneNumber = document.getString("phoneNumber") ?: return null
-      val role = document.getString("role") ?: return null
-      val section = document.getString("section") ?: return null
-      val academicLevel = document.getString("academicLevel") ?: return null
-      // Note that in the above section, we could do "Section.valueOf([current expression]).NAME",
-      // to check the string corresponds to the enums, at the cost of making the code less legible
-      val uploadProfile =
-          ProfileUpload(uid, firstName, lastName, phoneNumber, role, section, academicLevel)
-      profileFromUpload(uploadProfile)
+      val role = Role.valueOf(document.getString("role") ?: return null)
+      val section = Section.valueOf(document.getString("section") ?: return null)
+      val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
+
+      // Retrieve the "languages" field as a list of strings and map it to EnumSet<Language>
+      // the type cast (as List<String>) is safe since in a try-catch block
+      val languages =
+          document
+              .get("languages")
+              ?.let { languagesList ->
+                (languagesList as List<String>).map { Language.valueOf(it) }
+              }
+              ?.toCollection(EnumSet.noneOf(Language::class.java))
+              ?: EnumSet.noneOf(Language::class.java)
+
+      val subjects =
+          document
+              .get("subjects")
+              ?.let { subjectsList ->
+                (subjectsList as List<String>).map { TutoringSubject.valueOf(it) }
+              }
+              ?.toCollection(EnumSet.noneOf(TutoringSubject::class.java))
+              ?: EnumSet.noneOf(TutoringSubject::class.java)
+
+      val schedule =
+          document.get("schedule")?.let { (it as List<Int>).chunked(12) }
+              ?: List(7) { List(12) { 0 } }
+
+      Profile(
+          uid,
+          firstName,
+          lastName,
+          phoneNumber,
+          role,
+          section,
+          academicLevel,
+          languages,
+          subjects,
+          schedule)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null
     }
+  }
+
+  /** Converts a Profile object to a Map for Firestore. */
+  private fun profileToMap(profile: Profile): Map<String, Any> {
+    return mapOf(
+        "uid" to profile.uid,
+        "firstName" to profile.firstName,
+        "lastName" to profile.lastName,
+        "phoneNumber" to profile.phoneNumber,
+        "role" to profile.role.name,
+        "section" to profile.section.name,
+        "academicLevel" to profile.academicLevel.name,
+        "languages" to profile.languages.map { it.name }, // convert enumSets into a list of strings
+        "subjects" to profile.subjects.map { it.name },
+        "schedule" to profile.schedule.flatten(),
+        "price" to profile.price)
   }
 }
