@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
@@ -63,6 +64,8 @@ fun CreateProfileScreen(
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
 
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
   Scaffold(
       topBar = {
         Text(
@@ -86,7 +89,7 @@ fun CreateProfileScreen(
                   onValueChange = { firstName = it },
                   label = { Text("First Name") },
                   placeholder = { Text("Enter your first name") },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().testTag("firstNameInput"),
                   singleLine = true)
 
               // Last name input
@@ -95,7 +98,7 @@ fun CreateProfileScreen(
                   onValueChange = { lastName = it },
                   label = { Text("Last Name") },
                   placeholder = { Text("Enter your last name") },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().testTag("lastNameInput"),
                   singleLine = true)
 
               // Phone number input
@@ -104,21 +107,22 @@ fun CreateProfileScreen(
                   onValueChange = { phoneNumber = it },
                   label = { Text("Phone Number") },
                   placeholder = { Text("Enter your phone number") },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().testTag("phoneNumberInput"),
                   singleLine = true)
 
               // Role input
               Text("You are a :")
               val roles = listOf(Role.STUDENT, Role.TUTOR)
               SingleChoiceSegmentedButtonRow(
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().testTag("roleSelection"),
               ) {
                 roles.forEach { r ->
                   Spacer(Modifier.width(5.dp))
                   SegmentedButton(
                       shape = SegmentedButtonDefaults.baseShape,
                       selected = r == role,
-                      onClick = { role = r }) {
+                      onClick = { role = r },
+                      modifier = Modifier.testTag("roleButton_${r.name}")) {
                         Text(r.name)
                       }
                   Spacer(Modifier.width(5.dp))
@@ -136,13 +140,13 @@ fun CreateProfileScreen(
                     },
                     label = { Text("Your Section") },
                     placeholder = { Text("Select your section") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("sectionInput"),
                     singleLine = true)
 
                 DropdownMenu(
                     expanded = expandedSection,
                     onDismissRequest = { expandedSection = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    modifier = Modifier.fillMaxWidth().zIndex(1f).testTag("sectionDropdown"),
                     properties = PopupProperties(focusable = false)) {
                       // Display only the sections that corresponds to the user input
                       Section.entries
@@ -155,7 +159,8 @@ fun CreateProfileScreen(
                                 onClick = {
                                   section = s.name
                                   expandedSection = false
-                                })
+                                },
+                                modifier = Modifier.testTag("sectionItem_${s.name}"))
                           }
                     }
               }
@@ -171,13 +176,13 @@ fun CreateProfileScreen(
                     },
                     label = { Text("Your Academic Level") },
                     placeholder = { Text("Select your academic level") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("academicLevelInput"),
                     singleLine = true)
 
                 DropdownMenu(
                     expanded = expandedAcademicLevel,
                     onDismissRequest = { expandedAcademicLevel = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    modifier = Modifier.fillMaxWidth().zIndex(1f).testTag("academicLevelDropdown"),
                     properties = PopupProperties(focusable = false)) {
                       // Display only the academic levels that corresponds to the user input
                       AcademicLevel.entries
@@ -191,7 +196,8 @@ fun CreateProfileScreen(
                                 onClick = {
                                   academicLevel = a.name
                                   expandedAcademicLevel = false
-                                })
+                                },
+                                modifier = Modifier.testTag("academicLevelItem_${a.name}"))
                           }
                     }
               }
@@ -200,7 +206,7 @@ fun CreateProfileScreen(
       bottomBar = {
         // Create profile button
         Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("createProfileButton"),
             onClick = {
               // Create a new profile if all fields are completed
               if (firstName.isNotEmpty() &&
@@ -237,6 +243,7 @@ fun CreateProfileScreen(
 
                   return@Button
                 } catch (e: IllegalArgumentException) {
+                    errorMessage = "Please select a section and an academic level from the dropdown menu!"
                   Toast.makeText(
                           context,
                           "Please select a section and an academic level from the dropdown menu!",
@@ -261,18 +268,28 @@ fun CreateProfileScreen(
               }
 
               if (phoneNumber.isNotEmpty() && isPhoneNumberValid(phoneNumber)) {
+                  errorMessage = "Please complete all the fields before creating your account!"
                 Toast.makeText(
                         context,
                         "Please complete all the fields before creating your account!",
                         Toast.LENGTH_SHORT)
                     .show()
               } else {
+                  errorMessage = "Please enter a valid phone number!"
                 Toast.makeText(context, "Please enter a valid phone number!", Toast.LENGTH_SHORT)
                     .show()
               }
             }) {
               Text("Confirm your details")
             }
+          errorMessage?.let {
+              Text(
+                  text = it,
+                  modifier = Modifier
+                      .padding(8.dp)
+                      .testTag("errorText") // Add this tag for testing
+              )
+          }
       })
 }
 

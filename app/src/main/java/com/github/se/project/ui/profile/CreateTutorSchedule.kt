@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,8 @@ fun AvailabilityScreen(
         TopAppBar(
             title = { Text(text = "Availability") },
             navigationIcon = {
-              IconButton(onClick = { /* Handle navigation */}) {
+              IconButton(onClick = { navigationActions.goBack()},
+                  modifier = Modifier.testTag("GoBackButton")) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back")
@@ -73,19 +75,20 @@ fun AvailabilityScreen(
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
                     .padding(10.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .testTag("AvailabilityScreen"),
             horizontalAlignment = Alignment.CenterHorizontally) {
               Text(
                   text = "${profile.firstName}, show us your availabilities",
                   fontSize = 24.sp,
                   fontWeight = FontWeight.Bold,
-                  modifier = Modifier.padding(bottom = 8.dp))
+                  modifier = Modifier.padding(bottom = 8.dp).testTag("GreetingText"))
 
               Text(
                   text =
                       "Finish your account creation by selecting the time slots you're available during the week:",
                   fontSize = 16.sp,
-                  modifier = Modifier.padding(bottom = 8.dp))
+                  modifier = Modifier.padding(bottom = 8.dp).testTag("InstructionsText"))
 
               // Display the availability grid
               AvailabilityGrid(
@@ -95,14 +98,12 @@ fun AvailabilityScreen(
               Spacer(modifier = Modifier.weight(1f))
 
               Button(
-                  onClick = { /* Add your logic for finding a student */
-                    // Update the profile with the new schedule
+                  onClick = {
                     listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))
-
-                    // Navigate to the home screen
-                    navigationActions.navigateTo(Screen.HOME)
+                    navigationActions.navigateTo(Screen.HOME) // Update the profile with the new schedule & navigate to the home screen
                   },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth()
+                      .testTag("FindStudentButton"),
                   colors = ButtonDefaults.buttonColors(Color(0xFF9B59B6))) {
                     Text(text = "Let's find a student!", color = Color.White)
                   }
@@ -119,7 +120,7 @@ fun AvailabilityGrid(schedule: List<List<Int>>, onScheduleChange: (List<List<Int
   var selectedSlots by remember { mutableStateOf(schedule) }
 
   // Grid Layout
-  Column {
+  Column(modifier = Modifier.testTag("AvailabilityGrid")) {
     Row {
       Spacer(modifier = Modifier.width(44.dp)) // Placeholder to align with time slots
       days.forEach { day ->
@@ -156,7 +157,7 @@ fun AvailabilityGrid(schedule: List<List<Int>>, onScheduleChange: (List<List<Int
                   )
             }
 
-        days.forEachIndexed { dayIndex, _ ->
+        days.forEachIndexed { dayIndex, day ->
           val isSelected = selectedSlots[dayIndex][hourIndex] == 1
 
           Box(
@@ -176,7 +177,8 @@ fun AvailabilityGrid(schedule: List<List<Int>>, onScheduleChange: (List<List<Int
 
                         selectedSlots = updatedSchedule
                         onScheduleChange(updatedSchedule)
-                      })
+                      }.testTag("Slot_${day}_${hour}"),
+              )
         }
       }
     }
