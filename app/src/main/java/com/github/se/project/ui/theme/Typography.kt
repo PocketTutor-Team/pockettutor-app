@@ -25,17 +25,17 @@ val Typography =
             ),
         headlineLarge =
             TextStyle(
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 fontSize = 32.sp, // Use for large headings
             ),
         headlineMedium =
             TextStyle(
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Bold,
                 fontSize = 28.sp,
             ),
         headlineSmall =
             TextStyle(
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Normal,
                 fontSize = 24.sp,
             ),
         titleLarge =
@@ -45,7 +45,7 @@ val Typography =
             ),
         titleMedium =
             TextStyle(
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
             ),
         titleSmall =
@@ -55,7 +55,7 @@ val Typography =
             ),
         bodyLarge =
             TextStyle(
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.Light,
                 fontSize = 16.sp, // Standard text size for body text
             ),
         bodyMedium =
