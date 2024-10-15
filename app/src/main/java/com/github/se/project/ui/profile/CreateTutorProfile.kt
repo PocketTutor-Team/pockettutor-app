@@ -1,4 +1,4 @@
-package com.android.sample
+package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,16 +24,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 
 // Composable function to display the tutor sign up info screen
 @Composable
-fun TutorInfo(profile: Profile) {
-  val analyseChecked = remember { mutableStateOf(false) }
-  val algebreChecked = remember { mutableStateOf(false) }
-  val physiqueChecked = remember { mutableStateOf(false) }
+fun TutorInfoScreen(
+    navigationActions: NavigationActions,
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory)
+) {
+  val profile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+
+  val analysisChecked = remember { mutableStateOf(false) }
+  val algebraChecked = remember { mutableStateOf(false) }
+  val physicsChecked = remember { mutableStateOf(false) }
   val frenchChecked = remember { mutableStateOf(false) }
   val englishChecked = remember { mutableStateOf(false) }
   val germanChecked = remember { mutableStateOf(false) }
@@ -82,33 +94,33 @@ fun TutorInfo(profile: Profile) {
         DropdownMenuItem(
             text = {
               Row {
-                if (analyseChecked.value) {
+                if (analysisChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Analyse")
+                Text("Analysis")
               }
             },
-            onClick = { analyseChecked.value = !analyseChecked.value })
+            onClick = { analysisChecked.value = !analysisChecked.value })
         DropdownMenuItem(
             text = {
               Row {
-                if (algebreChecked.value) {
+                if (algebraChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Algèbre")
+                Text("Algebra")
               }
             },
-            onClick = { algebreChecked.value = !algebreChecked.value })
+            onClick = { algebraChecked.value = !algebraChecked.value })
         DropdownMenuItem(
             text = {
               Row {
-                if (physiqueChecked.value) {
+                if (physicsChecked.value) {
                   Icon(Icons.Filled.Check, contentDescription = null)
                 }
-                Text("Physique")
+                Text("Physics")
               }
             },
-            onClick = { physiqueChecked.value = !physiqueChecked.value })
+            onClick = { physicsChecked.value = !physicsChecked.value })
       }
     }
 
@@ -123,11 +135,11 @@ fun TutorInfo(profile: Profile) {
     val priceDifference = average - sliderValue.floatValue.toInt()
     if (priceDifference >= 0)
         Text(
-            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is $priceDifference.- less than the average price on PocketTutor .",
+            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is $priceDifference.- less than the average price on PocketTutor.",
             Modifier.padding(start = 16.dp, top = 8.dp))
     else
         Text(
-            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is ${-priceDifference}.- more than the average price on PocketTutor .",
+            "Your price is currently ${sliderValue.floatValue.toInt()}.-. This is ${-priceDifference}.- more than the average price on PocketTutor.",
             Modifier.padding(start = 16.dp, top = 8.dp))
 
     // Tutor sign up info confirmation
@@ -138,15 +150,14 @@ fun TutorInfo(profile: Profile) {
               !germanChecked.value) { // Check if at least one language is selected
             languageflag.value = true
             subjectflag.value = false
-          } else if (!analyseChecked.value &&
-              !algebreChecked.value &&
-              !physiqueChecked.value) { // Check if at least one subject is selected
+          } else if (!analysisChecked.value &&
+              !algebraChecked.value &&
+              !physicsChecked.value) { // Check if at least one subject is selected
             languageflag.value = false
             subjectflag.value = true
           } else { // If all info is correct, save the info to the profile
             languageflag.value = false
             subjectflag.value = false
-            profile.languages.remove(Language.STUDENT)
             if (frenchChecked.value) {
               profile.languages.add(Language.FRENCH)
             }
@@ -156,19 +167,22 @@ fun TutorInfo(profile: Profile) {
             if (germanChecked.value) {
               profile.languages.add(Language.GERMAN)
             }
-            if (analyseChecked.value) {
+            if (analysisChecked.value) {
               profile.subjects.add(TutoringSubject.ANALYSIS)
             }
-            if (algebreChecked.value) {
+            if (algebraChecked.value) {
               profile.subjects.add(TutoringSubject.ALGEBRA)
             }
-            if (physiqueChecked.value) {
+            if (physicsChecked.value) {
               profile.subjects.add(TutoringSubject.PHYSICS)
             }
             profile.price = sliderValue.floatValue.toInt()
 
-            // navController.navigate("Home Screen")
-            /*TODO: Finish navigation and save info to firebase*/
+            // Update the profile in the database with the new information
+            listProfilesViewModel.updateProfile(profile)
+
+            // Navigate to the next screen (ie to enter availability information)
+            navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
           }
         },
         modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)) {
