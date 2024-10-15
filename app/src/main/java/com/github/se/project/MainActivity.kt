@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.android.sample.model.lesson.LessonsViewModel
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
@@ -25,6 +26,7 @@ import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.profile.AvailabilityScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
+import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.profile.TutorInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
@@ -49,6 +51,8 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
+
+  val lessonViewModel: LessonsViewModel = viewModel(factory = LessonsViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -96,6 +100,9 @@ fun PocketTutorApp() {
       }
       composable(Screen.CREATE_TUTOR_SCHEDULE) {
         AvailabilityScreen(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.PROFILE) {
+        ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
     }
   }
