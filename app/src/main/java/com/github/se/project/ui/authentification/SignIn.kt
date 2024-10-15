@@ -1,4 +1,4 @@
-package com.github.se.project.screens
+package com.github.se.project.ui.authentification
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
