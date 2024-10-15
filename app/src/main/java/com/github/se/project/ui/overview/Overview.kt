@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
@@ -25,44 +22,57 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.android.sample.model.lesson.Lesson
+import com.android.sample.model.lesson.LessonStatus
 import com.android.sample.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.navigation.BottomNavigationMenu
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
 import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.navigation.Route
-import com.github.se.project.ui.navigation.TopLevelDestination
+import com.github.se.project.ui.navigation.Screen
 
 @Composable
-fun homeScreen(
-    listProfilViewModel: ListProfilesViewModel,
+fun HomeScreen(
+    listProfilViewModele: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
     navigationActions: NavigationActions,
 ) {
 
   val context = LocalContext.current
-  val currentProfile = listProfilViewModel.currentProfile.collectAsState().value
-  val lessons = lessonViewModel.lessons.collectAsState()
-
-  // Show a Toast message when no current profile is found but it should never happen
-  // if (currentProfile == null) {
-  //    Toast.makeText(context, "No profil is currently assigned to the current user",
-  // Toast.LENGTH_LONG).show()
-  //    Log.e("homeScreen", "No profil is currently assigned to the current user")
-  // }
+  val currentProfile = listProfilViewModele.currentProfile.collectAsState().value
+  // TODO: uncomment the following line once the add lessons feature is implemented
+  // val lessons = lessonViewModel.lessons.collectAsState().value
+  // TODO: remove the following line once the add lessons feature is implemented
+  val lessons =
+      listOf(
+          Lesson(
+              id = "1",
+              title = "Math",
+              description = "Math lesson",
+              tutorUid = "",
+              studentUid = "2",
+              price = 20.0,
+              timeSlot = "Monday 10:00 - 12:00",
+              status = LessonStatus.REQUESTED, // Status of the lesson
+              language = ""),
+          Lesson(
+              id = "2",
+              title = "Algebra",
+              description = "Math lesson",
+              tutorUid = "",
+              studentUid = "2",
+              price = 15.0,
+              timeSlot = "Tuesday 10:00 - 12:00",
+              status = LessonStatus.REQUESTED, // Status of the lesson
+              language = ""))
 
   // Determine which bottom navigation items to show based on the user's role
   val tabList =
       when (currentProfile?.role) {
-        Role.TUTOR ->
-            listOf(
-                TopLevelDestination(Route.HOME, Icons.Outlined.Email, "my_work_space_route"),
-                TopLevelDestination(Route.HOME, Icons.Outlined.Search, "find_tutor_route"))
-        else ->
-            listOf(
-                TopLevelDestination(Route.HOME, Icons.Outlined.Email, "my_work_space_route"),
-                TopLevelDestination(Route.HOME, Icons.Outlined.Search, "find_student_route"))
+        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
+        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
       }
 
   Scaffold(
@@ -76,17 +86,21 @@ fun homeScreen(
         if (currentProfile == null) {
           // Display a message when no profile is found
           NoProfileFoundScreen(context, navigationActions)
-        } else if (lessons.value.isNotEmpty()) {
+        } else if (lessons.isNotEmpty()) {
           LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(lessons.value.size) { index ->
+            items(lessons.size) { index ->
               if (currentProfile != null) {
                 LessonItem(
                     currentProfile,
-                    lesson = lessons.value[index],
+                    lesson = lessons[index],
                     onClick = {
                       // Logic for selecting a lesson and navigating to the edit screen
-                      lessonViewModel.selectLesson(lessons.value[index])
+                      lessonViewModel.selectLesson(lessons[index])
                       // TODO: nagivate to edit lesson screen
+                      Toast.makeText(context, "Navigate to EDIT_LESSON screen", Toast.LENGTH_LONG)
+                          .show()
+                      // TODO: uncomment the following line once the add lessons feature is
+                      // implemented
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
                     })
               } else {
@@ -119,15 +133,9 @@ fun LessonItem(currentProfile: Profile, lesson: Lesson, onClick: () -> Unit) {
 
       // Row to display Lesson.timeSlot, currentProfileFirstName, and Lesson.price on the same line
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = lesson.timeSlot,
-        )
-
-        Text(
-            text = currentProfile?.firstName ?: "Unknown",
-        )
-
-        Text(text = "Price: \$${lesson.price}")
+        Text(text = currentProfile.academicLevel.toString())
+        Text(text = "\$${lesson.price}")
+        Text(text = lesson.timeSlot)
       }
     }
   }
@@ -142,8 +150,8 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "No profile is currently assigned to the current user.")
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { navigationActions.navigateTo(Route.AUTH) }) {
-          Text(text = "Go to the authentication screen")
+        Button(onClick = { navigationActions.navigateTo(Screen.HOME) }) {
+          Text(text = "Go back to HOME screen")
         }
       }
 }

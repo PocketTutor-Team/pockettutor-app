@@ -1,5 +1,6 @@
 package com.github.se.project
 
+import HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.android.sample.model.lesson.LessonViewModel
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
@@ -49,6 +51,8 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
+
+  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -86,7 +90,7 @@ fun PocketTutorApp() {
       // }
 
       composable(Screen.HOME) {
-        Greeting("Android") // TODO: Replace with HomeScreen
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
@@ -97,6 +101,31 @@ fun PocketTutorApp() {
       composable(Screen.CREATE_TUTOR_SCHEDULE) {
         AvailabilityScreen(navigationActions, listProfilesViewModel)
       }
+    }
+
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.FIND_STUDENT,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.FIND_TUTOR,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      // composable(Screen.ADD_LESSON) {
+      // AddLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      // }
+      // composable(Screen.EDIT_LESSON) {
+      //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      // }
+
     }
   }
 }

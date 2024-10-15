@@ -12,7 +12,8 @@ object Route {
   const val WELCOME = "Welcome"
   const val HOME = "Home"
   const val AUTH = "Auth"
-  const val SEARCH = "Search"
+  const val FIND_TUTOR = "Find a Tutor"
+  const val FIND_STUDENT = "Find a Lesson"
 }
 
 // Define screens
@@ -34,13 +35,25 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 
 // Top-level destinations with icons
 object TopLevelDestinations {
-  val HOME = TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "Home")
-  val SEARCH =
-      TopLevelDestination(route = Route.SEARCH, icon = Icons.Outlined.Search, textId = "Search")
+  val HOME_TUTOR =
+      TopLevelDestination(
+          route = Route.FIND_STUDENT, icon = Icons.Outlined.Home, textId = "My Work Space")
+  val HOME_STUDENT =
+      TopLevelDestination(
+          route = Route.FIND_TUTOR, icon = Icons.Outlined.Home, textId = "My Courses")
+  val STUDENT =
+      TopLevelDestination(
+          route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find a Tutor")
+  val TUTOR =
+      TopLevelDestination(
+          route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find a Student")
 }
 
 // List of top-level destinations
-val LIST_TOP_LEVEL_DESTINATIONS = listOf(TopLevelDestinations.HOME, TopLevelDestinations.SEARCH)
+val LIST_TOP_LEVEL_DESTINATIONS_TUTOR =
+    listOf(TopLevelDestinations.HOME_TUTOR, TopLevelDestinations.TUTOR)
+val LIST_TOP_LEVEL_DESTINATIONS_STUDENT =
+    listOf(TopLevelDestinations.HOME_STUDENT, TopLevelDestinations.STUDENT)
 
 open class NavigationActions(
     private val navController: NavHostController,
