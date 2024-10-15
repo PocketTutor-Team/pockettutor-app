@@ -128,7 +128,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val schedule =
           document.get("schedule")?.let { (it as List<Int>).chunked(12) }
               ?: List(7) { List(12) { 0 } }
-        val price = document.getLong("price")?.toInt() ?: return null
+      val price = document.getLong("price")?.toInt() ?: return null
 
       Profile(
           uid,
