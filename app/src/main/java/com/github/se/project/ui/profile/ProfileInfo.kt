@@ -98,7 +98,7 @@ fun ProfileDetailsScreen(
 
     // Display role-specific information
     if (isTutor) {
-      Text(text = "${profile.price} per hour", style = MaterialTheme.typography.bodyLarge)
+      Text(text = "${profile.price}.- per hour", style = MaterialTheme.typography.bodyLarge)
     }
     DisplayLessons(completedLessons = completedLessons, isTutor = isTutor)
   }
