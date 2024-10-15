@@ -1,8 +1,5 @@
 package com.android.sample.model.lesson
 
-
-import java.time.LocalDate
-
 data class Lesson(
     val id: String = "", // Unique identifier for the lesson
     val title: String = "", // Title of the lesson

@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.android.sample.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.screens.SignInScreen
@@ -25,6 +26,7 @@ import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.theme.SampleAppTheme
 import com.github.se.project.viewmodels.AuthenticationViewModel
+import homeScreen
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,8 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
 
+  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
+
   val context = LocalContext.current
 
   NavHost(navController = navController, startDestination = Route.AUTH) {
@@ -65,7 +69,9 @@ fun PocketTutorApp() {
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel)
       }
-      composable(Screen.HOME) { Greeting("Android") }
+      composable(Screen.HOME) {
+        homeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
     }
 
     // Home Screen or other screens after sign-in
