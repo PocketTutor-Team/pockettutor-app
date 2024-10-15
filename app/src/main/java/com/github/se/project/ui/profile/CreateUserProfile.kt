@@ -1,4 +1,4 @@
-package com.github.se.project.ui.authentification
+package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +45,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 fun CreateProfileScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
-        viewModel(factory = ListProfilesViewModel.Factory)
+        viewModel(factory = ListProfilesViewModel.Factory),
+    googleUid: String
 ) {
   // Profile details
   var firstName by remember { mutableStateOf("") }
@@ -211,19 +212,25 @@ fun CreateProfileScreen(
                   academicLevel.isNotEmpty()) {
 
                 try {
-                  listProfilesViewModel.addProfile(
+                  val newProfile =
                       Profile(
-                          listProfilesViewModel.getNewUid(), // TODO: use google sign-in uid
+                          listProfilesViewModel.getNewUid(),
+                          googleUid,
                           firstName,
                           lastName,
                           phoneNumber,
                           role,
                           Section.valueOf(section),
-                          AcademicLevel.valueOf(academicLevel)))
+                          AcademicLevel.valueOf(academicLevel))
 
-                  // Navigate to the next screen => TODO: update the destination
+                  listProfilesViewModel.addProfile(newProfile)
+
+                  // Set the current profile to the newly created profile
+                  listProfilesViewModel.setCurrentProfile(newProfile)
+
+                  // Navigate to the next screen
                   if (role == Role.TUTOR) {
-                    navigationActions.navigateTo(Screen.HOME)
+                    navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
                   } else if (role == Role.STUDENT) {
                     navigationActions.navigateTo(Screen.HOME)
                   }

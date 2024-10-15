@@ -1,4 +1,4 @@
-package com.github.se.project.viewmodels
+package com.github.se.project.model.authentification
 
 import android.content.Context
 import android.util.Log
@@ -29,7 +29,7 @@ class AuthenticationViewModel : ViewModel() {
   val userId = MutableLiveData<String>(null)
 
   // Function to handle Google Sign-In
-  fun handleGoogleSignIn(context: Context, onSuccess: () -> Unit) {
+  fun handleGoogleSignIn(context: Context, onSuccess: (uid: String) -> Unit) {
     viewModelScope.launch {
       // Collect the result of the Google Sign-In process
       googleSignIn(context).collect { result ->
@@ -43,7 +43,7 @@ class AuthenticationViewModel : ViewModel() {
 
                 Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
 
-                onSuccess()
+                onSuccess(userId.value!!)
               }
             },
             onFailure = { e ->
