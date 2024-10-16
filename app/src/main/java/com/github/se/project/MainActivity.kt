@@ -16,10 +16,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.android.sample.model.lesson.LessonsViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.screens.SignInScreen
 import com.github.se.project.ui.authentification.CreateProfileScreen
+import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -46,6 +48,8 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
 
+  val lessonViewModel: LessonsViewModel = viewModel(factory = LessonsViewModel.Factory)
+
   val context = LocalContext.current
 
   NavHost(navController = navController, startDestination = Route.AUTH) {
@@ -58,12 +62,15 @@ fun PocketTutorApp() {
                   context,
                   onSuccess = {
                     // On successful sign-in, navigate to the home screen
-                    navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                    navigationActions.navigateTo(Screen.ADD_LESSON)
                   })
             })
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
       composable(Screen.HOME) { Greeting("Android") }
     }

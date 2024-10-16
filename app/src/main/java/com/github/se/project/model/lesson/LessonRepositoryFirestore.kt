@@ -1,13 +1,18 @@
 package com.android.sample.model.lesson
 
 import android.util.Log
+import com.github.se.project.model.profile.TutoringSubject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepository {
 
-  private val lessonsCollectionPath = "lessons"
+  private val collectionPath = "lessons"
+
+  override fun getNewUid(): String {
+    return db.collection(collectionPath).document().id
+  }
 
   // Initialize the repository
   override fun init(onSuccess: () -> Unit) {
@@ -21,7 +26,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    db.collection(lessonsCollectionPath)
+    db.collection(collectionPath)
         .whereEqualTo("userUid", userUid) // Filter lessons by user ID
         .get()
         .addOnCompleteListener { task ->
@@ -46,7 +51,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onFailure: (Exception) -> Unit
   ) {
 
-    val task = db.collection(lessonsCollectionPath).document(lesson.id).set(lesson)
+    val task = db.collection(collectionPath).document(lesson.id).set(lesson)
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -59,7 +64,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onFailure: (Exception) -> Unit
   ) {
 
-    val task = db.collection(lessonsCollectionPath).document(lesson.id).set(lesson)
+    val task = db.collection(collectionPath).document(lesson.id).set(lesson)
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -72,7 +77,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onFailure: (Exception) -> Unit
   ) {
     // No need to filter by userUid because we're using the lesson ID to delete
-    val task = db.collection(lessonsCollectionPath).document(lessonId).delete()
+    val task = db.collection(collectionPath).document(lessonId).delete()
 
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -112,14 +117,28 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val id = document.id
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
+      val subject =
+          document.getString("subject")?.let { TutoringSubject.valueOf(it) } ?: return null
       val tutorUid = document.getString("tutorUid") ?: return null
       val studentUid = document.getString("studentUid") ?: return null
-      val price = document.getDouble("price") ?: return null
+      val minPrice = document.getDouble("minPrice") ?: return null
+      val maxPrice = document.getDouble("maxPrice") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = document.getString("status")?.let { LessonStatus.valueOf(it) } ?: return null
       val language = document.getString("language") ?: return null
 
-      Lesson(id, title, description, tutorUid, studentUid, price, timeSlot, status, language)
+      Lesson(
+          id,
+          title,
+          description,
+          subject,
+          tutorUid,
+          studentUid,
+          minPrice,
+          maxPrice,
+          timeSlot,
+          status,
+          language)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)
       null

@@ -37,6 +37,15 @@ class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
   }
 
   /**
+   * Generates a new unique ID.
+   *
+   * @return A new unique ID.
+   */
+  fun getNewUid(): String {
+    return repository.getNewUid()
+  }
+
+  /**
    * Retrieves all lessons associated with a specific user.
    *
    * @param userUid The UID of the user whose lessons are to be retrieved.
