@@ -1,4 +1,4 @@
-package com.github.se.project.ui.profile
+package com.github.se.project.ui.test
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -27,7 +27,7 @@ fun CreateTutorProfile(
 ) {
   val profile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red, modifier = Modifier.testTag("noProfile"))
 
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val selectedSubjects = remember { mutableStateListOf<TutoringSubject>() }

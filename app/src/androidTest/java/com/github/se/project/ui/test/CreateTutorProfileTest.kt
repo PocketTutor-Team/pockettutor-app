@@ -1,16 +1,19 @@
+package com.github.se.project.ui.test
+
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.TutoringSubject
 import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.profile.CreateProfileScreen
-import com.github.se.project.ui.profile.CreateTutorProfile
+import com.github.se.project.ui.navigation.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
@@ -134,5 +137,148 @@ class CreateTutorProfileTest {
             // Check that the subject is now selected
             composeTestRule.onNodeWithTag("${subject.name}Checkmark", useUnmergedTree = true).assertIsDisplayed()
         }
+    }
+
+    @Test
+    fun languageAndSubjectNotSelectedShowsToast() {
+        (mockViewModel.currentProfile as MutableStateFlow).value =
+            Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
+                role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+        }
+
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+        Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+    }
+/*
+    @Test
+    fun languageAndSubjectSelectedNavigatesAway() {
+        (mockViewModel.currentProfile as MutableStateFlow).value =
+            Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
+                role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+        }
+
+        composeTestRule.onNodeWithTag("${languages[0]}Check").performClick()
+        composeTestRule.onNodeWithTag("subjectButton").performClick()
+        composeTestRule.onNodeWithTag("dropdown${subjects[0].name}").performClick()
+
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+        //assert(mockViewModel.currentProfile.value != null)
+        //assert(mockViewModel.currentProfile.value!!.subjects.isNotEmpty())
+        Mockito.verify(mockNavigationActions).navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
+    }*/
+
+    @Test
+    fun sliderTextTest() {
+        (mockViewModel.currentProfile as MutableStateFlow).value =
+            Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
+                role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+        }
+
+        composeTestRule.onNodeWithTag("priceDifferenceLow").assertIsDisplayed()
+
+        // Perform the sliding action on the slider
+        composeTestRule.onNodeWithTag("priceSlider").performGesture {
+            swipeRight()
+        }
+
+        // Verify the slider's value has changed
+        composeTestRule.onNodeWithTag("priceDifferenceHigh").assertIsDisplayed()
+    }
+
+    @Test
+    fun noProfileTest() {
+        (mockViewModel.currentProfile as MutableStateFlow).value = null
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            CreateTutorProfile(navigationActions = mockNavigationActions, listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory))
+        }
+
+        // Assert
+        composeTestRule.onNodeWithTag("noProfile")
+            .assertTextEquals("No Profile selected. Should not happen.")
+    }
+
+    @Test
+    fun doubleClickTest() {
+        (mockViewModel.currentProfile as MutableStateFlow).value =
+            Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
+                role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+        }
+
+        composeTestRule.onNodeWithTag("${languages[0]}Check").performClick()
+        composeTestRule.onNodeWithTag("${languages[0]}Check").performClick()
+        composeTestRule.onNodeWithTag("${languages[0]}Check").assertIsOff()
+
+        composeTestRule.onNodeWithTag("subjectButton").performClick()
+
+        subjects.forEach { subject ->
+            composeTestRule.onNodeWithTag("dropdown${subject.name}").performClick()
+            composeTestRule.onNodeWithTag("dropdown${subject.name}").performClick()
+            composeTestRule.onNodeWithTag("${subject.name}Checkmark").assertIsNotDisplayed()
+        }
+    }
+}
+
+class MockProfilesRepository : ProfilesRepository {
+    private val profiles = mutableListOf<Profile>()
+
+    override fun init(onSuccess: () -> Unit) {
+        onSuccess()
+    }
+
+    override fun getNewUid(): String {
+        return "mockUid"
+    }
+
+    override fun getProfiles(onSuccess: (List<Profile>) -> Unit, onFailure: (Exception) -> Unit) {
+        onSuccess(profiles)
+    }
+
+    override fun addProfile(
+        profile: Profile,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        profiles.add(profile)
+        onSuccess()
+    }
+
+    override fun updateProfile(
+        profile: Profile,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val index = profiles.indexOfFirst { it.uid == profile.uid }
+        if (index != -1) {
+            profiles[index] = profile
+            onSuccess()
+        } else {
+            onFailure(Exception("Profile not found"))
+        }
+    }
+
+    override fun deleteProfileById(
+        id: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        onSuccess() //This not deleting anything is not a problem: this class is only used to test adding profiles
     }
 }
