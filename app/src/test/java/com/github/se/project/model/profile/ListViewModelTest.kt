@@ -1,5 +1,6 @@
 package com.github.se.project.model.profile
 
+import java.util.EnumSet
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -11,69 +12,69 @@ import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
-import java.util.EnumSet
 
 class ListToDosViewModelTest {
-    private lateinit var profilesRepository: ProfilesRepository
-    private lateinit var listProfilesViewModel: ListProfilesViewModel
+  private lateinit var profilesRepository: ProfilesRepository
+  private lateinit var listProfilesViewModel: ListProfilesViewModel
 
-    val profile =
-        Profile(
-            uid = "1",
-            googleUid = "1",
-            firstName = "Pocket",
-            lastName = "Tutor",
-            phoneNumber = "0213456789",
-            role = Role.TUTOR,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.of(Language.ENGLISH),
-            subjects = EnumSet.of(TutoringSubject.ALGEBRA),
-            schedule = List(7) { day ->
+  val profile =
+      Profile(
+          uid = "1",
+          googleUid = "1",
+          firstName = "Pocket",
+          lastName = "Tutor",
+          phoneNumber = "0213456789",
+          role = Role.TUTOR,
+          section = Section.GM,
+          academicLevel = AcademicLevel.MA2,
+          languages = EnumSet.of(Language.ENGLISH),
+          subjects = EnumSet.of(TutoringSubject.ALGEBRA),
+          schedule =
+              List(7) { day ->
                 List(12) {
-                    if (day == 0) 1 else 0 // Set 1 for the first row and 0 for the others
-                }},
-            price = 50)
+                  if (day == 0) 1 else 0 // Set 1 for the first row and 0 for the others
+                }
+              },
+          price = 50)
 
-    @Before
-    fun setUp() {
-        profilesRepository = mock(ProfilesRepository::class.java)
-        listProfilesViewModel = ListProfilesViewModel(profilesRepository)
-    }
+  @Before
+  fun setUp() {
+    profilesRepository = mock(ProfilesRepository::class.java)
+    listProfilesViewModel = ListProfilesViewModel(profilesRepository)
+  }
 
-    @Test
-    fun getNewUid() {
-        `when`(profilesRepository.getNewUid()).thenReturn("uid")
-        assertThat(listProfilesViewModel.getNewUid(), `is`("uid"))
-    }
+  @Test
+  fun getNewUid() {
+    `when`(profilesRepository.getNewUid()).thenReturn("uid")
+    assertThat(listProfilesViewModel.getNewUid(), `is`("uid"))
+  }
 
-    @Test
-    fun getProfilesCallsRepository() {
-        listProfilesViewModel.getProfiles()
-        verify(profilesRepository).getProfiles(any(), any())
-    }
+  @Test
+  fun getProfilesCallsRepository() {
+    listProfilesViewModel.getProfiles()
+    verify(profilesRepository).getProfiles(any(), any())
+  }
 
-    @Test
-    fun addToDoCallsRepository() {
-        listProfilesViewModel.addProfile(profile)
-        verify(profilesRepository).addProfile(eq(profile), any(), any())
-    }
+  @Test
+  fun addToDoCallsRepository() {
+    listProfilesViewModel.addProfile(profile)
+    verify(profilesRepository).addProfile(eq(profile), any(), any())
+  }
 
-    @Test
-    fun getProfilesCallsOnSuccess() = runBlocking {
-        val profiles = listOf(profile)
-        val onSuccessCaptor = argumentCaptor<(List<Profile>) -> Unit>()
+  @Test
+  fun getProfilesCallsOnSuccess() = runBlocking {
+    val profiles = listOf(profile)
+    val onSuccessCaptor = argumentCaptor<(List<Profile>) -> Unit>()
 
-        // Mock repository to call the success callback
-        listProfilesViewModel.getProfiles()
-        verify(profilesRepository).getProfiles(onSuccessCaptor.capture(), any())
-        onSuccessCaptor.firstValue.invoke(profiles)
+    // Mock repository to call the success callback
+    listProfilesViewModel.getProfiles()
+    verify(profilesRepository).getProfiles(onSuccessCaptor.capture(), any())
+    onSuccessCaptor.firstValue.invoke(profiles)
 
-        // Collect the profiles from the StateFlow
-        val collectedProfiles = listProfilesViewModel.profiles.value
+    // Collect the profiles from the StateFlow
+    val collectedProfiles = listProfilesViewModel.profiles.value
 
-        // Verify that the ViewModel handled the result as expected
-        assertThat(collectedProfiles, `is`(profiles))
-    }
-
+    // Verify that the ViewModel handled the result as expected
+    assertThat(collectedProfiles, `is`(profiles))
+  }
 }
