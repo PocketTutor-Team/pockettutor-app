@@ -26,7 +26,7 @@ interface LessonRepository {
   // Method to add a new lesson
   fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
-  // Method to update an existing lesson by its ID
+  // Method to update an existing lesson
   fun updateLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
   // Method to delete a lesson by its ID
