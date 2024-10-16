@@ -45,29 +45,29 @@ fun CreateTutorSchedule(
                 Modifier.fillMaxSize()
                     .padding(horizontal = 12.dp)
                     .padding(paddingValues)
-                    .testTag("availabilityScreen"),
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    .testTag("availabilityScreen")) {
               Text(
                   "Finish your account creation by selecting the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
                   modifier = Modifier.testTag("instructionText"))
 
+              Spacer(modifier = Modifier.height(8.dp))
+
               AvailabilityGrid(
                   schedule = currentSchedule,
                   onScheduleChange = { updatedSchedule -> currentSchedule = updatedSchedule },
                   modifier = Modifier.weight(1f))
-
-              Spacer(modifier = Modifier.height(16.dp))
-
-              Button(
-                  modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("confirmButton"),
-                  shape = MaterialTheme.shapes.medium,
-                  onClick = {
-                    listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))
-                    navigationActions.navigateTo(Screen.HOME)
-                  }) {
-                    Text(text = "Let's find a student!", fontSize = 16.sp)
-                  }
+            }
+      },
+      bottomBar = {
+        Button(
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("confirmButton"),
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+              listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))
+              navigationActions.navigateTo(Screen.HOME)
+            }) {
+              Text(text = "Let's find a student!", fontSize = 16.sp)
             }
       })
 }

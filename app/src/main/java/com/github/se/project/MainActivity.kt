@@ -1,6 +1,5 @@
 package com.github.se.project
 
-import CreateTutorSchedule
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +25,7 @@ import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.profile.CreateTutorProfile
+import com.github.se.project.ui.profile.CreateTutorSchedule
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
