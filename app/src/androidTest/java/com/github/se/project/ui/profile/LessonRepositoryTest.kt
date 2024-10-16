@@ -1,9 +1,9 @@
 package com.github.se.project.ui.profile
 
 import com.android.sample.model.lesson.Lesson
+import com.android.sample.model.lesson.LessonRepository
 import com.android.sample.model.lesson.LessonRepositoryFirestore
 import com.android.sample.model.lesson.LessonStatus
-import com.github.se.project.LessonRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Test
 import org.mockito.Mockito.mock

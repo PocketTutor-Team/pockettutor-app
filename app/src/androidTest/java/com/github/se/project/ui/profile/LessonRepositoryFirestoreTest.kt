@@ -26,7 +26,7 @@ class ProfilesRepositoryFirestoreTest {
         firestore = mock()
         repository = LessonRepositoryFirestore(firestore)
     }
-/*
+    /*
     @Test
     fun testGetLessons_Success() {
         // Arrange

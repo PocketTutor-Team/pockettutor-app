@@ -63,6 +63,7 @@ fun CreateTutorProfile(
 
               Text(
                   "What languages do you feel comfortable teaching in?",
+                  Modifier.testTag("languageText"),
                   style = MaterialTheme.typography.titleSmall)
               // Language Selection
               LanguageSelection(selectedLanguages)
@@ -70,7 +71,7 @@ fun CreateTutorProfile(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Subject Selection
-              Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall)
+              Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag("subjectText"))
               SubjectDropdown(selectedSubjects, expandedSubjectDropdown)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -78,6 +79,7 @@ fun CreateTutorProfile(
               // Price Selection
               Text(
                   "Select your tutoring price per hour:",
+                  Modifier.testTag("priceText"),
                   style = MaterialTheme.typography.titleSmall)
               PriceSlider(sliderValue)
             }
@@ -120,11 +122,11 @@ fun LanguageSelection(selectedLanguages: MutableList<Language>) {
 
   Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+      modifier = Modifier.testTag("languageSelection").fillMaxWidth().padding(8.dp)) {
         languages.forEach { language ->
           Row(
               verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+              modifier = Modifier.testTag("languageRow").weight(1f).padding(end = 8.dp)) {
                 Checkbox(
                     checked = selectedLanguages.contains(language),
                     onCheckedChange = { isSelected ->
@@ -134,13 +136,13 @@ fun LanguageSelection(selectedLanguages: MutableList<Language>) {
                         selectedLanguages.remove(language)
                       }
                     },
-                    modifier = Modifier.size(24.dp))
+                    modifier = Modifier.testTag("${language}Check").size(24.dp))
 
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = language.name.lowercase(),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.CenterVertically))
+                    modifier = Modifier.testTag("${language}Text").align(Alignment.CenterVertically))
               }
         }
       }
@@ -152,7 +154,7 @@ fun SubjectDropdown(
     expandedSubjectDropdown: MutableState<Boolean>
 ) {
   val subjects = TutoringSubject.entries.toTypedArray()
-  Box(modifier = Modifier.fillMaxWidth()) {
+  Box(modifier = Modifier.testTag("subjectBox").fillMaxWidth()) {
     Button(
         onClick = { expandedSubjectDropdown.value = true },
         modifier = Modifier.fillMaxWidth().testTag("subjectButton")) {
@@ -161,16 +163,16 @@ fun SubjectDropdown(
     DropdownMenu(
         expanded = expandedSubjectDropdown.value,
         onDismissRequest = { expandedSubjectDropdown.value = false },
-        modifier = Modifier.fillMaxWidth()) {
+        modifier = Modifier.testTag("subjectMenu").fillMaxWidth()) {
           subjects.forEach { subject ->
             val isSelected = selectedSubjects.contains(subject)
             DropdownMenuItem(
                 text = {
                   Row {
                     if (isSelected) {
-                      Icon(Icons.Filled.Check, contentDescription = null)
+                      Icon(Icons.Filled.Check, contentDescription = null, Modifier.testTag("${subject.name}Checkmark"))
                     }
-                    Text(subject.name.lowercase())
+                    Text(subject.name.lowercase(), modifier = Modifier.testTag("${subject.name}Text"))
                   }
                 },
                 onClick = {
