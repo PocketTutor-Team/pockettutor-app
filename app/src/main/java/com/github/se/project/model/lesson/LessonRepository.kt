@@ -8,18 +8,7 @@ interface LessonRepository {
   fun init(onSuccess: () -> Unit)
 
   // Retrieve all lessons for a specific tutor
-  fun getLessonsByTutorUid(
-      tutorUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  )
-
-  // Retrieve all lessons for a specific student
-  fun getLessonsByStudentUid(
-      studentUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  )
+  fun getAllLessons(onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit)
 
   // Method to add a new lesson
   fun addLessonByUserId(

@@ -39,7 +39,7 @@ fun ProfileInfoScreen(
         viewModel(factory = LessonsViewModel.Factory(listProfilesViewModel))
 ) {
   val profileState = listProfilesViewModel.currentProfile.collectAsState()
-  val lessons = lessonViewModel.lessons.collectAsState()
+  val lessons = lessonViewModel.userLessons.collectAsState()
 
   // Filter only lessons that are marked as COMPLETED
   val completedLessons = lessons.value.filter { it.status == LessonStatus.COMPLETED }

@@ -19,29 +19,22 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class LessonsViewModel(
     private val repository: LessonRepository,
-    profileViewModel: ListProfilesViewModel
+    private val profileViewModel: ListProfilesViewModel
 ) : ViewModel() {
-  private val lessons_ = MutableStateFlow<List<Lesson>>(emptyList())
-  val lessons: StateFlow<List<Lesson>> = lessons_.asStateFlow()
+
+  private val allLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
+  val allLessons: StateFlow<List<Lesson>> = allLessons_.asStateFlow()
+
+  private val userLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
+  val userLessons: StateFlow<List<Lesson>> = userLessons_.asStateFlow()
 
   private val selectedLesson_ = MutableStateFlow<Lesson?>(null)
   val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
 
-  private val isTutor: Boolean
+  private val currentUserId: String? = Firebase.auth.currentUser?.uid
 
   init {
-    // Initialize isTutor based on the profile role
-    val profile = profileViewModel.currentProfile.value
-    isTutor = profile?.role == Role.TUTOR
-
-    // Fetch lessons based on whether the user is a tutor or a student
-    profile?.let {
-      if (isTutor) {
-        getLessonsByTutor(Firebase.auth.currentUser?.uid ?: "")
-      } else {
-        getLessonsByStudent(Firebase.auth.currentUser?.uid ?: "")
-      }
-    }
+    fetchAllLessons()
   }
 
   /** Factory for creating a LessonsViewModel. */
@@ -56,28 +49,17 @@ class LessonsViewModel(
         }
   }
 
-  /**
-   * Retrieves all lessons associated with a tutor.
-   *
-   * @param tutorUid The UID of the tutor whose lessons are to be retrieved.
-   */
-  fun getLessonsByTutor(tutorUid: String) {
-    repository.getLessonsByTutorUid(
-        tutorUid,
-        onSuccess = { lessons_.value = it },
-        onFailure = { e -> Log.e("LessonViewModel", "Error loading tutor's lessons", e) })
-  }
-
-  /**
-   * Retrieves all lessons associated with a student.
-   *
-   * @param studentUid The UID of the student whose lessons are to be retrieved.
-   */
-  fun getLessonsByStudent(studentUid: String) {
-    repository.getLessonsByStudentUid(
-        studentUid,
-        onSuccess = { lessons_.value = it },
-        onFailure = { e -> Log.e("LessonViewModel", "Error loading student's lessons", e) })
+  // Filter lessons based on the current user's ID (tutor or student)
+  private fun filterLessonsForCurrentUser(lessons: List<Lesson>) {
+    val profile = profileViewModel.currentProfile.value
+    profile?.let {
+      userLessons_.value =
+          if (it.role == Role.TUTOR) {
+            lessons.filter { lesson -> lesson.tutorUid == currentUserId }
+          } else {
+            lessons.filter { lesson -> lesson.studentUid == currentUserId }
+          }
+    }
   }
 
   /**
@@ -90,7 +72,7 @@ class LessonsViewModel(
     repository.addLessonByUserId(
         userUid = userUid,
         lesson = lesson,
-        onSuccess = { getLessonsForUser(userUid) }, // Refresh the lesson list on success
+        onSuccess = { fetchAllLessons() }, // Refresh the lesson list on success
         onFailure = { Log.e("LessonViewModel", "Error adding lesson: $lesson", it) })
   }
 
@@ -104,7 +86,7 @@ class LessonsViewModel(
     repository.deleteLessonByUserId(
         userUid = userUid,
         lessonId = lessonId,
-        onSuccess = { getLessonsForUser(userUid) }, // Refresh the lesson list on success
+        onSuccess = { fetchAllLessons() }, // Refresh the lesson list on success
         onFailure = { Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it) })
   }
 
@@ -117,12 +99,13 @@ class LessonsViewModel(
     selectedLesson_.value = lesson
   }
 
-  /** Fetches lessons based on whether the current user is a tutor or a student. */
-  private fun getLessonsForUser(userUid: String) {
-    if (isTutor) {
-      getLessonsByTutor(userUid)
-    } else {
-      getLessonsByStudent(userUid)
-    }
+  // Fetch all lessons and then filter based on the current user
+  fun fetchAllLessons() {
+    repository.getAllLessons(
+        onSuccess = { lessons ->
+          allLessons_.value = lessons
+          filterLessonsForCurrentUser(lessons)
+        },
+        onFailure = { e -> Log.e("LessonsViewModel", "Error loading all lessons", e) })
   }
 }

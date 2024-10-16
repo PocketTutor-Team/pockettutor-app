@@ -17,46 +17,21 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
     onSuccess()
   }
 
-  // Generic function to retrieve lessons based on user field (tutorUid or studentUid)
-  private fun getLessonsByUserField(
-      userField: String,
-      userUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    db.collection(lessonsCollectionPath)
-        .whereEqualTo(userField, userUid) // Filter lessons by user field
-        .get()
-        .addOnCompleteListener { task ->
-          if (task.isSuccessful) {
-            val lessons =
-                task.result?.mapNotNull { document -> documentToLesson(document) } ?: emptyList()
-            onSuccess(lessons)
-          } else {
-            task.exception?.let { e ->
-              Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
-              onFailure(e)
-            }
-          }
+  // Fetch all lessons without filtering
+  override fun getAllLessons(onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit) {
+    db.collection(lessonsCollectionPath).get().addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        val lessons =
+            task.result?.mapNotNull { document -> documentToLesson(document) } ?: emptyList()
+        Log.d("LessonRepositoryFirestore", "All lessons: $lessons")
+        onSuccess(lessons)
+      } else {
+        task.exception?.let { e ->
+          Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
+          onFailure(e)
         }
-  }
-
-  // Retrieve all lessons for a specific tutor
-  override fun getLessonsByTutorUid(
-      tutorUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    getLessonsByUserField("tutorUid", tutorUid, onSuccess, onFailure)
-  }
-
-  // Retrieve all lessons for a specific student
-  override fun getLessonsByStudentUid(
-      studentUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    getLessonsByUserField("studentUid", studentUid, onSuccess, onFailure)
+      }
+    }
   }
 
   // Add a new lesson for a specific user
@@ -139,7 +114,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = document.getString("status")?.let { LessonStatus.valueOf(it) } ?: return null
       val language = document.getString("language") ?: return null
-      Log.d("LessonRepositoryFirestore", "Lesson converted: $title")
+
       Lesson(id, title, description, tutorUid, studentUid, price, timeSlot, status, language)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)

@@ -76,6 +76,7 @@ fun PocketTutorApp() {
                     if (profile != null) {
                       // If the user already has a profile, navigate to the home screen
                       listProfilesViewModel.setCurrentProfile(profile)
+                      lessonViewModel.fetchAllLessons()
                       navigationActions.navigateTo(Screen.HOME)
                     } else {
                       // If the user doesn't have a profile, navigate to the profile creation screen
