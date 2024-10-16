@@ -22,8 +22,8 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
   init {
     repository.init {
-        //I comment it as it might tricker the problem on the CI
-        //getLessons()
+      // I comment it as it might tricker the problem on the CI
+      // getLessons()
     }
   }
 
@@ -38,14 +38,14 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
         }
   }
 
-    /**
-     * Generates a new unique ID.
-     *
-     * @return A new unique ID.
-     */
-    fun getNewUid(): String {
-        return repository.getNewUid()
-    }
+  /**
+   * Generates a new unique ID.
+   *
+   * @return A new unique ID.
+   */
+  fun getNewUid(): String {
+    return repository.getNewUid()
+  }
 
   /**
    * Retrieves all lessons associated with a specific user.
@@ -53,7 +53,7 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
    * @param userUid The UID of the user whose lessons are to be retrieved.
    */
   fun getLessons() {
-      Log.d("LessonViewModel", "getLessons")
+    Log.d("LessonViewModel", "getLessons")
     repository.getLessons(
         onSuccess = { lessons_.value = it },
         onFailure = { e -> Log.e("LessonViewModel", "Error loading lessons", e) })

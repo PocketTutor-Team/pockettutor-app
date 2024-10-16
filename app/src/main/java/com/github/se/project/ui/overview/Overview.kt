@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonStatus
 import com.android.sample.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
@@ -49,8 +48,7 @@ fun HomeScreen(
   // TODO: uncomment the following line once the add lessons feature is implemented
   val lessons = lessonViewModel.lessons.collectAsState().value
 
-    lessonViewModel.getLessons()
-
+  lessonViewModel.getLessons()
 
   // Determine which bottom navigation items to show based on the user's role
   val tabList =
@@ -68,11 +66,11 @@ fun HomeScreen(
               IconButton(
                   onClick = {
                     // Do nothing for now or add any logic you want when the button is clicked
-                      lessonViewModel.getLessons()
-                      Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
-                      //check if the lessons are fetched
-                        Log.d("HomeScreen", "Lessons fetched: ${lessons.size}")
-                      //navigationActions.navigateTo(Screen.PROFILE)
+                    lessonViewModel.getLessons()
+                    Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
+                    // check if the lessons are fetched
+                    Log.d("HomeScreen", "Lessons fetched: ${lessons.size}")
+                    // navigationActions.navigateTo(Screen.PROFILE)
                   }) {
                     Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
                   }
@@ -105,8 +103,7 @@ fun HomeScreen(
                       // implemented
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
                     },
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                    modifier = Modifier.padding(vertical = 8.dp))
               } else {
                 Toast.makeText(
                         context,
@@ -127,7 +124,12 @@ fun HomeScreen(
 }
 
 @Composable
-fun LessonItem(currentProfile: Profile, lesson: Lesson, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LessonItem(
+    currentProfile: Profile,
+    lesson: Lesson,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
   Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
     Column(modifier = Modifier.padding(8.dp)) {
       // Lesson Title at the top
