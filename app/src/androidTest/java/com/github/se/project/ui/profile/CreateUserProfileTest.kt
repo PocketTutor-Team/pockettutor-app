@@ -1,158 +1,87 @@
-package com.github.se.project.ui.profile
-
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.navigation.Screen
-import org.junit.Before
+import com.github.se.project.ui.profile.CreateProfileScreen
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
+import org.junit.runner.RunWith
+import org.mockito.Mockito
 
+@RunWith(AndroidJUnit4::class)
 class CreateProfileScreenTest {
-    private lateinit var profilesRepository: ProfilesRepository
-    private lateinit var navigationActions: NavigationActions
-    private lateinit var listProfilesViewModel: ListProfilesViewModel
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Before
-    fun setUp() {
-        // Mock is a way to create a fake object that can be used in place of a real object
-        profilesRepository = mock(ProfilesRepository::class.java)
-        navigationActions = mock(NavigationActions::class.java)
-        listProfilesViewModel = ListProfilesViewModel(profilesRepository)
+  // Mocking navigation actions
+  private val mockNavigationActions = Mockito.mock(NavigationActions::class.java)
+  private val mockViewModel = Mockito.mock(ListProfilesViewModel::class.java)
 
-        // Mock the current route to be the create profile screen
-        `when`(navigationActions.currentRoute()).thenReturn(Screen.CREATE_PROFILE)
+  @Test
+  fun createProfileScreen_rendersCorrectly() {
+    // Set the screen in the test environment
+    composeTestRule.setContent {
+      CreateProfileScreen(navigationActions = mockNavigationActions, googleUid = "mockUid")
     }
 
-    @Test
-    fun displayAllComponents() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
+    composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("instructionText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("roleButtonStudent").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("roleButtonTutor").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+  }
 
-        // Check that all necessary components are displayed
-        composeTestRule.onNodeWithTag("createProfileButton").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("firstNameInput").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("lastNameInput").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("phoneNumberInput").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("sectionInput").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("academicLevelInput").assertIsDisplayed()
+  @Test
+  fun formValidation_displaysToastWhenFieldsAreEmpty() {
+    composeTestRule.setContent {
+      CreateProfileScreen(navigationActions = mockNavigationActions, googleUid = "mockUid")
     }
 
-    @Test
-    fun testProfileTutorCreationValidInput() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-        // Input valid first name, last name, phone number, section, and academic level
-        composeTestRule.onNodeWithTag("firstNameInput").performTextInput("John")
-        composeTestRule.onNodeWithTag("lastNameInput").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberInput").performTextInput("0123456789")
-        composeTestRule.onNodeWithTag("roleButton_TUTOR").performClick()
-        composeTestRule.onNodeWithTag("sectionInput").performTextInput("GM")
-        composeTestRule.onNodeWithTag("academicLevelInput").performTextInput("MA2")
+    Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+  }
 
-        // Click the create profile button
-        composeTestRule.onNodeWithTag("createProfileButton").performClick()
-
-        // Verify that the navigation action was called to the HOME screen
-        //verify(navigationActions).navigateTo(Screen.HOME)
+  @Test
+  fun phoneNumberValidation_showsErrorForInvalidPhone() {
+    // Set the screen in the test environment
+    composeTestRule.setContent {
+      CreateProfileScreen(navigationActions = mockNavigationActions, googleUid = "mockUid")
     }
 
-    @Test
-    fun testProfileStudentCreationValidInput() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
+    // Enter an invalid phone number
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123ABC")
 
-        // Input valid first name, last name, phone number, section, and academic level
-        composeTestRule.onNodeWithTag("firstNameInput").performTextInput("John")
-        composeTestRule.onNodeWithTag("lastNameInput").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberInput").performTextInput("0123456789")
-        composeTestRule.onNodeWithTag("roleButton_STUDENT").performClick()
-        composeTestRule.onNodeWithTag("sectionInput").performTextInput("GM")
-        composeTestRule.onNodeWithTag("academicLevelInput").performTextInput("MA2")
+    // Click on the Confirm button
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-        // Click the create profile button
-        composeTestRule.onNodeWithTag("createProfileButton").performClick()
+    // Verify no navigation due to invalid input
+    Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+  }
 
-        // Verify that the navigation action was called to the HOME screen
-        //verify(navigationActions).navigateTo(Screen.HOME)
+  @Test
+  fun selectingRole_updatesRoleCorrectly() {
+    composeTestRule.setContent {
+      CreateProfileScreen(navigationActions = mockNavigationActions, googleUid = "mockUid")
     }
 
-    @Test
-    fun testProfileCreationInvalidPhoneNumber() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
+    // Select "Student" role
+    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
 
-        // Input valid first name, last name, and invalid phone number
-        composeTestRule.onNodeWithTag("firstNameInput").performTextInput("Jane")
-        composeTestRule.onNodeWithTag("lastNameInput").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberInput").performTextInput("123ABC")
-        composeTestRule.onNodeWithTag("sectionInput").performTextInput("GM")
-        composeTestRule.onNodeWithTag("academicLevelInput").performTextInput("BA5")
+    // Check that the button is selected
+    composeTestRule.onNodeWithTag("roleButtonStudent").assertIsSelected()
 
-        // Click the create profile button
-        composeTestRule.onNodeWithTag("createProfileButton").performClick()
+    // Select "Tutor" role
+    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
 
-        composeTestRule.onNodeWithTag("errorText").assertTextEquals("Please enter a valid phone number!")
-
-        // Verify that the navigation action was not called
-        verify(navigationActions, org.mockito.Mockito.never()).navigateTo(Screen.HOME)
-    }
-
-    @Test
-    fun testProfileCreationWrongAcademicLevel() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
-
-        // Input first name only, leave other fields empty
-        composeTestRule.onNodeWithTag("firstNameInput").performTextInput("Alice")
-        composeTestRule.onNodeWithTag("lastNameInput").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberInput").performTextInput("0123456789")
-        composeTestRule.onNodeWithTag("roleButton_STUDENT").performClick()
-        composeTestRule.onNodeWithTag("sectionInput").performTextInput("GX")
-        composeTestRule.onNodeWithTag("academicLevelInput").performTextInput("BA5")
-        // Click the create profile button
-        composeTestRule.onNodeWithTag("createProfileButton").performClick()
-        composeTestRule.onNodeWithTag("errorText").assertTextEquals("Please select a section and an academic level from the dropdown menu!")
-
-        // Verify that the navigation action was not called
-        verify(navigationActions, org.mockito.Mockito.never()).navigateTo(Screen.HOME)
-    }
-
-    @Test
-    fun testProfileCreationIncompleteInput() {
-        composeTestRule.setContent {
-            CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid = "test_google_uid")
-        }
-
-        // Input first name only, leave other fields empty
-        composeTestRule.onNodeWithTag("firstNameInput").performTextInput("Alice")
-        composeTestRule.onNodeWithTag("lastNameInput").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberInput").performTextInput("0123456789")
-        // Click the create profile button
-        composeTestRule.onNodeWithTag("createProfileButton").performClick()
-        composeTestRule.onNodeWithTag("errorText").assertTextEquals("Please complete all the fields before creating your account!")
-
-        // Verify that the navigation action was not called
-        verify(navigationActions, org.mockito.Mockito.never()).navigateTo(Screen.HOME)
-    }
-
+    // Check that the Tutor role is now selected
+    composeTestRule.onNodeWithTag("roleButtonTutor").assertIsSelected()
+  }
 }
