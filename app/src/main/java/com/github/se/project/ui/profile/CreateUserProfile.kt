@@ -43,6 +43,7 @@ fun CreateProfileScreen(
   // Dropdown menu states (for section and academic level selection)
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf<String?>(null) }
 
   Scaffold(
       topBar = {
@@ -236,13 +237,6 @@ fun CreateProfileScreen(
                   }
 
                   return@Button
-                } catch (e: IllegalArgumentException) {
-                  Toast.makeText(
-                          context,
-                          "Please select a section and an academic level from the dropdown menu!",
-                          Toast.LENGTH_SHORT)
-                      .show()
-                  return@Button
                 } catch (e: FirebaseFirestoreException) {
                   Toast.makeText(
                           context,
@@ -261,18 +255,26 @@ fun CreateProfileScreen(
               }
 
               if (phoneNumber.isNotEmpty() && isPhoneNumberValid(phoneNumber)) {
+                errorMessage = "Please complete all the fields before creating your account!"
                 Toast.makeText(
                         context,
                         "Please complete all the fields before creating your account!",
                         Toast.LENGTH_SHORT)
                     .show()
               } else {
+                errorMessage = "Please enter a valid phone number!"
                 Toast.makeText(context, "Please enter a valid phone number!", Toast.LENGTH_SHORT)
                     .show()
               }
             }) {
               Text("Confirm your details")
             }
+        errorMessage?.let {
+          Text(
+              text = it,
+              modifier = Modifier.padding(8.dp).testTag("errorText") // Add this tag for testing
+              )
+        }
       })
 }
 
