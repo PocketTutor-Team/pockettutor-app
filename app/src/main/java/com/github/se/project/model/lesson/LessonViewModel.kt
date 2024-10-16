@@ -34,7 +34,7 @@ class LessonsViewModel(
   private val currentUserId: String? = Firebase.auth.currentUser?.uid
 
   init {
-    fetchAllLessons()
+    repository.init { fetchAllLessons() }
   }
 
   /** Factory for creating a LessonsViewModel. */
