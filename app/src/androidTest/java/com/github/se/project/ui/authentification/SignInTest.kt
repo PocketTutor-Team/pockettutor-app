@@ -1,9 +1,6 @@
 package com.github.se.project.ui.authentification
 
-import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.MainActivity
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
