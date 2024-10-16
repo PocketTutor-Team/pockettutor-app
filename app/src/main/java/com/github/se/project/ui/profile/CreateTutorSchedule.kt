@@ -49,7 +49,7 @@ fun CreateTutorSchedule(
               Text(
                   "Finish your account creation by selecting the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("instructionText"))
+                  modifier = Modifier.testTag("InstructionsText"))
 
               Spacer(modifier = Modifier.height(8.dp))
 
@@ -61,7 +61,7 @@ fun CreateTutorSchedule(
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("confirmButton"),
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("FindStudentButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
               listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))
@@ -83,7 +83,7 @@ fun AvailabilityGrid(
 
   var selectedSlots by remember { mutableStateOf(schedule) }
 
-  Column(modifier = modifier) {
+  Column(modifier = Modifier.testTag("AvailabilityGrid")) {
     Row {
       Spacer(modifier = Modifier.width(44.dp))
       days.forEach { day ->
@@ -119,7 +119,7 @@ fun AvailabilityGrid(
                   textAlign = TextAlign.Center)
             }
 
-        days.forEachIndexed { dayIndex, _ ->
+        days.forEachIndexed { dayIndex, day ->
           val isSelected = selectedSlots[dayIndex][hourIndex] == 1
 
           Box(
@@ -137,7 +137,8 @@ fun AvailabilityGrid(
                         updatedSchedule[dayIndex][hourIndex] = if (isSelected) 0 else 1
                         selectedSlots = updatedSchedule
                         onScheduleChange(updatedSchedule)
-                      })
+                      }
+                      .testTag("Slot_${day}_${hour}"))
         }
       }
     }
