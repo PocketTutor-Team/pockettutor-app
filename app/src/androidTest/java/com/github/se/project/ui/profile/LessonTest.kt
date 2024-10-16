@@ -1,4 +1,4 @@
-package com.github.se.project
+package com.github.se.project.ui.profile
 
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
