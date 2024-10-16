@@ -16,5 +16,6 @@ data class Lesson(
 enum class LessonStatus {
   REQUESTED, // Lesson has been requested by the student
   PENDING, // Lesson is pending waiting for confirmation of the tutor
-  SCHEDULED // // Lesson is planned and confirmed by the tutor or student
+  SCHEDULED, // // Lesson is planned and confirmed by the tutor or student
+  COMPLETED, // Lesson has been completed
 }
