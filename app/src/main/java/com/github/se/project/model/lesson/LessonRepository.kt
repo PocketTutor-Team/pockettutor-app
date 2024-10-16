@@ -1,13 +1,14 @@
 package com.android.sample.model.lesson
 
 interface LessonRepository {
+    // Method to get a new unique identifier
+    fun getNewUid(): String
 
   // Method to initialize the repository
   fun init(onSuccess: () -> Unit)
 
   // Method to retrieve all lessons by user UID
-  fun getLessonsByUserId(
-      userUid: String,
+  fun getLessons(
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   )

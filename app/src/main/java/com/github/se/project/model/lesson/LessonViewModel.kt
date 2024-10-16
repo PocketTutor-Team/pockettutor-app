@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +21,10 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
   val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
 
   init {
-    repository.init { getLessonsByUser(Firebase.auth.currentUser?.uid ?: "") }
+    repository.init {
+        //I comment it as it might tricker the problem on the CI
+        //getLessons()
+    }
   }
 
   /** Factory for creating a LessonsViewModel. */
@@ -36,16 +38,25 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
         }
   }
 
+    /**
+     * Generates a new unique ID.
+     *
+     * @return A new unique ID.
+     */
+    fun getNewUid(): String {
+        return repository.getNewUid()
+    }
+
   /**
    * Retrieves all lessons associated with a specific user.
    *
    * @param userUid The UID of the user whose lessons are to be retrieved.
    */
-  fun getLessonsByUser(userUid: String) {
-    repository.getLessonsByUserId(
-        userUid,
+  fun getLessons() {
+      Log.d("LessonViewModel", "getLessons")
+    repository.getLessons(
         onSuccess = { lessons_.value = it },
-        onFailure = { e -> Log.e("LessonViewModel", "Error loading user: $userUid's lessons", e) })
+        onFailure = { e -> Log.e("LessonViewModel", "Error loading lessons", e) })
   }
 
   /**
@@ -58,7 +69,7 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
     repository.addLessonByUserId(
         userUid = userUid,
         lesson = lesson,
-        onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success
+        onSuccess = { getLessons() }, // Refresh the lesson list on success
         onFailure = { Log.e("LessonViewModel", "Error adding lesson: $lesson", it) })
   }
 
@@ -72,7 +83,7 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
     repository.deleteLessonByUserId(
         userUid = userUid,
         lessonId = lessonId,
-        onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success
+        onSuccess = { getLessons() }, // Refresh the lesson list on success
         onFailure = { Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it) })
   }
 

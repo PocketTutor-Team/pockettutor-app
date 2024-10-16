@@ -47,30 +47,10 @@ fun HomeScreen(
   val context = LocalContext.current
   val currentProfile = listProfilViewModele.currentProfile.collectAsState().value
   // TODO: uncomment the following line once the add lessons feature is implemented
-  // val lessons = lessonViewModel.lessons.collectAsState().value
-  // TODO: remove the following line once the add lessons feature is implemented
-  val lessons =
-      listOf(
-          Lesson(
-              id = "1",
-              title = "Math",
-              description = "Math lesson",
-              tutorUid = "",
-              studentUid = "2",
-              price = 20.0,
-              timeSlot = "Monday 10:00 - 12:00",
-              status = LessonStatus.REQUESTED, // Status of the lesson
-              language = ""),
-          Lesson(
-              id = "2",
-              title = "Algebra",
-              description = "Math lesson",
-              tutorUid = "",
-              studentUid = "2",
-              price = 15.0,
-              timeSlot = "Tuesday 10:00 - 12:00",
-              status = LessonStatus.REQUESTED, // Status of the lesson
-              language = ""))
+  val lessons = lessonViewModel.lessons.collectAsState().value
+
+    lessonViewModel.getLessons()
+
 
   // Determine which bottom navigation items to show based on the user's role
   val tabList =
@@ -88,8 +68,11 @@ fun HomeScreen(
               IconButton(
                   onClick = {
                     // Do nothing for now or add any logic you want when the button is clicked
-                    Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
-                    navigationActions.navigateTo(Screen.PROFILE)
+                      lessonViewModel.getLessons()
+                      Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
+                      //check if the lessons are fetched
+                        Log.d("HomeScreen", "Lessons fetched: ${lessons.size}")
+                      //navigationActions.navigateTo(Screen.PROFILE)
                   }) {
                     Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
                   }
@@ -106,7 +89,7 @@ fun HomeScreen(
           // Display a message when no profile is found
           NoProfileFoundScreen(context, navigationActions)
         } else if (lessons.isNotEmpty()) {
-          LazyColumn(modifier = Modifier.fillMaxWidth()) {
+          LazyColumn(modifier = Modifier.fillMaxWidth().padding(paddingValues)) {
             items(lessons.size) { index ->
               if (currentProfile != null) {
                 LessonItem(
@@ -121,7 +104,9 @@ fun HomeScreen(
                       // TODO: uncomment the following line once the add lessons feature is
                       // implemented
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
-                    })
+                    },
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
               } else {
                 Toast.makeText(
                         context,
@@ -142,13 +127,13 @@ fun HomeScreen(
 }
 
 @Composable
-fun LessonItem(currentProfile: Profile, lesson: Lesson, onClick: () -> Unit) {
+fun LessonItem(currentProfile: Profile, lesson: Lesson, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
     Column(modifier = Modifier.padding(8.dp)) {
       // Lesson Title at the top
       Text(text = lesson.title)
 
-      Spacer(modifier = Modifier.height(4.dp))
+      Spacer(modifier = Modifier.height(8.dp))
 
       // Row to display Lesson.timeSlot, currentProfileFirstName, and Lesson.price on the same line
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
