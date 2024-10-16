@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.android.sample.model.lesson.Lesson
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Role
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,49 +14,40 @@ import kotlinx.coroutines.flow.asStateFlow
  * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,
  * addition, and deletion of lessons.
  */
-class LessonsViewModel(
-    private val repository: LessonRepository,
-    private val profileViewModel: ListProfilesViewModel
-) : ViewModel() {
+class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
-  private val allLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
-  val allLessons: StateFlow<List<Lesson>> = allLessons_.asStateFlow()
-
-  private val userLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
-  val userLessons: StateFlow<List<Lesson>> = userLessons_.asStateFlow()
+  private val currentUserLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
+  val currentUserLessons: StateFlow<List<Lesson>> = currentUserLessons_.asStateFlow()
 
   private val selectedLesson_ = MutableStateFlow<Lesson?>(null)
   val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
 
-  private val currentUserId: String? = Firebase.auth.currentUser?.uid
-
   init {
-    repository.init { fetchAllLessons() }
+    repository.init {
+      // Uncomment this if needed in the future to automatically load lessons, but this seems to
+      // make the CI fails.
+      // getAllLessons()
+    }
   }
 
   /** Factory for creating a LessonsViewModel. */
   companion object {
-    fun Factory(profileViewModel: ListProfilesViewModel): ViewModelProvider.Factory =
+    val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val repository = LessonRepositoryFirestore(Firebase.firestore)
-            return LessonsViewModel(repository, profileViewModel) as T
+            return LessonViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T
           }
         }
   }
 
-  // Filter lessons based on the current user's ID (tutor or student)
-  private fun filterLessonsForCurrentUser(lessons: List<Lesson>) {
-    val profile = profileViewModel.currentProfile.value
-    profile?.let {
-      userLessons_.value =
-          if (it.role == Role.TUTOR) {
-            lessons.filter { lesson -> lesson.tutorUid == currentUserId }
-          } else {
-            lessons.filter { lesson -> lesson.studentUid == currentUserId }
-          }
-    }
+  /**
+   * Generates a new unique ID.
+   *
+   * @return A new unique ID.
+   */
+  fun getNewUid(): String {
+    return repository.getNewUid()
   }
 
   /**
@@ -67,27 +55,36 @@ class LessonsViewModel(
    *
    * @param userUid The UID of the user to associate with the lesson.
    * @param lesson The Lesson object to be added.
+   * @param onComplete Callback to execute when the operation completes.
    */
-  fun addLesson(userUid: String, lesson: Lesson) {
-    repository.addLessonByUserId(
-        userUid = userUid,
+  fun addLesson(userUid: String, lesson: Lesson, onComplete: () -> Unit) {
+    repository.addLesson(
         lesson = lesson,
-        onSuccess = { fetchAllLessons() }, // Refresh the lesson list on success
-        onFailure = { Log.e("LessonViewModel", "Error adding lesson: $lesson", it) })
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error adding lesson: $lesson", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 
   /**
    * Deletes a lesson from the repository.
    *
-   * @param userUid The UID of the user associated with the lesson.
    * @param lessonId The ID of the lesson to be deleted.
+   * @param onComplete Callback to execute when the operation completes.
    */
-  fun deleteLesson(userUid: String, lessonId: String) {
-    repository.deleteLessonByUserId(
-        userUid = userUid,
+  fun deleteLesson(lessonId: String, onComplete: () -> Unit) {
+    repository.deleteLesson(
         lessonId = lessonId,
-        onSuccess = { fetchAllLessons() }, // Refresh the lesson list on success
-        onFailure = { Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it) })
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 
   /**
@@ -99,13 +96,41 @@ class LessonsViewModel(
     selectedLesson_.value = lesson
   }
 
-  // Fetch all lessons and then filter based on the current user
-  fun fetchAllLessons() {
-    repository.getAllLessons(
-        onSuccess = { lessons ->
-          allLessons_.value = lessons
-          filterLessonsForCurrentUser(lessons)
+  /**
+   * Fetches all lessons for a specific tutor.
+   *
+   * @param tutorUid The UID of the tutor.
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
+    repository.getLessonsForTutor(
+        tutorUid = tutorUid,
+        onSuccess = { fetchedLessons ->
+          currentUserLessons_.value = fetchedLessons
+          onComplete() // Call the provided callback on success
         },
-        onFailure = { e -> Log.e("LessonsViewModel", "Error loading all lessons", e) })
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching tutor's lessons", it)
+          onComplete() // Call the callback even if there's a failure
+        })
+  }
+
+  /**
+   * Fetches all lessons for a specific student.
+   *
+   * @param studentUid The UID of the student.
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun getLessonsForStudent(studentUid: String, onComplete: () -> Unit = {}) {
+    repository.getLessonsForStudent(
+        studentUid = studentUid,
+        onSuccess = { fetchedLessons ->
+          currentUserLessons_.value = fetchedLessons
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching student's lessons", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 }

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.LessonsViewModel
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -35,11 +35,10 @@ fun ProfileInfoScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonsViewModel =
-        viewModel(factory = LessonsViewModel.Factory(listProfilesViewModel))
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 ) {
   val profileState = listProfilesViewModel.currentProfile.collectAsState()
-  val lessons = lessonViewModel.userLessons.collectAsState()
+  val lessons = lessonViewModel.currentUserLessons.collectAsState()
 
   // Filter only lessons that are marked as COMPLETED
   val completedLessons = lessons.value.filter { it.status == LessonStatus.COMPLETED }
@@ -61,6 +60,8 @@ fun ProfileInfoScreen(
       }) { paddingValues ->
         // must check that the profile is not null
         profileState.value?.let { userProfile ->
+          // lessonViewModel.getLessonsForTutor(userProfile.uid) uncomment if you want to fetch your
+          // lessons.
           // Pass the profile and completedLessons into ProfileDetailsScreen
           ProfileDetailsScreen(
               profile = userProfile,
