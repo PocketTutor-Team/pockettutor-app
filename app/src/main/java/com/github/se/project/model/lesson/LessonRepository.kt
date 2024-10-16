@@ -1,13 +1,22 @@
-package com.android.sample.model.lesson
+package com.github.se.project.model.lesson
+
+import com.android.sample.model.lesson.Lesson
 
 interface LessonRepository {
 
   // Method to initialize the repository
   fun init(onSuccess: () -> Unit)
 
-  // Method to retrieve all lessons by user UID
-  fun getLessonsByUserId(
-      userUid: String,
+  // Retrieve all lessons for a specific tutor
+  fun getLessonsByTutorUid(
+      tutorUid: String,
+      onSuccess: (List<Lesson>) -> Unit,
+      onFailure: (Exception) -> Unit
+  )
+
+  // Retrieve all lessons for a specific student
+  fun getLessonsByStudentUid(
+      studentUid: String,
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   )

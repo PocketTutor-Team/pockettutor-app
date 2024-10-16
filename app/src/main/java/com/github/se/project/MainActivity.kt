@@ -16,8 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.android.sample.model.lesson.LessonsViewModel
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.lesson.LessonsViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
@@ -52,7 +52,8 @@ fun PocketTutorApp() {
       viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
 
-  val lessonViewModel: LessonsViewModel = viewModel(factory = LessonsViewModel.Factory)
+  val lessonViewModel: LessonsViewModel =
+      viewModel(factory = LessonsViewModel.Factory(listProfilesViewModel))
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""

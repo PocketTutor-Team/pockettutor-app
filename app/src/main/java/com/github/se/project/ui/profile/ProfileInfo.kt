@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
-import com.android.sample.model.lesson.LessonsViewModel
+import com.github.se.project.model.lesson.LessonsViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -35,7 +35,8 @@ fun ProfileInfoScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonsViewModel = viewModel(factory = LessonsViewModel.Factory)
+    lessonViewModel: LessonsViewModel =
+        viewModel(factory = LessonsViewModel.Factory(listProfilesViewModel))
 ) {
   val profileState = listProfilesViewModel.currentProfile.collectAsState()
   val lessons = lessonViewModel.lessons.collectAsState()
