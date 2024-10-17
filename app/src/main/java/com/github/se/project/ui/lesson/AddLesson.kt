@@ -48,11 +48,11 @@ fun AddLessonScreen(
   var language by remember { mutableStateOf("") }
   var minPrice by remember { mutableStateOf(0.0) }
   var maxPrice by remember { mutableStateOf(0.0) }
-  var timeSlot by remember { mutableStateOf("") }
   val calendar = Calendar.getInstance()
+    val currentDateTime = Calendar.getInstance()
 
-  val profile = listProfilesViewModel.currentProfile.collectAsState()
-  val lessonState = lessonViewModel.lessons
+
+    val profile = listProfilesViewModel.currentProfile.collectAsState()
 
   // Context for the Toast messages
   val context = LocalContext.current
@@ -67,8 +67,6 @@ fun AddLessonScreen(
             description,
             subject,
             language,
-            minPrice,
-            maxPrice,
             selectedDate,
             selectedTime,
         )
@@ -96,28 +94,52 @@ fun AddLessonScreen(
     }
   }
 
-  // Date Picker
-  val datePickerDialog =
-      DatePickerDialog(
-          context,
-          { _, year, month, dayOfMonth -> selectedDate = "$dayOfMonth/${month + 1}/$year" },
-          calendar.get(Calendar.YEAR),
-          calendar.get(Calendar.MONTH),
-          calendar.get(Calendar.DAY_OF_MONTH))
+    // Date Picker
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            val selectedCalendar = Calendar.getInstance()
+            selectedCalendar.set(year, month, dayOfMonth)
 
-  // Time Picker
-  val timePickerDialog =
-      TimePickerDialog(
-          context,
-          { _, hourOfDay, minute ->
+            if (selectedCalendar.before(currentDateTime)) {
+                Toast.makeText(context, "You cannot select a past date", Toast.LENGTH_SHORT).show()
+            } else {
+                selectedDate = "$dayOfMonth/${month + 1}/$year"
+            }
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
+    // Restrict date picker to future dates only
+    datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
+
+    // Time Picker
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
             val formattedHour = if (hourOfDay < 10) "0$hourOfDay" else hourOfDay.toString()
             val formattedMinute = if (minute < 10) "0$minute" else minute.toString()
-            selectedTime = "$formattedHour:$formattedMinute"
-          },
-          calendar.get(Calendar.HOUR_OF_DAY),
-          calendar.get(Calendar.MINUTE),
-          true // 24-hour format
-          )
+
+            val selectedCalendar = Calendar.getInstance()
+            selectedCalendar.timeInMillis = currentDateTime.timeInMillis
+            selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            selectedCalendar.set(Calendar.MINUTE, minute)
+
+            // Check if the selected date is the current date and the selected time is in the past
+            if (selectedDate == "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}" &&
+                selectedCalendar.before(currentDateTime)
+            ) {
+                Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
+            } else {
+                selectedTime = "$formattedHour:$formattedMinute"
+            }
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true // 24-hour format
+    )
 
   Scaffold(
       topBar = {
@@ -194,8 +216,6 @@ fun validateLessonInput(
     description: String,
     subject: String,
     language: String,
-    minPrice: Double,
-    maxPrice: Double,
     date: String,
     time: String
 ): String? {
