@@ -62,6 +62,18 @@ class ListToDosViewModelTest {
   }
 
   @Test
+  fun updateProfileCallsRepository() {
+    listProfilesViewModel.updateProfile(profile)
+    verify(profilesRepository).updateProfile(eq(profile), any(), any())
+  }
+
+  @Test
+  fun deleteProfileCallsRepository() {
+    listProfilesViewModel.deleteProfileById(profile.uid)
+    verify(profilesRepository).deleteProfileById(eq(profile.uid), any(), any())
+  }
+
+  @Test
   fun getProfilesCallsOnSuccess() = runBlocking {
     val profiles = listOf(profile)
     val onSuccessCaptor = argumentCaptor<(List<Profile>) -> Unit>()
