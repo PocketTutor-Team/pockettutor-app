@@ -1,6 +1,7 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -120,7 +121,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
    * @param document The Firestore document to convert.
    * @return The Lesson object, or null if the document could not be converted.
    */
-  private fun documentToLesson(document: DocumentSnapshot): Lesson? {
+  @VisibleForTesting
+  internal fun documentToLesson(document: DocumentSnapshot): Lesson? {
     return try {
       val id = document.id
       val title = document.getString("title") ?: return null
