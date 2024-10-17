@@ -36,6 +36,7 @@ import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
+
 @Composable
 fun HomeScreen(
     listProfilViewModele: ListProfilesViewModel,
@@ -45,10 +46,11 @@ fun HomeScreen(
 
   val context = LocalContext.current
   val currentProfile = listProfilViewModele.currentProfile.collectAsState().value
-  // TODO: uncomment the following line once the add lessons feature is implemented
   val lessons = lessonViewModel.lessons.collectAsState().value
 
-  lessonViewModel.getLessons()
+  //lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
+    lessonViewModel.getLessons()
+    Log.d("current profil", currentProfile?.uid ?: "No user id found")
 
   // Determine which bottom navigation items to show based on the user's role
   val tabList =
@@ -65,11 +67,10 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically) {
               IconButton(
                   onClick = {
-                    // Do nothing for now or add any logic you want when the button is clicked
-                    lessonViewModel.getLessons()
+                    //lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
+                      lessonViewModel.getLessons()
                     Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
-                    // check if the lessons are fetched
-                    Log.d("HomeScreen", "Lessons fetched: ${lessons.size}")
+                      //TODO: uncomment once Screen.Profil is merged
                     // navigationActions.navigateTo(Screen.PROFILE)
                   }) {
                     Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
