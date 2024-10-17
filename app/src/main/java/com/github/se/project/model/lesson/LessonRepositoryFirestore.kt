@@ -3,6 +3,7 @@ package com.github.se.project.model.lesson
 import android.util.Log
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
+import com.github.se.project.model.profile.TutoringSubject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -86,6 +87,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
+    // No need to filter by userUid because we're using the lesson ID to delete
     val task = db.collection(collectionPath).document(lessonId).delete()
     performFirestoreOperation(task, onSuccess, onFailure)
   }
@@ -125,13 +127,28 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val id = document.id
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
+      val subject =
+          document.getString("subject")?.let { TutoringSubject.valueOf(it) } ?: return null
       val tutorUid = document.getString("tutorUid") ?: return null
       val studentUid = document.getString("studentUid") ?: return null
-      val price = document.getDouble("price") ?: return null
+      val minPrice = document.getDouble("minPrice") ?: return null
+      val maxPrice = document.getDouble("maxPrice") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = LessonStatus.valueOf(document.getString("status") ?: return null)
       val language = document.getString("language") ?: return null
-      Lesson(id, title, description, tutorUid, studentUid, price, timeSlot, status, language)
+
+      Lesson(
+          id,
+          title,
+          description,
+          subject,
+          tutorUid,
+          studentUid,
+          minPrice,
+          maxPrice,
+          timeSlot,
+          status,
+          language)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)
       null

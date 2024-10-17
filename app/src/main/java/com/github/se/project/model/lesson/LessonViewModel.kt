@@ -53,11 +53,10 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
   /**
    * Adds a new lesson to the repository.
    *
-   * @param userUid The UID of the user to associate with the lesson.
    * @param lesson The Lesson object to be added.
    * @param onComplete Callback to execute when the operation completes.
    */
-  fun addLesson(userUid: String, lesson: Lesson, onComplete: () -> Unit) {
+  fun addLesson(lesson: Lesson, onComplete: () -> Unit) {
     repository.addLesson(
         lesson = lesson,
         onSuccess = {

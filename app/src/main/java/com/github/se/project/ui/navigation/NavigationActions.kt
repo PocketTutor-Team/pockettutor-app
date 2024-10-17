@@ -25,6 +25,7 @@ object Screen {
   const val EDIT_PROFILE = "Edit profile Screen"
   const val CREATE_TUTOR_PROFILE = "Tutor information creation Screen"
   const val CALENDAR = "Calendar Screen"
+  const val ADD_LESSON = "Add Lesson Screen"
   const val CREATE_TUTOR_SCHEDULE = "Create tutor calendar Screen"
   const val SEARCH = "Search Screen" // Find tutor / find student screen
 }
