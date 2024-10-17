@@ -50,13 +50,6 @@ class ProfileInfoScreenTest {
           academicLevel = AcademicLevel.MA2,
           schedule = List(7) { List(12) { 0 } },
           price = 50)
-  private val mockProfileFlow = MutableStateFlow<Profile?>(mockProfile)
-
-  val mockLesson =
-      listOf(
-          Lesson("1", "Math Tutoring", "2", Subject.ALGEBRA, listOf(Language.FRENCH), "12345"),
-          Lesson("2", "Physics Tutoring", "3", Subject.PHYSICS, listOf(Language.FRENCH), "12345"))
-  private val mockLessonFlow = MutableStateFlow<List<Lesson>>(mockLesson)
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -99,9 +92,6 @@ class ProfileInfoScreenTest {
           lessonViewModel = mockLessonViewModel)
     }
 
-    // Check that the top bar is displayed
-    // composeTestRule.onNodeWithText("Profile Info").assertExists()
-
     // Check if profile details are displayed
     composeTestRule.onNodeWithText("John Doe").assertExists()
     composeTestRule.onNodeWithText("Status: MA2 Tutor").assertExists()
@@ -110,8 +100,6 @@ class ProfileInfoScreenTest {
 
     // Check if lessons are displayed
     composeTestRule.onNodeWithText("0 lessons given since you joined PocketTutor").assertExists()
-    // composeTestRule.onNodeWithText("Math Tutoring with 2").assertExists()
-    // composeTestRule.onNodeWithText("Physics Tutoring with 3").assertExists()
   }
 
   @Test
@@ -126,8 +114,6 @@ class ProfileInfoScreenTest {
     composeTestRule.setContent {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
-          // listProfilesViewModel = mockListProfilesViewModel, // This needs a valid ViewModel for
-          // the test
           lessonViewModel = mockLessonViewModel)
     }
 
