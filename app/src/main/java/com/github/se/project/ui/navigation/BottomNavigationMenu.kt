@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -33,16 +32,14 @@ fun BottomNavigationMenu(
     tabList: List<TopLevelDestination>,
     selectedItem: String
 ) {
-  NavigationBar(
-      modifier = Modifier.fillMaxWidth().height(60.dp).testTag("bottomNavigationMenu"),
-      containerColor = MaterialTheme.colorScheme.surface) {
-        tabList.forEach { tab ->
-          NavigationBarItem(
-              icon = { Icon(tab.icon, contentDescription = tab.textId) },
-              label = { Text(tab.textId) },
-              selected = tab.route == selectedItem,
-              onClick = { onTabSelect(tab) },
-              modifier = Modifier.clip(RoundedCornerShape(50.dp)).testTag(tab.textId))
-        }
-      }
+  NavigationBar(modifier = Modifier.fillMaxWidth().height(60.dp).testTag("bottomNavigationMenu")) {
+    tabList.forEach { tab ->
+      NavigationBarItem(
+          icon = { Icon(tab.icon, contentDescription = tab.textId) },
+          label = { Text(tab.textId) },
+          selected = tab.route == selectedItem,
+          onClick = { onTabSelect(tab) },
+          modifier = Modifier.clip(RoundedCornerShape(50.dp)).testTag(tab.textId))
+    }
+  }
 }

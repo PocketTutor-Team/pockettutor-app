@@ -6,5 +6,6 @@ enum class Subject {
   ALGEBRA,
   PHYSICS,
   ICC,
-  AICC
+  AICC,
+  NONE
 }
