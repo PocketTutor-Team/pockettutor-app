@@ -1,7 +1,7 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
-import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -125,8 +125,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val id = document.id
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
-      val subject =
-          document.getString("subject")?.let { TutoringSubject.valueOf(it) } ?: return null
+      val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
       val tutorUid = document.getString("tutorUid") ?: return null
       val studentUid = document.getString("studentUid") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
