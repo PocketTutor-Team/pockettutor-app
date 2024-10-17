@@ -1,8 +1,11 @@
-package com.android.sample.model.lesson
+package com.github.se.project.model.lesson
 
 import android.util.Log
+import com.android.sample.model.lesson.Lesson
+import com.android.sample.model.lesson.LessonStatus
 import com.github.se.project.model.profile.TutoringSubject
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -10,24 +13,29 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
 
   private val collectionPath = "lessons"
 
+  // Method to get a new unique identifier
   override fun getNewUid(): String {
     return db.collection(collectionPath).document().id
   }
 
   // Initialize the repository
   override fun init(onSuccess: () -> Unit) {
-    // Additional initialization logic if required
-    onSuccess()
+    FirebaseAuth.getInstance().addAuthStateListener {
+      if (it.currentUser != null) {
+        onSuccess()
+      }
+    }
   }
 
-  // Retrieve all lessons for a specific user by userUid
-  override fun getLessonsByUserId(
+  // General method to retrieve lessons based on a user field (tutor or student)
+  private fun getLessonsByUserField(
+      userField: String,
       userUid: String,
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("userUid", userUid) // Filter lessons by user ID
+        .whereEqualTo(userField, userUid) // Filter lessons by user field (tutorUid or studentUid)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -36,53 +44,55 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
             onSuccess(lessons)
           } else {
             task.exception?.let { e ->
-              Log.e("LessonRepositoryFirestore", "Error getting lessons for user", e)
+              Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
               onFailure(e)
             }
           }
         }
   }
 
-  // Add a new lesson for a specific user
-  override fun addLessonByUserId(
-      userUid: String,
-      lesson: Lesson,
-      onSuccess: () -> Unit,
+  // Retrieve all lessons for a specific tutor
+  override fun getLessonsForTutor(
+      tutorUid: String,
+      onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
+    getLessonsByUserField("tutorUid", tutorUid, onSuccess, onFailure)
+  }
 
+  // Retrieve all lessons for a specific student
+  override fun getLessonsForStudent(
+      studentUid: String,
+      onSuccess: (List<Lesson>) -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    getLessonsByUserField("studentUid", studentUid, onSuccess, onFailure)
+  }
+
+  // Add a new lesson
+  override fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
     val task = db.collection(collectionPath).document(lesson.id).set(lesson)
-
     performFirestoreOperation(task, onSuccess, onFailure)
   }
 
-  // Update an existing lesson for a specific user
-  override fun updateLessonByUserId(
-      userUid: String,
-      lesson: Lesson,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-
+  // Update an existing lesson by its ID
+  override fun updateLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
     val task = db.collection(collectionPath).document(lesson.id).set(lesson)
-
     performFirestoreOperation(task, onSuccess, onFailure)
   }
 
-  // Delete a lesson by its ID for a specific user
-  override fun deleteLessonByUserId(
-      userUid: String,
+  // Delete a lesson by its ID
+  override fun deleteLesson(
       lessonId: String,
       onSuccess: () -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     // No need to filter by userUid because we're using the lesson ID to delete
     val task = db.collection(collectionPath).document(lessonId).delete()
-
     performFirestoreOperation(task, onSuccess, onFailure)
   }
 
-  /*
+  /**
    * Performs a Firestore operation and calls the appropriate callback based on the result.
    *
    * @param task The Firestore task to perform.
@@ -124,7 +134,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
-      val status = document.getString("status")?.let { LessonStatus.valueOf(it) } ?: return null
+      val status = LessonStatus.valueOf(document.getString("status") ?: return null)
       val language = document.getString("language") ?: return null
 
       Lesson(

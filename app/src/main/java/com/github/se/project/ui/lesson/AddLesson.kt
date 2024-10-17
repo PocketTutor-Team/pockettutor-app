@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
-import com.android.sample.model.lesson.LessonsViewModel
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.TutoringSubject
@@ -41,7 +41,7 @@ fun AddLessonScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonsViewModel = viewModel(factory = LessonsViewModel.Factory)
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 ) {
   var title by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
@@ -74,7 +74,6 @@ fun AddLessonScreen(
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
       lessonViewModel.addLesson(
-          profile.value!!.uid,
           Lesson(
               lessonViewModel.getNewUid(),
               title,
@@ -86,7 +85,10 @@ fun AddLessonScreen(
               maxPrice,
               "${selectedDate}T${selectedTime}:00",
               LessonStatus.REQUESTED,
-              language))
+              language),
+          onComplete = ({
+                lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
+              }))
 
       // this should ideally be done in onSuccess callback of addLesson
       // but done directly here in the meantime
