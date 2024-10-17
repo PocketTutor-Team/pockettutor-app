@@ -40,8 +40,7 @@ class LessonTest {
             maxPrice = 100.0,
             timeSlot = "2024-10-10T10:00:00",
             status = LessonStatus.CONFIRMED,
-            languages = listOf(Language.ENGLISH)
-        )
+            languages = listOf(Language.ENGLISH))
     assertEquals("1", lesson.id)
     assertEquals("Kotlin Basics", lesson.title)
     assertEquals("Introduction to Kotlin", lesson.description)

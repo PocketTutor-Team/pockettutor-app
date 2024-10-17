@@ -135,7 +135,10 @@ fun AddLessonScreen(
   Scaffold(
       topBar = {
         Row(
-            modifier = Modifier.testTag("topRow").fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
+            modifier =
+                Modifier.testTag("topRow")
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
@@ -151,7 +154,11 @@ fun AddLessonScreen(
       },
       content = { paddingValues ->
         Column(
-            modifier = Modifier.testTag("bigColumn").fillMaxSize().padding(horizontal = 24.dp).padding(paddingValues),
+            modifier =
+                Modifier.testTag("bigColumn")
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+                    .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Text(
                   "Give a title and add a description to your lesson",

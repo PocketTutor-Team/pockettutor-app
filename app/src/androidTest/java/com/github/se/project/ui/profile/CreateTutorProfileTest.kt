@@ -1,6 +1,5 @@
 package com.github.se.project.ui.profile
 
-import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,11 +93,9 @@ class CreateTutorProfileTest {
   @Test
   fun selectingLanguagesUpdatesCorrectly() {
 
-      val languages = mutableListOf<Language>()
+    val languages = mutableListOf<Language>()
     // Set the screen in the test environment
-    composeTestRule.setContent {
-      LanguageSelector(languages)
-    }
+    composeTestRule.setContent { LanguageSelector(languages) }
 
     Language.entries.forEach { language ->
       // Check that the language is not selected
@@ -107,16 +104,14 @@ class CreateTutorProfileTest {
       // Select the language
       composeTestRule.onNodeWithTag("checkbox_${language.name}").performClick()
 
-        assert(languages == mutableListOf(language))
+      assert(languages == mutableListOf(language))
 
-        composeTestRule.onNodeWithTag("checkbox_${language.name}").performClick()
+      composeTestRule.onNodeWithTag("checkbox_${language.name}").performClick()
 
-        assert(languages == mutableListOf<Language>())
+      assert(languages == mutableListOf<Language>())
 
-
-
-        // Check that the language is now selected
-      //composeTestRule.onNodeWithTag("checkbox_${language.name}").assertIsOn()
+      // Check that the language is now selected
+      // composeTestRule.onNodeWithTag("checkbox_${language.name}").assertIsOn()
     }
   }
 

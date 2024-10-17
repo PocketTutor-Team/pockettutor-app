@@ -71,10 +71,23 @@ class AddLessonTest {
 
   @Test
   fun validateValidatesValidly() {
-    assert(validateLessonInput("title", "description", mutableStateOf(Subject.AICC), listOf(Language.ENGLISH), "date", "time") == null)
     assert(
-        validateLessonInput("title", "description", mutableStateOf(Subject.AICC), listOf(Language.ENGLISH), "date", "") ==
-            "time is missing")}
+        validateLessonInput(
+            "title",
+            "description",
+            mutableStateOf(Subject.AICC),
+            listOf(Language.ENGLISH),
+            "date",
+            "time") == null)
+    assert(
+        validateLessonInput(
+            "title",
+            "description",
+            mutableStateOf(Subject.AICC),
+            listOf(Language.ENGLISH),
+            "date",
+            "") == "time is missing")
+  }
 
   @Test
   fun confirm() {
