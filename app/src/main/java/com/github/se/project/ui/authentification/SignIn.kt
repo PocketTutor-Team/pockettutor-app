@@ -107,13 +107,15 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
               Spacer(modifier = Modifier.height(8.dp))
 
               // Pagination Dots
-              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.testTag("dots").fillMaxWidth()) {
-                PaginationDot(isActive = pagerState.currentPage == 0)
-                Spacer(modifier = Modifier.width(8.dp))
-                PaginationDot(isActive = pagerState.currentPage == 1)
-                Spacer(modifier = Modifier.width(8.dp))
-                PaginationDot(isActive = pagerState.currentPage == 2)
-              }
+              Row(
+                  horizontalArrangement = Arrangement.Center,
+                  modifier = Modifier.testTag("dots").fillMaxWidth()) {
+                    PaginationDot(isActive = pagerState.currentPage == 0)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    PaginationDot(isActive = pagerState.currentPage == 1)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    PaginationDot(isActive = pagerState.currentPage == 2)
+                  }
 
               Spacer(modifier = Modifier.height(64.dp))
 

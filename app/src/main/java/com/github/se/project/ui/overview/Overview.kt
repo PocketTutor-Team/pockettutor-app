@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonViewModel
@@ -65,6 +66,7 @@ fun HomeScreen(
       }
 
   Scaffold(
+      modifier = Modifier.testTag("homeScreen"),
       topBar = {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -100,7 +102,8 @@ fun HomeScreen(
                           .show()
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
                     },
-                    modifier = Modifier.padding(vertical = 8.dp))
+                    modifier =
+                        Modifier.testTag("${lessons[index].id}Lesson").padding(vertical = 8.dp))
               } else {
                 Toast.makeText(
                         context,
@@ -113,7 +116,7 @@ fun HomeScreen(
           }
         } else {
           Text(
-              modifier = Modifier.padding(paddingValues),
+              modifier = Modifier.testTag("noLessonText").padding(paddingValues),
               text = "You have no lessons scheduled at the moment.",
           )
         }
@@ -149,7 +152,7 @@ fun LessonItem(
 fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions) {
   // Display an error message when no profile is assigned as it should never happen
   Column(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.testTag("noProfileScreen").fillMaxSize(),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "No profile is currently assigned to the current user.")

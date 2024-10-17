@@ -27,7 +27,10 @@ fun CreateTutorProfile(
 ) {
   val profile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red, modifier = Modifier.testTag("noProfile"))
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              color = Color.Red,
+              modifier = Modifier.testTag("noProfile"))
 
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val selectedSubjects = remember { mutableStateListOf<Subject>() }
@@ -71,7 +74,10 @@ fun CreateTutorProfile(
               Spacer(modifier = Modifier.height(16.dp))
 
               // Subject Selection
-              Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag("subjectText"))
+              Text(
+                  "Which subjects do you teach?",
+                  style = MaterialTheme.typography.titleSmall,
+                  modifier = Modifier.testTag("subjectText"))
               SubjectDropdown(selectedSubjects, expandedSubjectDropdown)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -142,7 +148,8 @@ fun LanguageSelection(selectedLanguages: MutableList<Language>) {
                 Text(
                     text = language.name.lowercase(),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.testTag("${language}Text").align(Alignment.CenterVertically))
+                    modifier =
+                        Modifier.testTag("${language}Text").align(Alignment.CenterVertically))
               }
         }
       }
@@ -170,9 +177,14 @@ fun SubjectDropdown(
                 text = {
                   Row {
                     if (isSelected) {
-                      Icon(Icons.Filled.Check, contentDescription = null, Modifier.testTag("${subject.name}Checkmark"))
+                      Icon(
+                          Icons.Filled.Check,
+                          contentDescription = null,
+                          Modifier.testTag("${subject.name}Checkmark"))
                     }
-                    Text(subject.name.lowercase(), modifier = Modifier.testTag("${subject.name}Text"))
+                    Text(
+                        subject.name.lowercase(),
+                        modifier = Modifier.testTag("${subject.name}Text"))
                   }
                 },
                 onClick = {

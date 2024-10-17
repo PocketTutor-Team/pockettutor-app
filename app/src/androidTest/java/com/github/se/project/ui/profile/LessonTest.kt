@@ -1,6 +1,5 @@
 package com.github.se.project.ui.profile
 
-
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Subject
@@ -10,25 +9,26 @@ import org.junit.Test
 
 class LessonTest {
 
-    @Test
-    fun testLessonDefaultValues() {
-        val lesson = Lesson()
-        assertEquals("", lesson.id)
-        assertEquals("", lesson.title)
-        assertEquals("", lesson.description)
-        assertEquals(Subject.PHYSICS, lesson.subject)
-        assertEquals("", lesson.tutorUid)
-        assertEquals("", lesson.studentUid)
-        assertEquals(0.0, lesson.minPrice)
-        assertEquals(0.0, lesson.maxPrice)
-        assertEquals("", lesson.timeSlot)
-        assertEquals(LessonStatus.PENDING, lesson.status)
-        assertEquals("", lesson.language)
-    }
+  @Test
+  fun testLessonDefaultValues() {
+    val lesson = Lesson()
+    assertEquals("", lesson.id)
+    assertEquals("", lesson.title)
+    assertEquals("", lesson.description)
+    assertEquals(Subject.PHYSICS, lesson.subject)
+    assertEquals("", lesson.tutorUid)
+    assertEquals("", lesson.studentUid)
+    assertEquals(0.0, lesson.minPrice)
+    assertEquals(0.0, lesson.maxPrice)
+    assertEquals("", lesson.timeSlot)
+    assertEquals(LessonStatus.PENDING, lesson.status)
+    assertEquals("", lesson.language)
+  }
 
-    @Test
-    fun testLessonCustomValues() {
-        val lesson = Lesson(
+  @Test
+  fun testLessonCustomValues() {
+    val lesson =
+        Lesson(
             id = "1",
             title = "Kotlin Basics",
             description = "Introduction to Kotlin",
@@ -39,26 +39,25 @@ class LessonTest {
             maxPrice = 100.0,
             timeSlot = "2024-10-10T10:00:00",
             status = LessonStatus.CONFIRMED,
-            language = "EN"
-        )
-        assertEquals("1", lesson.id)
-        assertEquals("Kotlin Basics", lesson.title)
-        assertEquals("Introduction to Kotlin", lesson.description)
-        assertEquals(Subject.ICC, lesson.subject)
-        assertEquals("tutor123", lesson.tutorUid)
-        assertEquals("student456", lesson.studentUid)
-        assertEquals(50.0, lesson.minPrice)
-        assertEquals(100.0, lesson.maxPrice)
-        assertEquals("2024-10-10T10:00:00", lesson.timeSlot)
-        assertEquals(LessonStatus.CONFIRMED, lesson.status)
-        assertEquals("EN", lesson.language)
-    }
+            language = "EN")
+    assertEquals("1", lesson.id)
+    assertEquals("Kotlin Basics", lesson.title)
+    assertEquals("Introduction to Kotlin", lesson.description)
+    assertEquals(Subject.ICC, lesson.subject)
+    assertEquals("tutor123", lesson.tutorUid)
+    assertEquals("student456", lesson.studentUid)
+    assertEquals(50.0, lesson.minPrice)
+    assertEquals(100.0, lesson.maxPrice)
+    assertEquals("2024-10-10T10:00:00", lesson.timeSlot)
+    assertEquals(LessonStatus.CONFIRMED, lesson.status)
+    assertEquals("EN", lesson.language)
+  }
 
-    @Test
-    fun testLessonStatusValues() {
-        assertNotNull(LessonStatus.valueOf("PENDING"))
-        assertNotNull(LessonStatus.valueOf("CONFIRMED"))
-        assertNotNull(LessonStatus.valueOf("COMPLETED"))
-        assertNotNull(LessonStatus.valueOf("CANCELLED"))
-    }
+  @Test
+  fun testLessonStatusValues() {
+    assertNotNull(LessonStatus.valueOf("PENDING"))
+    assertNotNull(LessonStatus.valueOf("CONFIRMED"))
+    assertNotNull(LessonStatus.valueOf("COMPLETED"))
+    assertNotNull(LessonStatus.valueOf("CANCELLED"))
+  }
 }
