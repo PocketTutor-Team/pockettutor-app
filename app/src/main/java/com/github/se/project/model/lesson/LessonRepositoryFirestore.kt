@@ -1,8 +1,6 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
-import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
