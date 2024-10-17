@@ -57,7 +57,7 @@ fun SubjectSelector(
                         Text(subject.name.lowercase(), style = MaterialTheme.typography.bodyMedium)
 
                         if (selectedSubject.value == subject) {
-                          Icon(Icons.Filled.Check, contentDescription = null)
+                          Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.testTag("${subject.name}Checkmark"))
                         }
                       }
                     },

@@ -1,5 +1,6 @@
 package com.github.se.project.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,7 @@ fun LanguageSelector(selectedLanguages: MutableList<Language>) {
                 Checkbox(
                     checked = selectedLanguages.contains(language),
                     onCheckedChange = { isSelected ->
-                      if (isSelected) {
+                      if (!selectedLanguages.contains(language)) {
                         selectedLanguages.add(language)
                       } else {
                         selectedLanguages.remove(language)

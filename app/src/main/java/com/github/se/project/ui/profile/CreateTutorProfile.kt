@@ -28,7 +28,7 @@ fun CreateTutorProfile(
 ) {
   val profile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red, modifier = Modifier.testTag("noProfile"))
 
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val selectedSubjects = remember { mutableStateListOf<Subject>() }
@@ -63,14 +63,14 @@ fun CreateTutorProfile(
 
               Text(
                   "What languages do you feel comfortable teaching in?",
-                  style = MaterialTheme.typography.titleSmall)
+                  style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag("languageText"))
               // Language Selection
               LanguageSelector(selectedLanguages)
 
               Spacer(modifier = Modifier.height(16.dp))
 
               // Subject Selection
-              Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall)
+              Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag("subjectText"))
               SubjectsSelector(selectedSubjects)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -78,7 +78,7 @@ fun CreateTutorProfile(
               // Price Selection
               Text(
                   "Select your tutoring price per hour:",
-                  style = MaterialTheme.typography.titleSmall)
+                  style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag("priceText"))
               PriceSlider(sliderValue)
             }
       },
