@@ -3,27 +3,16 @@ package com.github.se.project.ui.lesson
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.Lesson
@@ -32,7 +21,9 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Subject
-import com.github.se.project.ui.components.WritableDropdown
+import com.github.se.project.ui.components.LanguageSelector
+import com.github.se.project.ui.components.PriceRangeSlider
+import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import java.util.Calendar
@@ -46,8 +37,8 @@ fun AddLessonScreen(
 ) {
   var title by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
-  var subject by remember { mutableStateOf("") }
-  var language by remember { mutableStateOf("") }
+  val selectedLanguages = remember { mutableStateListOf<Language>() }
+  val selectedSubject = remember { mutableStateOf(Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(5.0) }
   var maxPrice by remember { mutableDoubleStateOf(50.0) }
   val calendar = Calendar.getInstance()
@@ -66,8 +57,8 @@ fun AddLessonScreen(
         validateLessonInput(
             title,
             description,
-            subject,
-            language,
+            selectedSubject,
+            selectedLanguages,
             selectedDate,
             selectedTime,
         )
@@ -79,20 +70,21 @@ fun AddLessonScreen(
               lessonViewModel.getNewUid(),
               title,
               description,
-              Subject.valueOf(subject),
+              selectedSubject.value,
+              selectedLanguages.toList(),
               "",
               profile.value!!.uid,
               minPrice,
               maxPrice,
+              0.0,
               "${selectedDate}T${selectedTime}:00",
               LessonStatus.REQUESTED,
-              language),
-          onComplete = ({
-                lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
-              }))
+          ),
+          onComplete = {
+            lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
+            Toast.makeText(context, "Lesson added successfully", Toast.LENGTH_SHORT).show()
+          })
 
-      // this should ideally be done in onSuccess callback of addLesson
-      // but done directly here in the meantime
       navigationActions.navigateTo(Screen.HOME)
     }
   }
@@ -104,18 +96,11 @@ fun AddLessonScreen(
           { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(year, month, dayOfMonth)
-
-            if (selectedCalendar.before(currentDateTime)) {
-              Toast.makeText(context, "You cannot select a past date", Toast.LENGTH_SHORT).show()
-            } else {
-              selectedDate = "$dayOfMonth/${month + 1}/$year"
-            }
+            selectedDate = "$dayOfMonth/${month + 1}/$year"
           },
           calendar.get(Calendar.YEAR),
           calendar.get(Calendar.MONTH),
           calendar.get(Calendar.DAY_OF_MONTH))
-
-  // Restrict date picker to future dates only
   datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
 
   // Time Picker
@@ -123,18 +108,21 @@ fun AddLessonScreen(
       TimePickerDialog(
           context,
           { _, hourOfDay, minute ->
-            val formattedHour = if (hourOfDay < 10) "0$hourOfDay" else hourOfDay.toString()
-            val formattedMinute = if (minute < 10) "0$minute" else minute.toString()
+            val formattedHour = hourOfDay.toString().padStart(2, '0')
+            val formattedMinute = minute.toString().padStart(2, '0')
 
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.timeInMillis = currentDateTime.timeInMillis
-            selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-            selectedCalendar.set(Calendar.MINUTE, minute)
+            val selectedCalendar =
+                Calendar.getInstance().apply {
+                  timeInMillis = currentDateTime.timeInMillis
+                  set(Calendar.HOUR_OF_DAY, hourOfDay)
+                  set(Calendar.MINUTE, minute)
+                }
 
-            // Check if the selected date is the current date and the selected time is in the past
-            if (selectedDate ==
-                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}" &&
-                selectedCalendar.before(currentDateTime)) {
+            val isSelectedDateToday =
+                selectedDate ==
+                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+
+            if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
               Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
             } else {
               selectedTime = "$formattedHour:$formattedMinute"
@@ -142,89 +130,122 @@ fun AddLessonScreen(
           },
           calendar.get(Calendar.HOUR_OF_DAY),
           calendar.get(Calendar.MINUTE),
-          true // 24-hour format
-          )
+          true)
 
   Scaffold(
       topBar = {
-        Text(
-            text = "Schedule a new lesson",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically) {
+              Text(
+                  text = "Schedule a lesson",
+                  modifier = Modifier.testTag("Title"),
+                  style = MaterialTheme.typography.headlineMedium,
+                  textAlign = TextAlign.Center)
+
+              IconButton(onClick = { navigationActions.navigateTo(Screen.HOME) }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+              }
+            }
       },
       content = { paddingValues ->
         Column(
-            modifier =
-                Modifier.testTag("bigColumn").fillMaxSize().padding(16.dp).padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Text(
+                  "Give a title and add a description to your lesson",
+                  style = MaterialTheme.typography.titleSmall)
+
               OutlinedTextField(
                   value = title,
                   onValueChange = { title = it },
-                  label = { Text("You can write what the lesson is about in short") },
-                  placeholder = { Text("Give a title to this lesson") },
-                  modifier = Modifier.testTag("titleField").fillMaxWidth(),
+                  label = { Text("Give a title to this lesson") },
+                  placeholder = { Text("You can write what the lesson is about in short") },
+                  modifier = Modifier.fillMaxWidth().testTag("TitleField"),
                   singleLine = true)
-
-              // TODO: description picture
 
               OutlinedTextField(
                   value = description,
                   onValueChange = { description = it },
-                  label = { Text("You can write what the lesson is about in detail") },
-                  placeholder = { Text("Give a description to this lesson") },
-                  modifier = Modifier.testTag("descriptionField").fillMaxWidth(),
+                  label = { Text("Give a description to this lesson") },
+                  placeholder = { Text("You can write what the lesson is about in detail") },
+                  modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
                   singleLine = true)
+
+              Spacer(modifier = Modifier.height(8.dp))
 
               Text(
                   "Select the desired date and time for the lesson",
-                  Modifier.testTag("dateTimeText"))
-              Button(onClick = { datePickerDialog.show() }) {
-                Text(if (selectedDate.isEmpty()) "Select Date" else "Selected Date: $selectedDate")
+                  style = MaterialTheme.typography.titleSmall)
+
+              Row(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = { datePickerDialog.show() },
+                    modifier = Modifier.weight(1f).testTag("DateButton"),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                      Text(
+                          selectedDate.ifEmpty { "Select Date" },
+                          style = MaterialTheme.typography.labelMedium)
+                    }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { timePickerDialog.show() },
+                    modifier = Modifier.weight(1f).testTag("TimeButton"),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                      Text(
+                          selectedTime.ifEmpty { "Select Time" },
+                          style = MaterialTheme.typography.labelMedium)
+                    }
               }
 
-              Button(onClick = { timePickerDialog.show() }) {
-                Text(if (selectedTime.isEmpty()) "Select Time" else "Selected Time: $selectedTime")
-              }
+              Spacer(modifier = Modifier.height(8.dp))
 
-              // Subject input
-              WritableDropdown(
-                  label = "Which subject would you like to study ?",
-                  placeholder = "Subject(s)",
-                  value = subject,
-                  onValueChange = { subject = it },
-                  choices = Subject.entries.map { it.name }.toList())
+              Text(
+                  "Select the subject you want to study",
+                  style = MaterialTheme.typography.titleSmall)
+              SubjectSelector(selectedSubject)
 
-              // Language input
-              WritableDropdown(
-                  label = "In which language would you like the lesson to take place ?",
-                  placeholder = "Language(s)",
-                  value = language,
-                  onValueChange = { language = it },
-                  choices = Language.entries.map { it.name }.toList())
+              Spacer(modifier = Modifier.height(8.dp))
 
-              // Slider price selection
-              PriceSlider("Select a price range for your lesson:") { min, max ->
+              Text(
+                  "Select the possible languages you want the course to take place in",
+                  style = MaterialTheme.typography.titleSmall)
+              LanguageSelector(selectedLanguages)
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              PriceRangeSlider("Select a price range for your lesson:") { min, max ->
                 minPrice = min.toDouble()
                 maxPrice = max.toDouble()
               }
+
               Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
       },
       bottomBar = {
         Button(
-            modifier = Modifier.testTag("confirmButton").fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("ConfirmButton"),
+            shape = MaterialTheme.shapes.medium,
             onClick = onConfirm) {
-              Text("Confirm your details")
+              Text("Confirm your request")
             }
       })
 }
 
-/** Return a potential validation error */
 fun validateLessonInput(
     title: String,
     description: String,
-    subject: String,
-    language: String,
+    selectedSubject: MutableState<Subject>,
+    selectedLanguages: List<Language>,
     date: String,
     time: String
 ): String? {
@@ -232,8 +253,8 @@ fun validateLessonInput(
       mapOf(
               "title" to title,
               "description" to description,
-              "subject" to subject,
-              "language" to language,
+              "subject" to selectedSubject.value.name,
+              "language" to selectedLanguages.joinToString { it.name },
               "date" to date,
               "time" to time,
           )
@@ -242,28 +263,5 @@ fun validateLessonInput(
       return "${entry.key} is missing"
     }
   }
-  try {
-    Subject.valueOf(subject)
-  } catch (e: IllegalArgumentException) {
-    return "Invalid subject"
-  }
   return null
-}
-
-@Composable
-fun PriceSlider(label: String, onValueChange: (Float, Float) -> Unit) {
-  var sliderPosition by remember { mutableStateOf(0f..100f) }
-  Column {
-    Text(text = label)
-    RangeSlider(
-        value = sliderPosition,
-        steps = 44,
-        onValueChange = { range -> sliderPosition = range },
-        modifier = Modifier.testTag("priceSlider"),
-        valueRange = 5f..50f,
-        onValueChangeFinished = {
-          onValueChange(sliderPosition.start, sliderPosition.endInclusive)
-        },
-    )
-  }
 }

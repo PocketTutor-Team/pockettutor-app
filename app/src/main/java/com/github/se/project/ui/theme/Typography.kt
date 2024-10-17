@@ -45,12 +45,12 @@ val Typography =
             ),
         titleMedium =
             TextStyle(
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
             ),
         titleSmall =
             TextStyle(
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
             ),
         bodyLarge =

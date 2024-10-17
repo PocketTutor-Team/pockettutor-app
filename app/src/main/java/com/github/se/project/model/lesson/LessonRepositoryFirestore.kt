@@ -2,6 +2,7 @@ package com.github.se.project.model.lesson
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -132,22 +133,35 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val studentUid = document.getString("studentUid") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null
+      val price = document.getDouble("price") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = LessonStatus.valueOf(document.getString("status") ?: return null)
-      val language = document.getString("language") ?: return null
+
+      val language =
+          document.get("languages")?.let { languagesList ->
+            (languagesList as List<*>).mapNotNull {
+              try {
+                Language.valueOf(it.toString())
+              } catch (e: IllegalArgumentException) {
+                Log.e("LessonRepositoryFirestore", "Invalid language in document: $it", e)
+                null
+              }
+            }
+          } ?: emptyList()
 
       Lesson(
           id,
           title,
           description,
           subject,
+          language,
           tutorUid,
           studentUid,
           minPrice,
           maxPrice,
+          price,
           timeSlot,
-          status,
-          language)
+          status)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)
       null
