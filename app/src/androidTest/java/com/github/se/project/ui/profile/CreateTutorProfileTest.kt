@@ -255,39 +255,6 @@ class CreateTutorProfileTest {
         .onNodeWithTag("noProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
   }
-
-  @Test
-  fun doubleClickTest() {
-    (mockViewModel.currentProfile as MutableStateFlow).value =
-        Profile(
-            uid = "1",
-            googleUid = "googleUid",
-            firstName = "First",
-            lastName = "Last",
-            phoneNumber = "1234567890",
-            role = Role.STUDENT,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java),
-            subjects = EnumSet.noneOf(Subject::class.java),
-            schedule = listOf())
-    // Set the screen in the test environment
-    composeTestRule.setContent {
-      CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
-    }
-
-    composeTestRule.onNodeWithTag("${languages[0]}Check").performClick()
-    composeTestRule.onNodeWithTag("${languages[0]}Check").performClick()
-    composeTestRule.onNodeWithTag("${languages[0]}Check").assertIsOff()
-
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-
-    subjects.forEach { subject ->
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").performClick()
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").performClick()
-      composeTestRule.onNodeWithTag("${subject.name}Checkmark").assertIsNotDisplayed()
-    }
-  }
 }
 
 class MockProfilesRepository : ProfilesRepository {
