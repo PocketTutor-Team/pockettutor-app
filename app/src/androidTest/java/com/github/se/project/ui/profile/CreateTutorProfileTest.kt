@@ -11,7 +11,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
@@ -33,14 +33,14 @@ class CreateTutorProfileTest {
     }
     //list of languages
     private val languages = Language.entries.toTypedArray()
-    private val subjects = TutoringSubject.entries.toTypedArray()
+    private val subjects = Subject.entries.toTypedArray()
 
     @Test
     fun createTutorProfileScreen_rendersCorrectly() {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -70,7 +70,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -86,7 +86,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -109,7 +109,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -143,7 +143,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -159,7 +159,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -171,7 +171,7 @@ class CreateTutorProfileTest {
 
         val sample2 = Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
             role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+            languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
 
         // Stub the updateProfile method
         `when`(mockViewModel.updateProfile(any())).thenAnswer {}
@@ -191,7 +191,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -226,7 +226,7 @@ class CreateTutorProfileTest {
         (mockViewModel.currentProfile as MutableStateFlow).value =
             Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890",
                 role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.MA2,
-                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(TutoringSubject::class.java), schedule = listOf())
+                languages = EnumSet.noneOf(Language::class.java), subjects = EnumSet.noneOf(Subject::class.java), schedule = listOf())
         // Set the screen in the test environment
         composeTestRule.setContent {
             CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)

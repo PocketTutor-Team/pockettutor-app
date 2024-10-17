@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.Lesson
@@ -153,14 +154,14 @@ fun AddLessonScreen(
       },
       content = { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp).padding(paddingValues),
+            modifier = Modifier.testTag("bigColumn").fillMaxSize().padding(16.dp).padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               OutlinedTextField(
                   value = title,
                   onValueChange = { title = it },
                   label = { Text("You can write what the lesson is about in short") },
                   placeholder = { Text("Give a title to this lesson") },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.testTag("titleField").fillMaxWidth(),
                   singleLine = true)
 
               // TODO: description picture
@@ -170,10 +171,10 @@ fun AddLessonScreen(
                   onValueChange = { description = it },
                   label = { Text("You can write what the lesson is about in detail") },
                   placeholder = { Text("Give a description to this lesson") },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.testTag("descriptionField").fillMaxWidth(),
                   singleLine = true)
 
-              Text("Select the desired date and time for the lesson")
+              Text("Select the desired date and time for the lesson", Modifier.testTag("dateTimeText"))
               Button(onClick = { datePickerDialog.show() }) {
                 Text(if (selectedDate.isEmpty()) "Select Date" else "Selected Date: $selectedDate")
               }
@@ -207,7 +208,7 @@ fun AddLessonScreen(
             }
       },
       bottomBar = {
-        Button(modifier = Modifier.fillMaxWidth().padding(16.dp), onClick = onConfirm) {
+        Button(modifier = Modifier.testTag("confirmButton").fillMaxWidth().padding(16.dp), onClick = onConfirm) {
           Text("Confirm your details")
         }
       })
@@ -253,6 +254,7 @@ fun PriceSlider(label: String, onValueChange: (Float, Float) -> Unit) {
         value = sliderPosition,
         steps = 44,
         onValueChange = { range -> sliderPosition = range },
+        modifier = Modifier.testTag("priceSlider"),
         valueRange = 5f..50f,
         onValueChangeFinished = {
           onValueChange(sliderPosition.start, sliderPosition.endInclusive)

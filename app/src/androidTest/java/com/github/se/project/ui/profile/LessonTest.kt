@@ -1,7 +1,9 @@
 package com.github.se.project.ui.profile
 
-import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonStatus
+
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.profile.Subject
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.junit.Test
@@ -14,9 +16,11 @@ class LessonTest {
         assertEquals("", lesson.id)
         assertEquals("", lesson.title)
         assertEquals("", lesson.description)
+        assertEquals(Subject.PHYSICS, lesson.subject)
         assertEquals("", lesson.tutorUid)
         assertEquals("", lesson.studentUid)
-        assertEquals(0.0, lesson.price)
+        assertEquals(0.0, lesson.minPrice)
+        assertEquals(0.0, lesson.maxPrice)
         assertEquals("", lesson.timeSlot)
         assertEquals(LessonStatus.PENDING, lesson.status)
         assertEquals("", lesson.language)
@@ -28,9 +32,11 @@ class LessonTest {
             id = "1",
             title = "Kotlin Basics",
             description = "Introduction to Kotlin",
+            subject = Subject.ICC,
             tutorUid = "tutor123",
             studentUid = "student456",
-            price = 50.0,
+            minPrice = 50.0,
+            maxPrice = 100.0,
             timeSlot = "2024-10-10T10:00:00",
             status = LessonStatus.CONFIRMED,
             language = "EN"
@@ -38,9 +44,11 @@ class LessonTest {
         assertEquals("1", lesson.id)
         assertEquals("Kotlin Basics", lesson.title)
         assertEquals("Introduction to Kotlin", lesson.description)
+        assertEquals(Subject.ICC, lesson.subject)
         assertEquals("tutor123", lesson.tutorUid)
         assertEquals("student456", lesson.studentUid)
-        assertEquals(50.0, lesson.price)
+        assertEquals(50.0, lesson.minPrice)
+        assertEquals(100.0, lesson.maxPrice)
         assertEquals("2024-10-10T10:00:00", lesson.timeSlot)
         assertEquals(LessonStatus.CONFIRMED, lesson.status)
         assertEquals("EN", lesson.language)
