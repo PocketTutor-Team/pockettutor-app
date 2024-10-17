@@ -70,13 +70,9 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically) {
-              IconButton(
-                  onClick = {
-                    Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
-                    navigationActions.navigateTo(Screen.PROFILE)
-                  }) {
-                    Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
-                  }
+              IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
+                Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
+              }
             }
       },
       bottomBar = {
@@ -108,10 +104,10 @@ fun HomeScreen(
               } else {
                 Toast.makeText(
                         context,
-                        "No profil is currently assigned to the current user",
+                        "No profile is currently assigned to the current user",
                         Toast.LENGTH_LONG)
                     .show()
-                Log.e("homeScreen", "No profil is currently assigned to the current user")
+                Log.e("homeScreen", "No profile is currently assigned to the current user")
               }
             }
           }
