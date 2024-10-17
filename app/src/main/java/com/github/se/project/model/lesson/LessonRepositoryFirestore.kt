@@ -1,6 +1,7 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.android.sample.model.lesson.Lesson
 import com.android.sample.model.lesson.LessonStatus
 import com.github.se.project.model.profile.TutoringSubject
@@ -28,7 +29,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
   }
 
   // General method to retrieve lessons based on a user field (tutor or student)
-  private fun getLessonsByUserField(
+  internal fun getLessonsByUserField(
       userField: String,
       userUid: String,
       onSuccess: (List<Lesson>) -> Unit,
@@ -122,7 +123,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
    * @param document The Firestore document to convert.
    * @return The Lesson object, or null if the document could not be converted.
    */
-  private fun documentToLesson(document: DocumentSnapshot): Lesson? {
+  @VisibleForTesting
+  internal fun documentToLesson(document: DocumentSnapshot): Lesson? {
     return try {
       val id = document.id
       val title = document.getString("title") ?: return null
