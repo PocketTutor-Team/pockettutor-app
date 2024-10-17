@@ -1,8 +1,8 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
-import com.github.se.project.model.profile.Language
 import androidx.annotation.VisibleForTesting
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
