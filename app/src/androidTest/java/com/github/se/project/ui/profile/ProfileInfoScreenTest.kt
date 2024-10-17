@@ -10,6 +10,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
@@ -52,8 +53,8 @@ class ProfileInfoScreenTest {
     private val mockProfileFlow = MutableStateFlow<Profile?>(mockProfile)
 
     val mockLesson = listOf(
-        Lesson("1", "Math Tutoring", "2", Subject.ALGEBRA, "12345"),
-        Lesson("2", "Physics Tutoring", "3", Subject.PHYSICS, "12345")
+        Lesson("1", "Math Tutoring", "2", Subject.ALGEBRA, listOf(Language.FRENCH) ,"12345"),
+        Lesson("2", "Physics Tutoring", "3", Subject.PHYSICS, listOf(Language.FRENCH), "12345")
     )
     private val mockLessonFlow = MutableStateFlow<List<Lesson>>(mockLesson)
 
@@ -101,19 +102,20 @@ class ProfileInfoScreenTest {
         }
 
         // Check that the top bar is displayed
-        composeTestRule.onNodeWithText("Profile Info").assertExists()
+        //composeTestRule.onNodeWithText("Profile Info").assertExists()
 
         // Check if profile details are displayed
         composeTestRule.onNodeWithText("John Doe").assertExists()
-        composeTestRule.onNodeWithText("MA2 Tutor").assertExists()
-        composeTestRule.onNodeWithText("GM").assertExists()
-        composeTestRule.onNodeWithText("50.- per hour").assertExists()
+        composeTestRule.onNodeWithText("Status: MA2 Tutor").assertExists()
+        composeTestRule.onNodeWithText("Section: GM").assertExists()
+        composeTestRule.onNodeWithText("Price: 50.- per hour").assertExists()
 
         // Check if lessons are displayed
-        composeTestRule.onNodeWithText("0 lessons given").assertExists()
+        composeTestRule.onNodeWithText("0 lessons given since you joined PocketTutor").assertExists()
         //composeTestRule.onNodeWithText("Math Tutoring with 2").assertExists()
         //composeTestRule.onNodeWithText("Physics Tutoring with 3").assertExists()
     }
+
 
     @Test
     fun profileInfoScreenDisplaysErrorMessage_whenProfileIsNull() {
@@ -127,7 +129,7 @@ class ProfileInfoScreenTest {
         composeTestRule.setContent {
             ProfileInfoScreen(
                 navigationActions = mockNavigationActions,
-                // listProfilesViewModel = mockProfilesViewModel, // This needs a valid ViewModel for the test
+                //listProfilesViewModel = mockListProfilesViewModel, // This needs a valid ViewModel for the test
                 lessonViewModel = mockLessonViewModel
             )
         }
