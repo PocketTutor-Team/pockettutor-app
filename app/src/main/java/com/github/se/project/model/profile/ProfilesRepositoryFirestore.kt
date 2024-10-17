@@ -119,11 +119,9 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val subjects =
           document
               .get("subjects")
-              ?.let { subjectsList ->
-                (subjectsList as List<String>).map { TutoringSubject.valueOf(it) }
-              }
-              ?.toCollection(EnumSet.noneOf(TutoringSubject::class.java))
-              ?: EnumSet.noneOf(TutoringSubject::class.java)
+              ?.let { subjectsList -> (subjectsList as List<String>).map { Subject.valueOf(it) } }
+              ?.toCollection(EnumSet.noneOf(Subject::class.java))
+              ?: EnumSet.noneOf(Subject::class.java)
 
       val schedule =
           document.get("schedule")?.let { (it as List<Int>).chunked(12) }

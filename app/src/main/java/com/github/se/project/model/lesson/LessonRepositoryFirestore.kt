@@ -1,7 +1,8 @@
 package com.github.se.project.model.lesson
 
 import android.util.Log
-import com.github.se.project.model.profile.TutoringSubject
+
+import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -122,26 +123,26 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
         }
     }
 
-    /**
-     * Converts a Firestore document to a Lesson object.
-     *
-     * @param document The Firestore document to convert.
-     * @return The Lesson object, or null if the document could not be converted.
-     */
-    private fun documentToLesson(document: DocumentSnapshot): Lesson? {
-        return try {
-            val id = document.id
-            val title = document.getString("title") ?: return null
-            val description = document.getString("description") ?: return null
-            val subject =
-                document.getString("subject")?.let { TutoringSubject.valueOf(it) } ?: return null
-            val tutorUid = document.getString("tutorUid") ?: return null
-            val studentUid = document.getString("studentUid") ?: return null
-            val minPrice = document.getDouble("minPrice") ?: return null
-            val maxPrice = document.getDouble("maxPrice") ?: return null
-            val timeSlot = document.getString("timeSlot") ?: return null
-            val status = LessonStatus.valueOf(document.getString("status") ?: return null)
-            val language = document.getString("language") ?: return null
+    
+  /**
+   * Converts a Firestore document to a Lesson object.
+   *
+   * @param document The Firestore document to convert.
+   * @return The Lesson object, or null if the document could not be converted.
+   */
+  private fun documentToLesson(document: DocumentSnapshot): Lesson? {
+    return try {
+      val id = document.id
+      val title = document.getString("title") ?: return null
+      val description = document.getString("description") ?: return null
+      val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
+      val tutorUid = document.getString("tutorUid") ?: return null
+      val studentUid = document.getString("studentUid") ?: return null
+      val minPrice = document.getDouble("minPrice") ?: return null
+      val maxPrice = document.getDouble("maxPrice") ?: return null
+      val timeSlot = document.getString("timeSlot") ?: return null
+      val status = LessonStatus.valueOf(document.getString("status") ?: return null)
+      val language = document.getString("language") ?: return null
 
             Lesson(
                 id,

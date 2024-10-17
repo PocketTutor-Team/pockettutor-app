@@ -30,7 +30,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.WritableDropdown
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
@@ -78,7 +78,7 @@ fun AddLessonScreen(
               lessonViewModel.getNewUid(),
               title,
               description,
-              TutoringSubject.valueOf(subject),
+              Subject.valueOf(subject),
               "",
               profile.value!!.uid,
               minPrice,
@@ -188,7 +188,7 @@ fun AddLessonScreen(
                   placeholder = "Subject(s)",
                   value = subject,
                   onValueChange = { subject = it },
-                  choices = TutoringSubject.entries.map { it.name }.toList())
+                  choices = Subject.entries.map { it.name }.toList())
 
               // Language input
               WritableDropdown(
@@ -237,7 +237,7 @@ fun validateLessonInput(
     }
   }
   try {
-    TutoringSubject.valueOf(subject)
+    Subject.valueOf(subject)
   } catch (e: IllegalArgumentException) {
     return "Invalid subject"
   }
