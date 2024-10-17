@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -28,68 +29,72 @@ fun AvailabilityGrid(
     onScheduleChange: (List<List<Int>>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-  val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-  val hours = (8..19).map { "$it h" }
+    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    val hours = (8..19).map { "$it h" }
 
-  var selectedSlots by remember { mutableStateOf(schedule) }
+    var selectedSlots by remember { mutableStateOf(schedule) }
 
-  Column(modifier = modifier) {
-    Row {
-      Spacer(modifier = Modifier.width(44.dp))
-      days.forEach { day ->
-        Box(
-            modifier =
-                Modifier.weight(1f)
-                    .padding(2.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(8.dp))
-                    .padding(2.dp)) {
-              Text(
-                  text = day,
-                  style = MaterialTheme.typography.bodySmall,
-                  textAlign = TextAlign.Center,
-              )
+    Column(modifier = modifier.testTag("availabilityGrid")) {
+        Row(modifier = Modifier.testTag("daysRow")) {
+            Spacer(modifier = Modifier.width(44.dp).testTag("daySpacer"))
+            days.forEachIndexed { dayIndex, day ->
+                Box(
+                    modifier = Modifier.weight(1f)
+                        .padding(2.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(8.dp))
+                        .padding(2.dp)
+                        .testTag("dayBox_$dayIndex")) {
+                    Text(
+                        text = day,
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.testTag("dayText_$dayIndex")
+                    )
+                }
             }
-      }
-    }
-
-    hours.forEachIndexed { hourIndex, hour ->
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            modifier =
-                Modifier.weight(1f)
-                    .aspectRatio(1f)
-                    .padding(4.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(8.dp))
-                    .padding(8.dp)) {
-              Text(
-                  text = hour,
-                  style = MaterialTheme.typography.bodySmall,
-                  textAlign = TextAlign.Center)
-            }
-
-        days.forEachIndexed { dayIndex, _ ->
-          val isSelected = selectedSlots[dayIndex][hourIndex] == 1
-
-          Box(
-              modifier =
-                  Modifier.weight(1f)
-                      .aspectRatio(1f)
-                      .padding(4.dp)
-                      .background(
-                          if (isSelected) MaterialTheme.colorScheme.inverseSurface
-                          else MaterialTheme.colorScheme.surfaceBright,
-                          shape = RoundedCornerShape(8.dp))
-                      .clickable {
-                        val updatedSchedule =
-                            selectedSlots.toMutableList().map { it.toMutableList() }
-                        updatedSchedule[dayIndex][hourIndex] = if (isSelected) 0 else 1
-                        selectedSlots = updatedSchedule
-                        onScheduleChange(updatedSchedule)
-                      })
         }
-      }
+
+        hours.forEachIndexed { hourIndex, hour ->
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("hourRow_$hourIndex")) {
+                Box(
+                    modifier = Modifier.weight(1f)
+                        .aspectRatio(1f)
+                        .padding(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                        .testTag("hourBox_$hourIndex")) {
+                    Text(
+                        text = hour,
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.testTag("hourText_$hourIndex")
+                    )
+                }
+
+                days.forEachIndexed { dayIndex, _ ->
+                    val isSelected = selectedSlots[dayIndex][hourIndex] == 1
+
+                    Box(
+                        modifier = Modifier.weight(1f)
+                            .aspectRatio(1f)
+                            .padding(4.dp)
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.inverseSurface
+                                else MaterialTheme.colorScheme.surfaceBright,
+                                shape = RoundedCornerShape(8.dp))
+                            .clickable {
+                                val updatedSchedule = selectedSlots.toMutableList().map { it.toMutableList() }
+                                updatedSchedule[dayIndex][hourIndex] = if (isSelected) 0 else 1
+                                selectedSlots = updatedSchedule
+                                onScheduleChange(updatedSchedule)
+                            }
+                            .testTag("Slot_${dayIndex}_${hourIndex}")
+                    )
+                }
+            }
+        }
     }
-  }
 }
+

@@ -46,7 +46,7 @@ fun CreateTutorSchedule(
               Text(
                   "Finish your account creation by selecting the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("instructionText"))
+                  modifier = Modifier.testTag("InstructionsText"))
 
               Spacer(modifier = Modifier.height(8.dp))
 
@@ -58,7 +58,7 @@ fun CreateTutorSchedule(
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("confirmButton"),
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("FindStudentButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
               listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))

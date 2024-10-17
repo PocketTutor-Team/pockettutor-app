@@ -1,5 +1,6 @@
 package com.github.se.project.model.lesson
 
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
@@ -23,13 +24,13 @@ class LessonViewModelTest {
           title = "Physics Tutoring",
           description = "Mechanics and Thermodynamics",
           subject = Subject.PHYSICS,
+        languages = listOf(Language.ENGLISH),
           tutorUid = "tutor123",
           studentUid = "student123",
           minPrice = 20.0,
           maxPrice = 40.0,
           timeSlot = "2024-10-10T10:00:00",
-          status = LessonStatus.PENDING,
-          language = "ENGLISH")
+          status = LessonStatus.PENDING)
 
   @Before
   fun setUp() {
