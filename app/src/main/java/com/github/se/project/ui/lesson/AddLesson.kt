@@ -249,7 +249,7 @@ fun PriceSlider(label: String, onValueChange: (Float, Float) -> Unit) {
     Text(text = label)
     RangeSlider(
         value = sliderPosition,
-        steps = 45,
+        steps = 44,
         onValueChange = { range -> sliderPosition = range },
         valueRange = 5f..50f,
         onValueChangeFinished = {
