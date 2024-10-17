@@ -1,7 +1,5 @@
 package com.github.se.project.model.lesson
 
-import com.android.sample.model.lesson.Lesson
-
 interface LessonRepository {
   // Method to get a new unique identifier
   fun getNewUid(): String
