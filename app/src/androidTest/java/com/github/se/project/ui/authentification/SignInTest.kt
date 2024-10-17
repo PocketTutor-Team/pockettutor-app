@@ -50,4 +50,10 @@ class SignInTest : TestCase() {
             "Pocket Tutor connects university students and tutors for quick, effective learning support.")
         .assertIsDisplayed()
   }
+
+  @Test
+  fun dotsAndTermsAreCorrectlyDisplayed() {
+    composeTestRule.onNodeWithTag("dots").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("terms").assertIsDisplayed()
+  }
 }

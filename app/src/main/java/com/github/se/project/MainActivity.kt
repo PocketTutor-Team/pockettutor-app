@@ -5,12 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
@@ -145,9 +141,4 @@ fun PocketTutorApp() {
 
     }
   }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
 }

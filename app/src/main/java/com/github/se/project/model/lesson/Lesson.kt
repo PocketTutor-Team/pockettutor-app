@@ -8,7 +8,7 @@ data class Lesson(
     val title: String = "", // Title of the lesson
     val description: String = "", // Description of the lesson
     val subject: Subject = Subject.NONE,
-    val languages: List<Language>,
+    val languages: List<Language> = listOf(), // Languages spoken in the lesson
     val tutorUid: String = "", // User ID of the tutor
     val studentUid: String = "", // User ID of the student (if booked)
     val minPrice: Double = 0.0, // Price for the lesson

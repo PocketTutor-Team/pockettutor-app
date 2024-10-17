@@ -107,13 +107,15 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
               Spacer(modifier = Modifier.height(8.dp))
 
               // Pagination Dots
-              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                PaginationDot(isActive = pagerState.currentPage == 0)
-                Spacer(modifier = Modifier.width(8.dp))
-                PaginationDot(isActive = pagerState.currentPage == 1)
-                Spacer(modifier = Modifier.width(8.dp))
-                PaginationDot(isActive = pagerState.currentPage == 2)
-              }
+              Row(
+                  horizontalArrangement = Arrangement.Center,
+                  modifier = Modifier.testTag("dots").fillMaxWidth()) {
+                    PaginationDot(isActive = pagerState.currentPage == 0)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    PaginationDot(isActive = pagerState.currentPage == 1)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    PaginationDot(isActive = pagerState.currentPage == 2)
+                  }
 
               Spacer(modifier = Modifier.height(64.dp))
 
@@ -143,7 +145,7 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
                   text =
                       "By clicking 'Continue', you agree to the Terms of Service and Privacy Policy, and consent to the use of cookies related to PocketTutor.",
                   style = Typography.bodySmall, // Use bodySmall style from the theme
-                  modifier = Modifier.padding(horizontal = 32.dp),
+                  modifier = Modifier.testTag("terms").padding(horizontal = 32.dp),
                   textAlign = TextAlign.Center)
             }
       }
