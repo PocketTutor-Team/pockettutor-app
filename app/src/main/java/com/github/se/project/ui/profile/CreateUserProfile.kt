@@ -236,13 +236,12 @@ fun CreateProfileScreen(
                   }
 
                   return@Button
-
                 } catch (e: IllegalArgumentException) {
-                    Toast.makeText(
-                        context,
-                        "Please select a section and an academic level from the dropdown menu!",
-                        Toast.LENGTH_SHORT)
-                        .show()
+                  Toast.makeText(
+                          context,
+                          "Please select a section and an academic level from the dropdown menu!",
+                          Toast.LENGTH_SHORT)
+                      .show()
                 } catch (e: FirebaseFirestoreException) {
                   Toast.makeText(
                           context,
