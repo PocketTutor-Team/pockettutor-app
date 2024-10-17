@@ -25,8 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -46,17 +46,25 @@ fun HomeScreen(
 
   val context = LocalContext.current
   val currentProfile = listProfilViewModele.currentProfile.collectAsState().value
-  val lessons = lessonViewModel.lessons.collectAsState().value
+  val lessons = lessonViewModel.currentUserLessons.collectAsState().value
 
   //lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
-    lessonViewModel.getLessons()
+    when (currentProfile?.role) {
+        Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid)
+        Role.STUDENT -> lessonViewModel.getLessonsForStudent(currentProfile.uid)
+        Role.UNKNOWN -> Toast.makeText(context, "Unknown Profil", Toast.LENGTH_SHORT).show()
+        null -> Toast.makeText(context, "null Profil", Toast.LENGTH_SHORT).show()
+    }
+
     Log.d("current profil", currentProfile?.uid ?: "No user id found")
 
   // Determine which bottom navigation items to show based on the user's role
-  val tabList =
+  val LIST_TOP_LEVEL_DESTINATIONS =
       when (currentProfile?.role) {
         Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
-        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+          Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+          Role.UNKNOWN -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+          null -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
       }
 
   Scaffold(
@@ -67,11 +75,8 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically) {
               IconButton(
                   onClick = {
-                    //lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
-                      lessonViewModel.getLessons()
                     Toast.makeText(context, "Profile icon clicked", Toast.LENGTH_SHORT).show()
-                      //TODO: uncomment once Screen.Profil is merged
-                    // navigationActions.navigateTo(Screen.PROFILE)
+                    navigationActions.navigateTo(Screen.PROFILE)
                   }) {
                     Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Profile Icon")
                   }
@@ -80,7 +85,7 @@ fun HomeScreen(
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { route -> navigationActions.navigateTo(route) },
-            tabList = tabList,
+            tabList = LIST_TOP_LEVEL_DESTINATIONS,
             selectedItem = navigationActions.currentRoute())
       },
       content = { paddingValues ->
@@ -101,7 +106,6 @@ fun HomeScreen(
                       Toast.makeText(context, "Navigate to EDIT_LESSON screen", Toast.LENGTH_LONG)
                           .show()
                       // TODO: uncomment the following line once the add lessons feature is
-                      // implemented
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
                     },
                     modifier = Modifier.padding(vertical = 8.dp))
@@ -141,7 +145,8 @@ fun LessonItem(
       // Row to display Lesson.timeSlot, currentProfileFirstName, and Lesson.price on the same line
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = currentProfile.academicLevel.toString())
-        Text(text = "\$${lesson.price}")
+          //using the lesson.maxPrice
+        Text(text = "\$${lesson.maxPrice}")
         Text(text = lesson.timeSlot)
       }
     }

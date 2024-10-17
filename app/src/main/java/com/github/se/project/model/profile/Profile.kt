@@ -71,4 +71,6 @@ enum class TutoringSubject {
   ANALYSIS,
   ALGEBRA,
   PHYSICS,
+  ICC,
+  AICC
 }

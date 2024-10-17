@@ -17,17 +17,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.android.sample.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
+import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
-import com.github.se.project.ui.profile.AvailabilityScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
-import com.github.se.project.ui.profile.TutorInfoScreen
+import com.github.se.project.ui.profile.CreateTutorProfile
+import com.github.se.project.ui.profile.CreateTutorSchedule
+import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -96,10 +98,16 @@ fun PocketTutorApp() {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
       }
       composable(Screen.CREATE_TUTOR_PROFILE) {
-        TutorInfoScreen(navigationActions, listProfilesViewModel)
+        CreateTutorProfile(navigationActions, listProfilesViewModel)
       }
       composable(Screen.CREATE_TUTOR_SCHEDULE) {
-        AvailabilityScreen(navigationActions, listProfilesViewModel)
+        CreateTutorSchedule(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.PROFILE) {
+        ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
     }
 
@@ -113,15 +121,15 @@ fun PocketTutorApp() {
     }
 
     navigation(
-        startDestination = Screen.HOME,
+        startDestination = Screen.ADD_LESSON,
         route = Route.FIND_TUTOR,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
-      // composable(Screen.ADD_LESSON) {
-      // AddLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-      // }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
       // composable(Screen.EDIT_LESSON) {
       //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       // }

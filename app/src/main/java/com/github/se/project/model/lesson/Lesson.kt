@@ -1,21 +1,26 @@
-package com.android.sample.model.lesson
+package com.github.se.project.model.lesson
+
+import com.github.se.project.model.profile.TutoringSubject
 
 data class Lesson(
     val id: String = "", // Unique identifier for the lesson
     val title: String = "", // Title of the lesson
     val description: String = "", // Description of the lesson
+    val subject: TutoringSubject = TutoringSubject.PHYSICS,
     val tutorUid: String = "", // User ID of the tutor
     val studentUid: String = "", // User ID of the student (if booked)
-    val price: Double = 0.0, // Price for the lesson
-    val timeSlot: String, // Date and time of the lesson
-    val status: LessonStatus = LessonStatus.REQUESTED, // Status of the lesson
+    val minPrice: Double = 0.0, // Price for the lesson
+    val maxPrice: Double = 0.0, // Price for the lesson
+    val timeSlot: String = "", // Time slot for the lesson (e.g., "2024-10-10T10:00:00")
+    val status: LessonStatus = LessonStatus.PENDING, // Status of the lesson
     val language: String = "" // todo: create a language enum ?
 )
 
 // Enum class to define lesson status
 enum class LessonStatus {
-  REQUESTED, // Lesson has been requested by the student
-  PENDING, // Lesson is pending waiting for confirmation of the tutor
-  SCHEDULED, // // Lesson is planned and confirmed by the tutor or student
+  REQUESTED,
+  PENDING, // Lesson is pending
+  CONFIRMED, // Lesson is confirmed
   COMPLETED, // Lesson has been completed
+  CANCELLED // Lesson has been cancelled
 }
