@@ -1,35 +1,35 @@
 package com.github.se.project.ui.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
+import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.NavigationActions
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileInfoScreen(
     navigationActions: NavigationActions,
@@ -45,86 +45,88 @@ fun ProfileInfoScreen(
 
   Scaffold(
       topBar = {
-        TopAppBar(
-            title = { Text("Profile Info") },
-            navigationIcon = {
-              IconButton(onClick = { navigationActions.goBack() }) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(4.dp).testTag("profileTopBar"),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              Row(Modifier.padding(horizontal = 4.dp)) {
+                IconButton(
+                    onClick = { /* Navigate to calendar screen */},
+                    modifier = Modifier.testTag("calendarButton")) {
+                      Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
+                    }
+                IconButton(
+                    onClick = { /* Navigate to edit profile screen */},
+                    modifier = Modifier.testTag("editProfileButton")) {
+                      Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
+                    }
               }
-            },
-            actions = {
-              IconButton(onClick = { /* Handle edit navigation to the EDIT_TODO_SCREEN */}) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
-              }
-            })
+
+              IconButton(
+                  onClick = { navigationActions.goBack() },
+                  modifier = Modifier.testTag("closeButton")) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+                  }
+            }
       }) { paddingValues ->
-        // must check that the profile is not null
         profileState.value?.let { userProfile ->
-          // lessonViewModel.getLessonsForTutor(userProfile.uid) uncomment if you want to fetch your
-          // lessons.
-          // Pass the profile and completedLessons into ProfileDetailsScreen
-          ProfileDetailsScreen(
-              profile = userProfile,
-              completedLessons = completedLessons,
-              modifier = Modifier.padding(paddingValues))
+          val isTutor = userProfile.role == Role.TUTOR
+
+          if (isTutor) {
+            lessonViewModel.getLessonsForTutor(userProfile.uid)
+          } else {
+            lessonViewModel.getLessonsForStudent(userProfile.uid)
+          }
+
+          Column(
+              modifier =
+                  Modifier.padding(paddingValues)
+                      .padding(horizontal = 32.dp, vertical = 8.dp)
+                      .testTag("profileContent")) {
+                Text(
+                    text = "${userProfile.firstName} ${userProfile.lastName}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.testTag("profileName"))
+                Spacer(modifier = Modifier.height(8.dp))
+                ProfileDetails(userProfile)
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text =
+                        "${completedLessons.size} ${if (isTutor) "lessons given" else "lessons taken"} since you joined PocketTutor",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.testTag("lessonsCount"))
+                DisplayLessons(lessons = completedLessons, isTutor = isTutor)
+              }
         }
             ?: run {
               // Display message if profile is null
-              Text(text = "Error loading profile...")
+              Text(
+                  text = "Error loading profile...",
+                  modifier = Modifier.testTag("errorLoadingProfile"))
             }
       }
 }
 
-/**
- * Displays the details of the user's profile, including their role and personal information.
- *
- * @param profile The current user's profile.
- * @param completedLessons The list of completed lessons to display.
- * @param modifier Optional modifier for the screen layout.
- */
 @Composable
-fun ProfileDetailsScreen(
-    profile: Profile,
-    completedLessons: List<Lesson>,
-    modifier: Modifier = Modifier
-) {
-  Column(modifier = modifier.padding(16.dp)) {
-    val isTutor = profile.role == Role.TUTOR
-
-    // Display shared profile info
-    Text(text = "${profile.firstName} ${profile.lastName}")
-    Text(text = "${profile.academicLevel} ${if (isTutor) "Tutor" else "Student"}")
-    Text(text = "${profile.section}")
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    // Display role-specific information
-    if (isTutor) {
-      Text(text = "${profile.price}.- per hour", style = MaterialTheme.typography.bodyLarge)
-    }
-    DisplayLessons(completedLessons = completedLessons, isTutor = isTutor)
-  }
-}
-
-/**
- * Displays a list of completed lessons in a lazy scrollable column.
- *
- * @param completedLessons The list of completed lessons to display.
- * @param isTutor Whether the user viewing this screen is a tutor or a student.
- */
-@Composable
-fun DisplayLessons(completedLessons: List<Lesson>, isTutor: Boolean) {
-  // display number of lessons
-  Text(text = "${completedLessons.size} ${if (isTutor) "lessons given" else "lessons taken"}")
-
-  // display the completed lessons in a LazyColumn
-  LazyColumn {
-    itemsIndexed(completedLessons) { _, lesson ->
-      if (isTutor) {
-        Text(text = "${lesson.title} with ${lesson.studentUid}")
-      } else {
-        Text(text = "${lesson.title} with ${lesson.tutorUid}")
+fun ProfileDetails(profile: Profile) {
+  Column(
+      modifier = Modifier.fillMaxWidth().padding(4.dp).testTag("profileDetails"),
+      verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text =
+                "Status: ${profile.academicLevel} ${if (profile.role == Role.TUTOR) "Tutor" else "Student"}",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("profileStatus"))
+        Text(
+            text = "Section: ${profile.section}",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("profileSection"))
+        // Display role-specific information
+        if (profile.role == Role.TUTOR) {
+          Text(
+              text = "Price: ${profile.price}.- per hour",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("profilePrice"))
+        }
       }
-    }
-  }
 }

@@ -6,7 +6,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -15,6 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.components.LanguageSelector
+import com.github.se.project.ui.components.PriceSlider
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -31,7 +32,6 @@ fun CreateTutorProfile(
 
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val selectedSubjects = remember { mutableStateListOf<Subject>() }
-  val expandedSubjectDropdown = remember { mutableStateOf(false) }
   val sliderValue = remember { mutableFloatStateOf(5f) }
   val showError = remember { mutableStateOf(false) }
 
@@ -65,13 +65,13 @@ fun CreateTutorProfile(
                   "What languages do you feel comfortable teaching in?",
                   style = MaterialTheme.typography.titleSmall)
               // Language Selection
-              LanguageSelection(selectedLanguages)
+              LanguageSelector(selectedLanguages)
 
               Spacer(modifier = Modifier.height(16.dp))
 
               // Subject Selection
               Text("Which subjects do you teach?", style = MaterialTheme.typography.titleSmall)
-              SubjectDropdown(selectedSubjects, expandedSubjectDropdown)
+              SubjectsSelector(selectedSubjects)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -115,42 +115,11 @@ fun CreateTutorProfile(
 }
 
 @Composable
-fun LanguageSelection(selectedLanguages: MutableList<Language>) {
-  val languages = Language.entries.toTypedArray()
-
-  Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-        languages.forEach { language ->
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                Checkbox(
-                    checked = selectedLanguages.contains(language),
-                    onCheckedChange = { isSelected ->
-                      if (isSelected) {
-                        selectedLanguages.add(language)
-                      } else {
-                        selectedLanguages.remove(language)
-                      }
-                    },
-                    modifier = Modifier.size(24.dp))
-
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = language.name.lowercase(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.CenterVertically))
-              }
-        }
-      }
-}
-
-@Composable
-fun SubjectDropdown(
+fun SubjectsSelector(
     selectedSubjects: MutableList<Subject>,
-    expandedSubjectDropdown: MutableState<Boolean>
 ) {
+  val expandedSubjectDropdown = remember { mutableStateOf(false) }
+
   val subjects = Subject.entries.toTypedArray()
   Box(modifier = Modifier.fillMaxWidth()) {
     Button(
@@ -162,48 +131,28 @@ fun SubjectDropdown(
         expanded = expandedSubjectDropdown.value,
         onDismissRequest = { expandedSubjectDropdown.value = false },
         modifier = Modifier.fillMaxWidth()) {
-          subjects.forEach { subject ->
-            val isSelected = selectedSubjects.contains(subject)
-            DropdownMenuItem(
-                text = {
-                  Row {
-                    if (isSelected) {
-                      Icon(Icons.Filled.Check, contentDescription = null)
-                    }
-                    Text(subject.name.lowercase())
-                  }
-                },
-                onClick = {
-                  if (isSelected) {
-                    selectedSubjects.remove(subject)
-                  } else {
-                    selectedSubjects.add(subject)
-                  }
-                },
-                modifier = Modifier.testTag("dropdown${subject.name}"))
-          }
+          subjects
+              .filter { it != Subject.NONE }
+              .forEach { subject ->
+                val isSelected = selectedSubjects.contains(subject)
+                DropdownMenuItem(
+                    text = {
+                      Row {
+                        if (isSelected) {
+                          Icon(Icons.Filled.Check, contentDescription = null)
+                        }
+                        Text(subject.name.lowercase())
+                      }
+                    },
+                    onClick = {
+                      if (isSelected) {
+                        selectedSubjects.remove(subject)
+                      } else {
+                        selectedSubjects.add(subject)
+                      }
+                    },
+                    modifier = Modifier.testTag("dropdown${subject.name}"))
+              }
         }
-  }
-}
-
-@Composable
-fun PriceSlider(sliderValue: MutableFloatState) {
-  val averagePrice = 30
-  Slider(
-      value = sliderValue.floatValue,
-      onValueChange = { sliderValue.floatValue = it },
-      valueRange = 5f..50f,
-      steps = 45,
-      modifier = Modifier.padding(horizontal = 16.dp).testTag("priceSlider"))
-
-  val priceDifference = averagePrice - sliderValue.floatValue.toInt()
-  if (priceDifference >= 0) {
-    Text(
-        "Your price is ${sliderValue.floatValue.toInt()}.-, which is $priceDifference.- less than the average.",
-        modifier = Modifier.testTag("priceDifferenceLow"))
-  } else {
-    Text(
-        "Your price is ${sliderValue.floatValue.toInt()}.-, which is ${-priceDifference}.- more than the average.",
-        modifier = Modifier.testTag("priceDifferenceHigh"))
   }
 }

@@ -1,6 +1,5 @@
 package com.github.se.project
 
-import HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +25,7 @@ import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.ui.overview.HomeScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule

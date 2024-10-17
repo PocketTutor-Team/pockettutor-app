@@ -33,7 +33,7 @@ val OutlineLight = Color(0xFFBDBDBD) // Light gray for outlines
 val OutlineVariantLight = Color(0xFFE0E0E0) // Light outline variant
 val ScrimLight = Color(0x66000000) // Semi-transparent black for modals
 
-val SurfaceBrightLight = Color(0xFFF8F8F8) // Brighter surface
+val SurfaceBrightLight = Color(0xFFE9D7FE) // Brighter surface
 val SurfaceContainerLight = Color(0xFFE1E2E1) // Container color for surfaces
 val SurfaceContainerHighLight = Color(0xFFD5D7D6) // High contrast container
 val SurfaceContainerHighestLight = Color(0xFFCCCCCC) // Highest contrast container
@@ -46,8 +46,8 @@ val ElevatedSurfaceLight = Color(0xFFEDE7F6) // Light purple for elevated surfac
 
 // Dark Theme Colors
 val PrimaryDark = Color(0xFFBA68C8) // Soft Violet
-val PrimaryDarkVariant = Color(0xFF8E24AA) // Deep Violet
-val OnPrimaryDark = Color(0xFF000000) // Black text on primary
+val PrimaryDarkVariant = Color(0xFFE478FA) // light fushia
+val OnPrimaryDark = Color(0xFFFFFFFF) // Black text on primary
 
 val SecondaryDark = Color(0xFFBA68C8) // Soft Pink
 val SecondaryDarkVariant = Color(0xFFA179D9) // light voilet
@@ -57,10 +57,10 @@ val TertiaryDark = Color(0xFFFFD54F) // Accent Yellow
 val TertiaryDarkVariant = Color(0xFFFFC107) // Deep Accent Yellow
 val OnTertiaryDark = Color(0xFF000000) // Black text on tertiary
 
-val BackgroundDark = Color(0xFF121212) // Very dark gray background
+val BackgroundDark = Color(0xFF0C111D) // Very dark gray background
 val OnBackgroundDark = Color(0xFFFFFFFF) // White text on dark background
 
-val SurfaceDark = Color(0xFF1E1E1E) // Dark surface
+val SurfaceDark = Color(0xFF533676) // Dark surface
 val OnSurfaceDark = Color(0xFFE0E0E0) // Lighter text on dark surface
 
 val InverseSurfaceDark = Color(0xFF8E24AA) // Inverse surface (violet)
@@ -71,17 +71,19 @@ val OnErrorDark = Color(0xFF000000) // Black text on error
 val ErrorContainerDark = Color(0xFFB71C1C) // Dark red container
 val OnErrorContainerDark = Color(0xFFFFCDD2) // Light red text on error container
 
-val OutlineDark = Color(0xFF424242) // Dark gray for outlines
-val OutlineVariantDark = Color(0xFF616161) // Dark outline variant
-val ScrimDark = Color(0x66000000) // Semi-transparent black for modals
+val OutlineDark = Color(0xFF5C4E79) // Dark purple for outlines
+val OutlineVariantDark = Color(0xFF7D669B) // Dark outline variant with purple tones
+val ScrimDark = Color(0x663F2C64) // Semi-transparent dark purple for modals
 
-val SurfaceBrightDark = Color(0xFF2D2D2D) // Brighter surface
-val SurfaceContainerDark = Color(0xFF3E3E3E) // Container color for surfaces
-val SurfaceContainerHighDark = Color(0xFF4A4A4A) // High contrast container
-val SurfaceContainerHighestDark = Color(0xFF616161) // Highest contrast container
-val SurfaceContainerLowDark = Color(0xFF2B2B2B) // Low contrast container
-val SurfaceContainerLowestDark = Color(0xFF1C1C1C) // Lowest contrast container
-val SurfaceDimDark = Color(0xFF424242) // Dimmed surface
+val SurfaceBrightDark = Color(0xFF4A3166) // Brighter purple surface
+val SurfaceContainerDark = Color(0xFF533676) // Container color for surfaces with a deep purple
+val SurfaceContainerHighDark =
+    Color(0xFF6A4A87) // High contrast container in a stronger purple tone
+val SurfaceContainerHighestDark = Color(0xFF7D5A9E) // Highest contrast container with deep purple
+val SurfaceContainerLowDark = Color(0xFF3F2C64) // Low contrast container with a muted purple
+val SurfaceContainerLowestDark =
+    Color(0xFF2D1F49) // Lowest contrast container with a very dark purple
+val SurfaceDimDark = Color(0xFF5C4E79) // Dimmed surface in dark purple
 
 // Elevated surfaces
-val ElevatedSurfaceDark = Color(0xFF4E4E4E) // Darker gray for elevated surfaces
+val ElevatedSurfaceDark = Color(0xFF6F5090) // Darker purple for elevated surfaces
