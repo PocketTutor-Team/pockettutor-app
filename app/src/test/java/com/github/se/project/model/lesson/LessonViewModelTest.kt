@@ -1,8 +1,6 @@
 package com.github.se.project.model.lesson
 
-import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonStatus
-import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.model.profile.Subject
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -24,7 +22,7 @@ class LessonViewModelTest {
           id = "1",
           title = "Physics Tutoring",
           description = "Mechanics and Thermodynamics",
-          subject = TutoringSubject.PHYSICS,
+          subject = Subject.PHYSICS,
           tutorUid = "tutor123",
           studentUid = "student123",
           minPrice = 20.0,

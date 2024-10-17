@@ -1,9 +1,9 @@
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.android.sample.model.lesson.Lesson
-import com.android.sample.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepositoryFirestore
-import com.github.se.project.model.profile.TutoringSubject
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
@@ -36,7 +36,7 @@ class LessonRepositoryFirestoreTest {
           id = "1",
           title = "Physics Tutoring",
           description = "Mechanics",
-          subject = TutoringSubject.PHYSICS,
+          subject = Subject.PHYSICS,
           tutorUid = "tutor123",
           studentUid = "student123",
           minPrice = 20.0,
@@ -116,7 +116,7 @@ class LessonRepositoryFirestoreTest {
 
     assert(result != null)
     assert(result!!.title == "Physics Tutoring")
-    assert(result.subject == TutoringSubject.PHYSICS)
+    assert(result.subject == Subject.PHYSICS)
     assert(result.minPrice == 20.0)
     assert(result.maxPrice == 40.0)
     assert(result.status == LessonStatus.PENDING)
