@@ -242,7 +242,6 @@ fun CreateProfileScreen(
                           "Please select a section and an academic level from the dropdown menu!",
                           Toast.LENGTH_SHORT)
                       .show()
-                  return@Button
                 } catch (e: FirebaseFirestoreException) {
                   Toast.makeText(
                           context,
