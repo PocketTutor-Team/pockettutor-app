@@ -28,7 +28,7 @@ class ListToDosViewModelTest {
           section = Section.GM,
           academicLevel = AcademicLevel.MA2,
           languages = EnumSet.of(Language.ENGLISH),
-          subjects = EnumSet.of(TutoringSubject.ALGEBRA),
+          subjects = EnumSet.of(Subject.ALGEBRA),
           schedule =
               List(7) { day ->
                 List(12) {
