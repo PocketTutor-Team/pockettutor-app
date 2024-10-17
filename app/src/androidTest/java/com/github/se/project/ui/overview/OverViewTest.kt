@@ -103,7 +103,7 @@ class HomeScreenTest {
     composeTestRule.setContent {
       HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
-    composeTestRule.onNodeWithTag("homeScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertIsDisplayed()
   }
 
@@ -161,6 +161,6 @@ class HomeScreenTest {
     }
 
     // Verify the message indicating no lessons scheduled is displayed
-    composeTestRule.onNodeWithTag("noLessonText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
   }
 }

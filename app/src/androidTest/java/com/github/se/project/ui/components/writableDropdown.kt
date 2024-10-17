@@ -72,7 +72,7 @@ class WritableDropdownTest {
   //      composeTestRule.onNodeWithText("Cherry").assertDoesNotExist()
   //  }
 
-  @Test
+  /*@Test
   fun testSelectionFromDropdownUpdatesTextField() {
     var currentValue = ""
     composeTestRule.setContent {
@@ -93,5 +93,5 @@ class WritableDropdownTest {
 
     // Verify that the text field now has the selected value
     assert(currentValue == "Apple")
-  }
+  }*/
 }

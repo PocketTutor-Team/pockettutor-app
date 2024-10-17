@@ -16,7 +16,7 @@ class LessonTest {
     assertEquals("", lesson.id)
     assertEquals("", lesson.title)
     assertEquals("", lesson.description)
-    assertEquals(Subject.PHYSICS, lesson.subject)
+    assertEquals(Subject.NONE, lesson.subject)
     assertEquals("", lesson.tutorUid)
     assertEquals("", lesson.studentUid)
     assertEquals(0.0, lesson.minPrice)

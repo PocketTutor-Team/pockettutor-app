@@ -56,7 +56,7 @@ fun HomeScreen(
   Scaffold(
       topBar = {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("topBarRow"),
+            modifier = Modifier.testTag("topBar").fillMaxWidth().padding(16.dp).testTag("topBarRow"),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
