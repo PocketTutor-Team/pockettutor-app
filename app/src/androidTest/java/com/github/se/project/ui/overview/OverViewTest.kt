@@ -1,6 +1,5 @@
 package com.github.se.project.ui.overview
 
-import HomeScreen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.lesson.Lesson
@@ -56,25 +55,25 @@ class HomeScreenTest {
               title = "Physics Tutoring",
               description = "Mechanics and Thermodynamics",
               subject = Subject.PHYSICS,
+              languages = listOf(Language.ENGLISH),
               tutorUid = "tutor123",
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
-              status = LessonStatus.PENDING,
-              language = "ENGLISH"),
+              status = LessonStatus.PENDING),
           Lesson(
               id = "2",
               title = "Math Tutoring",
               description = "Algebra and Calculus",
               subject = Subject.ANALYSIS,
+              languages = listOf(Language.ENGLISH),
               tutorUid = "tutor123",
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.PENDING,
-              language = "ENGLISH"))
+              status = LessonStatus.PENDING))
   private val currentUserLessonsFlow = MutableStateFlow<List<Lesson>>(mockLessons)
 
   @Before

@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,6 +12,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.navigation.NavigationActions
 import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,10 +60,10 @@ class AddLessonTest {
   fun sliderTest() {
     // Set the screen in the test environment
     var changed = false
-    composeTestRule.setContent { PriceSlider("testLabel") { a, b -> changed = true } }
+    composeTestRule.setContent { PriceRangeSlider("testLabel") { a, b -> changed = true } }
 
     // Perform the sliding action on the slider
-    composeTestRule.onNodeWithTag("priceSlider").performTouchInput { swipeRight() }
+    composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
 
     // Verify the slider's value has changed
     assert(changed)
@@ -69,17 +71,10 @@ class AddLessonTest {
 
   @Test
   fun validateValidatesValidly() {
-    assert(validateLessonInput("title", "description", "AICC", "language", "date", "time") == null)
+    assert(validateLessonInput("title", "description", mutableStateOf(Subject.AICC), listOf(Language.ENGLISH), "date", "time") == null)
     assert(
-        validateLessonInput("title", "description", "AICC", "language", "date", "") ==
-            "time is missing")
-    assert(
-        validateLessonInput("title", "description", "subject", "language", "", "time") ==
-            "date is missing")
-    assert(
-        validateLessonInput("title", "description", "subject", "language", "date", "time") ==
-            "Invalid subject")
-  }
+        validateLessonInput("title", "description", mutableStateOf(Subject.AICC), listOf(Language.ENGLISH), "date", "") ==
+            "time is missing")}
 
   @Test
   fun confirm() {

@@ -2,6 +2,7 @@ package com.github.se.project.ui.profile
 
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
@@ -22,7 +23,7 @@ class LessonTest {
     assertEquals(0.0, lesson.maxPrice)
     assertEquals("", lesson.timeSlot)
     assertEquals(LessonStatus.PENDING, lesson.status)
-    assertEquals("", lesson.language)
+    assertEquals(listOf<Language>(), lesson.languages)
   }
 
   @Test
@@ -39,7 +40,8 @@ class LessonTest {
             maxPrice = 100.0,
             timeSlot = "2024-10-10T10:00:00",
             status = LessonStatus.CONFIRMED,
-            language = "EN")
+            languages = listOf(Language.ENGLISH)
+        )
     assertEquals("1", lesson.id)
     assertEquals("Kotlin Basics", lesson.title)
     assertEquals("Introduction to Kotlin", lesson.description)
@@ -50,7 +52,7 @@ class LessonTest {
     assertEquals(100.0, lesson.maxPrice)
     assertEquals("2024-10-10T10:00:00", lesson.timeSlot)
     assertEquals(LessonStatus.CONFIRMED, lesson.status)
-    assertEquals("EN", lesson.language)
+    assertEquals(listOf(Language.ENGLISH), lesson.languages)
   }
 
   @Test

@@ -135,7 +135,7 @@ fun AddLessonScreen(
   Scaffold(
       topBar = {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
+            modifier = Modifier.testTag("topRow").fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
@@ -151,7 +151,7 @@ fun AddLessonScreen(
       },
       content = { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(paddingValues),
+            modifier = Modifier.testTag("bigColumn").fillMaxSize().padding(horizontal = 24.dp).padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Text(
                   "Give a title and add a description to your lesson",
@@ -162,7 +162,7 @@ fun AddLessonScreen(
                   onValueChange = { title = it },
                   label = { Text("Give a title to this lesson") },
                   placeholder = { Text("You can write what the lesson is about in short") },
-                  modifier = Modifier.fillMaxWidth().testTag("TitleField"),
+                  modifier = Modifier.fillMaxWidth().testTag("titleField"),
                   singleLine = true)
 
               OutlinedTextField(
@@ -233,7 +233,7 @@ fun AddLessonScreen(
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("ConfirmButton"),
+            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = onConfirm) {
               Text("Confirm your request")
