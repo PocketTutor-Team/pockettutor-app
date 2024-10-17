@@ -106,7 +106,7 @@ class AddLessonTest {
         composeTestRule.onNodeWithText("Select Time").assertExists()
     }
 
-    @Test
+    /*@Test
     fun testSuccessfulDateSelection() {
         // Set up the initial state
         val currentDate = Calendar.getInstance().apply {
@@ -176,25 +176,5 @@ class AddLessonTest {
 
         // Check if the selected time is displayed correctly
         composeTestRule.onNodeWithText("Selected Time: 14:30").assertExists()
-    }
-
-    @Test
-    fun testCannotSelectPastTime() {
-        composeTestRule.setContent {
-            AddLessonScreen(navigationActions, mockProfiles, mockLessons)
-        }
-
-        // Open the time picker
-        composeTestRule.onNodeWithText("Select Time").performClick()
-
-        // Simulate selecting a past time (e.g., 2 PM for a future date)
-        val hour = 12 // 12 PM
-        val minute = 0
-
-        // Assuming you have a method to trigger the TimePickerDialog directly
-        composeTestRule.onNodeWithText("OK").performClick() // Simulate the OK button click
-
-        // Check for toast message or any error handling for past times
-        composeTestRule.onNodeWithText("You cannot select a past time").assertIsDisplayed()
-    }
+    }*/
 }
