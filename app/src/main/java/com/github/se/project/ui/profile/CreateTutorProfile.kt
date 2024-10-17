@@ -131,26 +131,28 @@ fun SubjectsSelector(
         expanded = expandedSubjectDropdown.value,
         onDismissRequest = { expandedSubjectDropdown.value = false },
         modifier = Modifier.fillMaxWidth()) {
-          subjects.forEach { subject ->
-            val isSelected = selectedSubjects.contains(subject)
-            DropdownMenuItem(
-                text = {
-                  Row {
-                    if (isSelected) {
-                      Icon(Icons.Filled.Check, contentDescription = null)
-                    }
-                    Text(subject.name.lowercase())
-                  }
-                },
-                onClick = {
-                  if (isSelected) {
-                    selectedSubjects.remove(subject)
-                  } else {
-                    selectedSubjects.add(subject)
-                  }
-                },
-                modifier = Modifier.testTag("dropdown${subject.name}"))
-          }
+          subjects
+              .filter { it != Subject.NONE }
+              .forEach { subject ->
+                val isSelected = selectedSubjects.contains(subject)
+                DropdownMenuItem(
+                    text = {
+                      Row {
+                        if (isSelected) {
+                          Icon(Icons.Filled.Check, contentDescription = null)
+                        }
+                        Text(subject.name.lowercase())
+                      }
+                    },
+                    onClick = {
+                      if (isSelected) {
+                        selectedSubjects.remove(subject)
+                      } else {
+                        selectedSubjects.add(subject)
+                      }
+                    },
+                    modifier = Modifier.testTag("dropdown${subject.name}"))
+              }
         }
   }
 }
