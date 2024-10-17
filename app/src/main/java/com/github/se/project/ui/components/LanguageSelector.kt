@@ -38,7 +38,7 @@ fun LanguageSelector(selectedLanguages: MutableList<Language>) {
                 Checkbox(
                     checked = selectedLanguages.contains(language),
                     onCheckedChange = { isSelected ->
-                      if (isSelected) {
+                      if (!selectedLanguages.contains(language)) {
                         selectedLanguages.add(language)
                       } else {
                         selectedLanguages.remove(language)
