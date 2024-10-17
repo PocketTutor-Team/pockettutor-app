@@ -47,7 +47,7 @@ class ProfileRepositoryTest {
           section = Section.IN,
           academicLevel = AcademicLevel.MA1,
           languages = EnumSet.of(Language.ENGLISH),
-          subjects = EnumSet.of(TutoringSubject.ALGEBRA),
+          subjects = EnumSet.of(Subject.ALGEBRA),
           schedule = List(7) { List(12) { 1 } },
           price = 20)
 
@@ -261,5 +261,489 @@ class ProfileRepositoryTest {
         studentProfile.uid, { fail("Success callback should not be called") }, { assert(true) })
 
     shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  @Test
+  fun profileToMap_returnCorrectTutorMap() {
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("profileToMap", Profile::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    val profileAsMap = method.invoke(profileRepositoryFirestore, tutorProfile) as Map<String, Any>
+
+    assert(profileAsMap["uid"] == tutorProfile.uid)
+    assert(profileAsMap["googleUid"] == tutorProfile.googleUid)
+    assert(profileAsMap["firstName"] == tutorProfile.firstName)
+    assert(profileAsMap["lastName"] == tutorProfile.lastName)
+    assert(profileAsMap["phoneNumber"] == tutorProfile.phoneNumber)
+    assert(profileAsMap["role"] == tutorProfile.role.toString())
+    assert(profileAsMap["section"] == tutorProfile.section.toString())
+    assert(profileAsMap["academicLevel"] == tutorProfile.academicLevel.toString())
+    assert(profileAsMap["languages"] == tutorProfile.languages.map { it.toString() })
+    assert(profileAsMap["subjects"] == tutorProfile.subjects.map { it.toString() })
+    assert(profileAsMap["schedule"] == tutorProfile.schedule.flatten())
+    assert(profileAsMap["price"] == tutorProfile.price)
+  }
+
+  @Test
+  fun profileToMap_returnCorrectStudentMap() {
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("profileToMap", Profile::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    val profileAsMap = method.invoke(profileRepositoryFirestore, studentProfile) as Map<String, Any>
+
+    assert(profileAsMap["uid"] == studentProfile.uid)
+    assert(profileAsMap["googleUid"] == studentProfile.googleUid)
+    assert(profileAsMap["firstName"] == studentProfile.firstName)
+    assert(profileAsMap["lastName"] == studentProfile.lastName)
+    assert(profileAsMap["phoneNumber"] == studentProfile.phoneNumber)
+    assert(profileAsMap["role"] == studentProfile.role.toString())
+    assert(profileAsMap["section"] == studentProfile.section.toString())
+    assert(profileAsMap["academicLevel"] == studentProfile.academicLevel.toString())
+    assert(profileAsMap["languages"] == studentProfile.languages.map { it.toString() })
+    assert(profileAsMap["subjects"] == studentProfile.subjects.map { it.toString() })
+    assert(profileAsMap["schedule"] == studentProfile.schedule.flatten())
+    assert(profileAsMap["price"] == studentProfile.price)
+  }
+
+  @Test
+  fun documentToProfile_returnCorrectTutorProfile() {
+    `when`(mockDocumentSnapshot.id).thenReturn(tutorProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(tutorProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(tutorProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(tutorProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(tutorProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(tutorProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(tutorProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(tutorProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages"))
+        .thenReturn(tutorProfile.languages.map { it.toString() })
+    `when`(mockDocumentSnapshot.get("subjects"))
+        .thenReturn(tutorProfile.subjects.map { it.toString() })
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(tutorProfile.schedule.flatten())
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(tutorProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+
+    assert(profile.uid == tutorProfile.uid)
+    assert(profile.googleUid == tutorProfile.googleUid)
+    assert(profile.firstName == tutorProfile.firstName)
+    assert(profile.lastName == tutorProfile.lastName)
+    assert(profile.phoneNumber == tutorProfile.phoneNumber)
+    assert(profile.role == tutorProfile.role)
+    assert(profile.section == tutorProfile.section)
+    assert(profile.academicLevel == tutorProfile.academicLevel)
+    assert(profile.languages == tutorProfile.languages)
+    assert(profile.subjects == tutorProfile.subjects)
+    assert(profile.schedule == tutorProfile.schedule)
+    assert(profile.price == tutorProfile.price)
+  }
+
+  @Test
+  fun documentToProfile_returnCorrectStudentProfile() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(null)
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+
+    assert(profile.uid == studentProfile.uid)
+    assert(profile.googleUid == studentProfile.googleUid)
+    assert(profile.firstName == studentProfile.firstName)
+    assert(profile.lastName == studentProfile.lastName)
+    assert(profile.phoneNumber == studentProfile.phoneNumber)
+    assert(profile.role == studentProfile.role)
+    assert(profile.section == studentProfile.section)
+    assert(profile.academicLevel == studentProfile.academicLevel)
+    assert(profile.languages == studentProfile.languages)
+    assert(profile.subjects == studentProfile.subjects)
+    assert(profile.schedule == studentProfile.schedule)
+    assert(profile.price == studentProfile.price)
+  }
+
+  @Test
+  fun documentToProfile_NoUid_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoGoogleUid_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoFirstName_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoLastName_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoPhoneNb_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoRole_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_FalseRole_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn("ANYONE")
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoSection_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_FalseSection_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn("ANYWHERE")
+    `when`(mockDocumentSnapshot.getString("academicLevel"))
+        .thenReturn(studentProfile.academicLevel.toString())
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_NoLevel_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
+  }
+
+  @Test
+  fun documentToProfile_FalseLevel_throwException() {
+    `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
+    `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
+    `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
+    `when`(mockDocumentSnapshot.getString("phoneNumber")).thenReturn(studentProfile.phoneNumber)
+    `when`(mockDocumentSnapshot.getString("role")).thenReturn(studentProfile.role.toString())
+    `when`(mockDocumentSnapshot.getString("section")).thenReturn(studentProfile.section.toString())
+    `when`(mockDocumentSnapshot.getString("academicLevel")).thenReturn("SOMETHING")
+    `when`(mockDocumentSnapshot.get("languages")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("subjects")).thenReturn(null)
+    `when`(mockDocumentSnapshot.get("schedule")).thenReturn(null)
+    `when`(mockDocumentSnapshot.getLong("price")).thenReturn(studentProfile.price.toLong())
+
+    // Use reflection to access the private method
+    val method =
+        ProfilesRepositoryFirestore::class
+            .java
+            .getDeclaredMethod("documentToProfile", DocumentSnapshot::class.java)
+    method.isAccessible = true
+
+    // Invoke the method and get the result
+    try {
+      val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
+      fail("Should throw exception")
+    } catch (e: Exception) {
+      assert(true)
+    }
   }
 }
