@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,13 +47,12 @@ fun AddLessonScreen(
   var description by remember { mutableStateOf("") }
   var subject by remember { mutableStateOf("") }
   var language by remember { mutableStateOf("") }
-  var minPrice by remember { mutableStateOf(0.0) }
-  var maxPrice by remember { mutableStateOf(0.0) }
+  var minPrice by remember { mutableDoubleStateOf(5.0) }
+  var maxPrice by remember { mutableDoubleStateOf(50.0) }
   val calendar = Calendar.getInstance()
-    val currentDateTime = Calendar.getInstance()
+  val currentDateTime = Calendar.getInstance()
 
-
-    val profile = listProfilesViewModel.currentProfile.collectAsState()
+  val profile = listProfilesViewModel.currentProfile.collectAsState()
 
   // Context for the Toast messages
   val context = LocalContext.current
@@ -94,31 +94,32 @@ fun AddLessonScreen(
     }
   }
 
-    // Date Picker
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
+  // Date Picker
+  val datePickerDialog =
+      DatePickerDialog(
+          context,
+          { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(year, month, dayOfMonth)
 
             if (selectedCalendar.before(currentDateTime)) {
-                Toast.makeText(context, "You cannot select a past date", Toast.LENGTH_SHORT).show()
+              Toast.makeText(context, "You cannot select a past date", Toast.LENGTH_SHORT).show()
             } else {
-                selectedDate = "$dayOfMonth/${month + 1}/$year"
+              selectedDate = "$dayOfMonth/${month + 1}/$year"
             }
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
+          },
+          calendar.get(Calendar.YEAR),
+          calendar.get(Calendar.MONTH),
+          calendar.get(Calendar.DAY_OF_MONTH))
 
-    // Restrict date picker to future dates only
-    datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
+  // Restrict date picker to future dates only
+  datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
 
-    // Time Picker
-    val timePickerDialog = TimePickerDialog(
-        context,
-        { _, hourOfDay, minute ->
+  // Time Picker
+  val timePickerDialog =
+      TimePickerDialog(
+          context,
+          { _, hourOfDay, minute ->
             val formattedHour = if (hourOfDay < 10) "0$hourOfDay" else hourOfDay.toString()
             val formattedMinute = if (minute < 10) "0$minute" else minute.toString()
 
@@ -128,18 +129,18 @@ fun AddLessonScreen(
             selectedCalendar.set(Calendar.MINUTE, minute)
 
             // Check if the selected date is the current date and the selected time is in the past
-            if (selectedDate == "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}" &&
-                selectedCalendar.before(currentDateTime)
-            ) {
-                Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
+            if (selectedDate ==
+                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}" &&
+                selectedCalendar.before(currentDateTime)) {
+              Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
             } else {
-                selectedTime = "$formattedHour:$formattedMinute"
+              selectedTime = "$formattedHour:$formattedMinute"
             }
-        },
-        calendar.get(Calendar.HOUR_OF_DAY),
-        calendar.get(Calendar.MINUTE),
-        true // 24-hour format
-    )
+          },
+          calendar.get(Calendar.HOUR_OF_DAY),
+          calendar.get(Calendar.MINUTE),
+          true // 24-hour format
+          )
 
   Scaffold(
       topBar = {
