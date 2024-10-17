@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,
  * addition, and deletion of lessons.
  */
-class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
+open class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
   private val currentUserLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
   val currentUserLessons: StateFlow<List<Lesson>> = currentUserLessons_.asStateFlow()
