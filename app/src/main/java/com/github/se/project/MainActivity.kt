@@ -1,5 +1,6 @@
 package com.github.se.project
 
+import HomeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -91,7 +92,7 @@ fun PocketTutorApp() {
       // }
 
       composable(Screen.HOME) {
-        Greeting("Android") // TODO: Replace with HomeScreen
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
@@ -108,6 +109,40 @@ fun PocketTutorApp() {
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
+    }
+
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.FIND_STUDENT,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.HOME,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
+        startDestination = Screen.ADD_LESSON,
+        route = Route.FIND_TUTOR,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      // composable(Screen.EDIT_LESSON) {
+      //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      // }
+
     }
   }
 }

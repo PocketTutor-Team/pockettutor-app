@@ -17,5 +17,4 @@ data class Profile(
     val subjects: EnumSet<Subject> = EnumSet.noneOf(Subject::class.java),
     val schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
     var price: Int = 0,
-    // TODO: profile picture
 )
