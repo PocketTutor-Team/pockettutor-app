@@ -70,10 +70,11 @@ class WritableDropdownTest {
       // Enter a value and open the dropdown
       composeTestRule.onNodeWithText("Select Item").performClick()
       composeTestRule.waitForIdle()
-      composeTestRule.onNodeWithText("Choose an option").performTextInput("a")
+      composeTestRule.onNodeWithTag("dropdown").performTextInput("a")
       composeTestRule.waitForIdle()
       // Check that the filtered dropdown displays only the correct choices
       composeTestRule.onNodeWithTag("item_Apple").assertIsDisplayed()
+      composeTestRule.waitForIdle()
       composeTestRule.onNodeWithText("Banana").assertIsNotDisplayed()
       composeTestRule.onNodeWithText("Cherry").assertIsNotDisplayed()
   }

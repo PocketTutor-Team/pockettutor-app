@@ -36,7 +36,7 @@ fun WritableDropdown(
         },
         label = { Text(label) },
         placeholder = { Text(placeholder) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.testTag("dropdown").fillMaxWidth(),
         singleLine = true)
 
     DropdownMenu(
