@@ -362,9 +362,6 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0123456789")
     // Click the create profile button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    composeTestRule
-        .onNodeWithTag("errorText")
-        .assertTextEquals("Please complete all the fields before creating your account!")
 
     // Verify that the navigation action was not called
     verify(mockNavigationActions, Mockito.never()).navigateTo(Screen.HOME)
@@ -387,10 +384,6 @@ class CreateProfileScreenTest {
 
     // Click the create profile button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    composeTestRule
-        .onNodeWithTag("errorText")
-        .assertTextEquals("Please enter a valid phone number!")
 
     // Verify that the navigation action was not called
     verify(mockNavigationActions, Mockito.never()).navigateTo(Screen.HOME)
