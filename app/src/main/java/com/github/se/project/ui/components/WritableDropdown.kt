@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 
@@ -49,6 +50,7 @@ fun WritableDropdown(
               .forEach { v ->
                 DropdownMenuItem(
                     text = { Text(v) },
+                    modifier = Modifier.testTag("item_$v"),
                     onClick = {
                       onValueChange(v)
                       expanded = false

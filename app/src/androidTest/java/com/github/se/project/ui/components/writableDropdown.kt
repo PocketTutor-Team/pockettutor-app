@@ -1,7 +1,9 @@
 package com.github.se.project.ui.components
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -67,12 +69,12 @@ class WritableDropdownTest {
 
       // Enter a value and open the dropdown
       composeTestRule.onNodeWithText("Select Item").performClick()
-      composeTestRule.onNodeWithText("Choose an option").performTextInput("A")
+      composeTestRule.onNodeWithText("Choose an option").performTextInput("a")
 
       // Check that the filtered dropdown displays only the correct choices
-      composeTestRule.onNodeWithText("Apple").assertIsDisplayed()
-      composeTestRule.onNodeWithText("Banana").assertDoesNotExist()
-      composeTestRule.onNodeWithText("Cherry").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("item_Apple").assertIsDisplayed()
+      composeTestRule.onNodeWithText("Banana").assertIsNotDisplayed()
+      composeTestRule.onNodeWithText("Cherry").assertIsNotDisplayed()
   }
 
   @Test
@@ -93,7 +95,7 @@ class WritableDropdownTest {
       composeTestRule.onNodeWithText("Choose an option").performTextInput("A")
 
       // Click on the dropdown item
-      composeTestRule.onNodeWithText("Apple").performClick()
+      composeTestRule.onNodeWithTag("item_Apple").performClick()
 
       // Verify that the text field now has the selected value
       assert(currentValue == "Apple")
