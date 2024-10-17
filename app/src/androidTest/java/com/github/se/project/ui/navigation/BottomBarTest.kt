@@ -14,47 +14,36 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class BottomBarTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Test
-    fun bottomNavigationMenu_displaysTabs() {
-        val tabList = listOf(
+  @Test
+  fun bottomNavigationMenu_displaysTabs() {
+    val tabList =
+        listOf(
             TopLevelDestination("home", Icons.Default.Home, "Home"),
             TopLevelDestination("search", Icons.Default.Search, "Search"),
-            TopLevelDestination("profile", Icons.Default.Person, "Profile")
-        )
+            TopLevelDestination("profile", Icons.Default.Person, "Profile"))
 
-        composeTestRule.setContent {
-            BottomNavigationMenu(
-                onTabSelect = {},
-                tabList = tabList,
-                selectedItem = "home"
-            )
-        }
-
-        tabList.forEach { tab ->
-            composeTestRule.onNodeWithTag(tab.textId).assertIsDisplayed()
-        }
+    composeTestRule.setContent {
+      BottomNavigationMenu(onTabSelect = {}, tabList = tabList, selectedItem = "home")
     }
 
-    @Test
-    fun bottomNavigationMenu_highlightsSelectedTab() {
-        val tabList = listOf(
+    tabList.forEach { tab -> composeTestRule.onNodeWithTag(tab.textId).assertIsDisplayed() }
+  }
+
+  @Test
+  fun bottomNavigationMenu_highlightsSelectedTab() {
+    val tabList =
+        listOf(
             TopLevelDestination("home", Icons.Default.Home, "Home"),
             TopLevelDestination("search", Icons.Default.Search, "Search"),
-            TopLevelDestination("profile", Icons.Default.Person, "Profile")
-        )
+            TopLevelDestination("profile", Icons.Default.Person, "Profile"))
 
-        composeTestRule.setContent {
-            BottomNavigationMenu(
-                onTabSelect = {},
-                tabList = tabList,
-                selectedItem = "search"
-            )
-        }
-
-        composeTestRule.onNodeWithTag("Search").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("Search").assertIsSelected()
+    composeTestRule.setContent {
+      BottomNavigationMenu(onTabSelect = {}, tabList = tabList, selectedItem = "search")
     }
+
+    composeTestRule.onNodeWithTag("Search").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Search").assertIsSelected()
+  }
 }

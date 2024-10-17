@@ -154,7 +154,8 @@ fun AddLessonScreen(
       },
       content = { paddingValues ->
         Column(
-            modifier = Modifier.testTag("bigColumn").fillMaxSize().padding(16.dp).padding(paddingValues),
+            modifier =
+                Modifier.testTag("bigColumn").fillMaxSize().padding(16.dp).padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               OutlinedTextField(
                   value = title,
@@ -174,7 +175,9 @@ fun AddLessonScreen(
                   modifier = Modifier.testTag("descriptionField").fillMaxWidth(),
                   singleLine = true)
 
-              Text("Select the desired date and time for the lesson", Modifier.testTag("dateTimeText"))
+              Text(
+                  "Select the desired date and time for the lesson",
+                  Modifier.testTag("dateTimeText"))
               Button(onClick = { datePickerDialog.show() }) {
                 Text(if (selectedDate.isEmpty()) "Select Date" else "Selected Date: $selectedDate")
               }
@@ -208,9 +211,11 @@ fun AddLessonScreen(
             }
       },
       bottomBar = {
-        Button(modifier = Modifier.testTag("confirmButton").fillMaxWidth().padding(16.dp), onClick = onConfirm) {
-          Text("Confirm your details")
-        }
+        Button(
+            modifier = Modifier.testTag("confirmButton").fillMaxWidth().padding(16.dp),
+            onClick = onConfirm) {
+              Text("Confirm your details")
+            }
       })
 }
 
