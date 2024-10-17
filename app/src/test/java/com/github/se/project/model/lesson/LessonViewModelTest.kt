@@ -24,7 +24,7 @@ class LessonViewModelTest {
           title = "Physics Tutoring",
           description = "Mechanics and Thermodynamics",
           subject = Subject.PHYSICS,
-        languages = listOf(Language.ENGLISH),
+          languages = listOf(Language.ENGLISH),
           tutorUid = "tutor123",
           studentUid = "student123",
           minPrice = 20.0,
