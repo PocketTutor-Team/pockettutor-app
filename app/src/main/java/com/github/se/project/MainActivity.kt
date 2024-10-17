@@ -121,6 +121,15 @@ fun PocketTutorApp() {
     }
 
     navigation(
+      startDestination = Screen.HOME,
+      route = Route.HOME,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
         startDestination = Screen.ADD_LESSON,
         route = Route.FIND_TUTOR,
     ) {

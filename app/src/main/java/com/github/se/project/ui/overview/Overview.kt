@@ -102,7 +102,6 @@ fun HomeScreen(
                       // TODO: nagivate to edit lesson screen
                       Toast.makeText(context, "Navigate to EDIT_LESSON screen", Toast.LENGTH_LONG)
                           .show()
-                      // TODO: uncomment the following line once the add lessons feature is
                       // navigationActions.navigateTo(Route.EDIT_LESSON)
                     },
                     modifier = Modifier.padding(vertical = 8.dp))

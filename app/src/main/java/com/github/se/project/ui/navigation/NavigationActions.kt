@@ -37,11 +37,9 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 // Top-level destinations with icons
 object TopLevelDestinations {
   val HOME_TUTOR =
-      TopLevelDestination(
-          route = Route.FIND_STUDENT, icon = Icons.Outlined.Home, textId = "My Work Space")
+      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Work Space")
   val HOME_STUDENT =
-      TopLevelDestination(
-          route = Route.FIND_TUTOR, icon = Icons.Outlined.Home, textId = "My Courses")
+      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
   val STUDENT =
       TopLevelDestination(
           route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find a Tutor")
