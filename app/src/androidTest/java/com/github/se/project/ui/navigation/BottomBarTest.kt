@@ -7,21 +7,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.project.model.profile.AcademicLevel
-import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.TutoringSubject
-import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.test.CreateTutorProfile
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import java.util.EnumSet
 
 @RunWith(AndroidJUnit4::class)
 class BottomBarTest {

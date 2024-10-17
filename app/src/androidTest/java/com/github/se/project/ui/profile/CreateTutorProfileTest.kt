@@ -1,4 +1,4 @@
-package com.github.se.project.ui.test
+package com.github.se.project.ui.profile
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -13,16 +13,12 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.TutoringSubject
 import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.navigation.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import java.util.EnumSet
-import javax.security.auth.Subject
 
 @RunWith(AndroidJUnit4::class)
 class CreateTutorProfileTest {

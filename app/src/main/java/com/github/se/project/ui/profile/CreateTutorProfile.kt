@@ -1,4 +1,4 @@
-package com.github.se.project.ui.test
+package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
