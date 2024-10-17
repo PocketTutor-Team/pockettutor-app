@@ -36,7 +36,6 @@ import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
-
 @Composable
 fun HomeScreen(
     listProfilViewModele: ListProfilesViewModel,
@@ -48,23 +47,21 @@ fun HomeScreen(
   val currentProfile = listProfilViewModele.currentProfile.collectAsState().value
   val lessons = lessonViewModel.currentUserLessons.collectAsState().value
 
-  //lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
-    when (currentProfile?.role) {
-        Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid)
-        Role.STUDENT -> lessonViewModel.getLessonsForStudent(currentProfile.uid)
-        Role.UNKNOWN -> Toast.makeText(context, "Unknown Profil", Toast.LENGTH_SHORT).show()
-        null -> Toast.makeText(context, "null Profil", Toast.LENGTH_SHORT).show()
-    }
-
-    Log.d("current profil", currentProfile?.uid ?: "No user id found")
+  // lessonViewModel.getLessonsByUserId(currentProfile?.uid ?: "")
+  when (currentProfile?.role) {
+    Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid)
+    Role.STUDENT -> lessonViewModel.getLessonsForStudent(currentProfile.uid)
+    Role.UNKNOWN -> Toast.makeText(context, "Unknown Profil", Toast.LENGTH_SHORT).show()
+    null -> Toast.makeText(context, "null Profil", Toast.LENGTH_SHORT).show()
+  }
 
   // Determine which bottom navigation items to show based on the user's role
   val LIST_TOP_LEVEL_DESTINATIONS =
       when (currentProfile?.role) {
         Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
-          Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-          Role.UNKNOWN -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-          null -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+        Role.UNKNOWN -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+        null -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
       }
 
   Scaffold(
@@ -145,7 +142,7 @@ fun LessonItem(
       // Row to display Lesson.timeSlot, currentProfileFirstName, and Lesson.price on the same line
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = currentProfile.academicLevel.toString())
-          //using the lesson.maxPrice
+        // using the lesson.maxPrice
         Text(text = "\$${lesson.maxPrice}")
         Text(text = lesson.timeSlot)
       }

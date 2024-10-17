@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
