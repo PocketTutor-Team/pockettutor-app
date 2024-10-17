@@ -30,7 +30,7 @@ fun CreateTutorProfile(
           ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
 
   val selectedLanguages = remember { mutableStateListOf<Language>() }
-  val selectedSubjects = remember { mutableStateListOf<TutoringSubject>() }
+  val selectedSubjects = remember { mutableStateListOf<Subject>() }
   val expandedSubjectDropdown = remember { mutableStateOf(false) }
   val sliderValue = remember { mutableFloatStateOf(5f) }
   val showError = remember { mutableStateOf(false) }
@@ -148,10 +148,10 @@ fun LanguageSelection(selectedLanguages: MutableList<Language>) {
 
 @Composable
 fun SubjectDropdown(
-    selectedSubjects: MutableList<TutoringSubject>,
+    selectedSubjects: MutableList<Subject>,
     expandedSubjectDropdown: MutableState<Boolean>
 ) {
-  val subjects = TutoringSubject.entries.toTypedArray()
+  val subjects = Subject.entries.toTypedArray()
   Box(modifier = Modifier.fillMaxWidth()) {
     Button(
         onClick = { expandedSubjectDropdown.value = true },
