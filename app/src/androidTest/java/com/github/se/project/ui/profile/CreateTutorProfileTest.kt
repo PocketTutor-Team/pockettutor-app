@@ -20,12 +20,12 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.navigation.NavigationActions
+import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import java.util.EnumSet
 
 @RunWith(AndroidJUnit4::class)
 class CreateTutorProfileTest {
@@ -38,9 +38,6 @@ class CreateTutorProfileTest {
       Mockito.mock(ListProfilesViewModel::class.java).apply {
         Mockito.`when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(null))
       }
-  // list of languages
-  private val languages = Language.entries.toTypedArray()
-  private val subjects = Subject.entries.toTypedArray()
 
   @Test
   fun createTutorProfileScreen_rendersCorrectly() {
