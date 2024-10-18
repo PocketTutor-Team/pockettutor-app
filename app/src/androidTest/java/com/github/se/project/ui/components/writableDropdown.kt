@@ -2,6 +2,7 @@ package com.github.se.project.ui.components
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -47,5 +48,21 @@ class WritableDropdownTest {
 
     // Check that the value is updated
     assert(currentValue == "A")
+  }
+
+  @Test
+  fun testDropdownChoices() {
+    var currentValue = ""
+    composeTestRule.setContent {
+      WritableDropdown(
+          label = "Select Item",
+          placeholder = "Choose an option",
+          value = currentValue,
+          onValueChange = { currentValue = it },
+          choices = listOf("Apple", "Banana", "Cherry"))
+    }
+
+    composeTestRule.onNodeWithTag("dropdown").performTextInput("A")
+    composeTestRule.onNodeWithTag("item_Apple").assertIsDisplayed()
   }
 }
