@@ -1,25 +1,31 @@
 package com.github.se.project.ui.profile
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.swipeRight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.navigation.NavigationActions
-import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.util.EnumSet
 
 @RunWith(AndroidJUnit4::class)
 class CreateTutorProfileTest {
@@ -116,6 +122,23 @@ class CreateTutorProfileTest {
   }
 
   @Test
+  fun selectingSubjectsUpdatesCorrectly() {
+    val subjects = mutableListOf<Subject>()
+    composeTestRule.setContent { SubjectsSelector(subjects) }
+
+    Subject.entries.forEach { subject ->
+      if (subject == Subject.NONE) return@forEach
+      composeTestRule.onNodeWithTag("dropdown${subject.name}").isNotDisplayed()
+    }
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+
+    Subject.entries.forEach { subject ->
+      if (subject == Subject.NONE) return@forEach
+      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
+    }
+  }
+
+  @Test
   fun sliderTextTest() {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
@@ -158,49 +181,5 @@ class CreateTutorProfileTest {
     composeTestRule
         .onNodeWithTag("noProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
-  }
-}
-
-class MockProfilesRepository : ProfilesRepository {
-  private val profiles = mutableListOf<Profile>()
-
-  override fun init(onSuccess: () -> Unit) {
-    onSuccess()
-  }
-
-  override fun getNewUid(): String {
-    return "mockUid"
-  }
-
-  override fun getProfiles(onSuccess: (List<Profile>) -> Unit, onFailure: (Exception) -> Unit) {
-    onSuccess(profiles)
-  }
-
-  override fun addProfile(profile: Profile, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-    profiles.add(profile)
-    onSuccess()
-  }
-
-  override fun updateProfile(
-      profile: Profile,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    val index = profiles.indexOfFirst { it.uid == profile.uid }
-    if (index != -1) {
-      profiles[index] = profile
-      onSuccess()
-    } else {
-      onFailure(Exception("Profile not found"))
-    }
-  }
-
-  override fun deleteProfileById(
-      id: String,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    onSuccess() // This not deleting anything is not a problem: this class is only used to test
-    // adding profiles
   }
 }
