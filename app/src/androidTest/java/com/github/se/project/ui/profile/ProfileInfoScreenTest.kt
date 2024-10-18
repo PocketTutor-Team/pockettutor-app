@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.Lesson
@@ -25,6 +26,8 @@ import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 
@@ -190,5 +193,18 @@ class ProfileInfoScreenTest {
         .onNodeWithTag("errorLoadingProfile")
         .assertIsDisplayed()
         .assertTextEquals("Error loading profile...")
+  }
+
+  @Test
+  fun profileInfoScreenNavigatesBack_whenCloseButtonClicked() {
+    `when`(mockNavigationActions.goBack()).thenAnswer {}
+
+    composeTestRule.setContent { ProfileInfoScreen(navigationActions = mockNavigationActions) }
+
+    // Click the close button
+    composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed().performClick()
+
+    // Verify that the goBack action was called
+    verify(mockNavigationActions).goBack()
   }
 }
