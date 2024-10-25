@@ -57,12 +57,6 @@ fun EditTutorProfile(
         topBar = {
             IconButton(onClick = { navigationActions.goBack() },
                 modifier = Modifier.testTag("closeButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
-            Text(
-                text = "${profile.firstName} ${profile.lastName}",
-                modifier =
-                Modifier.padding(vertical = 32.dp, horizontal = 16.dp).testTag("welcomeText"),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center)
         },
         content = { paddingValues ->
             Column(
@@ -73,14 +67,19 @@ fun EditTutorProfile(
                     .testTag("tutorInfoScreen"),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "Complete your profile by selecting your capabilities:",
+                    text = "${profile.firstName} ${profile.lastName}",
+                    modifier = Modifier,//.padding(vertical = 48.dp, horizontal = 16.dp).testTag("welcomeText"),
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center)
+                Text(
+                    "Modify your profile information:",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.testTag("instructionText"))
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    "What languages do you feel comfortable teaching in?",
+                    "Teaching languages:",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.testTag("languageText"))
                 // Language Selection
@@ -90,7 +89,7 @@ fun EditTutorProfile(
 
                 // Subject Selection
                 Text(
-                    "Which subjects do you teach?",
+                    "Teaching subjects:",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.testTag("subjectText"))
                 SubjectsSelector(selectedSubjects)
@@ -99,14 +98,14 @@ fun EditTutorProfile(
 
                 // Price Selection
                 Text(
-                    "Select your tutoring price per hour:",
+                    "Tutoring price per hour:",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.testTag("priceText"))
                 PriceSlider(sliderValue)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(text = "Select your section", style = MaterialTheme.typography.titleSmall)
+                Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
                 // Section dropdown menu with improved styling
                 Box {
                     Text(
@@ -140,7 +139,7 @@ fun EditTutorProfile(
                     }
                 }
 
-// For academic level
+                Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
                 Box {
                     Text(
                         text = academicLevel.value, // Directly access the value

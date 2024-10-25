@@ -35,11 +35,6 @@ fun EditTutorSchedule(
         topBar = {
             IconButton(onClick = { navigationActions.goBack() },
                 modifier = Modifier.testTag("closeButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
-            Text(
-                text = "${profile.firstName}, show us your availabilities",
-                modifier = Modifier.padding(16.dp).testTag("welcomeText"),
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Start)
         },
         content = { paddingValues ->
             Column(
@@ -48,6 +43,11 @@ fun EditTutorSchedule(
                     .padding(horizontal = 12.dp)
                     .padding(paddingValues)
                     .testTag("availabilityScreen")) {
+                Text(
+                    text = "${profile.firstName}, show us your availabilities",
+                    modifier = Modifier,//.padding(vertical = 0.dp).testTag("welcomeText"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Start)
                 Text(
                     "Modify the time slots you're available during the week:",
                     style = MaterialTheme.typography.bodyLarge,
