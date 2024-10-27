@@ -90,6 +90,12 @@ jobs:
           # To run the CI with debug information, add --info
           ./gradlew assembleDebug lint --parallel --build-cache
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+
       - name: Run tests
         run: |
           # To run the CI with debug information, add --info
