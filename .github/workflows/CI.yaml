@@ -122,6 +122,8 @@ jobs:
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.coverageReportPaths=app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
