@@ -30,179 +30,192 @@ fun EditTutorProfile(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory)
 ) {
-    val profile =
-        listProfilesViewModel.currentProfile.collectAsState().value
-            ?: return Text(
-                text = "No Profile selected. Should not happen.",
-                color = Color.Red,
-                modifier = Modifier.testTag("editTutorNoProfile"))
+  val profile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              color = Color.Red,
+              modifier = Modifier.testTag("editTutorNoProfile"))
 
-    val initialLanguagesList: List<Language> = profile.languages.toList()
-    val selectedLanguages: SnapshotStateList<Language> = remember { mutableStateListOf(*initialLanguagesList.toTypedArray()) }
+  val initialLanguagesList: List<Language> = profile.languages.toList()
+  val selectedLanguages: SnapshotStateList<Language> = remember {
+    mutableStateListOf(*initialLanguagesList.toTypedArray())
+  }
 
-    val initialSubjectsList: List<Subject> = profile.subjects.toList()
-    val selectedSubjects: SnapshotStateList<Subject> = remember { mutableStateListOf(*initialSubjectsList.toTypedArray()) }
+  val initialSubjectsList: List<Subject> = profile.subjects.toList()
+  val selectedSubjects: SnapshotStateList<Subject> = remember {
+    mutableStateListOf(*initialSubjectsList.toTypedArray())
+  }
 
-    val sliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
-    val showError = remember { mutableStateOf(false) }
+  val sliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
+  val showError = remember { mutableStateOf(false) }
 
-    val academicLevel = remember { mutableStateOf(profile.academicLevel.name) }
-    val section = remember { mutableStateOf(profile.section.name) }
-    var expandedSection by remember { mutableStateOf(false) }
-    var expandedAcademicLevel by remember { mutableStateOf(false) }
+  val academicLevel = remember { mutableStateOf(profile.academicLevel.name) }
+  val section = remember { mutableStateOf(profile.section.name) }
+  var expandedSection by remember { mutableStateOf(false) }
+  var expandedAcademicLevel by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            IconButton(onClick = { navigationActions.goBack() },
-                modifier = Modifier.testTag("editTutorProfileCloseButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
-        },
-        content = { paddingValues ->
-            Column(
-                modifier =
+  Scaffold(
+      topBar = {
+        IconButton(
+            onClick = { navigationActions.goBack() },
+            modifier = Modifier.testTag("editTutorProfileCloseButton")) {
+              Icon(
+                  imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                  contentDescription = "Go Back")
+            }
+      },
+      content = { paddingValues ->
+        Column(
+            modifier =
                 Modifier.fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(paddingValues)
                     .testTag("tutorInfoScreen"),
-                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Text(
+                  text = "${profile.firstName} ${profile.lastName}",
+                  modifier =
+                      Modifier, // .padding(vertical = 48.dp, horizontal =
+                                // 16.dp).testTag("welcomeText"),
+                  style = MaterialTheme.typography.headlineMedium,
+                  textAlign = TextAlign.Center)
+              Text(
+                  "Modify your profile information:",
+                  style = MaterialTheme.typography.titleMedium,
+                  modifier = Modifier.testTag("editTutorProfileInstructionText"))
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              Text(
+                  "Teaching languages:",
+                  style = MaterialTheme.typography.titleSmall,
+                  modifier = Modifier.testTag("editTutorProfileLanguageText"))
+              // Language Selection
+              LanguageSelector(selectedLanguages)
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Subject Selection
+              Text(
+                  "Teaching subjects:",
+                  style = MaterialTheme.typography.titleSmall,
+                  modifier = Modifier.testTag("editTutorProfileSubjectText"))
+              SubjectsSelector(selectedSubjects)
+
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Price Selection
+              Text(
+                  "Tutoring price per hour:",
+                  style = MaterialTheme.typography.titleSmall,
+                  modifier = Modifier.testTag("editTutorProfilePriceText"))
+              PriceSlider(sliderValue)
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
+              // Section dropdown menu with improved styling
+              Box {
                 Text(
-                    text = "${profile.firstName} ${profile.lastName}",
-                    modifier = Modifier,//.padding(vertical = 48.dp, horizontal = 16.dp).testTag("welcomeText"),
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center)
-                Text(
-                    "Modify your profile information:",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.testTag("editTutorProfileInstructionText"))
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    "Teaching languages:",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfileLanguageText"))
-                // Language Selection
-                LanguageSelector(selectedLanguages)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Subject Selection
-                Text(
-                    "Teaching subjects:",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfileSubjectText"))
-                SubjectsSelector(selectedSubjects)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Price Selection
-                Text(
-                    "Tutoring price per hour:",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfilePriceText"))
-                PriceSlider(sliderValue)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
-                // Section dropdown menu with improved styling
-                Box {
-                    Text(
-                        text = section.value, // Directly access the value
-                        modifier = Modifier
-                            .fillMaxWidth()
+                    text = section.value, // Directly access the value
+                    modifier =
+                        Modifier.fillMaxWidth()
                             .clickable { expandedSection = true }
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
+                            .border(
+                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
                             .testTag("editTutorProfileSectionDropdown"),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    style = MaterialTheme.typography.bodyLarge)
 
-                    DropdownMenu(
-                        expanded = expandedSection,
-                        onDismissRequest = { expandedSection = false },
-                        modifier = Modifier.fillMaxWidth().zIndex(1f),
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        Section.entries.forEach { s ->
-                            DropdownMenuItem(
-                                text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
-                                onClick = {
-                                    section.value = s.name
-                                    expandedSection = false
-                                },
-                                modifier = Modifier.testTag("editTutorProfileSectionDropdownItem-${s.name}")
-                            )
-                        }
+                DropdownMenu(
+                    expanded = expandedSection,
+                    onDismissRequest = { expandedSection = false },
+                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    properties = PopupProperties(focusable = true)) {
+                      Section.entries.forEach { s ->
+                        DropdownMenuItem(
+                            text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
+                            onClick = {
+                              section.value = s.name
+                              expandedSection = false
+                            },
+                            modifier =
+                                Modifier.testTag("editTutorProfileSectionDropdownItem-${s.name}"))
+                      }
                     }
-                }
+              }
 
-                Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
-                Box {
-                    Text(
-                        text = academicLevel.value, // Directly access the value
-                        modifier = Modifier
-                            .fillMaxWidth()
+              Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
+              Box {
+                Text(
+                    text = academicLevel.value, // Directly access the value
+                    modifier =
+                        Modifier.fillMaxWidth()
                             .clickable { expandedAcademicLevel = true }
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
+                            .border(
+                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
                             .testTag("editTutorProfileAcademicLevelDropdown"),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    style = MaterialTheme.typography.bodyLarge)
 
-                    DropdownMenu(
-                        expanded = expandedAcademicLevel,
-                        onDismissRequest = { expandedAcademicLevel = false },
-                        modifier = Modifier.fillMaxWidth().zIndex(1f),
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        AcademicLevel.entries.forEach { a ->
-                            DropdownMenuItem(
-                                text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
-                                onClick = {
-                                    academicLevel.value = a.name
-                                    expandedAcademicLevel = false
-                                },
-                                modifier = Modifier.testTag("editTutorProfileAcademicLevelDropdownItem-${a.name}")
-                            )
-                        }
+                DropdownMenu(
+                    expanded = expandedAcademicLevel,
+                    onDismissRequest = { expandedAcademicLevel = false },
+                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    properties = PopupProperties(focusable = true)) {
+                      AcademicLevel.entries.forEach { a ->
+                        DropdownMenuItem(
+                            text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
+                            onClick = {
+                              academicLevel.value = a.name
+                              expandedAcademicLevel = false
+                            },
+                            modifier =
+                                Modifier.testTag(
+                                    "editTutorProfileAcademicLevelDropdownItem-${a.name}"))
+                      }
                     }
-                }
+              }
             }
-        },
-        bottomBar = {
-            // Confirmation Button with Validation
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
-                shape = MaterialTheme.shapes.medium,
-                onClick = {
-                    if (selectedLanguages.isEmpty() || selectedSubjects.isEmpty()) {
-                        showError.value = true
-                        Toast.makeText(
-                            context,
-                            "Please select at least one language and one subject",
-                            Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        showError.value = false
-                        profile.languages.clear()
-                        profile.languages.addAll(selectedLanguages)
-                        profile.subjects.clear()
-                        profile.subjects.addAll(selectedSubjects)
-                        profile.price = sliderValue.floatValue.toInt()
-                        profile.academicLevel = AcademicLevel.valueOf(academicLevel.value) // Adjust based on your enum definition
-                        profile.section = Section.valueOf(section.value)
+      },
+      bottomBar = {
+        // Confirmation Button with Validation
+        Button(
+            modifier =
+                Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+              if (selectedLanguages.isEmpty() || selectedSubjects.isEmpty()) {
+                showError.value = true
+                Toast.makeText(
+                        context,
+                        "Please select at least one language and one subject",
+                        Toast.LENGTH_SHORT)
+                    .show()
+              } else {
+                showError.value = false
+                profile.languages.clear()
+                profile.languages.addAll(selectedLanguages)
+                profile.subjects.clear()
+                profile.subjects.addAll(selectedSubjects)
+                profile.price = sliderValue.floatValue.toInt()
+                profile.academicLevel =
+                    AcademicLevel.valueOf(
+                        academicLevel.value) // Adjust based on your enum definition
+                profile.section = Section.valueOf(section.value)
 
-                        listProfilesViewModel.updateProfile(profile)
-                        navigationActions.goBack()
+                listProfilesViewModel.updateProfile(profile)
+                navigationActions.goBack()
 
-                        Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                Text("Continue")
+                Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+              }
+            }) {
+              Text("Continue")
             }
-        })
+      })
 }

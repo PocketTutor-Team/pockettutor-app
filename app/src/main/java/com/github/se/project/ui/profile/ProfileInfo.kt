@@ -51,12 +51,12 @@ fun ProfileInfoScreen(
             horizontalArrangement = Arrangement.SpaceBetween) {
               Row(Modifier.padding(horizontal = 4.dp)) {
                 IconButton(
-                    onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE)},
+                    onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
                     modifier = Modifier.testTag("calendarButton")) {
                       Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
                     }
                 IconButton(
-                    onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE)},
+                    onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
                     modifier = Modifier.testTag("editProfileButton")) {
                       Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
                     }
