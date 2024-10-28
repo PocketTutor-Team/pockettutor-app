@@ -1,10 +1,9 @@
-package com.android.sample.model.lesson
+package com.github.se.project.model.lesson
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,15 +13,20 @@ import kotlinx.coroutines.flow.asStateFlow
  * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,
  * addition, and deletion of lessons.
  */
-class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
-  private val lessons_ = MutableStateFlow<List<Lesson>>(emptyList())
-  val lessons: StateFlow<List<Lesson>> = lessons_.asStateFlow()
+open class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
+
+  private val currentUserLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
+  open val currentUserLessons: StateFlow<List<Lesson>> = currentUserLessons_.asStateFlow()
 
   private val selectedLesson_ = MutableStateFlow<Lesson?>(null)
-  val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
+  open val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
 
   init {
-    repository.init { getLessonsByUser(Firebase.auth.currentUser?.uid ?: "") }
+    repository.init {
+      // Uncomment this if needed in the future to automatically load lessons, but this seems to
+      // make the CI fails.
+      // getAllLessons()
+    }
   }
 
   /** Factory for creating a LessonsViewModel. */
@@ -31,49 +35,54 @@ class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
           override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LessonsViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T
+            return LessonViewModel(LessonRepositoryFirestore(Firebase.firestore)) as T
           }
         }
   }
 
   /**
-   * Retrieves all lessons associated with a specific user.
+   * Generates a new unique ID.
    *
-   * @param userUid The UID of the user whose lessons are to be retrieved.
+   * @return A new unique ID.
    */
-  fun getLessonsByUser(userUid: String) {
-    repository.getLessonsByUserId(
-        userUid,
-        onSuccess = { lessons_.value = it },
-        onFailure = { e -> Log.e("LessonViewModel", "Error loading user: $userUid's lessons", e) })
+  fun getNewUid(): String {
+    return repository.getNewUid()
   }
 
   /**
    * Adds a new lesson to the repository.
    *
-   * @param userUid The UID of the user to associate with the lesson.
    * @param lesson The Lesson object to be added.
+   * @param onComplete Callback to execute when the operation completes.
    */
-  fun addLesson(userUid: String, lesson: Lesson) {
-    repository.addLessonByUserId(
-        userUid = userUid,
+  fun addLesson(lesson: Lesson, onComplete: () -> Unit) {
+    repository.addLesson(
         lesson = lesson,
-        onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success
-        onFailure = { Log.e("LessonViewModel", "Error adding lesson: $lesson", it) })
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error adding lesson: $lesson", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 
   /**
    * Deletes a lesson from the repository.
    *
-   * @param userUid The UID of the user associated with the lesson.
    * @param lessonId The ID of the lesson to be deleted.
+   * @param onComplete Callback to execute when the operation completes.
    */
-  fun deleteLesson(userUid: String, lessonId: String) {
-    repository.deleteLessonByUserId(
-        userUid = userUid,
+  fun deleteLesson(lessonId: String, onComplete: () -> Unit) {
+    repository.deleteLesson(
         lessonId = lessonId,
-        onSuccess = { getLessonsByUser(userUid) }, // Refresh the lesson list on success
-        onFailure = { Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it) })
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error deleting lesson: $lessonId", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 
   /**
@@ -83,5 +92,43 @@ class LessonsViewModel(private val repository: LessonRepository) : ViewModel() {
    */
   fun selectLesson(lesson: Lesson) {
     selectedLesson_.value = lesson
+  }
+
+  /**
+   * Fetches all lessons for a specific tutor.
+   *
+   * @param tutorUid The UID of the tutor.
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
+    repository.getLessonsForTutor(
+        tutorUid = tutorUid,
+        onSuccess = { fetchedLessons ->
+          currentUserLessons_.value = fetchedLessons
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching tutor's lessons", it)
+          onComplete() // Call the callback even if there's a failure
+        })
+  }
+
+  /**
+   * Fetches all lessons for a specific student.
+   *
+   * @param studentUid The UID of the student.
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun getLessonsForStudent(studentUid: String, onComplete: () -> Unit = {}) {
+    repository.getLessonsForStudent(
+        studentUid = studentUid,
+        onSuccess = { fetchedLessons ->
+          currentUserLessons_.value = fetchedLessons
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching student's lessons", it)
+          onComplete() // Call the callback even if there's a failure
+        })
   }
 }

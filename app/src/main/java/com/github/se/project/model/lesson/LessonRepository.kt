@@ -1,38 +1,32 @@
-package com.android.sample.model.lesson
+package com.github.se.project.model.lesson
 
 interface LessonRepository {
+  // Method to get a new unique identifier
+  fun getNewUid(): String
 
   // Method to initialize the repository
   fun init(onSuccess: () -> Unit)
 
-  // Method to retrieve all lessons by user UID
-  fun getLessonsByUserId(
-      userUid: String,
+  // Method to retrieve all lessons for a tutor
+  fun getLessonsForTutor(
+      tutorUid: String,
+      onSuccess: (List<Lesson>) -> Unit,
+      onFailure: (Exception) -> Unit
+  )
+
+  // Method to retrieve all lessons for a student
+  fun getLessonsForStudent(
+      studentUid: String,
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   )
 
   // Method to add a new lesson
-  fun addLessonByUserId(
-      userUid: String,
-      lesson: Lesson,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  )
+  fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
-  // Method to update an existing lesson by its ID
-  fun updateLessonByUserId(
-      userUid: String,
-      lesson: Lesson,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  )
+  // Method to update an existing lesson
+  fun updateLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
   // Method to delete a lesson by its ID
-  fun deleteLessonByUserId(
-      userUid: String,
-      lessonId: String,
-      onSuccess: () -> Unit,
-      onFailure: (Exception) -> Unit
-  )
+  fun deleteLesson(lessonId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 }

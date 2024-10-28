@@ -18,3 +18,5 @@ Designed for students seeking efficient academic help and tutors managing their 
 
 ## Figma
 https://www.figma.com/design/tVPWUZqvvIcr7MgOULXYO9/Pocket-Tutor-Design?node-id=2020-339&t=NxpQOF9cLSAnxrlx-1
+
+![Architecture Diagram Pocket Tutor](https://github.com/user-attachments/assets/5c91e14c-f0d8-4cd0-923e-c91e7422bdf3)

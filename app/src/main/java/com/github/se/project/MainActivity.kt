@@ -5,27 +5,27 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.resources.C
 import com.github.se.project.ui.authentification.SignInScreen
+import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
-import com.github.se.project.ui.profile.AvailabilityScreen
+import com.github.se.project.ui.overview.HomeScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
-import com.github.se.project.ui.profile.TutorInfoScreen
+import com.github.se.project.ui.profile.CreateTutorProfile
+import com.github.se.project.ui.profile.CreateTutorSchedule
+import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,6 +49,8 @@ fun PocketTutorApp() {
   val listProfilesViewModel: ListProfilesViewModel =
       viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
+
+  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -86,22 +88,57 @@ fun PocketTutorApp() {
       // }
 
       composable(Screen.HOME) {
-        Greeting("Android") // TODO: Replace with HomeScreen
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
       }
       composable(Screen.CREATE_TUTOR_PROFILE) {
-        TutorInfoScreen(navigationActions, listProfilesViewModel)
+        CreateTutorProfile(navigationActions, listProfilesViewModel)
       }
       composable(Screen.CREATE_TUTOR_SCHEDULE) {
-        AvailabilityScreen(navigationActions, listProfilesViewModel)
+        CreateTutorSchedule(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.PROFILE) {
+        ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
     }
-  }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(text = "Hello $name!", modifier = modifier.semantics { testTag = C.Tag.greeting })
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.FIND_STUDENT,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
+        startDestination = Screen.HOME,
+        route = Route.HOME,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+    }
+
+    navigation(
+        startDestination = Screen.ADD_LESSON,
+        route = Route.FIND_TUTOR,
+    ) {
+      composable(Screen.HOME) {
+        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.ADD_LESSON) {
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      // composable(Screen.EDIT_LESSON) {
+      //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      // }
+
+    }
+  }
 }
