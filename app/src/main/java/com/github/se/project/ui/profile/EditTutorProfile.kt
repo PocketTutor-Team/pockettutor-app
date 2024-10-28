@@ -35,7 +35,7 @@ fun EditTutorProfile(
             ?: return Text(
                 text = "No Profile selected. Should not happen.",
                 color = Color.Red,
-                modifier = Modifier.testTag("noProfile"))
+                modifier = Modifier.testTag("editTutorNoProfile"))
 
     val initialLanguagesList: List<Language> = profile.languages.toList()
     val selectedLanguages: SnapshotStateList<Language> = remember { mutableStateListOf(*initialLanguagesList.toTypedArray()) }
@@ -56,7 +56,7 @@ fun EditTutorProfile(
     Scaffold(
         topBar = {
             IconButton(onClick = { navigationActions.goBack() },
-                modifier = Modifier.testTag("closeButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
+                modifier = Modifier.testTag("editTutorProfileCloseButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
         },
         content = { paddingValues ->
             Column(
@@ -74,14 +74,14 @@ fun EditTutorProfile(
                 Text(
                     "Modify your profile information:",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.testTag("instructionText"))
+                    modifier = Modifier.testTag("editTutorProfileInstructionText"))
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     "Teaching languages:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("languageText"))
+                    modifier = Modifier.testTag("editTutorProfileLanguageText"))
                 // Language Selection
                 LanguageSelector(selectedLanguages)
 
@@ -91,7 +91,7 @@ fun EditTutorProfile(
                 Text(
                     "Teaching subjects:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("subjectText"))
+                    modifier = Modifier.testTag("editTutorProfileSubjectText"))
                 SubjectsSelector(selectedSubjects)
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -100,7 +100,7 @@ fun EditTutorProfile(
                 Text(
                     "Tutoring price per hour:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("priceText"))
+                    modifier = Modifier.testTag("editTutorProfilePriceText"))
                 PriceSlider(sliderValue)
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -116,7 +116,7 @@ fun EditTutorProfile(
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
                             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
-                            .testTag("sectionDropdown"),
+                            .testTag("editTutorProfileSectionDropdown"),
                         style = MaterialTheme.typography.bodyLarge
                     )
 
@@ -133,7 +133,7 @@ fun EditTutorProfile(
                                     section.value = s.name
                                     expandedSection = false
                                 },
-                                modifier = Modifier.testTag("sectionDropdownItem-${s.name}")
+                                modifier = Modifier.testTag("editTutorProfileSectionDropdownItem-${s.name}")
                             )
                         }
                     }
@@ -149,7 +149,7 @@ fun EditTutorProfile(
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
                             .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
-                            .testTag("academicLevelDropdown"),
+                            .testTag("editTutorProfileAcademicLevelDropdown"),
                         style = MaterialTheme.typography.bodyLarge
                     )
 
@@ -166,7 +166,7 @@ fun EditTutorProfile(
                                     academicLevel.value = a.name
                                     expandedAcademicLevel = false
                                 },
-                                modifier = Modifier.testTag("academicLevelDropdownItem-${a.name}")
+                                modifier = Modifier.testTag("editTutorProfileAcademicLevelDropdownItem-${a.name}")
                             )
                         }
                     }
@@ -176,7 +176,7 @@ fun EditTutorProfile(
         bottomBar = {
             // Confirmation Button with Validation
             Button(
-                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
+                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
                 shape = MaterialTheme.shapes.medium,
                 onClick = {
                     if (selectedLanguages.isEmpty() || selectedSubjects.isEmpty()) {

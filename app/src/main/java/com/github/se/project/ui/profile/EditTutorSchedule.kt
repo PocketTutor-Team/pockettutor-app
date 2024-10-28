@@ -34,7 +34,7 @@ fun EditTutorSchedule(
     Scaffold(
         topBar = {
             IconButton(onClick = { navigationActions.goBack() },
-                modifier = Modifier.testTag("closeButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
+                modifier = Modifier.testTag("editScheduleCloseButton")) { Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go Back") }
         },
         content = { paddingValues ->
             Column(
@@ -42,7 +42,7 @@ fun EditTutorSchedule(
                 Modifier.fillMaxSize()
                     .padding(horizontal = 12.dp)
                     .padding(paddingValues)
-                    .testTag("availabilityScreen")) {
+                    .testTag("editAvailabilityScreen")) {
                 Text(
                     text = "${profile.firstName}, show us your availabilities",
                     modifier = Modifier,//.padding(vertical = 0.dp).testTag("welcomeText"),
@@ -51,7 +51,7 @@ fun EditTutorSchedule(
                 Text(
                     "Modify the time slots you're available during the week:",
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.testTag("InstructionsText"))
+                    modifier = Modifier.testTag("editInstructionsText"))
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -63,7 +63,7 @@ fun EditTutorSchedule(
         },
         bottomBar = {
             Button(
-                modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("FindStudentButton"),
+                modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleUpdateButton"),
                 shape = MaterialTheme.shapes.medium,
                 onClick = {
                     profile.schedule = currentSchedule
