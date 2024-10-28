@@ -77,9 +77,8 @@ fun EditTutorProfile(
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Text(
                   text = "${profile.firstName} ${profile.lastName}",
-                  modifier =
-                      Modifier, // .padding(vertical = 48.dp, horizontal =
-                                // 16.dp).testTag("welcomeText"),
+                  modifier = Modifier, // .padding(vertical = 48.dp, horizontal =
+                  // 16.dp).testTag("welcomeText"),
                   style = MaterialTheme.typography.headlineMedium,
                   textAlign = TextAlign.Center)
               Text(
