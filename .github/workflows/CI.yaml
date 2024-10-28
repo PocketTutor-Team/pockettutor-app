@@ -135,5 +135,7 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
             -Dsonar.projectKey=PocketTutor-Team_pockettutor-app
             -Dsonar.organization=pockettutor-team
+            -Dsonar.sources=app/src/main/java
+            -Dsonar.tests=app/src/test/java,app/src/androidTest/java
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}     
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
