@@ -30,28 +30,27 @@ fun EditTutorProfile(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory)
 ) {
-  val profile =
+  val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
           ?: return Text(
               text = "No Profile selected. Should not happen.",
-              color = Color.Red,
               modifier = Modifier.testTag("editTutorNoProfile"))
 
-  val initialLanguagesList: List<Language> = profile.languages.toList()
+  val initialLanguagesList: List<Language> = currentProfile.languages.toList()
   val selectedLanguages: SnapshotStateList<Language> = remember {
     mutableStateListOf(*initialLanguagesList.toTypedArray())
   }
 
-  val initialSubjectsList: List<Subject> = profile.subjects.toList()
+  val initialSubjectsList: List<Subject> = currentProfile.subjects.toList()
   val selectedSubjects: SnapshotStateList<Subject> = remember {
     mutableStateListOf(*initialSubjectsList.toTypedArray())
   }
 
-  val sliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
+  val sliderValue = remember { mutableFloatStateOf(currentProfile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
 
-  val academicLevel = remember { mutableStateOf(profile.academicLevel.name) }
-  val section = remember { mutableStateOf(profile.section.name) }
+  val academicLevel = remember { mutableStateOf(currentProfile.academicLevel.name) }
+  val section = remember { mutableStateOf(currentProfile.section.name) }
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
 
@@ -76,7 +75,7 @@ fun EditTutorProfile(
                     .testTag("tutorInfoScreen"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Text(
-                  text = "${profile.firstName} ${profile.lastName}",
+                  text = "${currentProfile.firstName} ${currentProfile.lastName}",
                   modifier = Modifier, // .padding(vertical = 48.dp, horizontal =
                   // 16.dp).testTag("welcomeText"),
                   style = MaterialTheme.typography.headlineMedium,
@@ -198,17 +197,17 @@ fun EditTutorProfile(
                     .show()
               } else {
                 showError.value = false
-                profile.languages.clear()
-                profile.languages.addAll(selectedLanguages)
-                profile.subjects.clear()
-                profile.subjects.addAll(selectedSubjects)
-                profile.price = sliderValue.floatValue.toInt()
-                profile.academicLevel =
+                currentProfile.languages.clear()
+                currentProfile.languages.addAll(selectedLanguages)
+                currentProfile.subjects.clear()
+                currentProfile.subjects.addAll(selectedSubjects)
+                currentProfile.price = sliderValue.floatValue.toInt()
+                currentProfile.academicLevel =
                     AcademicLevel.valueOf(
                         academicLevel.value) // Adjust based on your enum definition
-                profile.section = Section.valueOf(section.value)
+                currentProfile.section = Section.valueOf(section.value)
 
-                listProfilesViewModel.updateProfile(profile)
+                listProfilesViewModel.updateProfile(currentProfile)
                 navigationActions.goBack()
 
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
