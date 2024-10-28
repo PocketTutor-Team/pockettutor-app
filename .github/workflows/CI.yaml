@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - setup/fix-ci
 
   pull_request:
     types:
@@ -137,4 +138,5 @@ jobs:
             -Dsonar.organization=pockettutor-team
             -Dsonar.sources=app/src/main/java/com/github/se/project
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}     
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
+            -Dsonar.branch.name=${{ github.ref_name }}
