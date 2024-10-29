@@ -25,6 +25,8 @@ import com.github.se.project.ui.overview.HomeScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
+import com.github.se.project.ui.profile.EditTutorProfile
+import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
@@ -134,6 +136,10 @@ fun PocketTutorApp() {
       }
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      composable(Screen.EDIT_PROFILE) { EditTutorProfile(navigationActions, listProfilesViewModel) }
+      composable(Screen.EDIT_SCHEDULE) {
+        EditTutorSchedule(navigationActions, listProfilesViewModel)
       }
       // composable(Screen.EDIT_LESSON) {
       //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
