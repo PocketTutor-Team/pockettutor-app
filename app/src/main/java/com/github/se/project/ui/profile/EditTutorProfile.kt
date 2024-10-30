@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PriceSlider
+import com.github.se.project.ui.components.SubjectsSelector
 import com.github.se.project.ui.navigation.NavigationActions
 
 @Composable
@@ -36,12 +37,12 @@ fun EditTutorProfile(
               text = "No Profile selected. Should not happen.",
               modifier = Modifier.testTag("editTutorNoProfile"))
 
-  val initialLanguagesList: List<Language> = profile.languages.toList()
+  val initialLanguagesList: List<Language> = profile.languages
   val selectedLanguages: SnapshotStateList<Language> = remember {
     mutableStateListOf(*initialLanguagesList.toTypedArray())
   }
 
-  val initialSubjectsList: List<Subject> = profile.subjects.toList()
+  val initialSubjectsList: List<Subject> = profile.subjects
   val selectedSubjects: SnapshotStateList<Subject> = remember {
     mutableStateListOf(*initialSubjectsList.toTypedArray())
   }
@@ -200,10 +201,8 @@ fun EditTutorProfile(
                     .show()
               } else {
                 showError.value = false
-                profile.languages.clear()
-                profile.languages.addAll(selectedLanguages)
-                profile.subjects.clear()
-                profile.subjects.addAll(selectedSubjects)
+                profile.languages = selectedLanguages
+                profile.subjects = selectedSubjects
                 profile.price = sliderValue.floatValue.toInt()
                 profile.academicLevel =
                     AcademicLevel.valueOf(

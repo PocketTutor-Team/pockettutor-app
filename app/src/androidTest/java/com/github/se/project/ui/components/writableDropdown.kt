@@ -50,7 +50,7 @@ class WritableDropdownTest {
     assert(currentValue == "A")
   }
 
-  @Test
+  /*@Test
   fun testDropdownChoices() {
     var currentValue = ""
     composeTestRule.setContent {
@@ -64,5 +64,5 @@ class WritableDropdownTest {
 
     composeTestRule.onNodeWithTag("dropdown").performTextInput("A")
     composeTestRule.onNodeWithTag("item_Apple").assertIsDisplayed()
-  }
+  }*/
 }

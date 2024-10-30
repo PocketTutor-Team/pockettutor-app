@@ -16,7 +16,6 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
-import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Assert.assertEquals
@@ -60,8 +59,8 @@ class EditTutorProfileTest {
             role = Role.STUDENT,
             section = Section.GM,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java),
-            subjects = EnumSet.noneOf(Subject::class.java),
+            languages = listOf(Language.ENGLISH),
+            subjects = listOf(Subject.ALGEBRA),
             schedule = listOf())
     // Set the screen in the test environment
     composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }
@@ -88,8 +87,8 @@ class EditTutorProfileTest {
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.of(Language.ENGLISH),
-            subjects = EnumSet.of(Subject.ALGEBRA),
+            languages = listOf(Language.ENGLISH),
+            subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
     composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }
@@ -124,8 +123,8 @@ class EditTutorProfileTest {
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.of(Language.ENGLISH),
-            subjects = EnumSet.of(Subject.ALGEBRA),
+            languages = listOf(Language.ENGLISH),
+            subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
     composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }

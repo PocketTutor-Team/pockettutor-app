@@ -5,7 +5,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.EnumSet
 
 class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesRepository {
 
@@ -105,23 +104,29 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val section = Section.valueOf(document.getString("section") ?: return null)
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
 
-      // Retrieve the "languages" field as a list of strings and map it to EnumSet<Language>
-      // the type cast (as List<String>) is safe since in a try-catch block
       val languages =
-          document
-              .get("languages")
-              ?.let { languagesList ->
-                (languagesList as List<String>).map { Language.valueOf(it) }
+          document.get("languages")?.let { languagesList ->
+            (languagesList as List<*>).mapNotNull {
+              try {
+                Language.valueOf(it.toString())
+              } catch (e: IllegalArgumentException) {
+                Log.e("LessonRepositoryFirestore", "Invalid language in document: $it", e)
+                null
               }
-              ?.toCollection(EnumSet.noneOf(Language::class.java))
-              ?: EnumSet.noneOf(Language::class.java)
+            }
+          } ?: emptyList()
 
       val subjects =
-          document
-              .get("subjects")
-              ?.let { subjectsList -> (subjectsList as List<String>).map { Subject.valueOf(it) } }
-              ?.toCollection(EnumSet.noneOf(Subject::class.java))
-              ?: EnumSet.noneOf(Subject::class.java)
+          document.get("subjects")?.let { subjectsList ->
+            (subjectsList as List<*>).mapNotNull {
+              try {
+                Subject.valueOf(it.toString())
+              } catch (e: IllegalArgumentException) {
+                Log.e("LessonRepositoryFirestore", "Invalid subject in document: $it", e)
+                null
+              }
+            }
+          } ?: emptyList()
 
       val schedule =
           document.get("schedule")?.let { (it as List<Int>).chunked(12) }
@@ -158,8 +163,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
         "role" to profile.role.name,
         "section" to profile.section.name,
         "academicLevel" to profile.academicLevel.name,
-        "languages" to profile.languages.map { it.name }, // convert enumSets into a list of strings
-        "subjects" to profile.subjects.map { it.name },
+        "languages" to profile.languages.map { it.toString() },
+        "subjects" to profile.subjects.map { it.toString() },
         "schedule" to profile.schedule.flatten(),
         "price" to profile.price)
   }

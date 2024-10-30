@@ -9,7 +9,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import java.util.EnumSet
 import junit.framework.TestCase.fail
 import org.junit.Before
 import org.junit.Test
@@ -46,8 +45,8 @@ class ProfileRepositoryTest {
           role = Role.TUTOR,
           section = Section.IN,
           academicLevel = AcademicLevel.MA1,
-          languages = EnumSet.of(Language.ENGLISH),
-          subjects = EnumSet.of(Subject.ALGEBRA),
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ALGEBRA),
           schedule = List(7) { List(12) { 1 } },
           price = 20)
 

@@ -1,6 +1,5 @@
 package com.github.se.project.model.profile
 
-import java.util.EnumSet
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -27,8 +26,8 @@ class ListToDosViewModelTest {
           role = Role.TUTOR,
           section = Section.GM,
           academicLevel = AcademicLevel.MA2,
-          languages = EnumSet.of(Language.ENGLISH),
-          subjects = EnumSet.of(Subject.ALGEBRA),
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ALGEBRA),
           schedule =
               List(7) { day ->
                 List(12) {

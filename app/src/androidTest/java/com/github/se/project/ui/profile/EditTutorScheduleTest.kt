@@ -55,8 +55,8 @@ class EditTutorScheduleTest {
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.of(Language.ENGLISH),
-            subjects = EnumSet.of(Subject.ALGEBRA),
+            languages = listOf(Language.ENGLISH),
+            subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
 
     composeTestRule.setContent {
@@ -93,8 +93,8 @@ class EditTutorScheduleTest {
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.of(Language.ENGLISH),
-            subjects = EnumSet.of(Subject.ALGEBRA),
+            languages = listOf(Language.ENGLISH),
+            subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
     composeTestRule.setContent { EditTutorSchedule(mockNavigationActions, mockViewModel) }
