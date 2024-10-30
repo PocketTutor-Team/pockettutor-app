@@ -53,10 +53,8 @@ fun EditTutorSchedule(
                     .testTag("editAvailabilityScreen")) {
               Text(
                   text = "${profile.firstName}, show us your availabilities",
-                  modifier =
-                      Modifier.testTag(
-                          "editScheduleWelcomeText"), // .padding(vertical =
-                                                      // 0.dp).testTag("welcomeText"),
+                  modifier = Modifier.testTag("editScheduleWelcomeText"), // .padding(vertical =
+                  // 0.dp).testTag("welcomeText"),
                   style = MaterialTheme.typography.headlineSmall,
                   textAlign = TextAlign.Start)
               Text(
