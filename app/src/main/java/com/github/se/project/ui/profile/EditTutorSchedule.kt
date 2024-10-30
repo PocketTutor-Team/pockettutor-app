@@ -26,7 +26,10 @@ fun EditTutorSchedule(
 ) {
   val profile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              color = Color.Red,
+              modifier = Modifier.testTag("editScheduleNoProfile"))
 
   var currentSchedule by remember { mutableStateOf(profile.schedule) }
   val context = LocalContext.current
@@ -50,13 +53,16 @@ fun EditTutorSchedule(
                     .testTag("editAvailabilityScreen")) {
               Text(
                   text = "${profile.firstName}, show us your availabilities",
-                  modifier = Modifier, // .padding(vertical = 0.dp).testTag("welcomeText"),
+                  modifier =
+                      Modifier.testTag(
+                          "editScheduleWelcomeText"), // .padding(vertical =
+                                                      // 0.dp).testTag("welcomeText"),
                   style = MaterialTheme.typography.headlineSmall,
                   textAlign = TextAlign.Start)
               Text(
                   "Modify the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("editInstructionsText"))
+                  modifier = Modifier.testTag("editScheduleInstructionsText"))
 
               Spacer(modifier = Modifier.height(8.dp))
 
@@ -68,7 +74,7 @@ fun EditTutorSchedule(
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleUpdateButton"),
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
               profile.schedule = currentSchedule
