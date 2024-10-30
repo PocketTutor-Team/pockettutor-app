@@ -15,7 +15,6 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
-import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
@@ -43,8 +42,8 @@ class HomeScreenTest {
           Role.TUTOR,
           Section.AR,
           AcademicLevel.BA1,
-          EnumSet.of(Language.ENGLISH),
-          EnumSet.of(Subject.ANALYSIS),
+          listOf(Language.ENGLISH),
+          listOf(Subject.ANALYSIS),
           List(7) { List(12) { 0 } },
           0)
 

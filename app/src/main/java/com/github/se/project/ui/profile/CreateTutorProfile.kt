@@ -2,8 +2,6 @@ package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PriceSlider
+import com.github.se.project.ui.components.SubjectsSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -96,7 +95,7 @@ fun CreateTutorProfile(
             modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              if (selectedLanguages.isEmpty() || selectedSubjects.isEmpty()) {
+              if (selectedSubjects.isEmpty() || selectedLanguages.isEmpty()) {
                 showError.value = true
                 Toast.makeText(
                         context,
@@ -105,13 +104,12 @@ fun CreateTutorProfile(
                     .show()
               } else {
                 showError.value = false
-                profile.languages.clear()
-                profile.languages.addAll(selectedLanguages)
-                profile.subjects.clear()
-                profile.subjects.addAll(selectedSubjects)
                 profile.price = sliderValue.floatValue.toInt()
 
-                listProfilesViewModel.updateProfile(profile)
+                listProfilesViewModel.updateProfile(
+                    profile.copy(
+                        languages = selectedLanguages.toList(),
+                        subjects = selectedSubjects.toList()))
                 navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
 
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
@@ -120,47 +118,4 @@ fun CreateTutorProfile(
               Text("Continue")
             }
       })
-}
-
-@Composable
-fun SubjectsSelector(
-    selectedSubjects: MutableList<Subject>,
-) {
-  val expandedSubjectDropdown = remember { mutableStateOf(false) }
-
-  val subjects = Subject.entries.toTypedArray()
-  Box(modifier = Modifier.fillMaxWidth()) {
-    Button(
-        onClick = { expandedSubjectDropdown.value = true },
-        modifier = Modifier.fillMaxWidth().testTag("subjectButton")) {
-          Text("Select Subjects")
-        }
-    DropdownMenu(
-        expanded = expandedSubjectDropdown.value,
-        onDismissRequest = { expandedSubjectDropdown.value = false },
-        modifier = Modifier.fillMaxWidth()) {
-          subjects
-              .filter { it != Subject.NONE }
-              .forEach { subject ->
-                val isSelected = selectedSubjects.contains(subject)
-                DropdownMenuItem(
-                    text = {
-                      Row {
-                        if (isSelected) {
-                          Icon(Icons.Filled.Check, contentDescription = null)
-                        }
-                        Text(subject.name.lowercase())
-                      }
-                    },
-                    onClick = {
-                      if (isSelected) {
-                        selectedSubjects.remove(subject)
-                      } else {
-                        selectedSubjects.add(subject)
-                      }
-                    },
-                    modifier = Modifier.testTag("dropdown${subject.name}"))
-              }
-        }
-  }
 }
