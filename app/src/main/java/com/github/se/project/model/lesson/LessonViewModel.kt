@@ -3,11 +3,13 @@ package com.github.se.project.model.lesson
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel for managing lessons and interacting with the LessonRepository. Handles the retrieval,
@@ -131,4 +133,11 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
           onComplete() // Call the callback even if there's a failure
         })
   }
+
+    // Method to update a lesson by passing it to the repository
+    fun updateLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        viewModelScope.launch {
+            repository.updateLesson(lesson, onSuccess, onFailure)
+        }
+    }
 }
