@@ -1,5 +1,6 @@
 package com.github.se.project
 
+import LessonsRequestedScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -110,11 +111,14 @@ fun PocketTutorApp() {
     }
 
     navigation(
-        startDestination = Screen.HOME,
+        startDestination = Screen.LESSONS_REQUESTED,
         route = Route.FIND_STUDENT,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.LESSONS_REQUESTED) {
+        LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 
