@@ -45,7 +45,8 @@ fun TutorLessonResponseScreen(
           ?: return Text("No lesson selected. Should not happen.")
 
   val sliderPrice = remember {
-    mutableFloatStateOf(((lesson.maxPrice - lesson.minPrice).toFloat() / 2.0).toFloat())
+    mutableFloatStateOf(
+        (lesson.maxPrice.toFloat() - lesson.minPrice.toFloat()) / 2.0f + lesson.minPrice.toFloat())
   }
 
   val context = LocalContext.current
@@ -98,7 +99,7 @@ fun TutorLessonResponseScreen(
               lessonViewModel.updateLesson(
                   lesson.copy(
                       tutorUid = listProfilesViewModel.currentProfile.value!!.uid,
-                      price = sliderPrice.floatValue.toDouble(),
+                      price = sliderPrice.floatValue.toInt().toDouble(),
                       status = LessonStatus.TUTOR_REQUESTED),
                   onComplete = {
                     lessonViewModel.getLessonsForTutor(

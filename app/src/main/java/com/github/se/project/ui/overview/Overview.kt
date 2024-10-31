@@ -85,7 +85,8 @@ fun HomeScreen(
 
           if (lessons.any {
             it.status == LessonStatus.CONFIRMED ||
-                it.status == LessonStatus.REQUESTED ||
+                it.status == LessonStatus.STUDENT_REQUESTED ||
+                it.status == LessonStatus.TUTOR_REQUESTED ||
                 it.status == LessonStatus.PENDING
           }) {
             Column(
@@ -98,8 +99,9 @@ fun HomeScreen(
                   if (profile.role == Role.TUTOR) {
                     ExpandableLessonSection(
                         sectionTitle = "Pending Lessons",
+                        // we have selected it and wait for student confirmation
                         lessons = lessons,
-                        statusFilter = LessonStatus.PENDING,
+                        statusFilter = LessonStatus.TUTOR_REQUESTED,
                         isTutor = true,
                         maxHeight = 340.dp,
                         modifier = Modifier.testTag("pendingLessonsSection"))
@@ -117,12 +119,22 @@ fun HomeScreen(
                   if (profile.role == Role.STUDENT) {
                     ExpandableLessonSection(
                         sectionTitle = "Requested Lessons",
+                        // we have create a lesson but no match yet
                         lessons = lessons,
-                        statusFilter = LessonStatus.REQUESTED,
+                        statusFilter = LessonStatus.STUDENT_REQUESTED,
                         isTutor = false,
                         maxHeight = 340.dp,
                         modifier = Modifier.testTag("requestedLessonsSection"))
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    ExpandableLessonSection(
+                        sectionTitle = "To Confirm Lessons",
+                        // a tutor has selected the lesson and wait for student confirmation
+                        lessons = lessons,
+                        statusFilter = LessonStatus.TUTOR_REQUESTED,
+                        isTutor = false,
+                        maxHeight = 340.dp,
+                        modifier = Modifier.testTag("toConfirmLessonsStudentSection"))
 
                     ExpandableLessonSection(
                         sectionTitle = "Confirmed Lessons",
