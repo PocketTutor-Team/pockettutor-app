@@ -25,7 +25,8 @@ fun DisplayLessons(
     modifier: Modifier = Modifier,
     lessons: List<Lesson>,
     statusFilter: LessonStatus? = null, // Option to filter by status
-    isTutor: Boolean
+    isTutor: Boolean,
+    onClick: ((Lesson) -> Unit)? = null,
 ) {
   val filteredLessons =
       statusFilter?.let { lessons.filter { lesson -> lesson.status == it } } ?: lessons
@@ -37,6 +38,11 @@ fun DisplayLessons(
               Modifier.fillMaxWidth()
                   .padding(vertical = 2.dp)
                   .testTag("lessonCard_$index"), // Tag for each lesson card
+          onClick = {
+            if (onClick != null) {
+              onClick(lesson)
+            }
+          },
           colors =
               CardDefaults.cardColors(
                   containerColor =
