@@ -32,9 +32,9 @@ fun CreateTutorProfile(
               color = Color.Red,
               modifier = Modifier.testTag("noProfile"))
 
-  val selectedLanguages = remember { mutableStateListOf<Language>() }
-  val selectedSubjects = remember { mutableStateListOf<Subject>() }
-  val sliderValue = remember { mutableFloatStateOf(5f) }
+  val profileLanguages = remember { mutableStateListOf<Language>() }
+  val profileSubjects = remember { mutableStateListOf<Subject>() }
+  val pricesliderValue = remember { mutableFloatStateOf(5f) }
   val showError = remember { mutableStateOf(false) }
 
   val context = LocalContext.current
@@ -68,7 +68,7 @@ fun CreateTutorProfile(
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("languageText"))
               // Language Selection
-              LanguageSelector(selectedLanguages)
+              LanguageSelector(profileLanguages)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -77,7 +77,7 @@ fun CreateTutorProfile(
                   "Which subjects do you teach?",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("subjectText"))
-              SubjectsSelector(selectedSubjects)
+              SubjectsSelector(profileSubjects)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -86,7 +86,7 @@ fun CreateTutorProfile(
                   "Select your tutoring price per hour:",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("priceText"))
-              PriceSlider(sliderValue)
+              PriceSlider(pricesliderValue)
             }
       },
       bottomBar = {
@@ -95,7 +95,7 @@ fun CreateTutorProfile(
             modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              if (selectedSubjects.isEmpty() || selectedLanguages.isEmpty()) {
+              if (profileSubjects.isEmpty() || profileLanguages.isEmpty()) {
                 showError.value = true
                 Toast.makeText(
                         context,
@@ -104,12 +104,11 @@ fun CreateTutorProfile(
                     .show()
               } else {
                 showError.value = false
-                profile.price = sliderValue.floatValue.toInt()
+                profile.price = pricesliderValue.floatValue.toInt()
 
                 listProfilesViewModel.updateProfile(
                     profile.copy(
-                        languages = selectedLanguages.toList(),
-                        subjects = selectedSubjects.toList()))
+                        languages = profileLanguages.toList(), subjects = profileSubjects.toList()))
                 navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
 
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
