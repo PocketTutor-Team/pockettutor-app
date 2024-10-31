@@ -2,7 +2,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,60 +22,49 @@ fun MapPickerScreen(
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions
 ) {
-    var selectedPosition by remember {
-        mutableStateOf(
-            LatLng(
-                lessonViewModel.selectedLocation.value.first,
-                lessonViewModel.selectedLocation.value.second
-            )
-        )
-    }
+  var selectedPosition by remember {
+    mutableStateOf(
+        LatLng(
+            lessonViewModel.selectedLocation.value.first,
+            lessonViewModel.selectedLocation.value.second))
+  }
 
-    val markerState = rememberMarkerState(position = selectedPosition)
+  val markerState = rememberMarkerState(position = selectedPosition)
 
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(selectedPosition, 10f)
-    }
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(selectedPosition, 10f)
+  }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
+  Column(
+      modifier = Modifier.fillMaxSize().padding(16.dp),
+      verticalArrangement = Arrangement.SpaceBetween) {
         GoogleMap(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f), // Take available space except the button area
+            modifier =
+                Modifier.fillMaxWidth().weight(1f), // Take available space except the button area
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
-                selectedPosition = latLng
-                markerState.position = selectedPosition // Update the marker position
+              selectedPosition = latLng
+              markerState.position = selectedPosition // Update the marker position
+            }) {
+              Marker(
+                  state = markerState,
+                  title = "Selected Location",
+                  snippet = "Lat: ${selectedPosition.latitude}, Lng: ${selectedPosition.longitude}",
+                  icon =
+                      BitmapDescriptorFactory.defaultMarker(
+                          BitmapDescriptorFactory.HUE_RED) // Customize the icon
+                  )
             }
-        ) {
-
-            Marker(
-                state = markerState,
-                title = "Selected Location",
-                snippet = "Lat: ${selectedPosition.latitude}, Lng: ${selectedPosition.longitude}",
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Customize the icon
-            )
-        }
-
 
         Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
             onClick = {
+              lessonViewModel.updateSelectedLocation(
+                  selectedPosition.latitude to selectedPosition.longitude)
 
-                lessonViewModel.updateSelectedLocation(selectedPosition.latitude to selectedPosition.longitude)
-
-                navigationActions.navigateTo(Screen.ADD_LESSON)
+              navigationActions.navigateTo(Screen.ADD_LESSON)
+            }) {
+              Text("Confirm Location")
             }
-        ) {
-            Text("Confirm Location")
-        }
-    }
+      }
 }

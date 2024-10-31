@@ -21,20 +21,19 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   private val _selectedLesson = MutableStateFlow<Lesson?>(null)
   open val selectedLesson: StateFlow<Lesson?> = _selectedLesson.asStateFlow()
 
-    // StateFlow to observe selected location changes
-    //Default value is currently set to Lausanne EPFL
-    //TODO: Change default value to user's current location
-    private val _selectedLocation = MutableStateFlow<Pair<Double, Double>>(46.520374 to 6.568339)
-    val selectedLocation = _selectedLocation.asStateFlow()
+  // StateFlow to observe selected location changes
+  // Default value is currently set to Lausanne EPFL
+  // TODO: Change default value to user's current location
+  private val _selectedLocation = MutableStateFlow<Pair<Double, Double>>(46.520374 to 6.568339)
+  val selectedLocation = _selectedLocation.asStateFlow()
 
-    // Function to update location
-    fun updateSelectedLocation(location: Pair<Double, Double>) {
-        _selectedLocation.value = location
-    }
+  // Function to update location
+  fun updateSelectedLocation(location: Pair<Double, Double>) {
+    _selectedLocation.value = location
+  }
 
   init {
-    repository.init {
-    }
+    repository.init {}
   }
 
   /** Factory for creating a LessonsViewModel. */
