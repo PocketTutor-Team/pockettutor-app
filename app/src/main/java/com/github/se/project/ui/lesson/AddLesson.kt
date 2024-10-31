@@ -45,6 +45,7 @@ fun AddLessonScreen(
   val currentDateTime = Calendar.getInstance()
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
+    val selectedLocation by lessonViewModel.selectedLocation.collectAsState()
 
   // Context for the Toast messages
   val context = LocalContext.current
@@ -61,6 +62,8 @@ fun AddLessonScreen(
             selectedLanguages,
             selectedDate,
             selectedTime,
+            selectedLocation.first,
+            selectedLocation.second
         )
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
@@ -79,6 +82,8 @@ fun AddLessonScreen(
               0.0,
               "${selectedDate}T${selectedTime}:00",
               LessonStatus.REQUESTED,
+              selectedLocation.first,
+              selectedLocation.second
           ),
           onComplete = {
             lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
@@ -88,6 +93,8 @@ fun AddLessonScreen(
       navigationActions.navigateTo(Screen.HOME)
     }
   }
+
+
 
   // Date Picker
   val datePickerDialog =
@@ -216,7 +223,21 @@ fun AddLessonScreen(
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              Text(
+            // Navigation to the map picker screen to select the location of Lesson
+            Button(onClick = {
+                navigationActions.navigateTo(Screen.MAP_LOC_PICKER)
+            }) {
+                Text("Pick Location")
+            }
+
+            // Show selected location if available
+            selectedLocation.let { (latitude, longitude) ->
+                Text("Selected Location: Lat: $latitude, Lng: $longitude")
+            }
+
+          Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
                   "Select the subject you want to study",
                   style = MaterialTheme.typography.titleSmall)
               SubjectSelector(selectedSubject)
@@ -254,7 +275,9 @@ fun validateLessonInput(
     selectedSubject: MutableState<Subject>,
     selectedLanguages: List<Language>,
     date: String,
-    time: String
+    time: String,
+    latitude: Double,
+    longitude: Double
 ): String? {
   for (entry in
       mapOf(
@@ -264,6 +287,8 @@ fun validateLessonInput(
               "language" to selectedLanguages.joinToString { it.name },
               "date" to date,
               "time" to time,
+                "latitude" to latitude.toString(),
+                "longitude" to longitude.toString()
           )
           .entries) {
     if (entry.value.isEmpty()) {

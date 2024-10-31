@@ -29,6 +29,7 @@ object Screen {
   const val ADD_LESSON = "Add Lesson Screen"
   const val CREATE_TUTOR_SCHEDULE = "Create tutor calendar Screen"
   const val SEARCH = "Search Screen" // Find tutor / find student screen
+  const val MAP_LOC_PICKER = "Map Screen"
 }
 
 // Data class for top-level destinations
