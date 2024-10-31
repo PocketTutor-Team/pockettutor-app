@@ -31,7 +31,7 @@ fun EditTutorSchedule(
               color = Color.Red,
               modifier = Modifier.testTag("editScheduleNoProfile"))
 
-  var currentSchedule by remember { mutableStateOf(profile.schedule) }
+  var profileSchedule by remember { mutableStateOf(profile.schedule) }
   val context = LocalContext.current
 
   Scaffold(
@@ -61,25 +61,24 @@ fun EditTutorSchedule(
                   "Modify the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
                   modifier = Modifier.testTag("editScheduleInstructionsText"))
-
               Spacer(modifier = Modifier.height(8.dp))
 
               AvailabilityGrid(
-                  schedule = currentSchedule,
-                  onScheduleChange = { updatedSchedule -> currentSchedule = updatedSchedule },
+                  schedule = profileSchedule,
+                  onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule },
                   modifier = Modifier.weight(1f))
             }
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              profile.schedule = currentSchedule
+              profile.schedule = profileSchedule
               listProfilesViewModel.updateProfile(profile)
               navigationActions.goBack()
               Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-            }) {
+            },
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton")) {
               Text(text = "Update Schedule", fontSize = 16.sp)
             }
       })
