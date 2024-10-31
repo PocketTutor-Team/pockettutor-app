@@ -57,8 +57,10 @@ fun ProfileInfoScreen(
                     }
                 IconButton(
                     onClick = {
-                        if(profileState.value?.role == Role.STUDENT) navigationActions.navigateTo(Screen.EDIT_PROFILE_STUDENT)
-                              else navigationActions.navigateTo(Screen.EDIT_PROFILE_TUTOR)},
+                      if (profileState.value?.role == Role.STUDENT)
+                          navigationActions.navigateTo(Screen.EDIT_PROFILE_STUDENT)
+                      else navigationActions.navigateTo(Screen.EDIT_PROFILE_TUTOR)
+                    },
                     modifier = Modifier.testTag("editProfileButton")) {
                       Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
                     }

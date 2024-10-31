@@ -52,205 +52,194 @@ fun EditStudentProfile(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory)
 ) {
-    val currentProfile =
-        listProfilesViewModel.currentProfile.collectAsState().value
-            ?: return Text(
-                text = "No Profile selected. Should not happen.",
-                modifier = Modifier.testTag("editTutorNoProfile")
-            )
-    var firstName by remember { mutableStateOf(currentProfile.firstName) }
-    var lastName by remember { mutableStateOf(currentProfile.lastName) }
-    var phoneNumber by remember { mutableStateOf(currentProfile.phoneNumber) }
-    val academicLevel = remember { mutableStateOf(currentProfile.academicLevel.name) }
-    var nameEditing by remember { mutableStateOf(false) }
-    val section = remember { mutableStateOf(currentProfile.section.name) }
-    var expandedSection by remember { mutableStateOf(false) }
-    var expandedAcademicLevel by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+  val currentProfile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              modifier = Modifier.testTag("editTutorNoProfile"))
+  var firstName by remember { mutableStateOf(currentProfile.firstName) }
+  var lastName by remember { mutableStateOf(currentProfile.lastName) }
+  var phoneNumber by remember { mutableStateOf(currentProfile.phoneNumber) }
+  val academicLevel = remember { mutableStateOf(currentProfile.academicLevel.name) }
+  var nameEditing by remember { mutableStateOf(false) }
+  val section = remember { mutableStateOf(currentProfile.section.name) }
+  var expandedSection by remember { mutableStateOf(false) }
+  var expandedAcademicLevel by remember { mutableStateOf(false) }
+  val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            IconButton(
-                onClick = { navigationActions.goBack() },
-                modifier = Modifier.testTag("editProfileCloseButton")) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Go Back")
+  Scaffold(
+      topBar = {
+        IconButton(
+            onClick = { navigationActions.goBack() },
+            modifier = Modifier.testTag("editProfileCloseButton")) {
+              Icon(
+                  imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                  contentDescription = "Go Back")
             }
-        },
-        content = { paddingValues ->
-            Column(modifier =
+      },
+      content = { paddingValues ->
+        Column(
+            modifier =
                 Modifier.fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(paddingValues)
                     .testTag("editScreen"),
-                verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "${currentProfile.firstName} ${currentProfile.lastName}",
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(end = 0.dp) // Allows the text to take available space
-                    )
-
-                    // Edit button with icon
-                    IconButton(
-                        onClick = { nameEditing = !nameEditing },
-                        modifier = Modifier.offset(y = (-4).dp)) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
-                    }
-                }
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+              ) {
                 Text(
-                    "Modify your profile information:",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.testTag("editTutorProfileInstructionText"))
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (nameEditing) {
-                    // First Name input
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        textStyle = MaterialTheme.typography.bodyLarge,
-                        label = { Text("First Name") },
-                        placeholder = { Text("Enter your first name") },
-                        modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
-                        singleLine = true
+                    text = "${currentProfile.firstName} ${currentProfile.lastName}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier.testTag("nameTitle")
+                            .padding(end = 0.dp) // Allows the text to take available space
                     )
 
-                    // Last Name input
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        label = { Text("Last Name") },
-                        placeholder = { Text("Enter your last name") },
-                        modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
-                        shape = MaterialTheme.shapes.small,
-                        singleLine = true
-                    )
-                }
+                // Edit button with icon
+                IconButton(
+                    onClick = { nameEditing = !nameEditing },
+                    modifier = Modifier.testTag("editNameButton").offset(y = (-4).dp)) {
+                      Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
+                    }
+              }
+              Text(
+                  "Modify your profile information:",
+                  style = MaterialTheme.typography.titleMedium,
+                  modifier = Modifier.testTag("editProfileInstructionText"))
 
-                // Phone Number input
+              Spacer(modifier = Modifier.height(16.dp))
+
+              if (nameEditing) {
+                // First Name input
                 OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("Phone Number") },
-                    placeholder = { Text("Enter your phone number") },
-                    modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    label = { Text("First Name") },
+                    placeholder = { Text("Enter your first name") },
+                    modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
+                    singleLine = true)
+
+                // Last Name input
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last Name") },
+                    placeholder = { Text("Enter your last name") },
+                    modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
                     shape = MaterialTheme.shapes.small,
                     singleLine = true)
-                Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
+              }
 
-                Spacer(modifier = Modifier.height(16.dp))
+              // Phone Number input
+              OutlinedTextField(
+                  value = phoneNumber,
+                  onValueChange = { phoneNumber = it },
+                  label = { Text("Phone Number") },
+                  placeholder = { Text("Enter your phone number") },
+                  modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
+                  shape = MaterialTheme.shapes.small,
+                  singleLine = true)
+              Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
 
-                // Section dropdown menu with improved styling
-                Box {
-                    Text(
-                        text = section.value, // Directly access the value
-                        modifier =
+              Spacer(modifier = Modifier.height(16.dp))
+
+              // Section dropdown menu with improved styling
+              Box {
+                Text(
+                    text = section.value, // Directly access the value
+                    modifier =
                         Modifier.fillMaxWidth()
                             .clickable { expandedSection = true }
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
                             .border(
                                 1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
-                            .testTag("editTutorProfileSectionDropdown"),
-                        style = MaterialTheme.typography.bodyLarge)
+                            .testTag("editProfileSectionDropdown"),
+                    style = MaterialTheme.typography.bodyLarge)
 
-                    DropdownMenu(
-                        expanded = expandedSection,
-                        onDismissRequest = { expandedSection = false },
-                        modifier = Modifier.fillMaxWidth().zIndex(1f),
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        Section.entries.forEach { s ->
-                            DropdownMenuItem(
-                                text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
-                                onClick = {
-                                    section.value = s.name
-                                    expandedSection = false
-                                },
-                                modifier =
-                                Modifier.testTag("editTutorProfileSectionDropdownItem-${s.name}"))
-                        }
+                DropdownMenu(
+                    expanded = expandedSection,
+                    onDismissRequest = { expandedSection = false },
+                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    properties = PopupProperties(focusable = true)) {
+                      Section.entries.forEach { s ->
+                        DropdownMenuItem(
+                            text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
+                            onClick = {
+                              section.value = s.name
+                              expandedSection = false
+                            },
+                            modifier = Modifier.testTag("editProfileSectionDropdownItem-${s.name}"))
+                      }
                     }
-                }
+              }
 
-                Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
-                Box {
-                    Text(
-                        text = academicLevel.value, // Directly access the value
-                        modifier =
+              Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
+              Box {
+                Text(
+                    text = academicLevel.value, // Directly access the value
+                    modifier =
                         Modifier.fillMaxWidth()
                             .clickable { expandedAcademicLevel = true }
                             .background(Color.Transparent, shape = MaterialTheme.shapes.small)
                             .border(
                                 1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                             .padding(16.dp)
-                            .testTag("editTutorProfileAcademicLevelDropdown"),
-                        style = MaterialTheme.typography.bodyLarge)
+                            .testTag("editProfileAcademicLevelDropdown"),
+                    style = MaterialTheme.typography.bodyLarge)
 
-                    DropdownMenu(
-                        expanded = expandedAcademicLevel,
-                        onDismissRequest = { expandedAcademicLevel = false },
-                        modifier = Modifier.fillMaxWidth().zIndex(1f),
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        AcademicLevel.entries.forEach { a ->
-                            DropdownMenuItem(
-                                text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
-                                onClick = {
-                                    academicLevel.value = a.name
-                                    expandedAcademicLevel = false
-                                },
-                                modifier =
+                DropdownMenu(
+                    expanded = expandedAcademicLevel,
+                    onDismissRequest = { expandedAcademicLevel = false },
+                    modifier = Modifier.fillMaxWidth().zIndex(1f),
+                    properties = PopupProperties(focusable = true)) {
+                      AcademicLevel.entries.forEach { a ->
+                        DropdownMenuItem(
+                            text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
+                            onClick = {
+                              academicLevel.value = a.name
+                              expandedAcademicLevel = false
+                            },
+                            modifier =
                                 Modifier.testTag(
                                     "editTutorProfileAcademicLevelDropdownItem-${a.name}"))
-                        }
+                      }
                     }
-                }
+              }
             }
-        },
-        bottomBar = {
-            // Confirmation Button with Validation
-            Button(
-                modifier =
+      },
+      bottomBar = {
+        // Confirmation Button with Validation
+        Button(
+            modifier =
                 Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
-                shape = MaterialTheme.shapes.medium,
-                onClick = {
-                    if(firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Please fill all the fields",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@Button
-                    }
-                    if(! isPhoneNumberValid(phoneNumber)){
-                        Toast.makeText(
-                            context,
-                            "Please input a valid phone number",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@Button
-                    }
-                    else {
-                        currentProfile.firstName = firstName
-                        currentProfile.lastName = lastName
-                        currentProfile.phoneNumber = phoneNumber
-                        currentProfile.academicLevel = AcademicLevel.valueOf(academicLevel.value)
-                        currentProfile.section = Section.valueOf(section.value)
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+              if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
+                Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT).show()
+                return@Button
+              }
+              if (!isPhoneNumberValid(phoneNumber)) {
+                Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
+                    .show()
+                return@Button
+              } else {
+                currentProfile.firstName = firstName
+                currentProfile.lastName = lastName
+                currentProfile.phoneNumber = phoneNumber
+                currentProfile.academicLevel = AcademicLevel.valueOf(academicLevel.value)
+                currentProfile.section = Section.valueOf(section.value)
 
-                        listProfilesViewModel.updateProfile(currentProfile)
-                        navigationActions.goBack()
+                listProfilesViewModel.updateProfile(currentProfile)
+                navigationActions.goBack()
 
-                        Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT)
-                            .show()
-                    }}) {
-                Text("Continue")
+                Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+              }
+            }) {
+              Text("Continue")
             }
-        })
+      })
 }
