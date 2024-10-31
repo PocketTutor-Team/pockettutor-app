@@ -6,9 +6,9 @@ import java.util.EnumSet
 data class Profile(
     val uid: String, // Unique string id for the profile
     val googleUid: String, // Google unique user id
-    val firstName: String, // First name of the user
-    val lastName: String, // Last name of the user
-    val phoneNumber: String, // Phone number of the user
+    var firstName: String, // First name of the user
+    var lastName: String, // Last name of the user
+    var phoneNumber: String, // Phone number of the user
     val role: Role, // Role of the user
     var section: Section, // Section of the user
     var academicLevel: AcademicLevel, // Academic level of the user
