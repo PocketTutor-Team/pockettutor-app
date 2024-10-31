@@ -32,8 +32,6 @@ import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
 import com.github.se.project.ui.profile.EditTutorProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
-import com.github.se.project.ui.profile.EditTutorProfile
-import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
