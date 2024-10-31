@@ -39,13 +39,13 @@ fun EditTutorProfile(
   val profileLanguages = remember { mutableStateListOf<Language>() }
   val profileSubjects = remember { mutableStateListOf<Subject>() }
 
-    LaunchedEffect(profile) {
-        profileLanguages.clear()
-        profileLanguages.addAll(profile.languages)
+  LaunchedEffect(profile) {
+    profileLanguages.clear()
+    profileLanguages.addAll(profile.languages)
 
-        profileSubjects.clear()
-        profileSubjects.addAll(profile.subjects)
-    }
+    profileSubjects.clear()
+    profileSubjects.addAll(profile.subjects)
+  }
 
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
