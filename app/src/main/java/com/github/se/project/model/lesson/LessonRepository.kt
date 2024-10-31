@@ -21,6 +21,9 @@ interface LessonRepository {
       onFailure: (Exception) -> Unit
   )
 
+  // Method to retrieve all requested lessons of the database
+  fun getAllRequestedLessons(onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit)
+
   // Method to add a new lesson
   fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 

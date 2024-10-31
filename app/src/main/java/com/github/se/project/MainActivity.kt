@@ -1,5 +1,7 @@
 package com.github.se.project
 
+import RequestedLessonsScreen
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +32,7 @@ import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {
       SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
@@ -108,11 +111,14 @@ fun PocketTutorApp() {
     }
 
     navigation(
-        startDestination = Screen.HOME,
+        startDestination = Screen.LESSONS_REQUESTED,
         route = Route.FIND_STUDENT,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.LESSONS_REQUESTED) {
+        RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 

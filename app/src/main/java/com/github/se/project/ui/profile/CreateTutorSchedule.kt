@@ -1,6 +1,7 @@
 package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,7 +27,7 @@ fun CreateTutorSchedule(
       listProfilesViewModel.currentProfile.collectAsState().value
           ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
 
-  var currentSchedule = profile.schedule
+  var currentSchedule by remember { mutableStateOf(profile.schedule) }
 
   Scaffold(
       topBar = {
@@ -37,23 +38,28 @@ fun CreateTutorSchedule(
             textAlign = TextAlign.Start)
       },
       content = { paddingValues ->
-        Column(
-            modifier =
-                Modifier.fillMaxSize()
-                    .padding(horizontal = 12.dp)
-                    .padding(paddingValues)
-                    .testTag("availabilityScreen")) {
-              Text(
-                  "Finish your account creation by selecting the time slots you're available during the week:",
-                  style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("InstructionsText"))
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues).testTag("availabilityScreen"),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              item {
+                Text(
+                    text =
+                        "Finish your account creation by selecting the time slots you're available during the week:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 12.dp).testTag("InstructionsText"))
+              }
 
-              Spacer(modifier = Modifier.height(8.dp))
+              item {
+                AvailabilityGrid(
+                    schedule = currentSchedule,
+                    onScheduleChange = { updatedSchedule -> currentSchedule = updatedSchedule },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .testTag("availabilityGrid"))
+              }
 
-              AvailabilityGrid(
-                  schedule = currentSchedule,
-                  onScheduleChange = { updatedSchedule -> currentSchedule = updatedSchedule },
-                  modifier = Modifier.weight(1f))
+              item { Spacer(modifier = Modifier.height(16.dp)) }
             }
       },
       bottomBar = {
