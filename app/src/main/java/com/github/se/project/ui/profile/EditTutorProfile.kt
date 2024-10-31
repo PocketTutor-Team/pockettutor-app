@@ -38,16 +38,16 @@ fun EditTutorProfile(
               modifier = Modifier.testTag("editTutorNoProfile"))
 
   val initialLanguagesList: List<Language> = profile.languages
-  val selectedLanguages: SnapshotStateList<Language> = remember {
+  val profileLanguages: SnapshotStateList<Language> = remember {
     mutableStateListOf(*initialLanguagesList.toTypedArray())
   }
 
   val initialSubjectsList: List<Subject> = profile.subjects
-  val selectedSubjects: SnapshotStateList<Subject> = remember {
+  val profileSubjects: SnapshotStateList<Subject> = remember {
     mutableStateListOf(*initialSubjectsList.toTypedArray())
   }
 
-  val sliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
+  val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
 
   val academicLevel = remember { mutableStateOf(profile.academicLevel.name) }
@@ -96,7 +96,7 @@ fun EditTutorProfile(
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("editTutorProfileLanguageText"))
               // Language Selection
-              LanguageSelector(selectedLanguages)
+              LanguageSelector(profileLanguages)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -105,7 +105,7 @@ fun EditTutorProfile(
                   "Teaching subjects:",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("editTutorProfileSubjectText"))
-              SubjectsSelector(selectedSubjects)
+              SubjectsSelector(profileSubjects)
 
               Spacer(modifier = Modifier.height(16.dp))
 
@@ -114,7 +114,7 @@ fun EditTutorProfile(
                   "Tutoring price per hour:",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("editTutorProfilePriceText"))
-              PriceSlider(sliderValue)
+              PriceSlider(priceSliderValue)
 
               Spacer(modifier = Modifier.height(8.dp))
 
@@ -192,7 +192,7 @@ fun EditTutorProfile(
                 Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              if (selectedLanguages.isEmpty() || selectedSubjects.isEmpty()) {
+              if (profileLanguages.isEmpty() || profileSubjects.isEmpty()) {
                 showError.value = true
                 Toast.makeText(
                         context,
@@ -201,9 +201,9 @@ fun EditTutorProfile(
                     .show()
               } else {
                 showError.value = false
-                profile.languages = selectedLanguages
-                profile.subjects = selectedSubjects
-                profile.price = sliderValue.floatValue.toInt()
+                profile.languages = profileLanguages
+                profile.subjects = profileSubjects
+                profile.price = priceSliderValue.floatValue.toInt()
                 profile.academicLevel =
                     AcademicLevel.valueOf(
                         academicLevel.value) // Adjust based on your enum definition
