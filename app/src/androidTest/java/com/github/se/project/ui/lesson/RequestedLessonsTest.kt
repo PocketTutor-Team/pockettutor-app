@@ -1,6 +1,6 @@
 package com.github.se.project.ui.lesson
 
-import LessonsRequestedScreen
+import RequestedLessonsScreen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.lesson.Lesson
@@ -94,7 +94,7 @@ class LessonsRequestedScreenTest {
   @Test
   fun testScreenComponentsDisplayed() {
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Verify Top Bar and Bottom Navigation are displayed
@@ -105,7 +105,7 @@ class LessonsRequestedScreenTest {
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Verify the lesson items are displayed
@@ -116,7 +116,7 @@ class LessonsRequestedScreenTest {
   @Test
   fun testDatePickerButtonFunctionality() {
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Click on the DatePicker to ensure it can be interacted with
@@ -132,7 +132,7 @@ class LessonsRequestedScreenTest {
     requestedLessonsFlow.value = mockLessons.filter { it.timeSlot.contains(filteredDate) }
 
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Verify that only the filtered lesson items are displayed
@@ -143,7 +143,7 @@ class LessonsRequestedScreenTest {
   @Test
   fun testBottomNavigationSelection() {
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Interact with Bottom Navigation and verify navigation action
@@ -158,7 +158,7 @@ class LessonsRequestedScreenTest {
     requestedLessonsFlow.value = emptyList() // Set no lessons
 
     composeTestRule.setContent {
-      LessonsRequestedScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Verify "No lessons available" message or any placeholder is displayed

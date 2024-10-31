@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @Composable
-fun LessonsRequestedScreen(
+fun RequestedLessonsScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
