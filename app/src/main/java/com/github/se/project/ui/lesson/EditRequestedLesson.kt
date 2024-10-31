@@ -11,7 +11,8 @@ import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
 @Composable
-fun AddLessonScreen(
+fun EditRequestedLessonScreen(
+    lessonId: String,
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
@@ -19,25 +20,42 @@ fun AddLessonScreen(
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
+  val lessons = lessonViewModel.currentUserLessons.collectAsState()
+  val lesson = lessons.value.find { it.id == lessonId }
+  if (lesson == null) {
+    return
+  }
+
   val context = LocalContext.current
 
   val onConfirm = { lesson: Lesson ->
-    lesson.id = lessonViewModel.getNewUid()
-    lessonViewModel.addLesson(
+    lessonViewModel.updateLesson(
         lesson,
         onComplete = {
           lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
-          Toast.makeText(context, "Lesson added successfully", Toast.LENGTH_SHORT).show()
+          Toast.makeText(context, "Lesson updated successfully", Toast.LENGTH_SHORT).show()
+        })
+
+    navigationActions.navigateTo(Screen.HOME)
+  }
+
+  val onDelete = { lesson: Lesson ->
+    lessonViewModel.deleteLesson(
+        lesson.id,
+        onComplete = {
+          lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
+          Toast.makeText(context, "Lesson deleted successfully", Toast.LENGTH_SHORT).show()
         })
 
     navigationActions.navigateTo(Screen.HOME)
   }
 
   LessonEditor(
-      mainTitle = "Schedule a new lesson",
+      mainTitle = "Edit requested lesson",
       profile = profile.value!!,
-      lesson = null,
+      lesson = lesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = null)
+      onDelete = onDelete,
+  )
 }

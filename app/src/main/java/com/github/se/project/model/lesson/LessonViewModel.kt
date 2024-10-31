@@ -135,6 +135,19 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         })
   }
 
+  // Method to update a lesson by passing it to the repository
+  fun updateLesson(lesson: Lesson, onComplete: () -> Unit) {
+    repository.updateLesson(
+        lesson,
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error adding lesson: $lesson", it)
+          onComplete() // Call the callback even if there's a failure
+        })
+  }
+
   /**
    * Fetches all lessons with the specified status from the repository.
    *
