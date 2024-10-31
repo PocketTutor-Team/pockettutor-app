@@ -14,7 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PriceSlider
-import com.github.se.project.ui.components.SubjectsSelector
+import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -61,7 +61,7 @@ fun CreateTutorProfile(
                   style = MaterialTheme.typography.titleMedium,
                   modifier = Modifier.testTag("instructionText"))
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(12.dp))
 
               Text(
                   "What languages do you feel comfortable teaching in?",
@@ -70,16 +70,16 @@ fun CreateTutorProfile(
               // Language Selection
               LanguageSelector(selectedLanguages)
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(12.dp))
 
               // Subject Selection
               Text(
                   "Which subjects do you teach?",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("subjectText"))
-              SubjectsSelector(selectedSubjects)
+              SubjectSelector(null, selectedSubjects, true)
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(12.dp))
 
               // Price Selection
               Text(

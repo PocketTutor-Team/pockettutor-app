@@ -120,7 +120,7 @@ class CreateTutorProfileTest {
   @Test
   fun selectingSubjectsUpdatesCorrectly() {
     val subjects = mutableListOf<Subject>()
-    composeTestRule.setContent { SubjectsSelector(subjects) }
+    composeTestRule.setContent { SubjectSelector(null, subjects, true) }
 
     Subject.entries.forEach { subject ->
       if (subject == Subject.NONE) return@forEach

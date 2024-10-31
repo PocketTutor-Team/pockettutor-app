@@ -24,13 +24,13 @@ class SubjectSelectorTest {
 
     Subject.entries.forEach { subject ->
       if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdownItem-${subject.name}").isNotDisplayed()
+      composeTestRule.onNodeWithTag("dropdown${subject.name}").isNotDisplayed()
     }
     composeTestRule.onNodeWithTag("subjectButton").performClick()
 
     Subject.entries.forEach { subject ->
       if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdownItem-${subject.name}").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
     }
   }
 }

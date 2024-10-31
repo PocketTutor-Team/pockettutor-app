@@ -43,7 +43,7 @@ class AddLessonTest {
   @Test
   fun AddLessonIsProperlyDisplayed() {
     composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
-    composeTestRule.onNodeWithTag("bigColumn").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
 
@@ -103,7 +103,7 @@ class AddLessonTest {
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdownItem-${Subject.AICC}").performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
     composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
 
     // Confirm
