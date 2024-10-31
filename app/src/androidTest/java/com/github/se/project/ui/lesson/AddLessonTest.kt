@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
+import com.github.se.project.ui.components.validateLessonInput
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
