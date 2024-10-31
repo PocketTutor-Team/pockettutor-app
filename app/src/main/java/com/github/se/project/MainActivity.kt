@@ -20,6 +20,7 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
+import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -119,6 +120,9 @@ fun PocketTutorApp() {
       }
       composable(Screen.LESSONS_REQUESTED) {
         RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.TUTOR_LESSON_RESPONSE) {
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 

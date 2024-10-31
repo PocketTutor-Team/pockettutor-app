@@ -21,6 +21,7 @@ import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.BottomNavigationMenu
 import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -80,7 +81,11 @@ fun RequestedLessonsScreen(
                         .fillMaxWidth()
                         .testTag("lessonsList"),
                 lessons = filteredLessons,
-                isTutor = (currentProfile?.role == Role.TUTOR))
+                isTutor = (currentProfile?.role == Role.TUTOR),
+                onCardClick = { lesson ->
+                  lessonViewModel.selectLesson(lesson)
+                  navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+                })
           }
         }
       }

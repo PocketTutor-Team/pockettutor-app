@@ -35,10 +35,10 @@ import com.github.se.project.ui.navigation.Screen
 
 @Composable
 fun TutorLessonResponseScreen(
-    navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
+    navigationActions: NavigationActions,
 ) {
   val lesson =
       lessonViewModel.selectedLesson.collectAsState().value
@@ -99,7 +99,7 @@ fun TutorLessonResponseScreen(
                   lesson.copy(
                       tutorUid = listProfilesViewModel.currentProfile.value!!.uid,
                       price = sliderPrice.floatValue.toDouble(),
-                      status = LessonStatus.TUTOR_PENDING),
+                      status = LessonStatus.TUTOR_REQUESTED),
                   onComplete = {
                     lessonViewModel.getLessonsForTutor(
                         listProfilesViewModel.currentProfile.value!!.uid)
