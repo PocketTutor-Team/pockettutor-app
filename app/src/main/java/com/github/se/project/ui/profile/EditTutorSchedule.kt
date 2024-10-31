@@ -32,10 +32,10 @@ fun EditTutorSchedule(
               modifier = Modifier.testTag("editScheduleNoProfile"))
 
   var profileSchedule by remember { mutableStateOf(profile.schedule) }
+    LaunchedEffect(profile.schedule) {
+        profileSchedule = profile.schedule
+    }
   val context = LocalContext.current
-
-  // prnt the profile schedule
-  println(profileSchedule)
 
   Scaffold(
       topBar = {
