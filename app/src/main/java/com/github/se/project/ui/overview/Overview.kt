@@ -53,6 +53,10 @@ fun HomeScreen(
         else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
       }
 
+  val onLessonClick = { lesson: Lesson ->
+    navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON + "/${lesson.id}")
+  }
+
   Scaffold(
       topBar = {
         Row(
@@ -104,6 +108,7 @@ fun HomeScreen(
                         statusFilter = LessonStatus.TUTOR_REQUESTED,
                         isTutor = true,
                         maxHeight = 340.dp,
+                        onClick = onLessonClick,
                         modifier = Modifier.testTag("pendingLessonsSection"))
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -112,6 +117,7 @@ fun HomeScreen(
                         lessons = lessons,
                         statusFilter = LessonStatus.CONFIRMED,
                         isTutor = true,
+                        onClick = onLessonClick,
                         modifier = Modifier.testTag("confirmedLessonsSection"))
                   }
 
@@ -124,6 +130,7 @@ fun HomeScreen(
                         statusFilter = LessonStatus.STUDENT_REQUESTED,
                         isTutor = false,
                         maxHeight = 340.dp,
+                        onClick = onLessonClick,
                         modifier = Modifier.testTag("requestedLessonsSection"))
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -141,6 +148,7 @@ fun HomeScreen(
                         lessons = lessons,
                         statusFilter = LessonStatus.CONFIRMED,
                         isTutor = false,
+                        onClick = onLessonClick,
                         modifier = Modifier.testTag("confirmedLessonsStudentSection"))
                   }
                 }
@@ -162,7 +170,8 @@ fun ExpandableLessonSection(
     statusFilter: LessonStatus,
     isTutor: Boolean,
     maxHeight: Dp? = null, // Optional parameter to limit the section's height
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (Lesson) -> Unit = {},
 ) {
   var expanded by remember { mutableStateOf(true) }
 
@@ -195,7 +204,8 @@ fun ExpandableLessonSection(
             lessons = lessons,
             statusFilter = statusFilter,
             isTutor = isTutor,
-            modifier = Modifier.testTag("${sectionTitle}Lessons"))
+            modifier = Modifier.testTag("${sectionTitle}Lessons"),
+            onCardClick = onClick)
       }
     }
   }
