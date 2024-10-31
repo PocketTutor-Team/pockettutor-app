@@ -157,7 +157,7 @@ fun LessonEditor(
       content = { paddingValues ->
         Column(
             modifier =
-                Modifier.testTag("bigColumn")
+                Modifier.testTag("lessonContent")
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
