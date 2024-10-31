@@ -14,11 +14,12 @@ class SubjectsSelectorTest {
 
   @Test
   fun testSubjectsSelector_onClickDisplaysDropdownAndSelectsItem() {
-    val selectedSubjects =
-        mutableStateListOf<Subject>() // Utilise mutableStateListOf pour une réactivité fiable
+    val selectedSubjects = mutableStateListOf<Subject>()
 
     // Set the content for the test
-    composeTestRule.setContent { SubjectsSelector(selectedSubjects = selectedSubjects) }
+    composeTestRule.setContent {
+      SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
+    }
 
     // Step 1: Check that the dropdown is not displayed initially
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").assertDoesNotExist()

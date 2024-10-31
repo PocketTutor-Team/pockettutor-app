@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -12,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
@@ -28,6 +29,7 @@ import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddLessonScreen(
     navigationActions: NavigationActions,
@@ -45,23 +47,34 @@ fun AddLessonScreen(
   val currentDateTime = Calendar.getInstance()
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
-
-  // Context for the Toast messages
   val context = LocalContext.current
 
   var selectedDate by remember { mutableStateOf("") }
   var selectedTime by remember { mutableStateOf("") }
 
+  // Date and Time Pickers setup
+  val datePickerDialog =
+      DatePickerDialog(
+          context,
+          { _, year, month, dayOfMonth -> selectedDate = "$dayOfMonth/${month + 1}/$year" },
+          calendar.get(Calendar.YEAR),
+          calendar.get(Calendar.MONTH),
+          calendar.get(Calendar.DAY_OF_MONTH))
+  datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
+
+  val timePickerDialog =
+      TimePickerDialog(
+          context,
+          { _, hourOfDay, minute -> selectedTime = String.format("%02d:%02d", hourOfDay, minute) },
+          calendar.get(Calendar.HOUR_OF_DAY),
+          calendar.get(Calendar.MINUTE),
+          true)
+
+  // Confirm action handler
   val onConfirm = {
     val error =
         validateLessonInput(
-            title,
-            description,
-            selectedSubject,
-            selectedLanguages,
-            selectedDate,
-            selectedTime,
-        )
+            title, description, selectedSubject, selectedLanguages, selectedDate, selectedTime)
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
@@ -83,167 +96,119 @@ fun AddLessonScreen(
           onComplete = {
             lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
             Toast.makeText(context, "Lesson added successfully", Toast.LENGTH_SHORT).show()
+            navigationActions.navigateTo(Screen.HOME)
           })
-
-      navigationActions.navigateTo(Screen.HOME)
     }
   }
-
-  // Date Picker
-  val datePickerDialog =
-      DatePickerDialog(
-          context,
-          { _, year, month, dayOfMonth ->
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
-          },
-          calendar.get(Calendar.YEAR),
-          calendar.get(Calendar.MONTH),
-          calendar.get(Calendar.DAY_OF_MONTH))
-  datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
-
-  // Time Picker
-  val timePickerDialog =
-      TimePickerDialog(
-          context,
-          { _, hourOfDay, minute ->
-            val formattedHour = hourOfDay.toString().padStart(2, '0')
-            val formattedMinute = minute.toString().padStart(2, '0')
-
-            val selectedCalendar =
-                Calendar.getInstance().apply {
-                  timeInMillis = currentDateTime.timeInMillis
-                  set(Calendar.HOUR_OF_DAY, hourOfDay)
-                  set(Calendar.MINUTE, minute)
-                }
-
-            val isSelectedDateToday =
-                selectedDate ==
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
-
-            if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-              Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
-            } else {
-              selectedTime = "$formattedHour:$formattedMinute"
-            }
-          },
-          calendar.get(Calendar.HOUR_OF_DAY),
-          calendar.get(Calendar.MINUTE),
-          true)
 
   Scaffold(
       topBar = {
         Row(
-            modifier =
-                Modifier.testTag("topRow")
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp, horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
                   text = "Schedule a lesson",
-                  modifier = Modifier.testTag("Title"),
                   style = MaterialTheme.typography.headlineMedium,
-                  textAlign = TextAlign.Center)
-
+                  modifier = Modifier.testTag("Title"))
               IconButton(onClick = { navigationActions.navigateTo(Screen.HOME) }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
             }
       },
       content = { paddingValues ->
-        Column(
+        LazyColumn(
             modifier =
-                Modifier.testTag("bigColumn")
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp)
-                    .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Text(
-                  "Give a title and add a description to your lesson",
-                  style = MaterialTheme.typography.titleSmall)
-
-              OutlinedTextField(
-                  value = title,
-                  onValueChange = { title = it },
-                  label = { Text("Give a title to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in short") },
-                  modifier = Modifier.fillMaxWidth().testTag("titleField"),
-                  singleLine = true)
-
-              OutlinedTextField(
-                  value = description,
-                  onValueChange = { description = it },
-                  label = { Text("Give a description to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in detail") },
-                  modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
-                  singleLine = true)
-
-              Spacer(modifier = Modifier.height(8.dp))
-
-              Text(
-                  "Select the desired date and time for the lesson",
-                  style = MaterialTheme.typography.titleSmall)
-
-              Row(modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = { datePickerDialog.show() },
-                    modifier = Modifier.weight(1f).testTag("DateButton"),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
-                      Text(
-                          selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.labelMedium)
-                    }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(
-                    onClick = { timePickerDialog.show() },
-                    modifier = Modifier.weight(1f).testTag("TimeButton"),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
-                      Text(
-                          selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.labelMedium)
-                    }
+                Modifier.fillMaxSize()
+                    .padding(horizontal = 16.dp)
+                    .padding(paddingValues)
+                    .testTag("lessonContent")) {
+              item {
+                Text(
+                    text = "Give a title and add a description to your lesson",
+                    style = MaterialTheme.typography.titleSmall)
               }
 
-              Spacer(modifier = Modifier.height(8.dp))
-
-              Text(
-                  "Select the subject you want to study",
-                  style = MaterialTheme.typography.titleSmall)
-              SubjectSelector(selectedSubject)
-
-              Spacer(modifier = Modifier.height(8.dp))
-
-              Text(
-                  "Select the possible languages you want the course to take place in",
-                  style = MaterialTheme.typography.titleSmall)
-              LanguageSelector(selectedLanguages)
-
-              Spacer(modifier = Modifier.height(8.dp))
-
-              PriceRangeSlider("Select a price range for your lesson:") { min, max ->
-                minPrice = min.toDouble()
-                maxPrice = max.toDouble()
+              item {
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Give a title to this lesson") },
+                    placeholder = { Text("You can write what the lesson is about in short") },
+                    modifier = Modifier.fillMaxWidth().testTag("titleField"),
+                    singleLine = true)
               }
 
-              Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
+              item {
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Give a description to this lesson") },
+                    placeholder = { Text("You can write what the lesson is about in detail") },
+                    modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
+                    singleLine = true)
+              }
+
+              item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Select the desired date and time for the lesson",
+                    style = MaterialTheme.typography.titleSmall)
+              }
+
+              item {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                  Button(
+                      onClick = { datePickerDialog.show() },
+                      modifier = Modifier.weight(1f).testTag("DateButton")) {
+                        Text(
+                            selectedDate.ifEmpty { "Select Date" },
+                            style = MaterialTheme.typography.labelMedium)
+                      }
+                  Spacer(modifier = Modifier.width(12.dp))
+                  Button(
+                      onClick = { timePickerDialog.show() },
+                      modifier = Modifier.weight(1f).testTag("TimeButton")) {
+                        Text(
+                            selectedTime.ifEmpty { "Select Time" },
+                            style = MaterialTheme.typography.labelMedium)
+                      }
+                }
+              }
+
+              item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Select the subject you want to study",
+                    style = MaterialTheme.typography.titleSmall)
+                SubjectSelector(selectedSubject)
+              }
+
+              item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Select the possible languages for the course",
+                    style = MaterialTheme.typography.titleSmall)
+                LanguageSelector(selectedLanguages)
+              }
+
+              item {
+                Spacer(modifier = Modifier.height(16.dp))
+                PriceRangeSlider("Select a price range for your lesson:") { min, max ->
+                  minPrice = min.toDouble()
+                  maxPrice = max.toDouble()
+                }
+                Text("Selected price range: ${minPrice.toInt()} - ${maxPrice.toInt()}.-")
+              }
             }
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
-            shape = MaterialTheme.shapes.medium,
-            onClick = onConfirm) {
-              Text("Confirm your request")
+            onClick = onConfirm,
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("confirmButton")) {
+              Text("Confirm your request", fontSize = 16.sp)
             }
       })
 }
