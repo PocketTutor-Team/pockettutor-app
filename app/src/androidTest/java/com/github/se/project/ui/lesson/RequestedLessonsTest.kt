@@ -121,8 +121,6 @@ class LessonsRequestedScreenTest {
 
     // Click on the DatePicker to ensure it can be interacted with
     composeTestRule.onNodeWithTag("datePicker").performClick()
-    // Here you would add further interactions if you can simulate date selection in the test
-    // environment
   }
 
   @Test
