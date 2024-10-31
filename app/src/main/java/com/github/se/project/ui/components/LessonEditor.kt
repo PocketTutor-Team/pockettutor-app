@@ -220,17 +220,6 @@ fun LessonEditor(
                           style = MaterialTheme.typography.labelMedium)
                     }
               }
-              Button(
-                  onClick = { timePickerDialog.show() },
-                  modifier = Modifier.weight(1f).testTag("TimeButton"),
-                  colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
-                    Text(
-                        selectedTime.ifEmpty { "Select Time" },
-                        style = MaterialTheme.typography.labelMedium)
-                  }
             }
 
         Spacer(modifier = Modifier.height(8.dp))
