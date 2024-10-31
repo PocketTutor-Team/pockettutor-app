@@ -26,10 +26,16 @@ fun EditTutorSchedule(
 ) {
   val profile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text(text = "No Profile selected. Should not happen.", color = Color.Red)
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              color = Color.Red,
+              modifier = Modifier.testTag("editScheduleNoProfile"))
 
-  var currentSchedule by remember { mutableStateOf(profile.schedule) }
+  var profileSchedule by remember { mutableStateOf(profile.schedule) }
   val context = LocalContext.current
+
+  // prnt the profile schedule
+  println(profileSchedule)
 
   Scaffold(
       topBar = {
@@ -50,32 +56,32 @@ fun EditTutorSchedule(
                     .testTag("editAvailabilityScreen")) {
               Text(
                   text = "${profile.firstName}, show us your availabilities",
-                  modifier = Modifier, // .padding(vertical = 0.dp).testTag("welcomeText"),
+                  modifier = Modifier.testTag("editScheduleWelcomeText"), // .padding(vertical =
+                  // 0.dp).testTag("welcomeText"),
                   style = MaterialTheme.typography.headlineSmall,
                   textAlign = TextAlign.Start)
               Text(
                   "Modify the time slots you're available during the week:",
                   style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("editInstructionsText"))
-
+                  modifier = Modifier.testTag("editScheduleInstructionsText"))
               Spacer(modifier = Modifier.height(8.dp))
 
               AvailabilityGrid(
-                  schedule = currentSchedule,
-                  onScheduleChange = { updatedSchedule -> currentSchedule = updatedSchedule },
+                  schedule = profileSchedule,
+                  onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule },
                   modifier = Modifier.weight(1f))
             }
       },
       bottomBar = {
         Button(
-            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleUpdateButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              profile.schedule = currentSchedule
+              profile.schedule = profileSchedule
               listProfilesViewModel.updateProfile(profile)
               navigationActions.goBack()
               Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-            }) {
+            },
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton")) {
               Text(text = "Update Schedule", fontSize = 16.sp)
             }
       })

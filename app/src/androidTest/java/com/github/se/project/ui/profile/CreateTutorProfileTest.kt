@@ -18,9 +18,8 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
-import com.github.se.project.ui.components.LanguageSelector
+import com.github.se.project.ui.components.*
 import com.github.se.project.ui.navigation.NavigationActions
-import java.util.EnumSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
@@ -51,8 +50,8 @@ class CreateTutorProfileTest {
             role = Role.STUDENT,
             section = Section.GM,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java),
-            subjects = EnumSet.noneOf(Subject::class.java),
+            languages = listOf(),
+            subjects = listOf(),
             schedule = listOf())
     // Set the screen in the test environment
     composeTestRule.setContent {
@@ -80,8 +79,8 @@ class CreateTutorProfileTest {
             role = Role.STUDENT,
             section = Section.GM,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java),
-            subjects = EnumSet.noneOf(Subject::class.java),
+            languages = listOf(),
+            subjects = listOf(),
             schedule = listOf())
     // Set the screen in the test environment
     composeTestRule.setContent {
@@ -121,7 +120,7 @@ class CreateTutorProfileTest {
   @Test
   fun selectingSubjectsUpdatesCorrectly() {
     val subjects = mutableListOf<Subject>()
-    composeTestRule.setContent { SubjectsSelector(subjects) }
+    composeTestRule.setContent { SubjectSelector(null, subjects, true) }
 
     Subject.entries.forEach { subject ->
       if (subject == Subject.NONE) return@forEach
@@ -147,8 +146,8 @@ class CreateTutorProfileTest {
             role = Role.STUDENT,
             section = Section.GM,
             academicLevel = AcademicLevel.MA2,
-            languages = EnumSet.noneOf(Language::class.java),
-            subjects = EnumSet.noneOf(Subject::class.java),
+            languages = listOf(),
+            subjects = listOf(),
             schedule = listOf())
     // Set the screen in the test environment
     composeTestRule.setContent {

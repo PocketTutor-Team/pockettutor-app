@@ -5,13 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
@@ -19,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
-import com.google.firebase.firestore.FirebaseFirestoreException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,18 +29,14 @@ fun CreateProfileScreen(
         viewModel(factory = ListProfilesViewModel.Factory),
     googleUid: String
 ) {
-  // Profile details
+
   var firstName by remember { mutableStateOf("") }
   var lastName by remember { mutableStateOf("") }
   var phoneNumber by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   var section by remember { mutableStateOf("") }
   var academicLevel by remember { mutableStateOf("") }
-
-  // Context for the Toast messages
   val context = LocalContext.current
-
-  // Dropdown menu states (for section and academic level selection)
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
 
@@ -50,84 +46,80 @@ fun CreateProfileScreen(
             text = "Welcome to Pocket Tutor!",
             style = MaterialTheme.typography.headlineMedium,
             modifier =
-                Modifier.padding(vertical = 32.dp, horizontal = 16.dp).testTag("welcomeText"),
-            textAlign = TextAlign.Center)
-      },
-      content = { paddingValues ->
+                Modifier.padding(vertical = 16.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .testTag("welcomeText") // Test tag for top title text
+            )
+      }) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Spacer(modifier = Modifier.height(8.dp))
-
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
               Text(
                   text = "Please enter your details to create your profile:",
                   style = MaterialTheme.typography.titleMedium,
-                  modifier = Modifier.fillMaxWidth().testTag("instructionText"))
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .padding(bottom = 8.dp)
+                          .testTag("instructionText") // Test tag for instruction text
+                  )
 
-              Spacer(modifier = Modifier.height(4.dp))
-
-              // First Name input
               OutlinedTextField(
                   value = firstName,
                   onValueChange = { firstName = it },
-                  textStyle = MaterialTheme.typography.bodyLarge,
                   label = { Text("First Name") },
-                  placeholder = { Text("Enter your first name") },
-                  modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .testTag("firstNameField"), // Test tag for first name input
                   singleLine = true)
 
-              // Last Name input
               OutlinedTextField(
                   value = lastName,
                   onValueChange = { lastName = it },
                   label = { Text("Last Name") },
-                  placeholder = { Text("Enter your last name") },
-                  modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
-                  shape = MaterialTheme.shapes.small,
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .testTag("lastNameField"), // Test tag for last name input
                   singleLine = true)
 
-              // Phone Number input
               OutlinedTextField(
                   value = phoneNumber,
                   onValueChange = { phoneNumber = it },
                   label = { Text("Phone Number") },
-                  placeholder = { Text("Enter your phone number") },
-                  modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
-                  shape = MaterialTheme.shapes.small,
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .testTag("phoneNumberField"), // Test tag for phone number input
                   singleLine = true)
 
-              Spacer(modifier = Modifier.height(8.dp))
-
-              // Role selection
-              Text("You are a:", style = MaterialTheme.typography.titleSmall)
-
-              val roles = listOf(Role.STUDENT, Role.TUTOR)
-
-              SingleChoiceSegmentedButtonRow(
-                  modifier = Modifier.fillMaxWidth().testTag("roleSelection"),
-              ) {
-                roles.forEach { r ->
-                  SegmentedButton(
-                      shape = SegmentedButtonDefaults.baseShape,
-                      selected = r == role,
-                      onClick = { role = r },
-                      modifier =
-                          Modifier.padding(4.dp)
-                              .testTag(
-                                  if (r.name == "STUDENT") "roleButtonStudent"
-                                  else "roleButtonTutor"),
-                      colors =
-                          SegmentedButtonDefaults.colors(
-                              activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                          )) {
-                        Text(
-                            if (r.name == "STUDENT") "Student" else "Tutor",
-                            style = MaterialTheme.typography.labelLarge)
+              Column(modifier = Modifier.fillMaxWidth()) {
+                Text("You are a:", style = MaterialTheme.typography.titleSmall)
+                val roles = listOf(Role.STUDENT, Role.TUTOR)
+                SingleChoiceSegmentedButtonRow(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .testTag("roleSelection") // Test tag for role selection row
+                    ) {
+                      roles.forEach { r ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.baseShape,
+                            selected = r == role,
+                            onClick = { role = r },
+                            modifier =
+                                Modifier.padding(4.dp)
+                                    .testTag(
+                                        "roleButton${if (r == Role.STUDENT) "Student" else "Tutor"}") // Test tag for role buttons
+                            ) {
+                              Text(
+                                  text = if (r == Role.STUDENT) "Student" else "Tutor",
+                                  style = MaterialTheme.typography.labelLarge)
+                            }
                       }
-                }
+                    }
               }
-
-              Spacer(modifier = Modifier.height(8.dp))
 
               Text(text = "Select your section", style = MaterialTheme.typography.titleSmall)
               // Section dropdown menu with improved styling
@@ -162,8 +154,6 @@ fun CreateProfileScreen(
                     }
               }
 
-              Spacer(modifier = Modifier.height(8.dp))
-
               Text(text = "Select your academic level", style = MaterialTheme.typography.titleSmall)
               // Academic Level dropdown menu with improved styling
               Box {
@@ -196,83 +186,61 @@ fun CreateProfileScreen(
                       }
                     }
               }
-            }
-      },
-      bottomBar = {
-        // Create profile button
-        Button(
-            modifier =
-                Modifier.fillMaxWidth().padding(16.dp).height(48.dp).testTag("confirmButton"),
-            shape = MaterialTheme.shapes.medium,
-            onClick = {
-              if (firstName.isNotEmpty() &&
-                  lastName.isNotEmpty() &&
-                  phoneNumber.isNotEmpty() &&
-                  isPhoneNumberValid(phoneNumber) &&
-                  role != Role.UNKNOWN &&
-                  section.isNotEmpty() &&
-                  academicLevel.isNotEmpty()) {
 
-                try {
+              Spacer(modifier = Modifier.weight(1f))
 
-                  val newProfile =
-                      Profile(
-                          listProfilesViewModel.getNewUid(),
-                          googleUid,
-                          firstName,
-                          lastName,
-                          phoneNumber,
-                          role,
-                          Section.valueOf(section),
-                          AcademicLevel.valueOf(academicLevel))
+              Button(
+                  onClick = {
+                    if (firstName.isNotEmpty() &&
+                        lastName.isNotEmpty() &&
+                        phoneNumber.isNotEmpty() &&
+                        isPhoneNumberValid(phoneNumber) &&
+                        role != Role.UNKNOWN &&
+                        section.isNotEmpty() &&
+                        academicLevel.isNotEmpty()) {
+                      try {
+                        val newProfile =
+                            Profile(
+                                listProfilesViewModel.getNewUid(),
+                                googleUid,
+                                firstName,
+                                lastName,
+                                phoneNumber,
+                                role,
+                                Section.valueOf(section),
+                                AcademicLevel.valueOf(academicLevel))
+                        listProfilesViewModel.addProfile(newProfile)
+                        listProfilesViewModel.setCurrentProfile(newProfile)
 
-                  listProfilesViewModel.addProfile(newProfile)
-                  listProfilesViewModel.setCurrentProfile(newProfile)
-
-                  if (role == Role.TUTOR) {
-                    navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
-                  } else if (role == Role.STUDENT) {
-                    navigationActions.navigateTo(Screen.HOME)
+                        if (role == Role.TUTOR) {
+                          navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
+                        } else if (role == Role.STUDENT) {
+                          navigationActions.navigateTo(Screen.HOME)
+                        }
+                      } catch (e: Exception) {
+                        Toast.makeText(
+                                context,
+                                "An error occurred. Please check your inputs and try again.",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    } else {
+                      Toast.makeText(
+                              context,
+                              "Please fill all fields with valid information!",
+                              Toast.LENGTH_SHORT)
+                          .show()
+                    }
+                  },
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .height(48.dp)
+                          .testTag("confirmButton"), // Test tag for confirm button
+                  shape = MaterialTheme.shapes.medium) {
+                    Text("Confirm your details")
                   }
-
-                  return@Button
-                } catch (e: IllegalArgumentException) {
-                  Toast.makeText(
-                          context,
-                          "Please select a section and an academic level from the dropdown menu!",
-                          Toast.LENGTH_SHORT)
-                      .show()
-                } catch (e: FirebaseFirestoreException) {
-                  Toast.makeText(
-                          context,
-                          "An error with Firestore occurred while creating your profile, please try again later!",
-                          Toast.LENGTH_SHORT)
-                      .show()
-                  return@Button
-                } catch (e: Exception) {
-                  Toast.makeText(
-                          context,
-                          "An unexpected error occurred while creating your profile, please try again later!",
-                          Toast.LENGTH_SHORT)
-                      .show()
-                  return@Button
-                }
-              }
-
-              if (phoneNumber.isNotEmpty() && isPhoneNumberValid(phoneNumber)) {
-                Toast.makeText(
-                        context,
-                        "Please complete all the fields before creating your account!",
-                        Toast.LENGTH_SHORT)
-                    .show()
-              } else {
-                Toast.makeText(context, "Please enter a valid phone number!", Toast.LENGTH_SHORT)
-                    .show()
-              }
-            }) {
-              Text("Confirm your details")
             }
-      })
+      }
 }
 
 /**
