@@ -34,6 +34,9 @@ fun EditTutorSchedule(
   var profileSchedule by remember { mutableStateOf(profile.schedule) }
   val context = LocalContext.current
 
+    //prnt the profile schedule
+    println(profileSchedule)
+
   Scaffold(
       topBar = {
         IconButton(

@@ -2,6 +2,7 @@ package com.github.se.project.ui.components
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -49,7 +50,7 @@ class WritableDropdownTest {
     assert(currentValue == "A")
   }
 
-  /*@Test
+  @Test
   fun testDropdownChoices() {
     var currentValue = ""
     composeTestRule.setContent {
@@ -63,5 +64,5 @@ class WritableDropdownTest {
 
     composeTestRule.onNodeWithTag("dropdown").performTextInput("A")
     composeTestRule.onNodeWithTag("item_Apple").assertIsDisplayed()
-  }*/
+  }
 }
