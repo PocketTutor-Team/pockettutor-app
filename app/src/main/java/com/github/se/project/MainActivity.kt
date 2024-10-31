@@ -1,6 +1,8 @@
 package com.github.se.project
 
 import MapPickerScreen
+import RequestedLessonsScreen
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,15 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
+import com.github.se.project.ui.lesson.EditRequestedLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -31,7 +36,9 @@ import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
+    // enableEdgeToEdge()
     setContent {
       SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
     }
@@ -109,12 +116,15 @@ fun PocketTutorApp() {
     }
 
     navigation(
-        startDestination = Screen.MAP_LOC_PICKER,
+        startDestination = Screen.LESSONS_REQUESTED,
         route = Route.FIND_STUDENT,
     ) {
       composable(Screen.MAP_LOC_PICKER) { MapPickerScreen(lessonViewModel, navigationActions) }
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.LESSONS_REQUESTED) {
+        RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 
@@ -141,7 +151,13 @@ fun PocketTutorApp() {
       // composable(Screen.EDIT_LESSON) {
       //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       // }
-
+      composable(
+          Screen.EDIT_REQUESTED_LESSON + "/{Lesson ID}",
+          arguments = listOf(navArgument("Lesson ID") { type = NavType.StringType })) { entry ->
+            val lessonId = entry.arguments?.getString("Lesson ID")!!
+            EditRequestedLessonScreen(
+                lessonId, navigationActions, listProfilesViewModel, lessonViewModel)
+          }
     }
   }
 }

@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 open class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
+  private val requestedLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
+  open val requestedLessons: StateFlow<List<Lesson>> = requestedLessons_.asStateFlow()
+
   private val _currentUserLessons = MutableStateFlow<List<Lesson>>(emptyList())
   open val currentUserLessons: StateFlow<List<Lesson>> = _currentUserLessons.asStateFlow()
 
@@ -136,6 +139,36 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         onFailure = {
           Log.e("LessonViewModel", "Error fetching student's lessons", it)
           onComplete() // Call the callback even if there's a failure
+        })
+  }
+
+  // Method to update a lesson by passing it to the repository
+  fun updateLesson(lesson: Lesson, onComplete: () -> Unit) {
+    repository.updateLesson(
+        lesson,
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error adding lesson: $lesson", it)
+          onComplete() // Call the callback even if there's a failure
+        })
+  }
+
+  /**
+   * Fetches all lessons with the specified status from the repository.
+   *
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun getAllRequestedLessons(onComplete: () -> Unit = {}) {
+    repository.getAllRequestedLessons(
+        onSuccess = { fetchedLessons ->
+          requestedLessons_.value = fetchedLessons
+          onComplete()
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching lessons by status", it)
+          onComplete()
         })
   }
 }

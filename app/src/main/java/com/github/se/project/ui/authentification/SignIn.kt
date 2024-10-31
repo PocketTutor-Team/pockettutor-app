@@ -27,128 +27,117 @@ import com.google.accompanist.pager.rememberPagerState
 fun SignInScreen(onSignInClick: () -> Unit = {}) {
   val pagerState = rememberPagerState()
 
-  Box(
-      modifier =
-          Modifier.fillMaxSize()
-              .background(MaterialTheme.colorScheme.background), // Use the theme's background color
-      contentAlignment = Alignment.Center) {
-        Image(
-            painter = painterResource(id = R.drawable.bg), // Replace with your SVG path
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds)
+  Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    // Background image covering the whole screen
+    Image(
+        painter = painterResource(id = R.drawable.bg),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.FillBounds)
 
-        // Box to position logo in top left
-        Box(modifier = Modifier.fillMaxSize()) {
-          // Logo in top-left
+    // Logo at the top
+    Box(
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(top = 16.dp) // Adjust padding as needed
+                .align(Alignment.TopCenter)) {
           Image(
-              painter = painterResource(id = R.drawable.logobrand), // Replace with your logo path
+              painter = painterResource(id = R.drawable.logobrand),
               contentDescription = "Brand logo",
-              modifier =
-                  Modifier.size(200.dp) // Adjust size as needed
-                      .padding(16.dp) // Padding from top and left
-                      .align(Alignment.TopStart) // Align logo to top-left
-                      .testTag("logo"))
+              modifier = Modifier.size(150.dp).padding(horizontal = 8.dp).testTag("logo"))
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()) {
+    // Center content for images and text
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()) {
+          HorizontalPager(
+              state = pagerState,
+              count = 3,
+              modifier = Modifier.height(300.dp).fillMaxWidth().testTag("images")) { page ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()) {
+                      Image(
+                          painter =
+                              painterResource(
+                                  id =
+                                      when (page) {
+                                        0 -> R.drawable.home1
+                                        1 -> R.drawable.home2
+                                        else -> R.drawable.home3
+                                      }),
+                          contentDescription = null,
+                          modifier =
+                              Modifier.height(200.dp).fillMaxWidth().padding(horizontal = 16.dp),
+                          contentScale = ContentScale.Fit)
 
-              // HorizontalPager for PNG image scrolling
-              HorizontalPager(
-                  state = pagerState,
-                  count = 3, // Number of images to scroll through
-                  modifier = Modifier.height(400.dp).fillMaxWidth().testTag("images")) { page ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()) {
-                          Image(
-                              painter =
-                                  painterResource(
-                                      id =
-                                          when (page) {
-                                            0 ->
-                                                R.drawable
-                                                    .home1 // Replace with your actual PNG resources
-                                            1 -> R.drawable.home2
-                                            else -> R.drawable.home3
-                                          }),
-                              contentDescription = null,
-                              modifier =
-                                  Modifier.height(250.dp) // Limit the image height
-                                      .fillMaxWidth()
-                                      .padding(horizontal = 32.dp),
-                              contentScale =
-                                  ContentScale.Fit // Use Fit to ensure the image is not stretched
-                              )
+                      Spacer(modifier = Modifier.height(16.dp))
 
-                          Spacer(modifier = Modifier.height(16.dp))
-
-                          Text(
-                              text =
-                                  when (page) {
-                                    0 ->
-                                        "Welcome to Pocket Tutor, Simplify learning and teaching with instant connections to the university community."
-                                    1 ->
-                                        "Get help or share your expertise – whether you're a student or a tutor, Pocket Tutor works for both."
-                                    else ->
-                                        "Pocket Tutor connects university students and tutors for quick, effective learning support."
-                                  },
-                              style = Typography.bodyLarge, // Apply the text style from the theme
-                              textAlign = TextAlign.Center,
-                              color =
-                                  MaterialTheme.colorScheme.onBackground, // Use color from theme
-                              modifier = Modifier.fillMaxWidth().padding(horizontal = 42.dp))
-                        }
-                  }
-
-              Spacer(modifier = Modifier.height(8.dp))
-
-              // Pagination Dots
-              Row(
-                  horizontalArrangement = Arrangement.Center,
-                  modifier = Modifier.testTag("dots").fillMaxWidth()) {
-                    PaginationDot(isActive = pagerState.currentPage == 0)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    PaginationDot(isActive = pagerState.currentPage == 1)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    PaginationDot(isActive = pagerState.currentPage == 2)
-                  }
-
-              Spacer(modifier = Modifier.height(64.dp))
-
-              // Google Sign-in Button
-              Button(
-                  onClick = onSignInClick,
-                  shape = Shapes.medium, // Apply the custom shape from the theme
-                  modifier =
-                      Modifier.fillMaxWidth(0.8f)
-                          .height(48.dp)
-                          .clip(Shapes.medium)
-                          .testTag("loginButton")) {
-                    Image(
-                        painter = painterResource(id = R.drawable.google_logo), // Google logo
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Continue with Google",
-                        style = Typography.labelMedium) // Apply button text style
+                      Text(
+                          text =
+                              when (page) {
+                                0 ->
+                                    "Welcome to Pocket Tutor, Simplify learning and teaching with instant connections to the university community."
+                                1 ->
+                                    "Get help or share your expertise – whether you're a student or a tutor, Pocket Tutor works for both."
+                                else ->
+                                    "Pocket Tutor connects university students and tutors for quick, effective learning support."
+                              },
+                          style = Typography.bodyLarge,
+                          textAlign = TextAlign.Center,
+                          color = MaterialTheme.colorScheme.onBackground,
+                          modifier = Modifier.fillMaxWidth().padding(horizontal = 42.dp))
+                    }
               }
 
-              Spacer(modifier = Modifier.height(32.dp))
+          // Pagination Dots
+          Row(
+              horizontalArrangement = Arrangement.Center,
+              modifier = Modifier.testTag("dots").fillMaxWidth()) {
+                PaginationDot(isActive = pagerState.currentPage == 0)
+                Spacer(modifier = Modifier.width(8.dp))
+                PaginationDot(isActive = pagerState.currentPage == 1)
+                Spacer(modifier = Modifier.width(8.dp))
+                PaginationDot(isActive = pagerState.currentPage == 2)
+              }
+        }
 
-              // Terms and Conditions
-              Text(
-                  text =
-                      "By clicking 'Continue', you agree to the Terms of Service and Privacy Policy, and consent to the use of cookies related to PocketTutor.",
-                  style = Typography.bodySmall, // Use bodySmall style from the theme
-                  modifier = Modifier.testTag("terms").padding(horizontal = 32.dp),
-                  textAlign = TextAlign.Center)
-            }
-      }
+    // Bottom content for Google sign-in button and Terms
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier =
+            Modifier.fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp) // Adjust bottom padding as needed
+        ) {
+          Button(
+              onClick = onSignInClick,
+              shape = Shapes.medium,
+              modifier =
+                  Modifier.fillMaxWidth(0.8f)
+                      .height(48.dp)
+                      .clip(Shapes.medium)
+                      .testTag("loginButton")) {
+                Image(
+                    painter = painterResource(id = R.drawable.google_logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Continue with Google", style = Typography.labelMedium)
+              }
+
+          Spacer(modifier = Modifier.height(16.dp))
+
+          Text(
+              text =
+                  "By clicking 'Continue', you agree to the Terms of Service and Privacy Policy, and consent to the use of cookies related to PocketTutor.",
+              style = Typography.bodySmall,
+              modifier = Modifier.testTag("terms").padding(horizontal = 32.dp),
+              textAlign = TextAlign.Center)
+        }
+  }
 }
 
 @Composable
