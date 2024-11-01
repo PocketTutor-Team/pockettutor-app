@@ -1,5 +1,6 @@
 package com.github.se.project.ui.components
 
+import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -29,7 +30,6 @@ import java.util.Calendar
 fun LessonEditor(
     mainTitle: String,
     profile: Profile,
-    selectedLocation: Pair<Double, Double>,
     lesson: Lesson?,
     onBack: () -> Unit,
     onLocationPicker: () -> Unit,
@@ -48,6 +48,15 @@ fun LessonEditor(
   val calendar = Calendar.getInstance()
   val currentDateTime = Calendar.getInstance()
   val currentLessonId = remember { mutableStateOf<String?>(null) }
+
+  var selectedLocation by remember {
+    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (46.520374 to 6.568339))
+  }
+  var isMapVisible by remember { mutableStateOf(false) }
+  val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
+    selectedLocation = newLocation
+    isMapVisible = false // Hide map after confirming selection
+  }
 
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
@@ -220,38 +229,49 @@ fun LessonEditor(
                           style = MaterialTheme.typography.labelMedium)
                     }
               }
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              // Toggle button for Map Picker
+              Button(onClick = { isMapVisible = !isMapVisible }) {
+                Text(if (isMapVisible) "Hide Map Picker" else "Pick Location on Map")
+              }
+
+              // Display selected location coordinates
+              Text(
+                  "Selected Location: Lat: ${selectedLocation.first}, Lng: ${selectedLocation.second}")
+
+              // Conditional Map Picker display
+              if (isMapVisible) {
+                Box(modifier = Modifier.fillMaxWidth().height(500.dp).padding(top = 16.dp)) {
+                  MapPickerBox(
+                      initialLocation = selectedLocation, onLocationSelected = onLocationSelected)
+                }
+              }
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              Text(
+                  "Select the subject you want to study",
+                  style = MaterialTheme.typography.titleSmall)
+              SubjectSelector(selectedSubject)
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              Text(
+                  "Select the possible languages you want the course to take place in",
+                  style = MaterialTheme.typography.titleSmall)
+              LanguageSelector(selectedLanguages)
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              PriceRangeSlider("Select a price range for your lesson:") { min, max ->
+                minPrice = min.toDouble()
+                maxPrice = max.toDouble()
+              }
+
+              Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Navigation to the map picker screen to select the location of Lesson
-        Button(onClick = { onLocationPicker() }) { Text("Pick Location") }
-
-        // Show selected location if available
-        selectedLocation.let { (latitude, longitude) ->
-          Text("Selected Location: Lat: $latitude, Lng: $longitude")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Select the subject you want to study", style = MaterialTheme.typography.titleSmall)
-        SubjectSelector(selectedSubject)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            "Select the possible languages you want the course to take place in",
-            style = MaterialTheme.typography.titleSmall)
-        LanguageSelector(selectedLanguages)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        PriceRangeSlider("Select a price range for your lesson:") { min, max ->
-          minPrice = min.toDouble()
-          maxPrice = max.toDouble()
-        }
-
-        Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
       },
       bottomBar = {
         Column {

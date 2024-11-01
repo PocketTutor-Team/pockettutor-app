@@ -1,6 +1,5 @@
 package com.github.se.project
 
-import MapPickerScreen
 import RequestedLessonsScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -119,7 +118,6 @@ fun PocketTutorApp() {
         startDestination = Screen.LESSONS_REQUESTED,
         route = Route.FIND_STUDENT,
     ) {
-      composable(Screen.MAP_LOC_PICKER) { MapPickerScreen(lessonViewModel, navigationActions) }
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
@@ -147,7 +145,6 @@ fun PocketTutorApp() {
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
-      composable(Screen.MAP_LOC_PICKER) { MapPickerScreen(lessonViewModel, navigationActions) }
       // composable(Screen.EDIT_LESSON) {
       //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       // }
