@@ -55,10 +55,8 @@ fun EditRequestedLessonScreen(
   LessonEditor(
       mainTitle = "Edit requested lesson",
       profile = profile.value!!,
-      selectedLocation = selectedLocation,
       lesson = lesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = onDelete,
-      onLocationPicker = {})
+      onDelete = onDelete)
 }

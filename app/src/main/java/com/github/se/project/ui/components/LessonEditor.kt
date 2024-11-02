@@ -4,6 +4,7 @@ import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -32,7 +33,6 @@ fun LessonEditor(
     profile: Profile,
     lesson: Lesson?,
     onBack: () -> Unit,
-    onLocationPicker: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
 ) {
@@ -49,6 +49,7 @@ fun LessonEditor(
   val currentDateTime = Calendar.getInstance()
   val currentLessonId = remember { mutableStateOf<String?>(null) }
 
+  // Default Location is assigned at EPFL
   var selectedLocation by remember {
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (46.520374 to 6.568339))
   }
@@ -128,6 +129,7 @@ fun LessonEditor(
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
+      Log.d("LessonEditor", lesson?.id ?: "Lesson is null")
       onConfirm(
           Lesson(
               lesson!!.id,
@@ -234,16 +236,17 @@ fun LessonEditor(
 
               // Toggle button for Map Picker
               Button(onClick = { isMapVisible = !isMapVisible }) {
-                Text(if (isMapVisible) "Hide Map Picker" else "Pick Location on Map")
+                Text(if (isMapVisible) "Hide Map" else "Pick Location on Map")
               }
 
               // Display selected location coordinates
               Text(
-                  "Selected Location: Lat: ${selectedLocation.first}, Lng: ${selectedLocation.second}")
+                  "Click on the Map to select the location",
+              )
 
               // Conditional Map Picker display
               if (isMapVisible) {
-                Box(modifier = Modifier.fillMaxWidth().height(500.dp).padding(top = 16.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().height(400.dp).padding(top = 8.dp)) {
                   MapPickerBox(
                       initialLocation = selectedLocation, onLocationSelected = onLocationSelected)
                 }
@@ -303,6 +306,7 @@ fun validateLessonInput(
     latitude: Double,
     longitude: Double
 ): String? {
+  Log.d("LessonEditor", "Validating lesson input")
   for (entry in
       mapOf(
               "title" to title,
@@ -318,5 +322,6 @@ fun validateLessonInput(
       return "${entry.key} is missing"
     }
   }
+  Log.d("LessonEditor", "Lesson input is valid")
   return null
 }
