@@ -118,7 +118,7 @@ fun LessonEditor(
     } else {
       onConfirm(
           Lesson(
-              lesson!!.id,
+              lesson?.id ?: "",
               title,
               description,
               selectedSubject.value,
