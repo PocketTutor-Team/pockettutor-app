@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -27,10 +28,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.never
 import org.mockito.kotlin.verify
 
 @RunWith(AndroidJUnit4::class)
-class EditTutorProfileTest {
+class EditProfileTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -73,17 +75,16 @@ class EditTutorProfileTest {
             firstName = "First",
             lastName = "Last",
             phoneNumber = "1234567890",
-            role = Role.STUDENT,
+            role = Role.TUTOR,
             section = Section.GM,
             academicLevel = AcademicLevel.MA2,
             languages = listOf(Language.ENGLISH),
             subjects = listOf(Subject.ALGEBRA),
             schedule = listOf())
     // Set the screen in the test environment
-    composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }
+    composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
 
     // Assert all expected UI components are visible
-    // composeTestRule.onNodeWithTag("editTutorProfileCloseButton").assertExists()
     composeTestRule.onNodeWithTag("lastNameField").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("firstNameField").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
@@ -91,9 +92,40 @@ class EditTutorProfileTest {
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").assertIsDisplayed()
   }
+
+    @Test
+    fun tutorFieldsDontShowForStudentAccount() {
+        (mockViewModel.currentProfile as MutableStateFlow).value =
+            Profile(
+                uid = "1",
+                googleUid = "googleUid",
+                firstName = "First",
+                lastName = "Last",
+                phoneNumber = "1234567890",
+                role = Role.STUDENT,
+                section = Section.GM,
+                academicLevel = AcademicLevel.MA2
+            )
+        // Set the screen in the test environment
+        composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
+
+        composeTestRule.onNodeWithTag("lastNameField").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("firstNameField").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").assertIsDisplayed()
+    }
 
   @Test
   fun editTutorProfileUpdatesCorrectly() {
@@ -111,7 +143,7 @@ class EditTutorProfileTest {
             subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
-    composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }
+    composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
 
     composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").performClick()
     composeTestRule
@@ -147,7 +179,7 @@ class EditTutorProfileTest {
             subjects = listOf(Subject.ALGEBRA),
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
-    composeTestRule.setContent { EditTutorProfile(mockNavigationActions, mockViewModel) }
+    composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
 
     composeTestRule.onNodeWithTag("editTutorProfileCloseButton").performClick()
     Mockito.verify(mockNavigationActions).goBack()
@@ -168,11 +200,11 @@ class EditTutorProfileTest {
             schedule = List(7) { List(12) { 0 } })
     // Set the screen in the test environment
     composeTestRule.setContent {
-      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
 
-    Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+    Mockito.verify(mockNavigationActions, never()).navigateTo(Mockito.anyString())
   }
 
   @Test
@@ -180,7 +212,7 @@ class EditTutorProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value = profile
     // Set the screen in the test environment
     composeTestRule.setContent {
-      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
     composeTestRule.onNodeWithTag("editNameButton").performClick()
     composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
@@ -191,6 +223,9 @@ class EditTutorProfileTest {
 
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
 
+      assertEquals("NewFirst", mockViewModel.currentProfile.value?.firstName)
+      assertEquals("NewLast", mockViewModel.currentProfile.value?.lastName)
+
     verify(mockNavigationActions).goBack()
   }
 
@@ -199,7 +234,7 @@ class EditTutorProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value = profile
     // Set the screen in the test environment
     composeTestRule.setContent {
-      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
 
     // Enter an invalid phone number
@@ -209,7 +244,7 @@ class EditTutorProfileTest {
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
 
     // Verify no navigation is triggered due to invalid phone number
-    Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+    Mockito.verify(mockNavigationActions, never()).navigateTo(Mockito.anyString())
   }
 
   @Test
@@ -218,12 +253,14 @@ class EditTutorProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value = profile
     // Set the screen in the test environment
     composeTestRule.setContent {
-      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
 
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("00")
 
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+
+      assertEquals("001234567890", mockViewModel.currentProfile.value?.phoneNumber)
 
     verify(mockNavigationActions).goBack()
   }
@@ -233,7 +270,7 @@ class EditTutorProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value = null
     // Set the screen in the test environment
     composeTestRule.setContent {
-      EditTutorProfile(
+      EditProfile(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory))
     }
@@ -242,4 +279,25 @@ class EditTutorProfileTest {
         .onNodeWithTag("editTutorNoProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
   }
+
+    @Test
+    fun deleteName(){
+        (mockViewModel.currentProfile as MutableStateFlow).value = profile
+        // Set the screen in the test environment
+        composeTestRule.setContent {
+            EditProfile(navigationActions = mockNavigationActions, mockViewModel)
+        }
+        composeTestRule.onNodeWithTag("editNameButton").performClick()
+        composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("firstNameField").performClick()
+        composeTestRule.onNodeWithTag("firstNameField").performTextClearance()
+
+        composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+
+        assertEquals("Last", mockViewModel.currentProfile.value?.lastName)
+
+        verify(mockNavigationActions, never()).goBack()
+    }
 }
