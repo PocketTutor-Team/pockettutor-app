@@ -151,9 +151,7 @@ fun PocketTutorApp() {
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
-      composable(Screen.EDIT_PROFILE) {
-        EditProfile(navigationActions, listProfilesViewModel)
-      }
+      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
       composable(Screen.EDIT_SCHEDULE) {
         EditTutorSchedule(navigationActions, listProfilesViewModel)
       }

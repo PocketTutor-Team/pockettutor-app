@@ -58,9 +58,7 @@ fun ProfileInfoScreen(
                       }
                 }
                 IconButton(
-                    onClick = {
-                      navigationActions.navigateTo(Screen.EDIT_PROFILE)
-                    },
+                    onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
                     modifier = Modifier.testTag("editProfileButton")) {
                       Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
                     }

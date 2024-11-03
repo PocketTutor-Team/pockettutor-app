@@ -137,12 +137,11 @@ fun EditProfile(
                   shape = MaterialTheme.shapes.small,
                   singleLine = true)
 
-            if(profile.role == Role.TUTOR) {
+              if (profile.role == Role.TUTOR) {
                 Text(
                     "Teaching languages:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfileLanguageText")
-                )
+                    modifier = Modifier.testTag("editTutorProfileLanguageText"))
                 // Language Selection
                 LanguageSelector(profileLanguages)
 
@@ -152,8 +151,7 @@ fun EditProfile(
                 Text(
                     "Teaching subjects:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfileSubjectText")
-                )
+                    modifier = Modifier.testTag("editTutorProfileSubjectText"))
                 SubjectSelector(null, profileSubjects, true)
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -162,12 +160,11 @@ fun EditProfile(
                 Text(
                     "Tutoring price per hour:",
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.testTag("editTutorProfilePriceText")
-                )
+                    modifier = Modifier.testTag("editTutorProfilePriceText"))
                 PriceSlider(priceSliderValue)
 
                 Spacer(modifier = Modifier.height(5.dp))
-            }
+              }
 
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
               // Section dropdown menu with improved styling
@@ -243,7 +240,8 @@ fun EditProfile(
                 Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              if (profile.role == Role.TUTOR && (profileLanguages.isEmpty() || profileSubjects.isEmpty())) {
+              if (profile.role == Role.TUTOR &&
+                  (profileLanguages.isEmpty() || profileSubjects.isEmpty())) {
                 showError.value = true
                 Toast.makeText(
                         context,
