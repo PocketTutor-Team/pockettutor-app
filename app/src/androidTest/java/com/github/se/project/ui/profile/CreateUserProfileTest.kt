@@ -1,10 +1,16 @@
 package com.github.se.project.ui.profile
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Section
+import com.github.se.project.ui.components.AcademicSelector
+import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import org.junit.Before
@@ -53,8 +59,6 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonStudent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("academicLevelDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
@@ -136,12 +140,8 @@ class CreateProfileScreenTest {
 
   @Test
   fun selectingSection_updatesSectionCorrectly() {
-    composeTestRule.setContent {
-      CreateProfileScreen(
-          navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
-    }
+    val section: MutableState<Section?> = mutableStateOf(null)
+    composeTestRule.setContent { SectionSelector(section) }
 
     // Open section dropdown
     composeTestRule.onNodeWithTag("sectionDropdown").performClick()
@@ -151,16 +151,13 @@ class CreateProfileScreenTest {
 
     // Check that the section is updated correctly
     composeTestRule.onNodeWithTag("sectionDropdown").assertTextEquals("SC")
+    assert(section.value == Section.SC)
   }
 
   @Test
   fun selectingAcademicLevel_updatesAcademicLevelCorrectly() {
-    composeTestRule.setContent {
-      CreateProfileScreen(
-          navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
-    }
+    val academicLevel: MutableState<AcademicLevel?> = mutableStateOf(null)
+    composeTestRule.setContent { AcademicSelector(academicLevel) }
 
     // Open academic level dropdown
     composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()

@@ -90,8 +90,8 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
@@ -118,8 +118,8 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsNotDisplayed()
@@ -144,17 +144,14 @@ class EditProfileTest {
     // Set the screen in the test environment
     composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
 
-    composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
     composeTestRule
-        .onNodeWithTag("editTutorProfileAcademicLevelDropdownItem-MA4")
+        .onNodeWithTag("academicLevelDropdownItem-MA4")
         .assertIsDisplayed()
         .performClick()
 
-    composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").performClick()
-    composeTestRule
-        .onNodeWithTag("editTutorProfileSectionDropdownItem-GM")
-        .assertIsDisplayed()
-        .performClick()
+    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-GM").assertIsDisplayed().performClick()
 
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
 

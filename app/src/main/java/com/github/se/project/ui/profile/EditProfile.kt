@@ -1,9 +1,6 @@
 package com.github.se.project.ui.profile
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -11,17 +8,16 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PriceSlider
+import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.navigation.NavigationActions
 
@@ -55,10 +51,10 @@ fun EditProfile(
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
 
-  val academicLevel = remember { mutableStateOf(profile.academicLevel.name) }
-  val section = remember { mutableStateOf(profile.section.name) }
-  var expandedSection by remember { mutableStateOf(false) }
-  var expandedAcademicLevel by remember { mutableStateOf(false) }
+  val academicLevel: MutableState<AcademicLevel?> = remember {
+    mutableStateOf(profile.academicLevel)
+  }
+  val section: MutableState<Section?> = remember { mutableStateOf(profile.section) }
   var nameEditing by remember { mutableStateOf(false) }
 
   val context = LocalContext.current
@@ -167,70 +163,10 @@ fun EditProfile(
               }
 
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
-              // Section dropdown menu with improved styling
-              Box {
-                Text(
-                    text = section.value, // Directly access the value
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable { expandedSection = true }
-                            .background(Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(
-                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-                            .padding(16.dp)
-                            .testTag("editTutorProfileSectionDropdown"),
-                    style = MaterialTheme.typography.bodyLarge)
-
-                DropdownMenu(
-                    expanded = expandedSection,
-                    onDismissRequest = { expandedSection = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
-                    properties = PopupProperties(focusable = true)) {
-                      Section.entries.forEach { s ->
-                        DropdownMenuItem(
-                            text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
-                            onClick = {
-                              section.value = s.name
-                              expandedSection = false
-                            },
-                            modifier =
-                                Modifier.testTag("editTutorProfileSectionDropdownItem-${s.name}"))
-                      }
-                    }
-              }
+              SectionSelector(section)
 
               Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
-              Box {
-                Text(
-                    text = academicLevel.value, // Directly access the value
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable { expandedAcademicLevel = true }
-                            .background(Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(
-                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-                            .padding(16.dp)
-                            .testTag("editTutorProfileAcademicLevelDropdown"),
-                    style = MaterialTheme.typography.bodyLarge)
-
-                DropdownMenu(
-                    expanded = expandedAcademicLevel,
-                    onDismissRequest = { expandedAcademicLevel = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
-                    properties = PopupProperties(focusable = true)) {
-                      AcademicLevel.entries.forEach { a ->
-                        DropdownMenuItem(
-                            text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
-                            onClick = {
-                              academicLevel.value = a.name
-                              expandedAcademicLevel = false
-                            },
-                            modifier =
-                                Modifier.testTag(
-                                    "editTutorProfileAcademicLevelDropdownItem-${a.name}"))
-                      }
-                    }
-              }
+              AcademicSelector(academicLevel)
             }
       },
       bottomBar = {
@@ -264,10 +200,8 @@ fun EditProfile(
                 profile.languages = profileLanguages
                 profile.subjects = profileSubjects
                 profile.price = priceSliderValue.floatValue.toInt()
-                profile.academicLevel =
-                    AcademicLevel.valueOf(
-                        academicLevel.value) // Adjust based on your enum definition
-                profile.section = Section.valueOf(section.value)
+                profile.academicLevel = academicLevel.value!!
+                profile.section = section.value!!
 
                 listProfilesViewModel.updateProfile(profile)
                 navigationActions.goBack()
