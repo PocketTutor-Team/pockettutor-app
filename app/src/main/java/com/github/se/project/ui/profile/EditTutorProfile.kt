@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -47,6 +48,10 @@ fun EditTutorProfile(
     profileSubjects.addAll(profile.subjects)
   }
 
+  var firstName by remember { mutableStateOf(profile.firstName) }
+  var lastName by remember { mutableStateOf(profile.lastName) }
+  var phoneNumber by remember { mutableStateOf(profile.phoneNumber) }
+
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
 
@@ -54,6 +59,7 @@ fun EditTutorProfile(
   val section = remember { mutableStateOf(profile.section.name) }
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
+  var nameEditing by remember { mutableStateOf(false) }
 
   val context = LocalContext.current
 
@@ -75,21 +81,61 @@ fun EditTutorProfile(
                     .padding(paddingValues)
                     .testTag("tutorInfoScreen"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Text(
-                  text = "${profile.firstName} ${profile.lastName}",
-                  modifier =
-                      Modifier.testTag(
-                          "editTutorWelcomeText"), // .padding(vertical = 48.dp, horizontal =
-                  // 16.dp).testTag("welcomeText"),
-                  style = MaterialTheme.typography.headlineMedium,
-                  textAlign = TextAlign.Center)
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+              ) {
+                Text(
+                    text = "${profile.firstName} ${profile.lastName}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.testTag("nameTitle"))
+
+                // Edit button with icon
+                IconButton(
+                    onClick = { nameEditing = !nameEditing },
+                    modifier = Modifier.testTag("editNameButton").offset(y = (-4).dp)) {
+                      Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
+                    }
+              }
 
               Text(
                   "Modify your profile information:",
                   style = MaterialTheme.typography.titleMedium,
                   modifier = Modifier.testTag("editTutorProfileInstructionText"))
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(6.dp))
+
+              if (nameEditing) {
+                // First Name input
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    label = { Text("First Name") },
+                    placeholder = { Text("Enter your first name") },
+                    modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
+                    singleLine = true)
+
+                // Last Name input
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last Name") },
+                    placeholder = { Text("Enter your last name") },
+                    modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
+                    shape = MaterialTheme.shapes.small,
+                    singleLine = true)
+              }
+
+              // Phone Number input
+              OutlinedTextField(
+                  value = phoneNumber,
+                  onValueChange = { phoneNumber = it },
+                  label = { Text("Phone Number") },
+                  placeholder = { Text("Enter your phone number") },
+                  modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
+                  shape = MaterialTheme.shapes.small,
+                  singleLine = true)
 
               Text(
                   "Teaching languages:",
@@ -98,7 +144,7 @@ fun EditTutorProfile(
               // Language Selection
               LanguageSelector(profileLanguages)
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(6.dp))
 
               // Subject Selection
               Text(
@@ -107,7 +153,7 @@ fun EditTutorProfile(
                   modifier = Modifier.testTag("editTutorProfileSubjectText"))
               SubjectSelector(null, profileSubjects, true)
 
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.height(6.dp))
 
               // Price Selection
               Text(
@@ -116,7 +162,7 @@ fun EditTutorProfile(
                   modifier = Modifier.testTag("editTutorProfilePriceText"))
               PriceSlider(priceSliderValue)
 
-              Spacer(modifier = Modifier.height(8.dp))
+              Spacer(modifier = Modifier.height(5.dp))
 
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
               // Section dropdown menu with improved styling
@@ -199,8 +245,19 @@ fun EditTutorProfile(
                         "Please select at least one language and one subject",
                         Toast.LENGTH_SHORT)
                     .show()
+              } else if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
+                showError.value = true
+                Toast.makeText(context, "Please fill in all the text fields", Toast.LENGTH_SHORT)
+                    .show()
+              } else if (!isPhoneNumberValid(phoneNumber)) {
+                showError.value = true
+                Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
+                    .show()
               } else {
                 showError.value = false
+                profile.firstName = firstName
+                profile.lastName = lastName
+                profile.phoneNumber = phoneNumber
                 profile.languages = profileLanguages
                 profile.subjects = profileSubjects
                 profile.price = priceSliderValue.floatValue.toInt()

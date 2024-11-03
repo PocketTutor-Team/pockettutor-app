@@ -92,10 +92,7 @@ fun EditStudentProfile(
                     text = "${currentProfile.firstName} ${currentProfile.lastName}",
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier.testTag("nameTitle")
-                            .padding(end = 0.dp) // Allows the text to take available space
-                    )
+                    modifier = Modifier.testTag("nameTitle"))
 
                 // Edit button with icon
                 IconButton(
@@ -142,6 +139,7 @@ fun EditStudentProfile(
                   modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
                   shape = MaterialTheme.shapes.small,
                   singleLine = true)
+
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
 
               Spacer(modifier = Modifier.height(16.dp))
@@ -220,12 +218,9 @@ fun EditStudentProfile(
             onClick = {
               if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
                 Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT).show()
-                return@Button
-              }
-              if (!isPhoneNumberValid(phoneNumber)) {
+              } else if (!isPhoneNumberValid(phoneNumber)) {
                 Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
                     .show()
-                return@Button
               } else {
                 currentProfile.firstName = firstName
                 currentProfile.lastName = lastName

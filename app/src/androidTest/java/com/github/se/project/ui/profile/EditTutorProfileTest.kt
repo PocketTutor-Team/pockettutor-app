@@ -1,10 +1,12 @@
 package com.github.se.project.ui.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.AcademicLevel
@@ -25,6 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.doReturn
+import org.mockito.kotlin.verify
 
 @RunWith(AndroidJUnit4::class)
 class EditTutorProfileTest {
@@ -34,6 +37,20 @@ class EditTutorProfileTest {
   private lateinit var mutableStateFlow: MutableStateFlow<Profile?>
   private lateinit var mockViewModel: ListProfilesViewModel
   private lateinit var mockNavigationActions: NavigationActions
+
+  private var profile =
+      Profile(
+          uid = "1",
+          googleUid = "googleUid",
+          firstName = "First",
+          lastName = "Last",
+          phoneNumber = "1234567890",
+          role = Role.STUDENT,
+          section = Section.GM,
+          academicLevel = AcademicLevel.MA2,
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ALGEBRA),
+          schedule = listOf())
 
   @Before
   fun setUp() {
@@ -67,8 +84,11 @@ class EditTutorProfileTest {
 
     // Assert all expected UI components are visible
     // composeTestRule.onNodeWithTag("editTutorProfileCloseButton").assertExists()
-    composeTestRule.onNodeWithTag("editTutorWelcomeText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lastNameField").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("firstNameField").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSectionDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileAcademicLevelDropdown").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
@@ -153,6 +173,59 @@ class EditTutorProfileTest {
     composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
 
     Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+  }
+
+  @Test
+  fun editNameButton() {
+    (mockViewModel.currentProfile as MutableStateFlow).value = profile
+    // Set the screen in the test environment
+    composeTestRule.setContent {
+      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+    }
+    composeTestRule.onNodeWithTag("editNameButton").performClick()
+    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("firstNameField").performTextInput("New")
+    composeTestRule.onNodeWithTag("lastNameField").performTextInput("New")
+
+    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+
+    verify(mockNavigationActions).goBack()
+  }
+
+  @Test
+  fun phoneNumberValidation_showsErrorForInvalidPhone() {
+    (mockViewModel.currentProfile as MutableStateFlow).value = profile
+    // Set the screen in the test environment
+    composeTestRule.setContent {
+      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+    }
+
+    // Enter an invalid phone number
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123ABC")
+
+    // Click on the Confirm button
+    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+
+    // Verify no navigation is triggered due to invalid phone number
+    Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
+  }
+
+  @Test
+  fun phoneNumberValid() {
+    // Set the screen in the test environment
+    (mockViewModel.currentProfile as MutableStateFlow).value = profile
+    // Set the screen in the test environment
+    composeTestRule.setContent {
+      EditTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+    }
+
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("00")
+
+    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+
+    verify(mockNavigationActions).goBack()
   }
 
   @Test
