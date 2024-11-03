@@ -53,6 +53,17 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
   }
 
   /**
+   * Gets a Profile document by its ID.
+   *
+   * @param id The ID of the Profile document to be retrieved.
+   * @return The Profile document with the given ID, or null if not found.
+   */
+  fun getProfileById(id: String): Profile? {
+    getProfiles()
+    return profiles_.value.find { it.uid == id }
+  }
+
+  /**
    * Adds a Profile document.
    *
    * @param profile The Profile document to be added.

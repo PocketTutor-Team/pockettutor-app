@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -37,14 +36,15 @@ fun EditTutorProfile(
               text = "No Profile selected. Should not happen.",
               modifier = Modifier.testTag("editTutorNoProfile"))
 
-  val initialLanguagesList: List<Language> = profile.languages
-  val profileLanguages: SnapshotStateList<Language> = remember {
-    mutableStateListOf(*initialLanguagesList.toTypedArray())
-  }
+  val profileLanguages = remember { mutableStateListOf<Language>() }
+  val profileSubjects = remember { mutableStateListOf<Subject>() }
 
-  val initialSubjectsList: List<Subject> = profile.subjects
-  val profileSubjects: SnapshotStateList<Subject> = remember {
-    mutableStateListOf(*initialSubjectsList.toTypedArray())
+  LaunchedEffect(profile) {
+    profileLanguages.clear()
+    profileLanguages.addAll(profile.languages)
+
+    profileSubjects.clear()
+    profileSubjects.addAll(profile.subjects)
   }
 
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }

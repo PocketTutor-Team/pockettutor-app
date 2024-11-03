@@ -71,6 +71,24 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   }
 
   /**
+   * Updates an existing lesson in the repository.
+   *
+   * @param lesson The Lesson object to be updated.
+   * @param onComplete Callback to execute when the operation completes.
+   */
+  fun updateLesson(lesson: Lesson, onComplete: () -> Unit) {
+    repository.updateLesson(
+        lesson = lesson,
+        onSuccess = {
+          onComplete() // Call the provided callback on success
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error updating lesson: $lesson", it)
+          onComplete() // Call the callback even if there's a failure
+        })
+  }
+
+  /**
    * Deletes a lesson from the repository.
    *
    * @param lessonId The ID of the lesson to be deleted.

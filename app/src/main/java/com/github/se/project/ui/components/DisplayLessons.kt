@@ -1,5 +1,6 @@
 package com.github.se.project.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,8 @@ fun DisplayLessons(
     modifier: Modifier = Modifier,
     lessons: List<Lesson>,
     statusFilter: LessonStatus? = null, // Option to filter by status
-    isTutor: Boolean
+    isTutor: Boolean,
+    onCardClick: (Lesson) -> Unit = {}
 ) {
   val filteredLessons =
       statusFilter?.let { lessons.filter { lesson -> lesson.status == it } } ?: lessons
@@ -36,7 +38,8 @@ fun DisplayLessons(
           modifier =
               Modifier.fillMaxWidth()
                   .padding(vertical = 2.dp)
-                  .testTag("lessonCard_$index"), // Tag for each lesson card
+                  .testTag("lessonCard_$index")
+                  .clickable { onCardClick(lesson) }, // Tag for each lesson card
           colors =
               CardDefaults.cardColors(
                   containerColor =
