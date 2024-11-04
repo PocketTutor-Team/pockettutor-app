@@ -2,6 +2,8 @@ package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -75,7 +77,8 @@ fun EditProfile(
                 Modifier.fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(paddingValues)
-                    .testTag("tutorInfoScreen"),
+                    .testTag("tutorInfoScreen")
+                    .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Row(
                   modifier = Modifier.fillMaxWidth(),
