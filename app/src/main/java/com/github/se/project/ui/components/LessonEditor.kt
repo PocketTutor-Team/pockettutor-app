@@ -118,7 +118,7 @@ fun LessonEditor(
     } else {
       onConfirm(
           Lesson(
-              lesson!!.id,
+              lesson?.id ?: "",
               title,
               description,
               selectedSubject.value,
@@ -129,7 +129,7 @@ fun LessonEditor(
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              LessonStatus.PENDING,
+              LessonStatus.STUDENT_REQUESTED,
           ))
     }
   }
