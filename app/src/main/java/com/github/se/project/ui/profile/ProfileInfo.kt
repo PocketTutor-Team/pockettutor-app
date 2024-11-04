@@ -50,11 +50,13 @@ fun ProfileInfoScreen(
             modifier = Modifier.fillMaxWidth().padding(4.dp).testTag("profileTopBar"),
             horizontalArrangement = Arrangement.SpaceBetween) {
               Row(Modifier.padding(horizontal = 4.dp)) {
-                IconButton(
-                    onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
-                    modifier = Modifier.testTag("calendarButton")) {
-                      Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
-                    }
+                if (profileState.value?.role == Role.TUTOR) {
+                  IconButton(
+                      onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
+                      modifier = Modifier.testTag("calendarButton")) {
+                        Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
+                      }
+                }
                 IconButton(
                     onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
                     modifier = Modifier.testTag("editProfileButton")) {
