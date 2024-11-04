@@ -8,10 +8,10 @@ data class Profile(
     val lastName: String, // Last name of the user
     val phoneNumber: String, // Phone number of the user
     val role: Role, // Role of the user
-    val section: Section, // Section of the user
-    val academicLevel: AcademicLevel, // Academic level of the user
-    val languages: List<Language> = listOf(),
-    val subjects: List<Subject> = listOf(),
-    val schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
+    var section: Section, // Section of the user
+    var academicLevel: AcademicLevel, // Academic level of the user
+    var languages: List<Language> = listOf(),
+    var subjects: List<Subject> = listOf(),
+    var schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
     var price: Int = 0,
 )
