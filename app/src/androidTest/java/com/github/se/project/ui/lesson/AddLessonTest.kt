@@ -51,7 +51,7 @@ class AddLessonTest {
   @Test
   fun sliderTest() {
     var changed = false
-    composeTestRule.setContent { PriceRangeSlider("testLabel") { a, b -> changed = true } }
+    composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
   }
