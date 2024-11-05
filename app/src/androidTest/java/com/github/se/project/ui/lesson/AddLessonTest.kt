@@ -66,8 +66,8 @@ class AddLessonTest {
             listOf(Language.ENGLISH),
             "date",
             "time",
-            0.0,
-            0.0) == null)
+            1.0,
+            1.0) == null)
     assert(
         validateLessonInput(
             "title",
@@ -76,8 +76,8 @@ class AddLessonTest {
             listOf(Language.ENGLISH),
             "date",
             "",
-            0.0,
-            0.0) == "time is missing")
+            1.0,
+            1.0) == "time is missing")
   }
 
   @Test
