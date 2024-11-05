@@ -44,7 +44,9 @@ class LessonRepositoryFirestoreTest {
           minPrice = 20.0,
           maxPrice = 40.0,
           timeSlot = "2024-10-10T10:00:00",
-          status = LessonStatus.PENDING)
+          status = LessonStatus.PENDING,
+            latitude = 0.0,
+            longitude = 0.0)
 
   @Before
   fun setUp() {
