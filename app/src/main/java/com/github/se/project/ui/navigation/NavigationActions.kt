@@ -24,6 +24,7 @@ object Screen {
   const val PROFILE = "Profile Screen"
   const val CREATE_PROFILE = "Create profile Screen"
   const val EDIT_PROFILE = "Edit profile Screen"
+  const val EDIT_SCHEDULE = "Edit schedule Screen"
   const val CREATE_TUTOR_PROFILE = "Tutor information creation Screen"
   const val CALENDAR = "Calendar Screen"
   const val ADD_LESSON = "Add Lesson Screen"
@@ -31,6 +32,7 @@ object Screen {
   const val EDIT_SCHEDULED_LESSON = "Edit Scheduled Lesson"
   const val CREATE_TUTOR_SCHEDULE = "Create tutor calendar Screen"
   const val LESSONS_REQUESTED = "Lessons Requested Screen"
+  const val TUTOR_LESSON_RESPONSE = "Tutor Lesson Response Screen"
   const val SEARCH = "Search Screen" // Find tutor / find student screen
   const val MAP_LOC_PICKER = "Map Screen"
 }

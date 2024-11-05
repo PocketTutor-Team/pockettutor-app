@@ -23,6 +23,7 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
+import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -30,6 +31,8 @@ import com.github.se.project.ui.overview.HomeScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
+import com.github.se.project.ui.profile.EditProfile
+import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
@@ -124,6 +127,9 @@ fun PocketTutorApp() {
       composable(Screen.LESSONS_REQUESTED) {
         RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
+      composable(Screen.TUTOR_LESSON_RESPONSE) {
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
     }
 
     navigation(
@@ -145,9 +151,10 @@ fun PocketTutorApp() {
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
-      // composable(Screen.EDIT_LESSON) {
-      //  EditLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-      // }
+      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
+      composable(Screen.EDIT_SCHEDULE) {
+        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      }
       composable(
           Screen.EDIT_REQUESTED_LESSON + "/{Lesson ID}",
           arguments = listOf(navArgument("Lesson ID") { type = NavType.StringType })) { entry ->

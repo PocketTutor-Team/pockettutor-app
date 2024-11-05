@@ -1,23 +1,19 @@
 package com.github.se.project.ui.profile
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.components.AcademicSelector
+import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -34,8 +30,8 @@ fun CreateProfileScreen(
   var lastName by remember { mutableStateOf("") }
   var phoneNumber by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
-  var section by remember { mutableStateOf("") }
-  var academicLevel by remember { mutableStateOf("") }
+  val section: MutableState<Section?> = remember { mutableStateOf(null) }
+  val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
   val context = LocalContext.current
   var expandedSection by remember { mutableStateOf(false) }
   var expandedAcademicLevel by remember { mutableStateOf(false) }
@@ -123,69 +119,11 @@ fun CreateProfileScreen(
 
               Text(text = "Select your section", style = MaterialTheme.typography.titleSmall)
               // Section dropdown menu with improved styling
-              Box {
-                Text(
-                    text = if (section.isNotEmpty()) section else "Section",
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable { expandedSection = true }
-                            .background(
-                                color = Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(
-                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-                            .padding(16.dp)
-                            .testTag("sectionDropdown"),
-                    style = MaterialTheme.typography.bodyLarge)
-
-                DropdownMenu(
-                    expanded = expandedSection,
-                    onDismissRequest = { expandedSection = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
-                    properties = PopupProperties(focusable = true)) {
-                      Section.entries.forEach { s ->
-                        DropdownMenuItem(
-                            text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },
-                            onClick = {
-                              section = s.name
-                              expandedSection = false
-                            },
-                            modifier = Modifier.testTag("sectionDropdownItem-${s.name}"))
-                      }
-                    }
-              }
+              SectionSelector(section)
 
               Text(text = "Select your academic level", style = MaterialTheme.typography.titleSmall)
               // Academic Level dropdown menu with improved styling
-              Box {
-                Text(
-                    text = if (academicLevel.isNotEmpty()) academicLevel else "Academic level",
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable { expandedAcademicLevel = true }
-                            .background(
-                                color = Color.Transparent, shape = MaterialTheme.shapes.small)
-                            .border(
-                                1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-                            .padding(16.dp)
-                            .testTag("academicLevelDropdown"),
-                    style = MaterialTheme.typography.bodyLarge)
-
-                DropdownMenu(
-                    expanded = expandedAcademicLevel,
-                    onDismissRequest = { expandedAcademicLevel = false },
-                    modifier = Modifier.fillMaxWidth().zIndex(1f),
-                    properties = PopupProperties(focusable = true)) {
-                      AcademicLevel.entries.forEach { a ->
-                        DropdownMenuItem(
-                            text = { Text(a.name, style = MaterialTheme.typography.bodyMedium) },
-                            onClick = {
-                              academicLevel = a.name
-                              expandedAcademicLevel = false
-                            },
-                            modifier = Modifier.testTag("academicLevelDropdownItem-${a.name}"))
-                      }
-                    }
-              }
+              AcademicSelector(academicLevel)
 
               Spacer(modifier = Modifier.weight(1f))
 
@@ -196,8 +134,8 @@ fun CreateProfileScreen(
                         phoneNumber.isNotEmpty() &&
                         isPhoneNumberValid(phoneNumber) &&
                         role != Role.UNKNOWN &&
-                        section.isNotEmpty() &&
-                        academicLevel.isNotEmpty()) {
+                        section.value != null &&
+                        academicLevel.value != null) {
                       try {
                         val newProfile =
                             Profile(
@@ -207,8 +145,8 @@ fun CreateProfileScreen(
                                 lastName,
                                 phoneNumber,
                                 role,
-                                Section.valueOf(section),
-                                AcademicLevel.valueOf(academicLevel))
+                                section.value!!,
+                                academicLevel.value!!)
                         listProfilesViewModel.addProfile(newProfile)
                         listProfilesViewModel.setCurrentProfile(newProfile)
 

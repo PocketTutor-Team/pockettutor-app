@@ -60,7 +60,7 @@ class HomeScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
-              status = LessonStatus.PENDING),
+              status = LessonStatus.TUTOR_REQUESTED),
           Lesson(
               id = "2",
               title = "Math Tutoring",
@@ -72,7 +72,7 @@ class HomeScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.PENDING))
+              status = LessonStatus.STUDENT_REQUESTED))
   private val currentUserLessonsFlow = MutableStateFlow<List<Lesson>>(mockLessons)
 
   @Before

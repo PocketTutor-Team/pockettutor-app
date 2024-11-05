@@ -29,6 +29,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 
 @Composable
 fun ProfileInfoScreen(
@@ -49,13 +50,15 @@ fun ProfileInfoScreen(
             modifier = Modifier.fillMaxWidth().padding(4.dp).testTag("profileTopBar"),
             horizontalArrangement = Arrangement.SpaceBetween) {
               Row(Modifier.padding(horizontal = 4.dp)) {
+                if (profileState.value?.role == Role.TUTOR) {
+                  IconButton(
+                      onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
+                      modifier = Modifier.testTag("calendarButton")) {
+                        Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
+                      }
+                }
                 IconButton(
-                    onClick = { /* Navigate to calendar screen */},
-                    modifier = Modifier.testTag("calendarButton")) {
-                      Icon(imageVector = Icons.Default.DateRange, contentDescription = "Calendar")
-                    }
-                IconButton(
-                    onClick = { /* Navigate to edit profile screen */},
+                    onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
                     modifier = Modifier.testTag("editProfileButton")) {
                       Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
                     }

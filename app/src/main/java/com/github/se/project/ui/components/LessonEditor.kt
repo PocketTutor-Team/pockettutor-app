@@ -129,7 +129,6 @@ fun LessonEditor(
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
-      Log.d("LessonEditor", lesson?.id ?: "Lesson is null")
       onConfirm(
           Lesson(
               lesson?.id ?: "",
@@ -143,7 +142,7 @@ fun LessonEditor(
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              LessonStatus.REQUESTED,
+              LessonStatus.STUDENT_REQUESTED,
               selectedLocation.first,
               selectedLocation.second))
     }
@@ -306,7 +305,6 @@ fun validateLessonInput(
     latitude: Double,
     longitude: Double
 ): String? {
-  Log.d("LessonEditor", "Validating lesson input")
   for (entry in
       mapOf(
               "title" to title,
@@ -322,6 +320,5 @@ fun validateLessonInput(
       return "${entry.key} is missing"
     }
   }
-  Log.d("LessonEditor", "Lesson input is valid")
   return null
 }
