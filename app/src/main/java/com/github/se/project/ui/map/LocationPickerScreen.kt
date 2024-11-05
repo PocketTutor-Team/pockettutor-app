@@ -17,12 +17,21 @@ fun MapPickerBox(
     initialLocation: Pair<Double, Double>,
     onLocationSelected: (Pair<Double, Double>) -> Unit
 ) {
+  val EPFLCoordinates = LatLng(46.520374, 6.568339)
+
   var selectedPosition by remember {
     mutableStateOf(LatLng(initialLocation.first, initialLocation.second))
   }
   val markerState = rememberMarkerState(position = selectedPosition)
+
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(selectedPosition, 10f)
+    position =
+        // If no location is selected yet, set the camera position on the EPFL
+        if (selectedPosition.latitude == 0.0 && selectedPosition.longitude == 0.0) {
+          CameraPosition.fromLatLngZoom(EPFLCoordinates, 10f)
+        } else {
+          CameraPosition.fromLatLngZoom(selectedPosition, 10f)
+        }
   }
 
   Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -33,10 +42,13 @@ fun MapPickerBox(
           selectedPosition = latLng
           markerState.position = selectedPosition
         }) {
-          Marker(
-              state = markerState,
-              title = "Selected Location",
-              snippet = "Lat: ${selectedPosition.latitude}, Lng: ${selectedPosition.longitude}")
+          // Display marker only if initialLocation is not (0, 0)
+          if (selectedPosition.latitude != 0.0 || selectedPosition.longitude != 0.0) {
+            Marker(
+                state = markerState,
+                title = "Location of the Lesson",
+            )
+          }
         }
 
     Button(
