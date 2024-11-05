@@ -65,7 +65,9 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "time") == null)
+            "time",
+            0.0,
+            0.0) == null)
     assert(
         validateLessonInput(
             "title",
@@ -73,7 +75,10 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "") == "time is missing")
+            "",
+            0.0,
+            0.0
+            ) == "time is missing")
   }
 
   @Test

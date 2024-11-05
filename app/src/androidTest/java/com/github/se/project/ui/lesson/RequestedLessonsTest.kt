@@ -56,7 +56,10 @@ class LessonsRequestedScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
-              status = LessonStatus.REQUESTED),
+              status = LessonStatus.REQUESTED,
+              latitude = 0.0,
+                longitude = 0.0
+              ),
           Lesson(
               id = "2",
               title = "Math Tutoring",
@@ -68,7 +71,10 @@ class LessonsRequestedScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.REQUESTED))
+              status = LessonStatus.REQUESTED,
+                latitude = 0.0,
+                    longitude = 0.0
+          ))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
   @Before

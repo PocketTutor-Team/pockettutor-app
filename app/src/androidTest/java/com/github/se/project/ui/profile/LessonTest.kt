@@ -12,7 +12,10 @@ class LessonTest {
 
   @Test
   fun testLessonDefaultValues() {
-    val lesson = Lesson()
+    val lesson = Lesson(
+        latitude = 0.0,
+        longitude = 0.0
+    )
     assertEquals("", lesson.id)
     assertEquals("", lesson.title)
     assertEquals("", lesson.description)
@@ -24,6 +27,8 @@ class LessonTest {
     assertEquals("", lesson.timeSlot)
     assertEquals(LessonStatus.PENDING, lesson.status)
     assertEquals(listOf<Language>(), lesson.languages)
+      assertEquals(0.0, lesson.latitude)
+        assertEquals(0.0, lesson.longitude)
   }
 
   @Test
@@ -40,7 +45,9 @@ class LessonTest {
             maxPrice = 100.0,
             timeSlot = "2024-10-10T10:00:00",
             status = LessonStatus.CONFIRMED,
-            languages = listOf(Language.ENGLISH))
+            languages = listOf(Language.ENGLISH),
+            latitude = 0.0,
+            longitude = 0.0)
     assertEquals("1", lesson.id)
     assertEquals("Kotlin Basics", lesson.title)
     assertEquals("Introduction to Kotlin", lesson.description)
@@ -52,6 +59,8 @@ class LessonTest {
     assertEquals("2024-10-10T10:00:00", lesson.timeSlot)
     assertEquals(LessonStatus.CONFIRMED, lesson.status)
     assertEquals(listOf(Language.ENGLISH), lesson.languages)
+    assertEquals(0.0, lesson.latitude)
+    assertEquals(0.0, lesson.longitude)
   }
 
   @Test
