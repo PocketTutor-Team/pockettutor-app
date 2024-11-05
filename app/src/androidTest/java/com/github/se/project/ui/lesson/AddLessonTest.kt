@@ -77,8 +77,7 @@ class AddLessonTest {
             "date",
             "",
             0.0,
-            0.0
-            ) == "time is missing")
+            0.0) == "time is missing")
   }
 
   @Test

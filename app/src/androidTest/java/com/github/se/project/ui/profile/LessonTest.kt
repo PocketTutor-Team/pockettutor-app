@@ -12,10 +12,7 @@ class LessonTest {
 
   @Test
   fun testLessonDefaultValues() {
-    val lesson = Lesson(
-        latitude = 0.0,
-        longitude = 0.0
-    )
+    val lesson = Lesson(latitude = 0.0, longitude = 0.0)
     assertEquals("", lesson.id)
     assertEquals("", lesson.title)
     assertEquals("", lesson.description)
@@ -27,8 +24,8 @@ class LessonTest {
     assertEquals("", lesson.timeSlot)
     assertEquals(LessonStatus.PENDING, lesson.status)
     assertEquals(listOf<Language>(), lesson.languages)
-      assertEquals(0.0, lesson.latitude)
-        assertEquals(0.0, lesson.longitude)
+    assertEquals(0.0, lesson.latitude)
+    assertEquals(0.0, lesson.longitude)
   }
 
   @Test
