@@ -60,7 +60,7 @@ val OnTertiaryDark = Color(0xFF000000) // Black text on tertiary
 val BackgroundDark = Color(0xFF0C111D) // Very dark gray background
 val OnBackgroundDark = Color(0xFFFFFFFF) // White text on dark background
 
-val SurfaceDark = Color(0xFF533676) // Dark surface
+val SurfaceDark = Color(0xFF0C111D) // Dark surface
 val OnSurfaceDark = Color(0xFFE0E0E0) // Lighter text on dark surface
 
 val InverseSurfaceDark = Color(0xFF8E24AA) // Inverse surface (violet)

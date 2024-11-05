@@ -147,7 +147,6 @@ fun LessonsRequestedTopBar(selectedDate: LocalDate?, onDateSelected: (LocalDate)
 }
 
 // function to return LocalDateTime for sorting by date and time
-fun parseLessonDate(timeSlot: String): LocalDateTime? {
   return try {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
     LocalDateTime.parse(timeSlot, formatter)

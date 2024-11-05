@@ -106,10 +106,15 @@ fun CreateTutorProfile(
                 showError.value = false
                 profile.price = sliderValue.floatValue.toInt()
 
-                listProfilesViewModel.updateProfile(
-                    profile.copy(
-                        languages = selectedLanguages.toList(),
-                        subjects = selectedSubjects.toList()))
+                  val updatedProfile = profile.copy(
+                      languages = selectedLanguages.toList(),
+                      subjects = selectedSubjects.toList(),
+                      price = sliderValue.floatValue.toInt()
+                  )
+
+                  listProfilesViewModel.updateProfile(updatedProfile)
+                  listProfilesViewModel.setCurrentProfile(updatedProfile)
+
                 navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
 
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()

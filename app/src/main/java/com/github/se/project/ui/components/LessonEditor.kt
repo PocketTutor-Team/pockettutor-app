@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -140,6 +141,7 @@ fun LessonEditor(
             modifier =
                 Modifier.testTag("topRow")
                     .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.background)
                     .padding(vertical = 32.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
@@ -242,7 +244,7 @@ fun LessonEditor(
             }
       },
       bottomBar = {
-        Column {
+        Column (Modifier.background(color = MaterialTheme.colorScheme.background)) {
           Button(
               modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
               shape = MaterialTheme.shapes.medium,
