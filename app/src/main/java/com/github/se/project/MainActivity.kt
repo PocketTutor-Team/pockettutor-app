@@ -162,8 +162,6 @@ fun PocketTutorApp() {
             EditRequestedLessonScreen(
                 lessonId, navigationActions, listProfilesViewModel, lessonViewModel)
           }
-
-      // composable(Screen.EDIT_SCHEDULED_LESSON)
     }
   }
 }

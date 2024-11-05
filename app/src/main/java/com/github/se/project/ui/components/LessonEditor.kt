@@ -1,5 +1,6 @@
 package com.github.se.project.ui.components
 
+import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -46,6 +47,15 @@ fun LessonEditor(
   val calendar = Calendar.getInstance()
   val currentDateTime = Calendar.getInstance()
   val currentLessonId = remember { mutableStateOf<String?>(null) }
+
+  var selectedLocation by remember {
+    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
+  }
+  var isMapVisible by remember { mutableStateOf(false) }
+  val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
+    selectedLocation = newLocation
+    isMapVisible = false // Hide map after confirming selection
+  }
 
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
@@ -112,7 +122,8 @@ fun LessonEditor(
             selectedLanguages,
             selectedDate,
             selectedTime,
-        )
+            selectedLocation.first,
+            selectedLocation.second)
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
@@ -130,7 +141,8 @@ fun LessonEditor(
               0.0,
               "${selectedDate}T${selectedTime}:00",
               LessonStatus.STUDENT_REQUESTED,
-          ))
+              selectedLocation.first,
+              selectedLocation.second))
     }
   }
 
@@ -219,6 +231,23 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
+              Button(onClick = { isMapVisible = !isMapVisible }) {
+                Text(if (isMapVisible) "Hide Map" else "Display the Map")
+              }
+
+              Text(
+                  "Click on the Map to select the location",
+              )
+
+              if (isMapVisible) {
+                Box(modifier = Modifier.fillMaxWidth().height(600.dp).padding(top = 8.dp)) {
+                  MapPickerBox(
+                      initialLocation = selectedLocation, onLocationSelected = onLocationSelected)
+                }
+              }
+
+              Spacer(modifier = Modifier.height(8.dp))
+
               Text(
                   "Select the subject you want to study",
                   style = MaterialTheme.typography.titleSmall)
@@ -267,21 +296,30 @@ fun validateLessonInput(
     selectedSubject: MutableState<Subject>,
     selectedLanguages: List<Language>,
     date: String,
-    time: String
+    time: String,
+    latitude: Double,
+    longitude: Double
 ): String? {
-  for (entry in
+  val requiredFields =
       mapOf(
-              "title" to title,
-              "description" to description,
-              "subject" to selectedSubject.value.name,
-              "language" to selectedLanguages.joinToString { it.name },
-              "date" to date,
-              "time" to time,
-          )
-          .entries) {
-    if (entry.value.isEmpty()) {
-      return "${entry.key} is missing"
+          "title" to title,
+          "description" to description,
+          "subject" to selectedSubject.value.name,
+          "language" to selectedLanguages.joinToString { it.name },
+          "date" to date,
+          "time" to time)
+
+  // Check if any required field is empty
+  for ((field, value) in requiredFields) {
+    if (value.isEmpty()) {
+      return "$field is missing"
     }
   }
-  return null
+
+  // Check if location has been set
+  if (latitude == 0.0 && longitude == 0.0) {
+    return "location is missing"
+  }
+
+  return null // All inputs are valid
 }
