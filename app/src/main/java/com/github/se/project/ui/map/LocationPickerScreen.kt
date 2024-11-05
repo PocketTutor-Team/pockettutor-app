@@ -27,7 +27,7 @@ fun MapPickerBox(
 
   Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
     GoogleMap(
-        modifier = Modifier.fillMaxWidth().height(250.dp),
+        modifier = Modifier.fillMaxWidth().height(400.dp),
         cameraPositionState = cameraPositionState,
         onMapClick = { latLng ->
           selectedPosition = latLng
@@ -40,7 +40,7 @@ fun MapPickerBox(
         }
 
     Button(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         onClick = { onLocationSelected(selectedPosition.latitude to selectedPosition.longitude) }) {
           Text("Confirm Location")
         }

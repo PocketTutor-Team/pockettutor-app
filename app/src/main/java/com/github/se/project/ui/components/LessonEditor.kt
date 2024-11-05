@@ -4,7 +4,6 @@ import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -235,7 +234,7 @@ fun LessonEditor(
 
               // Toggle button for Map Picker
               Button(onClick = { isMapVisible = !isMapVisible }) {
-                Text(if (isMapVisible) "Hide Map" else "Pick Location on Map")
+                Text(if (isMapVisible) "Hide Map" else "Display the Map")
               }
 
               // Display selected location coordinates
