@@ -132,7 +132,7 @@ fun LessonEditor(
       Log.d("LessonEditor", lesson?.id ?: "Lesson is null")
       onConfirm(
           Lesson(
-              lesson!!.id,
+              lesson?.id ?: "",
               title,
               description,
               selectedSubject.value,
