@@ -146,12 +146,46 @@ fun LessonsRequestedTopBar(selectedDate: LocalDate?, onDateSelected: (LocalDate)
       })
 }
 
-// function to return LocalDateTime for sorting by date and time
-  return try {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-    LocalDateTime.parse(timeSlot, formatter)
-  } catch (e: Exception) {
-    Log.e("parseLessonDate", "Error parsing date: $timeSlot", e)
-    null
-  }
+@Composable
+private fun EmptyState() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "No lessons available",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = "Try adjusting your filters or check back later",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+/**
+ * Parses a lesson's time slot string into a LocalDateTime object.
+ * Returns null if parsing fails.
+ */
+private fun parseLessonDate(timeSlot: String): LocalDateTime? {
+    return try {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
+        LocalDateTime.parse(timeSlot, formatter)
+    } catch (e: Exception) {
+        Log.e("RequestedLessonsScreen", "Error parsing date: $timeSlot", e)
+        null
+    }
 }
