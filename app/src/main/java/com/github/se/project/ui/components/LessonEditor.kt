@@ -244,7 +244,7 @@ fun LessonEditor(
             }
       },
       bottomBar = {
-        Column (Modifier.background(color = MaterialTheme.colorScheme.background)) {
+        Column(Modifier.background(color = MaterialTheme.colorScheme.background)) {
           Button(
               modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
               shape = MaterialTheme.shapes.medium,

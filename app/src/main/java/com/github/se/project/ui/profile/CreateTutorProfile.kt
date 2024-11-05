@@ -106,14 +106,14 @@ fun CreateTutorProfile(
                 showError.value = false
                 profile.price = sliderValue.floatValue.toInt()
 
-                  val updatedProfile = profile.copy(
-                      languages = selectedLanguages.toList(),
-                      subjects = selectedSubjects.toList(),
-                      price = sliderValue.floatValue.toInt()
-                  )
+                val updatedProfile =
+                    profile.copy(
+                        languages = selectedLanguages.toList(),
+                        subjects = selectedSubjects.toList(),
+                        price = sliderValue.floatValue.toInt())
 
-                  listProfilesViewModel.updateProfile(updatedProfile)
-                  listProfilesViewModel.setCurrentProfile(updatedProfile)
+                listProfilesViewModel.updateProfile(updatedProfile)
+                listProfilesViewModel.setCurrentProfile(updatedProfile)
 
                 navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
 

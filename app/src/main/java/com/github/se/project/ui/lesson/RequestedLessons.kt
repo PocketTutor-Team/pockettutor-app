@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
@@ -50,24 +49,18 @@ fun RequestedLessonsScreen(
     val requestedLessons by lessonViewModel.requestedLessons.collectAsState()
 
     // Update lessons when screen is launched
-    LaunchedEffect(Unit) {
-        lessonViewModel.getAllRequestedLessons()
-    }
+    LaunchedEffect(Unit) { lessonViewModel.getAllRequestedLessons() }
 
     // Filter lessons
-    val filteredLessons = requestedLessons
-        .filter { lesson ->
-            val dateMatches = selectedDate?.let { date ->
-                parseLessonDate(lesson.timeSlot)?.toLocalDate() == date
-            } ?: true
+    val filteredLessons = requestedLessons.filter { lesson ->
+        val dateMatches = selectedDate?.let { date ->
+            parseLessonDate(lesson.timeSlot)?.toLocalDate() == date
+        } ?: true
 
-            val subjectMatches = selectedSubject?.let { subject ->
-                lesson.subject == subject
-            } ?: true
+        val subjectMatches = selectedSubject?.let { subject -> lesson.subject == subject } ?: true
 
-            dateMatches && subjectMatches
-        }
-        .sortedBy { parseLessonDate(it.timeSlot) }
+        dateMatches && subjectMatches
+    }.sortedBy { parseLessonDate(it.timeSlot) }
 
     Scaffold(
         topBar = {
@@ -101,11 +94,7 @@ fun RequestedLessonsScreen(
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
+            Box(modifier = Modifier.fillMaxSize().weight(1f)) {
                 if (filteredLessons.isEmpty()) {
                     EmptyState()
                 } else {
@@ -123,7 +112,8 @@ fun RequestedLessonsScreen(
                                 onCardClick = { lesson ->
                                     lessonViewModel.selectLesson(lesson)
                                     navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-                                }
+                                },
+                                listProfilesViewModel = listProfilesViewModel
                             )
                         }
                     }
@@ -163,30 +153,22 @@ fun LessonsRequestedTopBar(
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    ).apply {
-        datePicker.minDate = Calendar.getInstance().timeInMillis
-    }
+    ).apply { datePicker.minDate = Calendar.getInstance().timeInMillis }
 
     TopAppBar(
+        modifier = Modifier.testTag("topBar"),
         title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.testTag("topBar")
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Lessons Requested", modifier = Modifier.testTag("screenTitle"))
                 Spacer(modifier = Modifier.width(8.dp))
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
+        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.background),
         actions = {
             // Date picker button
             Surface(
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .clickable { datePickerDialog.show() }
-                    .testTag("datePicker"),
+                modifier = Modifier.clickable { datePickerDialog.show() }.testTag("datePicker"),
                 color = MaterialTheme.colorScheme.background
             ) {
                 Row(
@@ -204,10 +186,7 @@ fun LessonsRequestedTopBar(
             }
 
             // Filter button
-            IconButton(
-                onClick = onFilterClick,
-                modifier = Modifier.testTag("filterButton")
-            ) {
+            IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
                 Icon(Icons.Outlined.Menu, "Filter")
             }
         }
@@ -259,11 +238,7 @@ private fun FilterDialog(
                 Text("Clear filter")
             }
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }
 
@@ -298,8 +273,7 @@ private fun EmptyState() {
 }
 
 /**
- * Parses a lesson's time slot string into a LocalDateTime object.
- * Returns null if parsing fails.
+ * Parses a lesson's time slot string into a LocalDateTime object. Returns null if parsing fails.
  */
 private fun parseLessonDate(timeSlot: String): LocalDateTime? {
     return try {

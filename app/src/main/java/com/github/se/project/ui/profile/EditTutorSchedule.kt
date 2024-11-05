@@ -25,73 +25,67 @@ fun EditTutorSchedule(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory)
 ) {
-    val profile =
-        listProfilesViewModel.currentProfile.collectAsState().value
-            ?: return Text(
-                text = "No Profile selected. Should not happen.",
-                color = Color.Red,
-                modifier = Modifier.testTag("editScheduleNoProfile"))
+  val profile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text(
+              text = "No Profile selected. Should not happen.",
+              color = Color.Red,
+              modifier = Modifier.testTag("editScheduleNoProfile"))
 
-    var profileSchedule by remember { mutableStateOf(profile.schedule) }
-    LaunchedEffect(profile.schedule) { profileSchedule = profile.schedule }
-    val context = LocalContext.current
+  var profileSchedule by remember { mutableStateOf(profile.schedule) }
+  LaunchedEffect(profile.schedule) { profileSchedule = profile.schedule }
+  val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            IconButton(
-                onClick = { navigationActions.goBack() },
-                modifier = Modifier.testTag("editScheduleCloseButton")) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "Go Back")
+  Scaffold(
+      topBar = {
+        IconButton(
+            onClick = { navigationActions.goBack() },
+            modifier = Modifier.testTag("editScheduleCloseButton")) {
+              Icon(
+                  imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                  contentDescription = "Go Back")
             }
-        },
-        content = { paddingValues ->
-            LazyColumn(
-                modifier =
+      },
+      content = { paddingValues ->
+        LazyColumn(
+            modifier =
                 Modifier.fillMaxSize()
                     .padding(horizontal = 12.dp)
                     .padding(paddingValues)
                     .testTag("editAvailabilityScreen"),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    Text(
-                        text = "${profile.firstName}, show us your availabilities",
-                        modifier = Modifier.testTag("editScheduleWelcomeText"),
-                        style = MaterialTheme.typography.headlineSmall,
-                        textAlign = TextAlign.Start
-                    )
-                }
-                item {
-                    Text(
-                        "Modify the time slots you're available during the week:",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.testTag("editScheduleInstructionsText")
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(8.dp)) }
-                item {
-                    AvailabilityGrid(
-                        schedule = profileSchedule,
-                        onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule }
-                    )
-                }
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              item {
+                Text(
+                    text = "${profile.firstName}, show us your availabilities",
+                    modifier = Modifier.testTag("editScheduleWelcomeText"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Start)
+              }
+              item {
+                Text(
+                    "Modify the time slots you're available during the week:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.testTag("editScheduleInstructionsText"))
+              }
+              item { Spacer(modifier = Modifier.height(8.dp)) }
+              item {
+                AvailabilityGrid(
+                    schedule = profileSchedule,
+                    onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule })
+              }
             }
-        },
-        bottomBar = {
-            Button(
-                shape = MaterialTheme.shapes.medium,
-                onClick = {
-                    profile.schedule = profileSchedule
-                    listProfilesViewModel.updateProfile(profile)
-                    navigationActions.goBack()
-                    Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton")) {
-                Text(text = "Update Schedule", fontSize = 16.sp)
+      },
+      bottomBar = {
+        Button(
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+              profile.schedule = profileSchedule
+              listProfilesViewModel.updateProfile(profile)
+              navigationActions.goBack()
+              Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("editScheduleButton")) {
+              Text(text = "Update Schedule", fontSize = 16.sp)
             }
-        }
-    )
+      })
 }
-

@@ -18,177 +18,139 @@ import com.github.se.project.model.profile.Profile
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-/**
- * Displays detailed information about a lesson and the associated student.
- */
+/** Displays detailed information about a lesson and the associated student. */
 @Composable
-fun DisplayLessonDetails(
-    lesson: Lesson,
-    studentProfile: Profile,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp)
-            .testTag("lessonDetailsCard"),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modifier = Modifier) {
+  Card(
+      modifier = modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("lessonDetailsCard"),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Student information section
-            StudentInfoSection(studentProfile)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+              // Student information section
+              StudentInfoSection(studentProfile)
 
-            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+              Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            // Lesson information section
-            LessonInfoSection(lesson)
+              // Lesson information section
+              LessonInfoSection(lesson)
 
-            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+              Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            // Time and date section
-            TimeAndDateSection(lesson.timeSlot)
-        }
-    }
+              // Time and date section
+              TimeAndDateSection(lesson.timeSlot)
+            }
+      }
 }
 
 @Composable
 private fun StudentInfoSection(profile: Profile) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically) {
         // Profile picture placeholder
         Surface(
             modifier = Modifier.size(48.dp),
             shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                modifier = Modifier.padding(8.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
+              Icon(
+                  imageVector = Icons.Default.Person,
+                  contentDescription = null,
+                  modifier = Modifier.padding(8.dp),
+                  tint = MaterialTheme.colorScheme.primary)
+            }
 
         // Student details
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "${profile.firstName} ${profile.lastName}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.testTag("studentName")
-            )
-            Text(
-                text = "${profile.section} - ${profile.academicLevel}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+          Text(
+              text = "${profile.firstName} ${profile.lastName}",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("studentName"))
+          Text(
+              text = "${profile.section} - ${profile.academicLevel}",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         // Languages
         Column(horizontalAlignment = Alignment.End) {
-            profile.languages.forEach { language ->
-                Text(
-                    text = language.name,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+          profile.languages.forEach { language ->
+            Text(
+                text = language.name,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary)
+          }
         }
-    }
+      }
 }
 
 @Composable
 private fun LessonInfoSection(lesson: Lesson) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // Subject and Title
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                CustomIcon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_school_24),
-                    contentDescription = "School Icon"
-                )
-                Text(
-                    text = lesson.subject.name,
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-        }
-
-        // Title
-        Text(
-            text = lesson.title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.testTag("lessonTitle")
-        )
-
-        // Description
-        Text(
-            text = lesson.description,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.testTag("lessonDescription"),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 3
-        )
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // Subject and Title
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      Row(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.weight(1f)) {
+            CustomIcon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_school_24),
+                contentDescription = "School Icon")
+            Text(text = lesson.subject.name, style = MaterialTheme.typography.titleSmall)
+          }
     }
+
+    // Title
+    Text(
+        text = lesson.title,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.testTag("lessonTitle"))
+
+    // Description
+    Text(
+        text = lesson.description,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.testTag("lessonDescription"),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 3)
+  }
 }
 
 @Composable
 private fun TimeAndDateSection(timeSlot: String) {
-        val dateTime = LocalDateTime.parse(
-            timeSlot,
-            DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-        )
-        val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+  val dateTime = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
+  val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")
+  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically) {
+        // Date
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Date
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = dateTime.format(dateFormatter),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)) {
+              Icon(
+                  imageVector = Icons.Default.DateRange,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.primary)
+              Text(
+                  text = dateTime.format(dateFormatter),
+                  style = MaterialTheme.typography.bodyMedium)
             }
 
-            // Time
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CustomIcon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
-                    contentDescription = "Custom Icon"
-                )
-                Text(
-                    text = dateTime.format(timeFormatter),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        // Time
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+              CustomIcon(
+                  imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                  contentDescription = "Custom Icon")
+              Text(
+                  text = dateTime.format(timeFormatter),
+                  style = MaterialTheme.typography.bodyMedium)
             }
-        }
+      }
 }

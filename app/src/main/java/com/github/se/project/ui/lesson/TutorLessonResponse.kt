@@ -20,157 +20,133 @@ import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
-/**
- * Screen where tutors can respond to lesson requests by setting their price.
- */
+/** Screen where tutors can respond to lesson requests by setting their price. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TutorLessonResponseScreen(
-    listProfilesViewModel: ListProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions,
 ) {
-    val lesson = lessonViewModel.selectedLesson.collectAsState().value
-        ?: return Text("No lesson selected. Should not happen.")
+  val lesson =
+      lessonViewModel.selectedLesson.collectAsState().value
+          ?: return Text("No lesson selected. Should not happen.")
 
-    val currentProfile = listProfilesViewModel.currentProfile.collectAsState().value
-        ?: return Text("No profile found. Should not happen.")
+  val currentProfile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text("No profile found. Should not happen.")
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+  var showConfirmDialog by remember { mutableStateOf(false) }
+  val context = LocalContext.current
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navigationActions.goBack() },
-                        modifier = Modifier.testTag("backButton")
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                title = {
-                        Text(
-                            text = "Respond to Request",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.testTag("TutorLessonResponseTitle")
-                        )
-                }
-            )
-        }
-    ) { paddingValues ->
+  Scaffold(
+      containerColor = MaterialTheme.colorScheme.background,
+      topBar = {
+        TopAppBar(
+            navigationIcon = {
+              IconButton(
+                  onClick = { navigationActions.goBack() },
+                  modifier = Modifier.testTag("backButton")) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back")
+                  }
+            },
+            title = {
+              Text(
+                  text = "Respond to Request",
+                  style = MaterialTheme.typography.titleLarge,
+                  modifier = Modifier.testTag("TutorLessonResponseTitle"))
+            })
+      }) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .testTag("tutorLessonResponseScreen"),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
-            if (studentProfile == null) {
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .testTag("tutorLessonResponseScreen"),
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+              val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
+              if (studentProfile == null) {
                 ErrorState(message = "Cannot retrieve student profile")
-            } else {
+              } else {
                 // Lesson information card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    DisplayLessonDetails(lesson, studentProfile)
-                }
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                      DisplayLessonDetails(lesson, studentProfile)
+                    }
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Confirmation button
                 Button(
                     onClick = { showConfirmDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .testTag("confirmButton")
-                ) {
-                    Icon(
-                        Icons.Default.Send,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Offer to Teach (${currentProfile.price}.-/hour)")
-                }
+                    modifier =
+                        Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
+                      Icon(
+                          Icons.Default.Send,
+                          contentDescription = null,
+                          modifier = Modifier.size(20.dp))
+                      Spacer(modifier = Modifier.width(8.dp))
+                      Text("Offer to Teach (${currentProfile.price}.-/hour)")
+                    }
+              }
             }
-        }
 
         // Confirmation Dialog
         if (showConfirmDialog) {
-            AlertDialog(
-                onDismissRequest = { showConfirmDialog = false },
-                title = { Text("Confirm Your Offer") },
-                text = {
-                    Text(
-                        "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?"
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            lessonViewModel.updateLesson(
-                                lesson.copy(
-                                    tutorUid = currentProfile.uid,
-                                    price = currentProfile.price.toDouble(),
-                                    status = LessonStatus.TUTOR_REQUESTED,
-                                ),
-                                onComplete = {
-                                    lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                                    Toast.makeText(
-                                        context,
-                                        "Offer sent successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    navigationActions.navigateTo(Screen.HOME)
-                                }
-                            )
-                        }
-                    ) {
-                        Text("Confirm")
+          AlertDialog(
+              onDismissRequest = { showConfirmDialog = false },
+              title = { Text("Confirm Your Offer") },
+              text = {
+                Text(
+                    "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?")
+              },
+              confirmButton = {
+                Button(
+                    onClick = {
+                      lessonViewModel.updateLesson(
+                          lesson.copy(
+                              tutorUid = currentProfile.uid,
+                              price = currentProfile.price.toDouble(),
+                              status = LessonStatus.TUTOR_REQUESTED,
+                          ),
+                          onComplete = {
+                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                            navigationActions.navigateTo(Screen.HOME)
+                          })
+                    }) {
+                      Text("Confirm")
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showConfirmDialog = false }) {
-                        Text("Cancel")
-                    }
-                }
-            )
+              },
+              dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+              })
         }
-    }
+      }
 }
 
 @Composable
 private fun ErrorState(message: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+  Column(
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center) {
         Icon(
             Icons.Default.Close,
             contentDescription = null,
             modifier = Modifier.size(48.dp),
-            tint = MaterialTheme.colorScheme.error
-        )
+            tint = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error
-        )
-    }
+            color = MaterialTheme.colorScheme.error)
+      }
 }

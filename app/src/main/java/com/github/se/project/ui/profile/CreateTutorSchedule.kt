@@ -63,15 +63,14 @@ fun CreateTutorSchedule(
             }
       },
       bottomBar = {
-
         Button(
             modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("FindStudentButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-                val updatedProfile = profile.copy(schedule = currentSchedule)
+              val updatedProfile = profile.copy(schedule = currentSchedule)
 
-                listProfilesViewModel.updateProfile(updatedProfile)
-                listProfilesViewModel.setCurrentProfile(updatedProfile)
+              listProfilesViewModel.updateProfile(updatedProfile)
+              listProfilesViewModel.setCurrentProfile(updatedProfile)
 
               navigationActions.navigateTo(Screen.HOME)
             }) {

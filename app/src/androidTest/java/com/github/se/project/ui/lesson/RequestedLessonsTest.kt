@@ -1,6 +1,5 @@
 package com.github.se.project.ui.lesson
 
-import RequestedLessonsScreen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.lesson.Lesson
