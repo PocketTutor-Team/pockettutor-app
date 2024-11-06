@@ -3,6 +3,7 @@ package com.github.se.project
 import RequestedLessonsScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,10 +38,26 @@ import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
+
+  var testMode = false
   override fun onCreate(savedInstanceState: Bundle?) {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     // enableEdgeToEdge()
+
+    // Check if the Intent has been passed to the Activity
+    val isIntentPassed = intent != null
+    if (isIntentPassed) {
+      // Print "true" to Log or Toast
+      Log.e("Intent Passed", "true")
+    }
+    if(testMode){
+      Log.e("MainActivity", "Test mode enabled")
+      setContent {
+        SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp(true) } }
+      }
+    }
+
     setContent {
       SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
     }
@@ -48,7 +65,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PocketTutorApp() {
+fun PocketTutorApp(testMode: Boolean = false) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
@@ -72,7 +89,13 @@ fun PocketTutorApp() {
     // Authentication flow
     navigation(startDestination = Screen.AUTH, route = Route.AUTH) {
       composable(Screen.AUTH) {
-        SignInScreen(
+        if(testMode){
+          SignInScreen(
+            onSignInClick = {googleUid = "mockUid"
+              navigationActions.navigateTo(Screen.CREATE_PROFILE)}
+          )
+        }
+        else{SignInScreen(
             onSignInClick = {
               authenticationViewModel.handleGoogleSignIn(
                   context,
@@ -90,6 +113,7 @@ fun PocketTutorApp() {
                     }
                   })
             })
+        }
       }
       // For debugging purposes (when sign-in error)
       // composable(Screen.AUTH) {
