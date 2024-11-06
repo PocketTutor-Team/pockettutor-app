@@ -66,10 +66,12 @@ fun DisplayLessons(
                       when {
                         lesson.status == LessonStatus.COMPLETED ->
                             MaterialTheme.colorScheme.secondaryContainer
+                          lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isNotEmpty()->
+                            MaterialTheme.colorScheme.secondaryContainer
                         lesson.status == LessonStatus.STUDENT_REQUESTED ->
                             if (isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
                             else Color(0xFFFEDF89)
-                        else -> MaterialTheme.colorScheme.surfaceContainerHigh
+                        else -> Color(0xFFB6EFB5)
                       }),
           elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
             Column(
