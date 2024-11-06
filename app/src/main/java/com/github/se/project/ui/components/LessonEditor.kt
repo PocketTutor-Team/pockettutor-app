@@ -124,7 +124,7 @@ fun LessonEditor(
               description,
               selectedSubject.value,
               selectedLanguages.toList(),
-              "",
+              listOf(),
               profile.uid,
               minPrice,
               maxPrice,
@@ -201,7 +201,7 @@ fun LessonEditor(
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
                       Text(
                           selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.labelMedium)
+                          style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimary)
                     }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -215,7 +215,7 @@ fun LessonEditor(
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
                       Text(
                           selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.labelMedium)
+                          style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimary)
                     }
               }
 

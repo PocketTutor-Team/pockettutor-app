@@ -35,11 +35,12 @@ fun DisplayLessons(
     lessons: List<Lesson>,
     statusFilter: LessonStatus? = null,
     isTutor: Boolean,
+    tutorProposed: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel // Ajout du ViewModel pour récupérer les profils
 ) {
   val filteredLessons =
-      statusFilter?.let { lessons.filter { lesson -> lesson.status == it } } ?: lessons
+      statusFilter?.let { lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isNotEmpty() == tutorProposed} } ?: lessons
 
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     filteredLessons.forEachIndexed { index, lesson ->
@@ -50,7 +51,7 @@ fun DisplayLessons(
             if (isTutor) {
               listProfilesViewModel.getProfileById(lesson.studentUid)
             } else {
-              listProfilesViewModel.getProfileById(lesson.tutorUid)
+              listProfilesViewModel.getProfileById(lesson.tutorUid.toString())
             }
       }
 
@@ -65,8 +66,7 @@ fun DisplayLessons(
                       when {
                         lesson.status == LessonStatus.COMPLETED ->
                             MaterialTheme.colorScheme.secondaryContainer
-                        lesson.status == LessonStatus.PENDING ||
-                            lesson.status == LessonStatus.REQUESTED ->
+                        lesson.status == LessonStatus.STUDENT_REQUESTED ->
                             if (isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
                             else Color(0xFFFEDF89)
                         else -> MaterialTheme.colorScheme.surfaceContainerHigh

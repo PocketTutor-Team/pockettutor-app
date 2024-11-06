@@ -151,13 +151,25 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
       val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
-      val tutorUid = document.getString("tutorUid") ?: return null
+
       val studentUid = document.getString("studentUid") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null
       val price = document.getDouble("price") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = LessonStatus.valueOf(document.getString("status") ?: return null)
+
+        val tutorUid =
+            document.get("tutorUid")?.let { tutorUid ->
+                (tutorUid as List<*>).mapNotNull {
+                    try {
+                       it.toString()
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("LessonRepositoryFirestore", "Invalid tutorId in document: $it", e)
+                        null
+                    }
+                }
+            } ?: emptyList()
 
       val language =
           document.get("languages")?.let { languagesList ->

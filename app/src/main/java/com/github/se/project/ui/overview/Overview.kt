@@ -53,8 +53,13 @@ fun HomeScreen(
       }
 
   val onLessonClick = { lesson: Lesson ->
-    if (currentProfile?.role == Role.STUDENT) {
+    if (currentProfile?.role == Role.STUDENT && lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isEmpty()) {
       navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON + "/${lesson.id}")
+    }
+      else if (currentProfile?.role == Role.STUDENT && lesson.status == LessonStatus.STUDENT_REQUESTED) {
+          //TODO: Implement the navigation to the StudentConfirmationScreen
+    } else if (currentProfile?.role == Role.STUDENT && lesson.status == LessonStatus.CONFIRMED) {
+        //TODO: Implement the navigation to the LessonDetailScreen
     }
   }
 
@@ -131,7 +136,7 @@ private fun TutorSections(
       listOf(
           SectionInfo(
               "Pending Confirmations",
-              LessonStatus.TUTOR_REQUESTED,
+              LessonStatus.STUDENT_REQUESTED,
               ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
           SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
@@ -150,7 +155,7 @@ private fun StudentSections(
               "Waiting for Tutors",
               LessonStatus.STUDENT_REQUESTED,
               ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Tutor Offers", LessonStatus.TUTOR_REQUESTED, Icons.Default.Notifications),
+          SectionInfo("Tutor Offers", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications, true),
           SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
   LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
@@ -218,6 +223,7 @@ private fun ExpandableLessonSection(
                 lessons = lessons,
                 statusFilter = section.status,
                 isTutor = isTutor,
+                tutorProposed = section.tutorProposed,
                 onCardClick = onClick,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 listProfilesViewModel = listProfilesViewModel)
@@ -271,4 +277,4 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector)
+private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector, val tutorProposed: Boolean = false)
