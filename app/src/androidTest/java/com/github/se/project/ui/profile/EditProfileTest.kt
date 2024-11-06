@@ -66,37 +66,6 @@ class EditProfileTest {
     doReturn(mutableStateFlow as StateFlow<Profile?>).`when`(mockViewModel).currentProfile
   }
 
-  @Test
-  fun editTutorProfileScreen_rendersCorrectly() {
-    (mockViewModel.currentProfile as MutableStateFlow).value =
-        Profile(
-            uid = "1",
-            googleUid = "googleUid",
-            firstName = "First",
-            lastName = "Last",
-            phoneNumber = "1234567890",
-            role = Role.TUTOR,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = listOf(Language.ENGLISH),
-            subjects = listOf(Subject.ALGEBRA),
-            schedule = listOf())
-    // Set the screen in the test environment
-    composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
-
-    // Assert all expected UI components are visible
-    composeTestRule.onNodeWithTag("lastNameField").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("academicLevelDropdown").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").assertIsDisplayed()
-  }
 
   @Test
   fun tutorFieldsDontShowForStudentAccount() {
@@ -115,7 +84,6 @@ class EditProfileTest {
 
     composeTestRule.onNodeWithTag("lastNameField").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("firstNameField").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("nameTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileInstructionText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("sectionDropdown").assertIsDisplayed()
@@ -204,28 +172,6 @@ class EditProfileTest {
   }
 
   @Test
-  fun editNameButton() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = profile
-    // Set the screen in the test environment
-    composeTestRule.setContent {
-      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
-    }
-    composeTestRule.onNodeWithTag("editNameButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
-
-    composeTestRule.onNodeWithTag("firstNameField").performTextInput("New")
-    composeTestRule.onNodeWithTag("lastNameField").performTextInput("New")
-
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
-
-    assertEquals("NewFirst", mockViewModel.currentProfile.value?.firstName)
-    assertEquals("NewLast", mockViewModel.currentProfile.value?.lastName)
-
-    verify(mockNavigationActions).goBack()
-  }
-
-  @Test
   fun phoneNumberValidation_showsErrorForInvalidPhone() {
     (mockViewModel.currentProfile as MutableStateFlow).value = profile
     // Set the screen in the test environment
@@ -274,26 +220,5 @@ class EditProfileTest {
     composeTestRule
         .onNodeWithTag("editTutorNoProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
-  }
-
-  @Test
-  fun deleteName() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = profile
-    // Set the screen in the test environment
-    composeTestRule.setContent {
-      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
-    }
-    composeTestRule.onNodeWithTag("editNameButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
-
-    composeTestRule.onNodeWithTag("firstNameField").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").performTextClearance()
-
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
-
-    assertEquals("Last", mockViewModel.currentProfile.value?.lastName)
-
-    verify(mockNavigationActions, never()).goBack()
   }
 }

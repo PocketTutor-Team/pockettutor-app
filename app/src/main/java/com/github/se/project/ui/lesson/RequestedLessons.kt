@@ -261,7 +261,8 @@ private fun EmptyState() {
         Text(
             text = "No lessons available",
             style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.testTag("noLessonsMessage")
         )
         Text(
             text = "Try adjusting your filters or check back later",

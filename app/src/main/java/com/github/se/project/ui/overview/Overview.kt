@@ -61,6 +61,7 @@ fun HomeScreen(
   Scaffold(
       topBar = {
         TopAppBar(
+            modifier = Modifier.testTag("topBar"),
             title = {
               Text(
                   text = "Welcome, ${currentProfile?.firstName}",
@@ -68,9 +69,8 @@ fun HomeScreen(
             },
             actions = {
               IconButton(
-                  onClick = { navigationActions.navigateTo(Screen.PROFILE) },
-                  modifier = Modifier.testTag("profileIcon")) {
-                    Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Profile")
+                  onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
+                    Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Profile Icon", Modifier.testTag("Profile Icon"))
                   }
             })
       },
@@ -241,7 +241,8 @@ private fun EmptyLessonsState(paddingValues: PaddingValues) {
               Text(
                   text = "No active lessons",
                   style = MaterialTheme.typography.titleLarge,
-                  textAlign = TextAlign.Center)
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.testTag("noLessonsText"))
               Text(
                   text = "Your lessons will appear here once you have some scheduled",
                   style = MaterialTheme.typography.bodyMedium,
