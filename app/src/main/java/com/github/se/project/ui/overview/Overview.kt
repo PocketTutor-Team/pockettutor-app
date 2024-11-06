@@ -154,8 +154,8 @@ private fun StudentSections(
           SectionInfo(
               "Waiting for Tutors",
               LessonStatus.STUDENT_REQUESTED,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Tutor Offers", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications, true),
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24), true),
+          SectionInfo("Tutor Offers", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications),
           SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
   LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
@@ -223,7 +223,7 @@ private fun ExpandableLessonSection(
                 lessons = lessons,
                 statusFilter = section.status,
                 isTutor = isTutor,
-                tutorProposed = section.tutorProposed,
+                tutorEmpty = section.tutorEmpty,
                 onCardClick = onClick,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 listProfilesViewModel = listProfilesViewModel)
@@ -277,4 +277,4 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector, val tutorProposed: Boolean = false)
+private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector, val tutorEmpty: Boolean = false)

@@ -35,12 +35,12 @@ fun DisplayLessons(
     lessons: List<Lesson>,
     statusFilter: LessonStatus? = null,
     isTutor: Boolean,
-    tutorProposed: Boolean = false,
+    tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel // Ajout du ViewModel pour récupérer les profils
 ) {
   val filteredLessons =
-      statusFilter?.let { lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isNotEmpty() == tutorProposed} } ?: lessons
+      statusFilter?.let { lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isEmpty() == tutorEmpty} } ?: lessons
 
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     filteredLessons.forEachIndexed { index, lesson ->
