@@ -38,8 +38,6 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class EndToEndTest {
 
-  @Mock lateinit var listProfilesViewModel: ListProfilesViewModel
-
   @Mock lateinit var navigationActions: NavigationActions
 
   @Mock lateinit var context: Context
@@ -53,13 +51,7 @@ class EndToEndTest {
 
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
-  // private var currentProfile : Profile = Profile(uid = "1", googleUid = "googleUid", firstName =
-  // "First", lastName = "Last", phoneNumber = "1234567890", role = Role.STUDENT, section =
-  // Section.GM, academicLevel = AcademicLevel.BA1, languages = listOf(), subjects = listOf(),
-  // schedule = listOf())
   var currentLesson: Lesson? = null
-
-  private val mockUid = "mockUid"
 
   @get:Rule val composeTestRule = createComposeRule()
 
