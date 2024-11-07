@@ -4,9 +4,14 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.LessonRepository
@@ -67,7 +72,7 @@ class EndToEndTest {
 
     // End to end test, for the whole app, firebase included
     @Test
-    fun EndToEndWithFirebase() {
+    fun EndToEnd() {
         // Start the app in test mode
         composeTestRule.setContent { PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel) }
 
@@ -75,8 +80,8 @@ class EndToEndTest {
         composeTestRule.onNodeWithTag("loginButton").performClick()
 
         // Enter valid data for all fields
-        composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
-        composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
+        composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
+        composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupond")
         composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
         composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
 
@@ -88,11 +93,47 @@ class EndToEndTest {
 
         // Click the confirm button
         composeTestRule.onNodeWithTag("confirmButton").performClick()
-
+/*
         // Go to the profile viewing screen
         composeTestRule.onNodeWithTag("profileIcon", true).performClick()
 
-        // Check if the profile is displayed
-        composeTestRule.onNodeWithTag("profileView").assertIsDisplayed()
+        // Check if the correct profile info is displayed
+        composeTestRule.onNodeWithText("Alice Dupond").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Status: BA3 Student").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Section: SC").assertIsDisplayed()
+
+        // Go to the edit profile screen
+        composeTestRule.onNodeWithTag("editProfileButton").performClick()
+
+        // Change the profile info
+        composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
+        composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA5").performClick()
+        composeTestRule.onNodeWithTag("sectionDropdown").performClick()
+        composeTestRule.onNodeWithTag("sectionDropdownItem-MA").performClick()
+        composeTestRule.onNodeWithTag("editNameButton").performClick()
+        composeTestRule.onNodeWithTag("lastNameField").performTextClearance()
+        composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+        // Check if the profile info updated correctly
+        composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Status: BA5 Student").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Section: MA").assertIsDisplayed()
+
+        //Go back to the home screen
+        composeTestRule.onNodeWithTag("closeButton").performClick()
+*/
+        composeTestRule.onNodeWithText("Find a Tutor").performClick()
+
+        composeTestRule.onNodeWithTag("titleField").performTextInput("End-to-end testing")
+        composeTestRule.onNodeWithTag("DescriptionField").performTextInput("Teach me how to write tests :(")
+        composeTestRule.onNodeWithTag("DateButton").performClick()
+        onView(withText("OK")).perform(click());
+        composeTestRule.onNodeWithTag("TimeButton").performClick()
+        onView(withText("OK")).perform(click());
+        composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+        composeTestRule.onNodeWithTag("subjectButton").performClick()
+        composeTestRule.onNodeWithTag("dropdownAICC").performClick()
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
     }
 }

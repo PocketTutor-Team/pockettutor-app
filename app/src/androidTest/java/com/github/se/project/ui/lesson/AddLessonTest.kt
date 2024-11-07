@@ -3,6 +3,9 @@ package com.github.se.project.ui.lesson
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -95,21 +98,21 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("DateButton").performClick()
     // Assuming DatePickerDialog is shown, set selectedDate manually for test (mock behavior if
     // possible)
-    composeTestRule.onNodeWithText("Select Date").assertExists()
+      onView(withText("OK")).perform(click());
 
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     // Assuming TimePickerDialog is shown, set selectedTime manually for test (mock behavior if
     // possible)
-    composeTestRule.onNodeWithText("Select Time").assertExists()
+      onView(withText("OK")).perform(click());
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
+      composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions, never()).navigateTo(anyString())
+    verify(navigationActions).navigateTo(anyString())
   }
 
   @Test

@@ -176,7 +176,7 @@ fun EditProfile(
         // Confirmation Button with Validation
         Button(
             modifier =
-                Modifier.fillMaxWidth().padding(16.dp).testTag("editTutorProfileConfirmButton"),
+                Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
               if (profile.role == Role.TUTOR &&

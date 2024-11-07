@@ -95,7 +95,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
   @Test
@@ -123,7 +123,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
   @Test
@@ -153,7 +153,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("sectionDropdown").performClick()
     composeTestRule.onNodeWithTag("sectionDropdownItem-GM").assertIsDisplayed().performClick()
 
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     assertEquals(AcademicLevel.MA4, mockViewModel.currentProfile.value?.academicLevel)
     assertEquals(Section.GM, mockViewModel.currentProfile.value?.section)
@@ -198,7 +198,7 @@ class EditProfileTest {
     composeTestRule.setContent {
       EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     Mockito.verify(mockNavigationActions, never()).navigateTo(Mockito.anyString())
   }
@@ -217,7 +217,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("New")
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("New")
 
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     assertEquals("NewFirst", mockViewModel.currentProfile.value?.firstName)
     assertEquals("NewLast", mockViewModel.currentProfile.value?.lastName)
@@ -237,7 +237,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123ABC")
 
     // Click on the Confirm button
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     // Verify no navigation is triggered due to invalid phone number
     Mockito.verify(mockNavigationActions, never()).navigateTo(Mockito.anyString())
@@ -254,7 +254,7 @@ class EditProfileTest {
 
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("00")
 
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     assertEquals("001234567890", mockViewModel.currentProfile.value?.phoneNumber)
 
@@ -290,7 +290,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("firstNameField").performClick()
     composeTestRule.onNodeWithTag("firstNameField").performTextClearance()
 
-    composeTestRule.onNodeWithTag("editTutorProfileConfirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     assertEquals("Last", mockViewModel.currentProfile.value?.lastName)
 

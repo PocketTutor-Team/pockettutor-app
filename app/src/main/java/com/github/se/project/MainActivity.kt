@@ -71,7 +71,7 @@ fun PocketTutorApp(testMode: Boolean = false, authenticationViewModel: Authentic
       composable(Screen.AUTH) {
         if(testMode){
           SignInScreen(
-            onSignInClick = {googleUid = "hr5PpMgalxdvMOIxSEqkyEqGZ3Z2"
+            onSignInClick = {googleUid = "testingUid"
               navigationActions.navigateTo(Screen.CREATE_PROFILE)}
           )
         }
