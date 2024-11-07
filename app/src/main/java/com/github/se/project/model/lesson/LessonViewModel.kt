@@ -18,18 +18,25 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   private val requestedLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
   open val requestedLessons: StateFlow<List<Lesson>> = requestedLessons_.asStateFlow()
 
-  private val currentUserLessons_ = MutableStateFlow<List<Lesson>>(emptyList())
-  open val currentUserLessons: StateFlow<List<Lesson>> = currentUserLessons_.asStateFlow()
+  private val _currentUserLessons = MutableStateFlow<List<Lesson>>(emptyList())
+  open val currentUserLessons: StateFlow<List<Lesson>> = _currentUserLessons.asStateFlow()
 
-  private val selectedLesson_ = MutableStateFlow<Lesson?>(null)
-  open val selectedLesson: StateFlow<Lesson?> = selectedLesson_.asStateFlow()
+  private val _selectedLesson = MutableStateFlow<Lesson?>(null)
+  open val selectedLesson: StateFlow<Lesson?> = _selectedLesson.asStateFlow()
+
+  // StateFlow to observe selected location changes
+  // Default value is currently set to Lausanne EPFL
+  // TODO: Change default value to user's current location
+  private val _selectedLocation = MutableStateFlow<Pair<Double, Double>>(46.520374 to 6.568339)
+  val selectedLocation = _selectedLocation.asStateFlow()
+
+  // Function to update location
+  fun updateSelectedLocation(location: Pair<Double, Double>) {
+    _selectedLocation.value = location
+  }
 
   init {
-    repository.init {
-      // Uncomment this if needed in the future to automatically load lessons, but this seems to
-      // make the CI fails.
-      // getAllLessons()
-    }
+    repository.init {}
   }
 
   /** Factory for creating a LessonsViewModel. */
@@ -112,7 +119,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param lesson The Lesson object to be selected.
    */
   fun selectLesson(lesson: Lesson) {
-    selectedLesson_.value = lesson
+    _selectedLesson.value = lesson
   }
 
   /**
@@ -125,7 +132,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.getLessonsForTutor(
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
-          currentUserLessons_.value = fetchedLessons
+          _currentUserLessons.value = fetchedLessons
           onComplete() // Call the provided callback on success
         },
         onFailure = {
@@ -144,7 +151,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.getLessonsForStudent(
         studentUid = studentUid,
         onSuccess = { fetchedLessons ->
-          currentUserLessons_.value = fetchedLessons
+          _currentUserLessons.value = fetchedLessons
           onComplete() // Call the provided callback on success
         },
         onFailure = {

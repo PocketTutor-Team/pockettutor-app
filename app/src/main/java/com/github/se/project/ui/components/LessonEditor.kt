@@ -1,14 +1,18 @@
 package com.github.se.project.ui.components
 
+import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
@@ -24,6 +30,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("NewApi")
 @Composable
 fun LessonEditor(
@@ -46,6 +53,15 @@ fun LessonEditor(
   val calendar = Calendar.getInstance()
   val currentDateTime = Calendar.getInstance()
   val currentLessonId = remember { mutableStateOf<String?>(null) }
+
+  var selectedLocation by remember {
+    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
+  }
+  var showMapDialog by remember { mutableStateOf(false) }
+
+  val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
+    selectedLocation = newLocation
+  }
 
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
@@ -112,13 +128,14 @@ fun LessonEditor(
             selectedLanguages,
             selectedDate,
             selectedTime,
-        )
+            selectedLocation.first,
+            selectedLocation.second)
     if (error != null) {
       Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     } else {
       onConfirm(
           Lesson(
-              lesson!!.id,
+              lesson?.id ?: "",
               title,
               description,
               selectedSubject.value,
@@ -129,9 +146,50 @@ fun LessonEditor(
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              LessonStatus.PENDING,
-          ))
+              LessonStatus.STUDENT_REQUESTED,
+              selectedLocation.first,
+              selectedLocation.second))
     }
+  }
+  // Format location for display
+  val locationText =
+      if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
+        "Location selected"
+      } else {
+        "Select location"
+      }
+
+  // Map Dialog
+  if (showMapDialog) {
+    Dialog(
+        onDismissRequest = { showMapDialog = false },
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
+          Surface(
+              modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight(),
+              shape = MaterialTheme.shapes.large) {
+                Column {
+                  // Dialog header
+                  TopAppBar(
+                      title = { Text("Select Location") },
+                      navigationIcon = {
+                        IconButton(onClick = { showMapDialog = false }) {
+                          Icon(Icons.Default.Close, "Close map")
+                        }
+                      })
+
+                  // Map content
+                  Box() {
+                    MapPickerBox(
+                        initialLocation = selectedLocation,
+                        lessonTitle = title,
+                        onLocationSelected = { newLocation ->
+                          selectedLocation = newLocation
+                          showMapDialog = false
+                        })
+                  }
+                }
+              }
+        }
   }
 
   Scaffold(
@@ -140,6 +198,7 @@ fun LessonEditor(
             modifier =
                 Modifier.testTag("topRow")
                     .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.background)
                     .padding(vertical = 32.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
@@ -196,10 +255,10 @@ fun LessonEditor(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                            contentColor = MaterialTheme.colorScheme.onPrimary)) {
                       Text(
                           selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.labelMedium)
+                          style = MaterialTheme.typography.titleSmall)
                     }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -210,12 +269,33 @@ fun LessonEditor(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                            contentColor = MaterialTheme.colorScheme.onPrimary)) {
                       Text(
                           selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.labelMedium)
+                          style = MaterialTheme.typography.titleSmall)
                     }
               }
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              Text(
+                  "Select the location for the lesson", style = MaterialTheme.typography.titleSmall)
+
+              Button(
+                  onClick = { showMapDialog = true },
+                  modifier = Modifier.fillMaxWidth(),
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                    Icon(
+                        if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0)
+                            Icons.Default.Check
+                        else Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp))
+                    Text(locationText, style = MaterialTheme.typography.titleSmall)
+                  }
 
               Spacer(modifier = Modifier.height(8.dp))
 
@@ -233,31 +313,44 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              PriceRangeSlider("Select a price range for your lesson:") { min, max ->
-                minPrice = min.toDouble()
-                maxPrice = max.toDouble()
-              }
+              PriceRangeSlider(
+                  "Select a price range for your lesson:",
+                  { min, max ->
+                    minPrice = min.toDouble()
+                    maxPrice = max.toDouble()
+                  },
+                  initialStart = minPrice.toFloat(),
+                  initialEnd = maxPrice.toFloat())
 
               Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
       },
       bottomBar = {
-        Column {
-          Button(
-              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
-              shape = MaterialTheme.shapes.medium,
-              onClick = onConfirmClick) {
-                Text("Confirm")
+        Column(
+            modifier =
+                Modifier.background(color = MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Button(
+                  modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
+                  shape = MaterialTheme.shapes.medium,
+                  onClick = onConfirmClick) {
+                    Text("Confirm")
+                  }
+
+              if (onDelete != null) {
+                Button(
+                    modifier = Modifier.fillMaxWidth().testTag("deleteButton"),
+                    shape = MaterialTheme.shapes.medium,
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError),
+                    onClick = { onDelete(lesson!!) }) {
+                      Text("Delete")
+                    }
               }
-          if (onDelete != null) {
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("deleteButton"),
-                shape = MaterialTheme.shapes.medium,
-                onClick = { onDelete(lesson!!) }) {
-                  Text("Delete")
-                }
-          }
-        }
+            }
       })
 }
 
@@ -267,21 +360,30 @@ fun validateLessonInput(
     selectedSubject: MutableState<Subject>,
     selectedLanguages: List<Language>,
     date: String,
-    time: String
+    time: String,
+    latitude: Double,
+    longitude: Double
 ): String? {
-  for (entry in
+  val requiredFields =
       mapOf(
-              "title" to title,
-              "description" to description,
-              "subject" to selectedSubject.value.name,
-              "language" to selectedLanguages.joinToString { it.name },
-              "date" to date,
-              "time" to time,
-          )
-          .entries) {
-    if (entry.value.isEmpty()) {
-      return "${entry.key} is missing"
+          "title" to title,
+          "description" to description,
+          "subject" to selectedSubject.value.name,
+          "language" to selectedLanguages.joinToString { it.name },
+          "date" to date,
+          "time" to time)
+
+  // Check if any required field is empty
+  for ((field, value) in requiredFields) {
+    if (value.isEmpty()) {
+      return "$field is missing"
     }
   }
-  return null
+
+  // Check if location has been set
+  if (latitude == 0.0 && longitude == 0.0) {
+    return "location is missing"
+  }
+
+  return null // All inputs are valid
 }

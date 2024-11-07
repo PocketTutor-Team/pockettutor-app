@@ -19,8 +19,10 @@ fun EditRequestedLessonScreen(
 ) {
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
+  val selectedLocation by lessonViewModel.selectedLocation.collectAsState()
 
   val lessons = lessonViewModel.currentUserLessons.collectAsState()
+
   val lesson = lessons.value.find { it.id == lessonId }
   if (lesson == null) {
     return
@@ -56,6 +58,5 @@ fun EditRequestedLessonScreen(
       lesson = lesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = onDelete,
-  )
+      onDelete = onDelete)
 }

@@ -34,6 +34,7 @@ object Screen {
   const val LESSONS_REQUESTED = "Lessons Requested Screen"
   const val TUTOR_LESSON_RESPONSE = "Tutor Lesson Response Screen"
   const val SEARCH = "Search Screen" // Find tutor / find student screen
+  const val MAP_LOC_PICKER = "Map Screen"
 }
 
 // Data class for top-level destinations

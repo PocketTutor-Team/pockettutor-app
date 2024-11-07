@@ -223,7 +223,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("sectionDropdown").performClick()
     composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
     composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA6").performClick()
 
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()

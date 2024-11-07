@@ -34,8 +34,6 @@ fun CreateProfileScreen(
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
   val context = LocalContext.current
-  var expandedSection by remember { mutableStateOf(false) }
-  var expandedAcademicLevel by remember { mutableStateOf(false) }
 
   Scaffold(
       topBar = {
