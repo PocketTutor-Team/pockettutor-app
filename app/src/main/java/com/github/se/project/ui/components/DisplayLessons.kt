@@ -66,7 +66,8 @@ fun DisplayLessons(
                         lesson.status == LessonStatus.COMPLETED ->
                             MaterialTheme.colorScheme.secondaryContainer
                         lesson.status == LessonStatus.PENDING ||
-                            lesson.status == LessonStatus.REQUESTED ->
+                            lesson.status == LessonStatus.STUDENT_REQUESTED ||
+                            lesson.status == LessonStatus.TUTOR_REQUESTED ->
                             if (isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
                             else Color(0xFFFEDF89)
                         else -> MaterialTheme.colorScheme.surfaceContainerHigh
