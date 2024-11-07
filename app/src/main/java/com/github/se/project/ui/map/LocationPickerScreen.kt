@@ -1,9 +1,12 @@
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -36,7 +39,21 @@ fun MapPickerBox(
 
   Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
     GoogleMap(
-        modifier = Modifier.fillMaxWidth().height(400.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .height(400.dp)
+                // Pass the scrolling and zooming gestures to the map
+                .pointerInput(Unit) {
+                  detectTransformGestures { _, pan, zoom, _ ->
+                    // Update camera zoom
+                    cameraPositionState.move(
+                        CameraUpdateFactory.zoomBy(zoom - 1) // zoom factor correction
+                        )
+
+                    // Update camera position by panning
+                    cameraPositionState.move(CameraUpdateFactory.scrollBy(-pan.x, -pan.y))
+                  }
+                },
         cameraPositionState = cameraPositionState,
         onMapClick = { latLng ->
           selectedPosition = latLng
@@ -50,6 +67,8 @@ fun MapPickerBox(
             )
           }
         }
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     Button(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
