@@ -58,6 +58,9 @@ fun HomeScreen(
           lesson.status == LessonStatus.PENDING) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+      } else {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.TUTOR_MATCH)
       }
     } else {
       if (lesson.status == LessonStatus.STUDENT_REQUESTED) {

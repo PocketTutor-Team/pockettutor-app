@@ -145,7 +145,7 @@ fun TutorLessonResponseScreen(
                           lesson.copy(
                               tutorUid = currentProfile.uid,
                               price = currentProfile.price.toDouble(),
-                              status = LessonStatus.TUTOR_REQUESTED,
+                              status = if (lesson.status == LessonStatus.STUDENT_REQUESTED) LessonStatus.CONFIRMED else LessonStatus.TUTOR_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
