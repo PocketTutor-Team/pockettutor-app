@@ -213,8 +213,8 @@ fun LessonEditor(
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
                       Text(
                           selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.labelMedium)
-                    }
+                          style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)
+                }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -227,14 +227,14 @@ fun LessonEditor(
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
                       Text(
                           selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.labelMedium)
+                          style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)
                     }
               }
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              Button(onClick = { isMapVisible = !isMapVisible }) {
-                Text(if (isMapVisible) "Hide Map" else "Display the Map")
+              Button(onClick = { isMapVisible = !isMapVisible }, modifier = Modifier.fillMaxWidth()) {
+                Text(if (isMapVisible) "Hide Map" else "Display the Map", style = MaterialTheme.typography.titleSmall)
               }
 
               Text(
