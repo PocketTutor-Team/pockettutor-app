@@ -9,7 +9,6 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
-import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.navigation.TopLevelDestinations
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before

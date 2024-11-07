@@ -65,7 +65,6 @@ class EditProfileTest {
     doReturn(mutableStateFlow as StateFlow<Profile?>).`when`(mockViewModel).currentProfile
   }
 
-
   @Test
   fun tutorFieldsDontShowForStudentAccount() {
     (mockViewModel.currentProfile as MutableStateFlow).value =

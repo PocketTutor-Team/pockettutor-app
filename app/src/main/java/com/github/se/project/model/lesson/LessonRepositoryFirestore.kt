@@ -161,17 +161,17 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val latitude = document.getDouble("latitude") ?: return null
       val longitude = document.getDouble("longitude") ?: return null
 
-        val tutorUid =
-            document.get("tutorUid")?.let { tutorUid ->
-                (tutorUid as List<*>).mapNotNull {
-                    try {
-                       it.toString()
-                    } catch (e: IllegalArgumentException) {
-                        Log.e("LessonRepositoryFirestore", "Invalid tutorId in document: $it", e)
-                        null
-                    }
-                }
-            } ?: emptyList()
+      val tutorUid =
+          document.get("tutorUid")?.let { tutorUid ->
+            (tutorUid as List<*>).mapNotNull {
+              try {
+                it.toString()
+              } catch (e: IllegalArgumentException) {
+                Log.e("LessonRepositoryFirestore", "Invalid tutorId in document: $it", e)
+                null
+              }
+            }
+          } ?: emptyList()
 
       val language =
           document.get("languages")?.let { languagesList ->

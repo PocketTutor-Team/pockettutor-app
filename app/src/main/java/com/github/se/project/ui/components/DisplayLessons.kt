@@ -40,7 +40,9 @@ fun DisplayLessons(
     listProfilesViewModel: ListProfilesViewModel
 ) {
   val filteredLessons =
-      statusFilter?.let { lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isEmpty() == tutorEmpty} } ?: lessons
+      statusFilter?.let {
+        lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isEmpty() == tutorEmpty }
+      } ?: lessons
 
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     filteredLessons.forEachIndexed { index, lesson ->
@@ -66,7 +68,8 @@ fun DisplayLessons(
                       when {
                         lesson.status == LessonStatus.COMPLETED ->
                             MaterialTheme.colorScheme.secondaryContainer
-                          lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isNotEmpty()->
+                        lesson.status == LessonStatus.STUDENT_REQUESTED &&
+                            lesson.tutorUid.isNotEmpty() ->
                             MaterialTheme.colorScheme.secondaryContainer
                         lesson.status == LessonStatus.STUDENT_REQUESTED ->
                             if (isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer

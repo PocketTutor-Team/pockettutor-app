@@ -227,7 +227,7 @@ private fun ExpandableLessonSection(
                 isTutor = isTutor,
                 tutorEmpty = section.tutorEmpty,
                 onCardClick = onClick,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 listProfilesViewModel = listProfilesViewModel)
           }
         }

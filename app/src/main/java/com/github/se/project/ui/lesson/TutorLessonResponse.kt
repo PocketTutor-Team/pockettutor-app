@@ -121,9 +121,9 @@ fun TutorLessonResponseScreen(
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
-                              tutorUid = currentProfile.uid,
+                              tutorUid = lesson.tutorUid + currentProfile.uid,
                               price = currentProfile.price.toDouble(),
-                              status = LessonStatus.TUTOR_REQUESTED,
+                              status = LessonStatus.STUDENT_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
