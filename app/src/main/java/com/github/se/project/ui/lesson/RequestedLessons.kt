@@ -1,3 +1,5 @@
+package com.github.se.project.ui.lesson
+
 import android.app.DatePickerDialog
 import android.util.Log
 import androidx.compose.foundation.clickable

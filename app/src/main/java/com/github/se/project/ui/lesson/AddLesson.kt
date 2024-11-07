@@ -29,8 +29,8 @@ fun AddLessonScreen(
           lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
           Toast.makeText(context, "Lesson added successfully", Toast.LENGTH_SHORT).show()
         })
-
-    navigationActions.navigateTo(Screen.HOME)
+    lessonViewModel.selectLesson(lesson)
+    navigationActions.navigateTo(Screen.TUTOR_MATCH)
   }
 
   LessonEditor(
