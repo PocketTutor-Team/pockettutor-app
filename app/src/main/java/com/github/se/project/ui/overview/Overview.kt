@@ -107,12 +107,18 @@ private fun LessonsContent(
 ) {
   Column(
       modifier =
-          Modifier.fillMaxSize()
-              .padding(paddingValues)
-              .padding(horizontal = 16.dp)
-              .testTag("lessonsColumn")) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-          Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+      Modifier
+          .fillMaxSize()
+          .padding(paddingValues)
+          .padding(horizontal = 16.dp)
+          .testTag("lessonsColumn")) {
+      Spacer(modifier = Modifier.height(16.dp))
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .weight(1f)) {
+          Column(modifier = Modifier
+              .fillMaxWidth()
+              .verticalScroll(rememberScrollState())) {
             if (profile.role == Role.TUTOR) {
               TutorSections(lessons, onClick, listProfilesViewModel)
             } else {
@@ -187,10 +193,12 @@ private fun ExpandableLessonSection(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  var expanded by remember { mutableStateOf(true) }
+  var expanded by remember { mutableStateOf(lessons.isNotEmpty()) }
 
   Card(
-      modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),
+      modifier = Modifier
+          .fillMaxWidth()
+          .testTag("section_${section.title}"),
       colors =
           CardDefaults.cardColors(
               containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)) {
@@ -231,7 +239,10 @@ private fun ExpandableLessonSection(
 @Composable
 private fun EmptyLessonsState(paddingValues: PaddingValues) {
   Box(
-      modifier = Modifier.fillMaxSize().padding(paddingValues).padding(32.dp),
+      modifier = Modifier
+          .fillMaxSize()
+          .padding(paddingValues)
+          .padding(32.dp),
       contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -258,7 +269,9 @@ private fun EmptyLessonsState(paddingValues: PaddingValues) {
 fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions) {
   // Display an error message when no profile is assigned
   Column(
-      modifier = Modifier.fillMaxSize().testTag("noProfileScreen"),
+      modifier = Modifier
+          .fillMaxSize()
+          .testTag("noProfileScreen"),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
