@@ -208,7 +208,7 @@ fun LessonEditor(
                   style = MaterialTheme.typography.headlineMedium,
                   textAlign = TextAlign.Center)
 
-              IconButton(onClick = onBack) {
+              IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
             }
@@ -283,7 +283,7 @@ fun LessonEditor(
 
               Button(
                   onClick = { showMapDialog = true },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.testTag("mapButton").fillMaxWidth(),
                   colors =
                       ButtonDefaults.buttonColors(
                           containerColor = MaterialTheme.colorScheme.secondaryContainer,

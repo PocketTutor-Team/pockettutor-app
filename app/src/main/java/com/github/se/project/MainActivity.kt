@@ -2,7 +2,6 @@ package com.github.se.project
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,15 +43,26 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     // enableEdgeToEdge()
 
-
     setContent {
-      SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp(authenticationViewModel = viewModel(), listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory), lessonViewModel = viewModel(factory = LessonViewModel.Factory)) } }
+      SampleAppTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          PocketTutorApp(
+              authenticationViewModel = viewModel(),
+              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
+        }
+      }
     }
   }
 }
 
 @Composable
-fun PocketTutorApp(testMode: Boolean = false, authenticationViewModel: AuthenticationViewModel, listProfilesViewModel: ListProfilesViewModel, lessonViewModel: LessonViewModel) {
+fun PocketTutorApp(
+    testMode: Boolean = false,
+    authenticationViewModel: AuthenticationViewModel,
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
+) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
@@ -69,30 +79,32 @@ fun PocketTutorApp(testMode: Boolean = false, authenticationViewModel: Authentic
     // Authentication flow
     navigation(startDestination = Screen.AUTH, route = Route.AUTH) {
       composable(Screen.AUTH) {
-        if(testMode){
+        if (testMode) {
           SignInScreen(
-            onSignInClick = {googleUid = "testingUid"
-              navigationActions.navigateTo(Screen.CREATE_PROFILE)}
-          )
-        }
-        else{SignInScreen(
-            onSignInClick = {
-              authenticationViewModel.handleGoogleSignIn(
-                  context,
-                  onSuccess = { uid ->
-                    googleUid = uid
-                    val profile = profiles.value.find { it.googleUid == googleUid }
+              onSignInClick = {
+                googleUid = "testingUid"
+                navigationActions.navigateTo(Screen.CREATE_PROFILE)
+              })
+        } else {
+          SignInScreen(
+              onSignInClick = {
+                authenticationViewModel.handleGoogleSignIn(
+                    context,
+                    onSuccess = { uid ->
+                      googleUid = uid
+                      val profile = profiles.value.find { it.googleUid == googleUid }
 
-                    if (profile != null) {
-                      // If the user already has a profile, navigate to the home screen
-                      listProfilesViewModel.setCurrentProfile(profile)
-                      navigationActions.navigateTo(Screen.HOME)
-                    } else {
-                      // If the user doesn't have a profile, navigate to the profile creation screen
-                      navigationActions.navigateTo(Screen.CREATE_PROFILE)
-                    }
-                  })
-            })
+                      if (profile != null) {
+                        // If the user already has a profile, navigate to the home screen
+                        listProfilesViewModel.setCurrentProfile(profile)
+                        navigationActions.navigateTo(Screen.HOME)
+                      } else {
+                        // If the user doesn't have a profile, navigate to the profile creation
+                        // screen
+                        navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                      }
+                    })
+              })
         }
       }
       // For debugging purposes (when sign-in error)

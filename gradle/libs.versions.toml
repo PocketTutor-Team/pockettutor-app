@@ -13,6 +13,7 @@ mockitoAndroid = "5.13.0"
 ui = "1.6.8"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
+uiautomator = "2.2.0"
 uiTooling = "1.6.8"
 composeBom = "2024.08.00"
 constraintlayout = "2.1.4"
@@ -122,6 +123,7 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 google-identity = { module="com.google.android.libraries.identity.googleid:googleid", version.ref ="googleIdentity"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
+uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 

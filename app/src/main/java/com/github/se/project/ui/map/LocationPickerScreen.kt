@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
@@ -39,7 +40,7 @@ fun MapPickerBox(
       verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // Map
         Card(
-            modifier = Modifier.fillMaxWidth().aspectRatio(8f / 9f),
+            modifier = Modifier.testTag("map").fillMaxWidth().aspectRatio(8f / 9f),
             shape = MaterialTheme.shapes.large,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
               GoogleMap(
@@ -70,7 +71,7 @@ fun MapPickerBox(
             onClick = {
               onLocationSelected(selectedPosition.latitude to selectedPosition.longitude)
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.testTag("confirmLocation").fillMaxWidth(),
             enabled = selectedPosition.latitude != 0.0 || selectedPosition.longitude != 0.0,
             colors =
                 ButtonDefaults.buttonColors(
