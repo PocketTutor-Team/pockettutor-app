@@ -80,10 +80,10 @@ fun TutorLessonResponseScreen(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                       DisplayLessonDetails(lesson, studentProfile)
 
-                        LessonLocationDisplay(
-                            latitude = lesson.latitude,
-                            longitude = lesson.longitude,
-                            lessonTitle = lesson.title)
+                      LessonLocationDisplay(
+                          latitude = lesson.latitude,
+                          longitude = lesson.longitude,
+                          lessonTitle = lesson.title)
                     }
 
                 Spacer(modifier = Modifier.weight(1f))

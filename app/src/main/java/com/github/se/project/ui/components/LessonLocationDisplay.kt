@@ -23,49 +23,33 @@ fun LessonLocationDisplay(
     lessonTitle: String,
     modifier: Modifier = Modifier
 ) {
-    val location = LatLng(latitude, longitude)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(location, 15f)
-    }
+  val location = LatLng(latitude, longitude)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(location, 15f)
+  }
 
-    Column(
-        modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            text = "Lesson Location",
-            style = MaterialTheme.typography.titleMedium
-        )
+  Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text(text = "Lesson Location", style = MaterialTheme.typography.titleMedium)
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    properties = MapProperties(
-                        isMyLocationEnabled = false
-                    ),
-                    uiSettings = MapUiSettings(
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+          Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = MapProperties(isMyLocationEnabled = false),
+                uiSettings =
+                    MapUiSettings(
                         zoomControlsEnabled = false,
                         scrollGesturesEnabled = false,
                         zoomGesturesEnabled = false,
                         tiltGesturesEnabled = false,
                         rotationGesturesEnabled = false,
-                    )
-                ) {
-                    Marker(
-                        state = MarkerState(position = location),
-                        title = lessonTitle
-                    )
+                    )) {
+                  Marker(state = MarkerState(position = location), title = lessonTitle)
                 }
-            }
+          }
         }
-    }
+  }
 }

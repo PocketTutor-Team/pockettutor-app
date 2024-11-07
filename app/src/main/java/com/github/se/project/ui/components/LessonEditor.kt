@@ -302,7 +302,9 @@ fun LessonEditor(
               if (isMapVisible) {
                 Box(modifier = Modifier.fillMaxWidth().height(600.dp).padding(top = 8.dp)) {
                   MapPickerBox(
-                      initialLocation = selectedLocation, lessonTitle = title, onLocationSelected = onLocationSelected)
+                      initialLocation = selectedLocation,
+                      lessonTitle = title,
+                      onLocationSelected = onLocationSelected)
                 }
               }
 
