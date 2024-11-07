@@ -2,6 +2,7 @@ package com.github.se.project.ui.overview
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.navigation.NavHostController
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -10,6 +11,7 @@ import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
@@ -20,16 +22,26 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
 
 class HomeScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
+
+  private lateinit var lessonRepository: LessonRepository
   private lateinit var lessonViewModel: LessonViewModel
+
+  private lateinit var navController: NavHostController
   private lateinit var navigationActions: NavigationActions
 
   private val profile =
@@ -77,28 +89,39 @@ class HomeScreenTest {
               status = LessonStatus.STUDENT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0))
+
+  private val mockProfileFlow = MutableStateFlow<Profile?>(profile)
+
   private val currentUserLessonsFlow = MutableStateFlow<List<Lesson>>(mockLessons)
 
   @Before
   fun setup() {
-    // Mocking the ViewModels
-    listProfilesViewModel =
-        Mockito.mock(ListProfilesViewModel::class.java).apply {
-          Mockito.`when`(currentProfile).thenReturn(MutableStateFlow(profile))
-        }
-    val mockRepository = mock<LessonRepository>()
-    val currentUserLessonsFlow = MutableStateFlow<List<Lesson>>(mockLessons) // or your initial data
-    lessonViewModel =
-        Mockito.spy(LessonViewModel(mockRepository)).apply {
-          // Assuming currentUserLessons is initialized in the constructor or some method,
-          // you'll have to use reflection to set it if it's private or internal.
-          `when`(this.currentUserLessons).thenReturn(currentUserLessonsFlow)
-        }
-    navigationActions =
-        Mockito.mock(NavigationActions::class.java).apply {
-          // Ensure that currentRoute() returns a valid string
-          Mockito.`when`(currentRoute()).thenReturn(Route.HOME) // or whatever the default route is
-        }
+    /// Mock the dependencies
+    profilesRepository = mock(ProfilesRepository::class.java)
+    lessonRepository = mock(LessonRepository::class.java)
+    navController = mock()
+
+    // Initialize the ViewModel with a spy
+    listProfilesViewModel = ListProfilesViewModel(profilesRepository)
+    listProfilesViewModel = spy(listProfilesViewModel)
+
+    lessonViewModel = LessonViewModel(lessonRepository)
+    lessonViewModel = spy(lessonViewModel)
+
+    navigationActions = NavigationActions(navController)
+    navigationActions = spy(navigationActions)
+
+    // Stub the methods in NavigationActions
+    doNothing().`when`(navigationActions).navigateTo(anyString())
+    `when`(navigationActions.currentRoute()).thenReturn(Route.HOME)
+
+    // Set up the StateFlows
+    doReturn(mockProfileFlow).`when`(listProfilesViewModel).currentProfile
+    doReturn(currentUserLessonsFlow).`when`(lessonViewModel).currentUserLessons
+
+    // Stub the init and getProfiles method in the repository to simulate success
+    doNothing().`when`(profilesRepository).init(any())
+    doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }
 
   @Test

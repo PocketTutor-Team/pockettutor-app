@@ -53,7 +53,7 @@ fun LanguageSelector(selectedLanguages: MutableList<Language>) {
 
                 Text(
                     text = language.name.lowercase(),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleSmall,
                     modifier =
                         Modifier.align(Alignment.CenterVertically)
                             .testTag("languageText_${language.name}") // Tag for each language text

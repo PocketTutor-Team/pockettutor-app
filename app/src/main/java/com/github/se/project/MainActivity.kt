@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
-    // enableEdgeToEdge()
     setContent {
       SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
     }

@@ -2,6 +2,7 @@ package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -46,28 +47,32 @@ fun EditTutorSchedule(
             }
       },
       content = { paddingValues ->
-        Column(
+        LazyColumn(
             modifier =
                 Modifier.fillMaxSize()
                     .padding(horizontal = 12.dp)
                     .padding(paddingValues)
-                    .testTag("editAvailabilityScreen")) {
-              Text(
-                  text = "${profile.firstName}, show us your availabilities",
-                  modifier = Modifier.testTag("editScheduleWelcomeText"), // .padding(vertical =
-                  // 0.dp).testTag("welcomeText"),
-                  style = MaterialTheme.typography.headlineSmall,
-                  textAlign = TextAlign.Start)
-              Text(
-                  "Modify the time slots you're available during the week:",
-                  style = MaterialTheme.typography.bodyLarge,
-                  modifier = Modifier.testTag("editScheduleInstructionsText"))
-              Spacer(modifier = Modifier.height(8.dp))
-
-              AvailabilityGrid(
-                  schedule = profileSchedule,
-                  onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule },
-                  modifier = Modifier.weight(1f))
+                    .testTag("editAvailabilityScreen"),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              item {
+                Text(
+                    text = "${profile.firstName}, show us your availabilities",
+                    modifier = Modifier.testTag("editScheduleWelcomeText"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Start)
+              }
+              item {
+                Text(
+                    "Modify the time slots you're available during the week:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.testTag("editScheduleInstructionsText"))
+              }
+              item { Spacer(modifier = Modifier.height(8.dp)) }
+              item {
+                AvailabilityGrid(
+                    schedule = profileSchedule,
+                    onScheduleChange = { updatedSchedule -> profileSchedule = updatedSchedule })
+              }
             }
       },
       bottomBar = {

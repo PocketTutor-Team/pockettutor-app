@@ -32,7 +32,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("status", LessonStatus.REQUESTED.name)
+        .whereEqualTo("status", LessonStatus.STUDENT_REQUESTED.name)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
