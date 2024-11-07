@@ -91,7 +91,7 @@ fun DisplayLessons(
                         Text(
                             text = lesson.subject.name.lowercase(),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.testTag("lessonSubject_$index"))
                       }
 
