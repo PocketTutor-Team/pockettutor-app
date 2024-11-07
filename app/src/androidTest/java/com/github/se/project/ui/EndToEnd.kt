@@ -66,13 +66,13 @@ class EndToEndTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
-    whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
+    /*whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
       ->
       val onComplete = invocation.arguments[1] as (List<Lesson>) -> Unit
       if (currentLesson != null) {
         onComplete(listOf(currentLesson!!)) // Simulate a successful update
       }
-    }
+    }*/
   }
 
   // End to end test, for the whole app, firebase included
