@@ -285,10 +285,14 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              PriceRangeSlider("Select a price range for your lesson:") { min, max ->
-                minPrice = min.toDouble()
-                maxPrice = max.toDouble()
-              }
+              PriceRangeSlider(
+                  "Select a price range for your lesson:",
+                  { min, max ->
+                    minPrice = min.toDouble()
+                    maxPrice = max.toDouble()
+                  },
+                  initialStart = minPrice.toFloat(),
+                  initialEnd = maxPrice.toFloat())
 
               Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
