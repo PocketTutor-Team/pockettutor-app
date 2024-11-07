@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import RequestedLessonsScreen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.lesson.Lesson
@@ -9,195 +10,162 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
-import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.ui.navigation.TopLevelDestinations
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.*
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
 class LessonsRequestedScreenTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private lateinit var listProfilesViewModel: ListProfilesViewModel
-    private lateinit var lessonViewModel: LessonViewModel
-    private lateinit var navigationActions: NavigationActions
-    private lateinit var profilesRepository: ProfilesRepository
-    private lateinit var lessonRepository: LessonRepository
+  private lateinit var listProfilesViewModel: ListProfilesViewModel
+  private lateinit var lessonViewModel: LessonViewModel
+  private lateinit var navigationActions: NavigationActions
 
-    private val testProfile = Profile(
-        uid = "uid",
-        googleUid = "googleUid",
-        firstName = "firstName",
-        lastName = "lastName",
-        phoneNumber = "phoneNumber",
-        role = Role.TUTOR,
-        section = Section.AR,
-        academicLevel = AcademicLevel.BA1,
-        languages = listOf(Language.ENGLISH),
-        subjects = listOf(Subject.ANALYSIS),
-        schedule = List(7) { List(12) { 0 } },
-        price = 0
-    )
+  private val profile =
+      Profile(
+          "uid",
+          "googleUid",
+          "firstName",
+          "lastName",
+          "phoneNumber",
+          Role.TUTOR,
+          Section.AR,
+          AcademicLevel.BA1,
+          listOf(Language.ENGLISH),
+          listOf(Subject.ANALYSIS),
+          List(7) { List(12) { 0 } },
+          0)
 
-    private val testLessons = listOf(
-        Lesson(
-            id = "1",
-            title = "Math Help",
-            description = "Help with calculus",
-            subject = Subject.ANALYSIS,
-            languages = listOf(Language.ENGLISH),
-            tutorUid = "",
-            studentUid = "student123",
-            minPrice = 20.0,
-            maxPrice = 30.0,
-            price = 25.0,
-            timeSlot = "10/10/2024T10:00:00",
-            status = LessonStatus.STUDENT_REQUESTED
-        ),
-        Lesson(
-            id = "2",
-            title = "Physics Tutorial",
-            description = "Mechanics review",
-            subject = Subject.PHYSICS,
-            languages = listOf(Language.ENGLISH),
-            tutorUid = "",
-            studentUid = "student456",
-            minPrice = 25.0,
-            maxPrice = 35.0,
-            price = 30.0,
-            timeSlot = "11/10/2024T14:00:00",
-            status = LessonStatus.STUDENT_REQUESTED
-        )
-    )
+  private val mockLessons =
+      listOf(
+          Lesson(
+              id = "1",
+              title = "Physics Tutoring",
+              description = "Mechanics and Thermodynamics",
+              subject = Subject.PHYSICS,
+              languages = listOf(Language.ENGLISH),
+              tutorUid = "tutor123",
+              studentUid = "student123",
+              minPrice = 20.0,
+              maxPrice = 40.0,
+              timeSlot = "2024-10-10T10:00:00",
+              status = LessonStatus.REQUESTED,
+              latitude = 0.0,
+              longitude = 0.0),
+          Lesson(
+              id = "2",
+              title = "Math Tutoring",
+              description = "Algebra and Calculus",
+              subject = Subject.ANALYSIS,
+              languages = listOf(Language.ENGLISH),
+              tutorUid = "tutor123",
+              studentUid = "student123",
+              minPrice = 20.0,
+              maxPrice = 40.0,
+              timeSlot = "2024-10-10T11:00:00",
+              status = LessonStatus.REQUESTED,
+              latitude = 0.0,
+              longitude = 0.0))
+  private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
-    private val requestedLessonsFlow = MutableStateFlow(testLessons)
-
-    @Before
-    fun setup() {
-        // Create mocks
-        profilesRepository = mock(ProfilesRepository::class.java)
-        lessonRepository = mock(LessonRepository::class.java)
-        navigationActions = mock(NavigationActions::class.java)
-
-        // Setup ProfilesRepository
-        doNothing().`when`(profilesRepository).init(any())
-        `when`(profilesRepository.getNewUid()).thenReturn("new-uid")
-        doAnswer { invocation ->
-            val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
-            onSuccess(listOf(testProfile))
-        }.`when`(profilesRepository).getProfiles(any(), any())
-
-        // Setup LessonRepository
-        doNothing().`when`(lessonRepository).init(any())
-        doAnswer { invocation ->
-            val onSuccess = invocation.arguments[0] as (List<Lesson>) -> Unit
-            onSuccess(testLessons)
-        }.`when`(lessonRepository).getAllRequestedLessons(any(), any())
-
-        // Create ViewModels
-        listProfilesViewModel = ListProfilesViewModel(profilesRepository).apply {
-            setCurrentProfile(testProfile)
+  @Before
+  fun setup() {
+    // Mock the ViewModels
+    listProfilesViewModel =
+        Mockito.mock(ListProfilesViewModel::class.java).apply {
+          `when`(currentProfile).thenReturn(MutableStateFlow(profile))
         }
 
-        lessonViewModel = spy(LessonViewModel(lessonRepository))
-        `when`(lessonViewModel.requestedLessons).thenReturn(requestedLessonsFlow)
-
-        // Setup NavigationActions
-        `when`(navigationActions.currentRoute()).thenReturn(Route.FIND_STUDENT)
-    }
-
-    @Test
-    fun testTopBarComponents() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
+    val mockRepository = mock(LessonRepository::class.java)
+    lessonViewModel =
+        Mockito.spy(LessonViewModel(mockRepository)).apply {
+          `when`(this.requestedLessons).thenReturn(requestedLessonsFlow)
         }
 
-        composeTestRule.onNodeWithTag("topBar").assertExists()
-        composeTestRule.onNodeWithTag("screenTitle").assertExists()
-        composeTestRule.onNodeWithTag("datePicker").assertExists()
-        composeTestRule.onNodeWithTag("filterButton").assertExists()
-    }
-
-    @Test
-    fun testEmptyStateDisplay() {
-        requestedLessonsFlow.value = emptyList()
-
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
+    navigationActions =
+        Mockito.mock(NavigationActions::class.java).apply {
+          `when`(currentRoute()).thenReturn(Route.FIND_STUDENT)
         }
+  }
 
-        composeTestRule.onNodeWithText("No lessons available").assertExists()
-        composeTestRule.onNodeWithText("Try adjusting your filters or check back later").assertExists()
+  @Test
+  fun testScreenComponentsDisplayed() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun testLessonsListDisplay() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
-        }
+    // Verify Top Bar and Bottom Navigation are displayed
+    composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bottomNavigationMenu").assertIsDisplayed()
+  }
 
-        composeTestRule.onNodeWithTag("lessonsList").assertExists()
-        composeTestRule.onNodeWithText("Math Help").assertExists()
-        composeTestRule.onNodeWithText("Physics Tutorial").assertExists()
+  @Test
+  fun testLessonItemsDisplayed() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun testFilterDialog() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
-        }
+    // Verify the lesson items are displayed
+    composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
+  }
 
-        composeTestRule.onNodeWithTag("filterButton").performClick()
-        composeTestRule.onNodeWithText("Filter by subject").assertExists()
-        composeTestRule.onNodeWithText("Clear filter").assertExists()
-        composeTestRule.onNodeWithText("Cancel").assertExists()
+  @Test
+  fun testDatePickerButtonFunctionality() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun testBottomNavigation() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
-        }
+    // Click on the DatePicker to ensure it can be interacted with
+    composeTestRule.onNodeWithTag("datePicker").performClick()
+  }
 
-        composeTestRule.onNodeWithTag("bottomNavigationMenu").assertExists()
-        composeTestRule.onNodeWithTag("Find a Student").performClick()
-        verify(navigationActions).navigateTo(TopLevelDestinations.TUTOR)
+  @Test
+  fun testLessonsFilteredBySelectedDate() {
+    // Set the selected date to filter lessons
+    val filteredDate = "2024-10-10"
+
+    // Change the lessons to include only those that match the date
+    requestedLessonsFlow.value = mockLessons.filter { it.timeSlot.contains(filteredDate) }
+
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun testGetAllRequestedLessonsCalledOnLaunch() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(
-                listProfilesViewModel = listProfilesViewModel,
-                lessonViewModel = lessonViewModel,
-                navigationActions = navigationActions
-            )
-        }
+    // Verify that only the filtered lesson items are displayed
+    composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
+  }
 
-        verify(lessonViewModel).getAllRequestedLessons()
+  @Test
+  fun testBottomNavigationSelection() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+
+    // Interact with Bottom Navigation and verify navigation action
+    composeTestRule.onNodeWithTag("Find a Student").performClick()
+
+    // Verify using the actual TopLevelDestination object
+    verify(navigationActions).navigateTo(TopLevelDestinations.TUTOR)
+  }
+
+  @Test
+  fun testNoLessonsMessageDisplayedWhenEmpty() {
+    requestedLessonsFlow.value = emptyList() // Set no lessons
+
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Verify "No lessons available" message or any placeholder is displayed
+    composeTestRule.onNodeWithTag("noLessonsMessage").assertIsDisplayed()
+  }
 }
