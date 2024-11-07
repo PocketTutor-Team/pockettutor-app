@@ -68,10 +68,12 @@ fun HomeScreen(
                   style = MaterialTheme.typography.headlineMedium)
             },
             actions = {
-              IconButton(
-                  onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
-                    Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Profile Icon", Modifier.testTag("Profile Icon"))
-                  }
+              IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = "Profile Icon",
+                    Modifier.testTag("Profile Icon"))
+              }
             })
       },
       bottomBar = {
