@@ -17,6 +17,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.DisplayLessonDetails
+import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -78,6 +79,11 @@ fun TutorLessonResponseScreen(
                         CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                       DisplayLessonDetails(lesson, studentProfile)
+
+                        LessonLocationDisplay(
+                            latitude = lesson.latitude,
+                            longitude = lesson.longitude,
+                            lessonTitle = lesson.title)
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
