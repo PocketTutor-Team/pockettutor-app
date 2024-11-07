@@ -14,8 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 
 @Composable
-fun PriceRangeSlider(label: String, onValueChange: (Float, Float) -> Unit) {
-  var sliderPosition by remember { mutableStateOf(0f..100f) }
+fun PriceRangeSlider(
+    label: String,
+    onValueChange: (Float, Float) -> Unit,
+    initialStart: Float = 5f, // Default value for initialStart
+    initialEnd: Float = 50f,
+) {
+  var sliderPosition by remember { mutableStateOf(initialStart..initialEnd) }
 
   Column(modifier = Modifier.testTag("priceRangeSliderColumn")) {
     Text(
@@ -26,11 +31,11 @@ fun PriceRangeSlider(label: String, onValueChange: (Float, Float) -> Unit) {
     RangeSlider(
         value = sliderPosition,
         steps = 44,
-        onValueChange = { range -> sliderPosition = range },
-        valueRange = 5f..50f,
-        onValueChangeFinished = {
+        onValueChange = { range ->
+          sliderPosition = range
           onValueChange(sliderPosition.start, sliderPosition.endInclusive)
         },
+        valueRange = 5f..50f,
         colors =
             SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondaryContainer,
