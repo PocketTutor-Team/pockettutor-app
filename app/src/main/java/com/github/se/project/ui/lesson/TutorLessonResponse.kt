@@ -2,6 +2,8 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -66,6 +68,7 @@ fun TutorLessonResponseScreen(
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
                     .testTag("tutorLessonResponseScreen"),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)

@@ -59,10 +59,8 @@ fun LessonEditor(
   }
   var showMapDialog by remember { mutableStateOf(false) }
 
-  var isMapVisible by remember { mutableStateOf(false) }
   val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
     selectedLocation = newLocation
-    isMapVisible = false // Hide map after confirming selection
   }
 
   if (currentLessonId.value != lesson?.id) {
@@ -167,7 +165,7 @@ fun LessonEditor(
         onDismissRequest = { showMapDialog = false },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
           Surface(
-              modifier = Modifier.fillMaxWidth(0.95f).fillMaxHeight(0.685f),
+              modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight(),
               shape = MaterialTheme.shapes.large) {
                 Column {
                   // Dialog header
@@ -180,7 +178,7 @@ fun LessonEditor(
                       })
 
                   // Map content
-                  Box(modifier = Modifier.weight(1f)) {
+                  Box() {
                     MapPickerBox(
                         initialLocation = selectedLocation,
                         lessonTitle = title,
@@ -298,15 +296,6 @@ fun LessonEditor(
                         modifier = Modifier.padding(end = 8.dp))
                     Text(locationText, style = MaterialTheme.typography.titleSmall)
                   }
-
-              if (isMapVisible) {
-                Box(modifier = Modifier.fillMaxWidth().height(600.dp).padding(top = 8.dp)) {
-                  MapPickerBox(
-                      initialLocation = selectedLocation,
-                      lessonTitle = title,
-                      onLocationSelected = onLocationSelected)
-                }
-              }
 
               Spacer(modifier = Modifier.height(8.dp))
 
