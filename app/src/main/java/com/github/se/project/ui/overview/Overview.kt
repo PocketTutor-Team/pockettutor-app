@@ -2,32 +2,31 @@ package com.github.se.project.ui.overview
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Role
+import com.github.se.project.R
+import com.github.se.project.model.lesson.*
+import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
-import com.github.se.project.ui.navigation.BottomNavigationMenu
-import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
-import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.ui.navigation.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     listProfileViewModel: ListProfilesViewModel,
@@ -54,161 +53,206 @@ fun HomeScreen(
       }
 
   val onLessonClick = { lesson: Lesson ->
-    navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON + "/${lesson.id}")
+    if (currentProfile?.role == Role.STUDENT) {
+      navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON + "/${lesson.id}")
+    }
   }
 
   Scaffold(
       topBar = {
-        Row(
-            modifier =
-                Modifier.testTag("topBar").fillMaxWidth().padding(16.dp).testTag("topBarRow"),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
+        TopAppBar(
+            modifier = Modifier.testTag("topBar"),
+            title = {
               Text(
-                  text = "Your dashboard",
-                  style = MaterialTheme.typography.headlineMedium,
-                  modifier = Modifier.testTag("dashboardTitle"))
+                  text = "Welcome, ${currentProfile?.firstName}",
+                  style = MaterialTheme.typography.headlineMedium)
+            },
+            actions = {
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
-                    imageVector = Icons.Filled.AccountBox,
+                    imageVector = Icons.Default.AccountBox,
                     contentDescription = "Profile Icon",
-                    Modifier.size(32.dp).testTag("profileIcon"))
+                    Modifier.testTag("Profile Icon"))
               }
-            }
+            })
       },
       bottomBar = {
         BottomNavigationMenu(
             onTabSelect = { route -> navigationActions.navigateTo(route) },
             tabList = navigationItems,
-            selectedItem = navigationActions.currentRoute(),
-        )
-      },
-      content = { paddingValues ->
+            selectedItem = navigationActions.currentRoute())
+      }) { paddingValues ->
         currentProfile?.let { profile ->
-          Spacer(modifier = Modifier.height(16.dp).testTag("spacer"))
-
-          if (lessons.any {
-            it.status == LessonStatus.CONFIRMED ||
-                it.status == LessonStatus.STUDENT_REQUESTED ||
-                it.status == LessonStatus.TUTOR_REQUESTED ||
-                it.status == LessonStatus.PENDING
-          }) {
-            Column(
-                modifier =
-                    Modifier.fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(16.dp)
-                        .testTag("lessonsColumn")) {
-                  // Expandable sections for Tutor
-                  if (profile.role == Role.TUTOR) {
-                    ExpandableLessonSection(
-                        sectionTitle = "Pending Lessons",
-                        // we have selected it and wait for student confirmation
-                        lessons = lessons,
-                        statusFilter = LessonStatus.TUTOR_REQUESTED,
-                        isTutor = true,
-                        maxHeight = 340.dp,
-                        onClick = onLessonClick,
-                        modifier = Modifier.testTag("pendingLessonsSection"))
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    ExpandableLessonSection(
-                        sectionTitle = "Confirmed Lessons",
-                        lessons = lessons,
-                        statusFilter = LessonStatus.CONFIRMED,
-                        isTutor = true,
-                        onClick = onLessonClick,
-                        modifier = Modifier.testTag("confirmedLessonsSection"))
-                  }
-
-                  // Expandable sections for Student
-                  if (profile.role == Role.STUDENT) {
-                    ExpandableLessonSection(
-                        sectionTitle = "Requested Lessons",
-                        // we have create a lesson but no match yet
-                        lessons = lessons,
-                        statusFilter = LessonStatus.STUDENT_REQUESTED,
-                        isTutor = false,
-                        maxHeight = 340.dp,
-                        onClick = onLessonClick,
-                        modifier = Modifier.testTag("requestedLessonsSection"))
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    ExpandableLessonSection(
-                        sectionTitle = "To Confirm Lessons",
-                        // a tutor has selected the lesson and wait for student confirmation
-                        lessons = lessons,
-                        statusFilter = LessonStatus.TUTOR_REQUESTED,
-                        isTutor = false,
-                        maxHeight = 340.dp,
-                        modifier = Modifier.testTag("toConfirmLessonsStudentSection"))
-
-                    ExpandableLessonSection(
-                        sectionTitle = "Confirmed Lessons",
-                        lessons = lessons,
-                        statusFilter = LessonStatus.CONFIRMED,
-                        isTutor = false,
-                        onClick = onLessonClick,
-                        modifier = Modifier.testTag("confirmedLessonsStudentSection"))
-                  }
-                }
+          if (lessons.any { it.status != LessonStatus.COMPLETED }) {
+            LessonsContent(
+                profile = profile,
+                lessons = lessons,
+                onClick = onLessonClick,
+                paddingValues = paddingValues,
+                listProfilesViewModel = listProfileViewModel)
           } else {
-            Text(
-                text = "You have no lessons scheduled at the moment.",
-                modifier =
-                    Modifier.padding(horizontal = 32.dp, vertical = 96.dp).testTag("noLessonsText"),
-                style = MaterialTheme.typography.titleMedium)
+            EmptyLessonsState(paddingValues)
           }
         } ?: NoProfileFoundScreen(context, navigationActions)
-      })
+      }
 }
 
 @Composable
-fun ExpandableLessonSection(
-    sectionTitle: String,
+private fun LessonsContent(
+    profile: Profile,
     lessons: List<Lesson>,
-    statusFilter: LessonStatus,
-    isTutor: Boolean,
-    maxHeight: Dp? = null, // Optional parameter to limit the section's height
-    modifier: Modifier = Modifier,
-    onClick: (Lesson) -> Unit = {},
+    onClick: (Lesson) -> Unit,
+    paddingValues: PaddingValues,
+    listProfilesViewModel: ListProfilesViewModel
 ) {
-  var expanded by remember { mutableStateOf(true) }
-
-  Column(modifier = modifier.fillMaxWidth()) {
-    // Section header with click to expand/collapse
-    Row(
-        modifier =
-            Modifier.fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .padding(8.dp)
-                .testTag("${sectionTitle}Row"),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically) {
-          Text(
-              text = sectionTitle,
-              style = MaterialTheme.typography.titleMedium,
-              modifier = Modifier.testTag("${sectionTitle}Text"))
-          Icon(
-              imageVector =
-                  if (expanded) Icons.Default.KeyboardArrowDown
-                  else Icons.Default.KeyboardArrowLeft,
-              contentDescription = if (expanded) "Collapse" else "Expand",
-              modifier = Modifier.testTag("${sectionTitle}Icon"))
+  Column(
+      modifier =
+          Modifier.fillMaxSize()
+              .padding(paddingValues)
+              .padding(horizontal = 16.dp)
+              .testTag("lessonsColumn")) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
+          Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+            if (profile.role == Role.TUTOR) {
+              TutorSections(lessons, onClick, listProfilesViewModel)
+            } else {
+              StudentSections(lessons, onClick, listProfilesViewModel)
+            }
+          }
         }
-
-    // Display lessons only when the section is expanded
-    if (expanded) {
-      Box(modifier = maxHeight?.let { Modifier.heightIn(max = it) } ?: Modifier.fillMaxWidth()) {
-        DisplayLessons(
-            lessons = lessons,
-            statusFilter = statusFilter,
-            isTutor = isTutor,
-            modifier = Modifier.testTag("${sectionTitle}Lessons"),
-            onCardClick = onClick)
       }
-    }
+}
+
+@Composable
+private fun TutorSections(
+    lessons: List<Lesson>,
+    onClick: (Lesson) -> Unit,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  val sections =
+      listOf(
+          SectionInfo(
+              "Pending Confirmations",
+              LessonStatus.TUTOR_REQUESTED,
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+
+  LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
+}
+
+@Composable
+private fun StudentSections(
+    lessons: List<Lesson>,
+    onClick: (Lesson) -> Unit,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  val sections =
+      listOf(
+          SectionInfo(
+              "Waiting for Tutors",
+              LessonStatus.STUDENT_REQUESTED,
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+          SectionInfo("Tutor Offers", LessonStatus.TUTOR_REQUESTED, Icons.Default.Notifications),
+          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+
+  LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
+}
+
+@Composable
+private fun LessonSections(
+    sections: List<SectionInfo>,
+    lessons: List<Lesson>,
+    isTutor: Boolean,
+    onClick: (Lesson) -> Unit,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  sections.forEach { section ->
+    val sectionLessons = lessons.filter { it.status == section.status }
+
+    ExpandableLessonSection(
+        section = section,
+        lessons = sectionLessons,
+        isTutor = isTutor,
+        onClick = onClick,
+        listProfilesViewModel = listProfilesViewModel)
+    Spacer(modifier = Modifier.height(16.dp))
   }
+}
+
+@Composable
+private fun ExpandableLessonSection(
+    section: SectionInfo,
+    lessons: List<Lesson>,
+    isTutor: Boolean,
+    onClick: (Lesson) -> Unit,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  var expanded by remember { mutableStateOf(lessons.isNotEmpty()) }
+
+  Card(
+      modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),
+      colors =
+          CardDefaults.cardColors(
+              containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)) {
+        Column {
+          ListItem(
+              headlineContent = {
+                Text(section.title, style = MaterialTheme.typography.titleMedium)
+              },
+              colors =
+                  ListItemDefaults.colors(
+                      containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+              leadingContent = {
+                Icon(section.icon, null, tint = MaterialTheme.colorScheme.primary)
+              },
+              trailingContent = {
+                IconButton(onClick = { expanded = !expanded }) {
+                  Icon(
+                      if (expanded) Icons.Default.KeyboardArrowDown
+                      else Icons.Default.KeyboardArrowLeft,
+                      contentDescription = if (expanded) "Collapse" else "Expand")
+                }
+              },
+              modifier = Modifier.clickable { expanded = !expanded })
+
+          if (expanded) {
+            DisplayLessons(
+                lessons = lessons,
+                statusFilter = section.status,
+                isTutor = isTutor,
+                onCardClick = onClick,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                listProfilesViewModel = listProfilesViewModel)
+          }
+        }
+      }
+}
+
+@Composable
+private fun EmptyLessonsState(paddingValues: PaddingValues) {
+  Box(
+      modifier = Modifier.fillMaxSize().padding(paddingValues).padding(32.dp),
+      contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+              Image(
+                  painter = painterResource(id = R.drawable.logopocket),
+                  contentDescription = null,
+                  modifier = Modifier.size(148.dp))
+              Text(
+                  text = "No active lessons",
+                  style = MaterialTheme.typography.titleLarge,
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.testTag("noLessonsText"))
+              Text(
+                  text = "Your lessons will appear here once you have some scheduled",
+                  style = MaterialTheme.typography.bodyMedium,
+                  textAlign = TextAlign.Center,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+      }
 }
 
 @Composable
@@ -229,3 +273,5 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
             }
       }
 }
+
+private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector)

@@ -1,6 +1,5 @@
 package com.github.se.project.ui.lesson
 
-import RequestedLessonsScreen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.lesson.Lesson
@@ -16,32 +15,25 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
 
 class LessonsRequestedScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
-  private lateinit var lessonViewModel: LessonViewModel
-  private lateinit var navigationActions: NavigationActions
 
-  private val profile =
-      Profile(
-          "uid",
-          "googleUid",
-          "firstName",
-          "lastName",
-          "phoneNumber",
-          Role.TUTOR,
-          Section.AR,
-          AcademicLevel.BA1,
-          listOf(Language.ENGLISH),
-          listOf(Subject.ANALYSIS),
-          List(7) { List(12) { 0 } },
-          0)
+  private lateinit var lessonRepository: LessonRepository
+  private lateinit var lessonViewModel: LessonViewModel
+
+  private lateinit var navigationActions: NavigationActions
 
   private val mockLessons =
       listOf(
@@ -77,22 +69,27 @@ class LessonsRequestedScreenTest {
 
   @Before
   fun setup() {
-    // Mock the ViewModels
-    listProfilesViewModel =
-        Mockito.mock(ListProfilesViewModel::class.java).apply {
-          `when`(currentProfile).thenReturn(MutableStateFlow(profile))
-        }
 
-    val mockRepository = mock(LessonRepository::class.java)
-    lessonViewModel =
-        Mockito.spy(LessonViewModel(mockRepository)).apply {
-          `when`(this.requestedLessons).thenReturn(requestedLessonsFlow)
-        }
+    // Repositories
+    profilesRepository = mock(ProfilesRepository::class.java)
+    lessonRepository = mock(LessonRepository::class.java)
+
+    // Initialize the Profile and lesson ViewModel with a spy
+    listProfilesViewModel = ListProfilesViewModel(profilesRepository)
+    listProfilesViewModel = spy(listProfilesViewModel)
+
+    lessonViewModel = LessonViewModel(lessonRepository)
+    lessonViewModel = spy(lessonViewModel)
 
     navigationActions =
         Mockito.mock(NavigationActions::class.java).apply {
           `when`(currentRoute()).thenReturn(Route.FIND_STUDENT)
         }
+
+    doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
+    doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
+
+    doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }
 
   @Test

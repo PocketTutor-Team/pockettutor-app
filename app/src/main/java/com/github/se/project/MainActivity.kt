@@ -1,6 +1,5 @@
 package com.github.se.project
 
-import RequestedLessonsScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,6 +22,7 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
+import com.github.se.project.ui.lesson.RequestedLessonsScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
-    // enableEdgeToEdge()
     setContent {
       SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
     }

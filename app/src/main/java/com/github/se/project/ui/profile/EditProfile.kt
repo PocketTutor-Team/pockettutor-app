@@ -6,13 +6,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
@@ -46,8 +44,6 @@ fun EditProfile(
     profileSubjects.addAll(profile.subjects)
   }
 
-  var firstName by remember { mutableStateOf(profile.firstName) }
-  var lastName by remember { mutableStateOf(profile.lastName) }
   var phoneNumber by remember { mutableStateOf(profile.phoneNumber) }
 
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
@@ -80,51 +76,12 @@ fun EditProfile(
                     .testTag("tutorInfoScreen")
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Row(
-                  modifier = Modifier.fillMaxWidth(),
-              ) {
-                Text(
-                    text = "${profile.firstName} ${profile.lastName}",
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.testTag("nameTitle"))
-
-                // Edit button with icon
-                IconButton(
-                    onClick = { nameEditing = !nameEditing },
-                    modifier = Modifier.testTag("editNameButton").offset(y = (-4).dp)) {
-                      Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Profile")
-                    }
-              }
-
               Text(
                   "Modify your profile information:",
                   style = MaterialTheme.typography.titleMedium,
                   modifier = Modifier.testTag("editTutorProfileInstructionText"))
 
               Spacer(modifier = Modifier.height(6.dp))
-
-              if (nameEditing) {
-                // First Name input
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    label = { Text("First Name") },
-                    placeholder = { Text("Enter your first name") },
-                    modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
-                    singleLine = true)
-
-                // Last Name input
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text("Last Name") },
-                    placeholder = { Text("Enter your last name") },
-                    modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
-                    shape = MaterialTheme.shapes.small,
-                    singleLine = true)
-              }
 
               // Phone Number input
               OutlinedTextField(
@@ -187,18 +144,12 @@ fun EditProfile(
                         "Please select at least one language and one subject",
                         Toast.LENGTH_SHORT)
                     .show()
-              } else if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
-                showError.value = true
-                Toast.makeText(context, "Please fill in all the text fields", Toast.LENGTH_SHORT)
-                    .show()
               } else if (!isPhoneNumberValid(phoneNumber)) {
                 showError.value = true
                 Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
                     .show()
               } else {
                 showError.value = false
-                profile.firstName = firstName
-                profile.lastName = lastName
                 profile.phoneNumber = phoneNumber
                 profile.languages = profileLanguages
                 profile.subjects = profileSubjects
