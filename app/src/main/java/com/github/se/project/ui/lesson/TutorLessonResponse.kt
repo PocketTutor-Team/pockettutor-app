@@ -43,6 +43,8 @@ fun TutorLessonResponseScreen(
   var showConfirmDialog by remember { mutableStateOf(false) }
   val context = LocalContext.current
 
+  var showDeclineDialog by remember { mutableStateOf(false) }
+
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
       topBar = {
@@ -57,10 +59,17 @@ fun TutorLessonResponseScreen(
                   }
             },
             title = {
-              Text(
-                  text = "Respond to Request",
-                  style = MaterialTheme.typography.titleLarge,
-                  modifier = Modifier.testTag("TutorLessonResponseTitle"))
+              if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+                Text(
+                    text = "Confirm the Lesson",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.testTag("confirmLessonTitle"))
+              } else {
+                Text(
+                    text = "Respond to Request",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.testTag("requestPendingLessonTitle"))
+              }
             })
       }) { paddingValues ->
         Column(
@@ -103,6 +112,20 @@ fun TutorLessonResponseScreen(
                       Spacer(modifier = Modifier.width(8.dp))
                       Text("Offer to Teach (${currentProfile.price}.-/hour)")
                     }
+
+                if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+                  Button(
+                      onClick = { showDeclineDialog = true },
+                      modifier =
+                          Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("cancelButton")) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Dismiss the Lesson")
+                      }
+                }
               }
             }
 
@@ -127,6 +150,36 @@ fun TutorLessonResponseScreen(
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
                             Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                            navigationActions.navigateTo(Screen.HOME)
+                          })
+                    }) {
+                      Text("Confirm")
+                    }
+              },
+              dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+              })
+        }
+
+        // Decline Dialog
+        if (showDeclineDialog) {
+          AlertDialog(
+              onDismissRequest = { showDeclineDialog = false },
+              title = { Text("Dismiss the Lesson") },
+              text = { Text("Are you sure you want to dismiss this lesson?") },
+              confirmButton = {
+                Button(
+                    onClick = {
+                      lessonViewModel.updateLesson(
+                          lesson.copy(
+                              tutorUid = "",
+                              status = LessonStatus.PENDING,
+                          ),
+                          onComplete = {
+                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                            Toast.makeText(
+                                    context, "Lesson dismiss successfully.", Toast.LENGTH_SHORT)
                                 .show()
                             navigationActions.navigateTo(Screen.HOME)
                           })

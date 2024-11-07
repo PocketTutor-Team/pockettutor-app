@@ -60,10 +60,19 @@ fun TutorMatchingScreen(
       listProfilesViewModel.profiles.collectAsState() // TODO: add field to get only tutor profiles
 
   val filteredTutor =
-      allProfiles.filter { profile -> // TODO: think of the filtering
-        profile.role == Role.TUTOR &&
-            profile.subjects.contains(currentLesson.subject) &&
-            isTutorAvailable(profile.schedule, currentLesson.timeSlot)
+      if (currentLesson.status == LessonStatus.PENDING) {
+        allProfiles.filter { profile -> // TODO: think of the filtering
+          profile.role == Role.TUTOR &&
+              profile.subjects.contains(currentLesson.subject) &&
+              isTutorAvailable(profile.schedule, currentLesson.timeSlot)
+        }
+      } else {
+        val tutorProfile = allProfiles.find { profile -> profile.uid == currentLesson.tutorUid }
+        if (tutorProfile == null) {
+          return Text("No tutor for the selected lesson. Should not happen.")
+        } else {
+          listOf(tutorProfile)
+        }
       }
 
   var showConfirmDialog by remember { mutableStateOf(false) }
@@ -106,21 +115,24 @@ fun TutorMatchingScreen(
             }
       },
       bottomBar = {
-        Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
-            onClick = {
-              lessonViewModel.addLesson(
-                  currentLesson,
-                  onComplete = {
-                    lessonViewModel.getLessonsForStudent(currentProfile.uid)
-                    Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
-                  })
-              navigationActions.navigateTo(Screen.HOME)
-            }) {
-              Text(
-                  "Ask other tutor for your lesson",
-                  modifier = Modifier.testTag("confirmButtonText"))
-            }
+        if (currentLesson.status == LessonStatus.PENDING) {
+          Button(
+              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
+              onClick = {
+                lessonViewModel.addLesson(
+                    currentLesson,
+                    onComplete = {
+                      lessonViewModel.getLessonsForStudent(currentProfile.uid)
+                      Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
+                          .show()
+                    })
+                navigationActions.navigateTo(Screen.HOME)
+              }) {
+                Text(
+                    "Ask other tutor for your lesson",
+                    modifier = Modifier.testTag("confirmButtonText"))
+              }
+        }
       }) { innerPadding ->
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding),

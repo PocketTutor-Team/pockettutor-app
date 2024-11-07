@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -139,6 +137,16 @@ fun PocketTutorApp() {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
+      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
+      composable(Screen.EDIT_SCHEDULE) {
+        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.EDIT_REQUESTED_LESSON) {
+        EditRequestedLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      composable(Screen.TUTOR_LESSON_RESPONSE) {
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
     }
 
     navigation(
@@ -154,17 +162,15 @@ fun PocketTutorApp() {
       composable(Screen.TUTOR_MATCH) {
         TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
-      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
-      composable(Screen.EDIT_SCHEDULE) {
-        EditTutorSchedule(navigationActions, listProfilesViewModel)
-      }
-      composable(
-          Screen.EDIT_REQUESTED_LESSON + "/{Lesson ID}",
-          arguments = listOf(navArgument("Lesson ID") { type = NavType.StringType })) { entry ->
-            val lessonId = entry.arguments?.getString("Lesson ID")!!
-            EditRequestedLessonScreen(
-                lessonId, navigationActions, listProfilesViewModel, lessonViewModel)
-          }
+      //      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions,
+      // listProfilesViewModel) }
+      //      composable(Screen.EDIT_SCHEDULE) {
+      //        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      //      }
+      //      composable(Screen.EDIT_REQUESTED_LESSON) {
+      //        EditRequestedLessonScreen(
+      //          navigationActions, listProfilesViewModel, lessonViewModel)
+      //      }
     }
   }
 }

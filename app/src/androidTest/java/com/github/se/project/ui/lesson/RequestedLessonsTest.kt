@@ -48,7 +48,7 @@ class LessonsRequestedScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
-              status = LessonStatus.REQUESTED,
+              status = LessonStatus.PENDING,
               latitude = 0.0,
               longitude = 0.0),
           Lesson(
@@ -62,7 +62,7 @@ class LessonsRequestedScreenTest {
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.REQUESTED,
+              status = LessonStatus.PENDING,
               latitude = 0.0,
               longitude = 0.0))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
@@ -87,7 +87,7 @@ class LessonsRequestedScreenTest {
         }
 
     doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
-    doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
+    doNothing().`when`(lessonRepository).getAllPendingLessons(any(), any())
 
     doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }
