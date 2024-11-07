@@ -37,12 +37,12 @@ fun DisplayTutors(
                 modifier = Modifier.padding(16.dp).fillMaxWidth().testTag("tutorContent_$index"),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                   Text(
-                      text = tutor.firstName + tutor.lastName,
+                      text = tutor.firstName + " " + tutor.lastName,
                       style = MaterialTheme.typography.titleMedium,
                       modifier = Modifier.testTag("tutorName_$index"))
 
                   Text(
-                      text = tutor.section.toString() + tutor.academicLevel.toString(),
+                      text = tutor.section.toString() + " " + tutor.academicLevel.toString(),
                       style = MaterialTheme.typography.bodyLarge,
                       modifier = Modifier.testTag("tutorLevel_$index"))
                 }

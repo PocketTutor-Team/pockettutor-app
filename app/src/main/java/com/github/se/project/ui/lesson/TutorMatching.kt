@@ -2,22 +2,22 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,6 +41,7 @@ import com.github.se.project.ui.components.DisplayTutors
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TutorMatchingScreen(
     listProfilesViewModel: ListProfilesViewModel =
@@ -92,27 +93,28 @@ fun TutorMatchingScreen(
 
   Scaffold(
       topBar = {
-        Row(
-            modifier = Modifier.testTag("topBar").fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+        TopAppBar(
+            navigationIcon = {
               IconButton(onClick = { navigationActions.goBack() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back arrow",
-                    modifier = Modifier.size(32.dp).testTag("backButton"))
+                    modifier = Modifier.testTag("backButton"))
               }
-
+            },
+            title = {
               Text(
                   text = "Available Tutors",
-                  style = MaterialTheme.typography.headlineMedium,
+                  style = MaterialTheme.typography.titleLarge,
                   modifier = Modifier.testTag("AvailableTutorsTitle"))
-
+            },
+            actions = {
               IconButton(
                   onClick = { /* TODO: Additional filter options */},
                   modifier = Modifier.testTag("filterButton")) {
                     Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Filter")
                   }
-            }
+            })
       },
       bottomBar = {
         if (currentLesson.status == LessonStatus.PENDING) {
@@ -174,7 +176,10 @@ fun TutorMatchingScreen(
                           currentLesson.copy(
                               tutorUid = chosenTutor.uid,
                               price = chosenTutor.price.toDouble(),
-                              status = LessonStatus.STUDENT_REQUESTED, // TODO: update state
+                              status =
+                                  if (currentLesson.status == LessonStatus.TUTOR_REQUESTED)
+                                      LessonStatus.CONFIRMED
+                                  else LessonStatus.STUDENT_REQUESTED, // TODO: update state
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForStudent(currentProfile.uid)
