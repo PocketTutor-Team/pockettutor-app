@@ -37,26 +37,23 @@ fun MapPickerBox(
         }
   }
 
-  Column (modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
     GoogleMap(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
-            //Pass the scrolling and zooming gestures to the map
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
+        modifier =
+            Modifier.fillMaxWidth()
+                .height(400.dp)
+                // Pass the scrolling and zooming gestures to the map
+                .pointerInput(Unit) {
+                  detectTransformGestures { _, pan, zoom, _ ->
                     // Update camera zoom
                     cameraPositionState.move(
                         CameraUpdateFactory.zoomBy(zoom - 1) // zoom factor correction
-                    )
+                        )
 
                     // Update camera position by panning
-                    cameraPositionState.move(
-                        CameraUpdateFactory.scrollBy(-pan.x, -pan.y)
-                    )
-                }
-            },
-
+                    cameraPositionState.move(CameraUpdateFactory.scrollBy(-pan.x, -pan.y))
+                  }
+                },
         cameraPositionState = cameraPositionState,
         onMapClick = { latLng ->
           selectedPosition = latLng
