@@ -65,6 +65,7 @@ fun TutorMatchingScreen(
         allProfiles.filter { profile -> // TODO: think of the filtering
           profile.role == Role.TUTOR &&
               profile.subjects.contains(currentLesson.subject) &&
+              profile.price <= currentLesson.maxPrice &&
               isTutorAvailable(profile.schedule, currentLesson.timeSlot)
         }
       } else {
