@@ -54,12 +54,12 @@ fun LessonEditor(
   val currentDateTime = Calendar.getInstance()
   val currentLessonId = remember { mutableStateOf<String?>(null) }
 
-    var selectedLocation by remember {
-        mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
-    }
-    var showMapDialog by remember { mutableStateOf(false) }
+  var selectedLocation by remember {
+    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
+  }
+  var showMapDialog by remember { mutableStateOf(false) }
 
-    var isMapVisible by remember { mutableStateOf(false) }
+  var isMapVisible by remember { mutableStateOf(false) }
   val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
     selectedLocation = newLocation
     isMapVisible = false // Hide map after confirming selection
@@ -153,49 +153,45 @@ fun LessonEditor(
               selectedLocation.second))
     }
   }
-    // Format location for display
-    val locationText = if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
+  // Format location for display
+  val locationText =
+      if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
         "Location selected"
-    } else {
+      } else {
         "Select location"
-    }
+      }
 
-    // Map Dialog
-    if (showMapDialog) {
-        Dialog(
-            onDismissRequest = { showMapDialog = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .fillMaxHeight(0.685f),
-                shape = MaterialTheme.shapes.large
-            ) {
+  // Map Dialog
+  if (showMapDialog) {
+    Dialog(
+        onDismissRequest = { showMapDialog = false },
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
+          Surface(
+              modifier = Modifier.fillMaxWidth(0.95f).fillMaxHeight(0.685f),
+              shape = MaterialTheme.shapes.large) {
                 Column {
-                    // Dialog header
-                    TopAppBar(title = { Text("Select Location") },
-                        navigationIcon = {
-                            IconButton(onClick = { showMapDialog = false }) {
-                                Icon(Icons.Default.Close, "Close map")
-                            }
+                  // Dialog header
+                  TopAppBar(
+                      title = { Text("Select Location") },
+                      navigationIcon = {
+                        IconButton(onClick = { showMapDialog = false }) {
+                          Icon(Icons.Default.Close, "Close map")
                         }
-                    )
+                      })
 
-                    // Map content
-                    Box(modifier = Modifier.weight(1f)) {
-                        MapPickerBox(
-                            initialLocation = selectedLocation,
-                            onLocationSelected = { newLocation ->
-                                selectedLocation = newLocation
-                                showMapDialog = false
-                            }
-                        )
-                    }
+                  // Map content
+                  Box(modifier = Modifier.weight(1f)) {
+                    MapPickerBox(
+                        initialLocation = selectedLocation,
+                        onLocationSelected = { newLocation ->
+                          selectedLocation = newLocation
+                          showMapDialog = false
+                        })
+                  }
                 }
-            }
+              }
         }
-    }
+  }
 
   Scaffold(
       topBar = {
@@ -264,7 +260,7 @@ fun LessonEditor(
                       Text(
                           selectedDate.ifEmpty { "Select Date" },
                           style = MaterialTheme.typography.titleSmall)
-                }
+                    }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -283,31 +279,24 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                "Select the location for the lesson",
-                style = MaterialTheme.typography.titleSmall
-            )
+              Text(
+                  "Select the location for the lesson", style = MaterialTheme.typography.titleSmall)
 
-            Button(
-                onClick = { showMapDialog = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Icon(
-                    if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0)
-                        Icons.Default.Check
-                    else
-                        Icons.Default.LocationOn,
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(locationText, style = MaterialTheme.typography.titleSmall)
-            }
-
-
+              Button(
+                  onClick = { showMapDialog = true },
+                  modifier = Modifier.fillMaxWidth(),
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                    Icon(
+                        if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0)
+                            Icons.Default.Check
+                        else Icons.Default.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp))
+                    Text(locationText, style = MaterialTheme.typography.titleSmall)
+                  }
 
               if (isMapVisible) {
                 Box(modifier = Modifier.fillMaxWidth().height(600.dp).padding(top = 8.dp)) {
@@ -341,38 +330,31 @@ fun LessonEditor(
             }
       },
       bottomBar = {
-          Column(
-              modifier = Modifier
-                  .background(color = MaterialTheme.colorScheme.background)
-                  .padding(horizontal = 16.dp, vertical = 8.dp),
-              verticalArrangement = Arrangement.spacedBy(8.dp)
-          ) {
+        Column(
+            modifier =
+                Modifier.background(color = MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Button(
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .testTag("confirmButton"),
+                  modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
-                  onClick = onConfirmClick
-              ) {
-                  Text("Confirm")
-              }
+                  onClick = onConfirmClick) {
+                    Text("Confirm")
+                  }
 
               if (onDelete != null) {
-                  Button(
-                      modifier = Modifier
-                          .fillMaxWidth()
-                          .testTag("deleteButton"),
-                      shape = MaterialTheme.shapes.medium,
-                      colors = ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.error,
-                          contentColor = MaterialTheme.colorScheme.onError
-                      ),
-                      onClick = { onDelete(lesson!!) }
-                  ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth().testTag("deleteButton"),
+                    shape = MaterialTheme.shapes.medium,
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError),
+                    onClick = { onDelete(lesson!!) }) {
                       Text("Delete")
-                  }
+                    }
               }
-          }
+            }
       })
 }
 
