@@ -51,7 +51,7 @@ class AddLessonTest {
   @Test
   fun sliderTest() {
     var changed = false
-    composeTestRule.setContent { PriceRangeSlider("testLabel") { a, b -> changed = true } }
+    composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
   }
@@ -65,7 +65,9 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "time") == null)
+            "time",
+            1.0,
+            1.0) == null)
     assert(
         validateLessonInput(
             "title",
@@ -73,7 +75,9 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "") == "time is missing")
+            "",
+            1.0,
+            1.0) == "time is missing")
   }
 
   @Test

@@ -37,7 +37,7 @@ fun DisplayLessons(
     isTutor: Boolean,
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
-    listProfilesViewModel: ListProfilesViewModel // Ajout du ViewModel pour récupérer les profils
+    listProfilesViewModel: ListProfilesViewModel
 ) {
   val filteredLessons =
       statusFilter?.let { lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isEmpty() == tutorEmpty} } ?: lessons

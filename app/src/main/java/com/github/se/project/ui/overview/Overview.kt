@@ -73,10 +73,12 @@ fun HomeScreen(
                   style = MaterialTheme.typography.headlineMedium)
             },
             actions = {
-              IconButton(
-                  onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
-                    Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Profile Icon", Modifier.testTag("Profile Icon"))
-                  }
+              IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
+                Icon(
+                    imageVector = Icons.Default.AccountBox,
+                    contentDescription = "Profile Icon",
+                    Modifier.testTag("Profile Icon"))
+              }
             })
       },
       bottomBar = {
@@ -190,7 +192,7 @@ private fun ExpandableLessonSection(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  var expanded by remember { mutableStateOf(true) }
+  var expanded by remember { mutableStateOf(lessons.isNotEmpty()) }
 
   Card(
       modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),

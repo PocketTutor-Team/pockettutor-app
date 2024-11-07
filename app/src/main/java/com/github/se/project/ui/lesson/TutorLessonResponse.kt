@@ -2,6 +2,9 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -17,6 +20,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.DisplayLessonDetails
+import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -65,6 +69,7 @@ fun TutorLessonResponseScreen(
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
                     .testTag("tutorLessonResponseScreen"),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
@@ -78,6 +83,11 @@ fun TutorLessonResponseScreen(
                         CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                       DisplayLessonDetails(lesson, studentProfile)
+
+                      LessonLocationDisplay(
+                          latitude = lesson.latitude,
+                          longitude = lesson.longitude,
+                          lessonTitle = lesson.title)
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -111,9 +121,9 @@ fun TutorLessonResponseScreen(
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
-                              tutorUid = lesson.tutorUid + currentProfile.uid,
+                              tutorUid = currentProfile.uid,
                               price = currentProfile.price.toDouble(),
-                              status = LessonStatus.STUDENT_REQUESTED,
+                              status = LessonStatus.TUTOR_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
