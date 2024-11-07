@@ -68,7 +68,7 @@ class ProfileInfoScreenTest {
   @Before
   fun setUp() {
     // Mock the dependencies
-    mockLessonRepository = mock(LessonRepository::class.java)
+      mockLessonRepository = mock(LessonRepository::class.java)
     mockProfilesRepository = mock(ProfilesRepository::class.java)
     mockNavigationActions = mock(NavigationActions::class.java)
 

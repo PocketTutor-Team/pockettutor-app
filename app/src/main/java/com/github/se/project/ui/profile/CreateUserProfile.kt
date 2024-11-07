@@ -1,5 +1,6 @@
 package com.github.se.project.ui.profile
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -129,6 +130,7 @@ fun CreateProfileScreen(
 
               Button(
                   onClick = {
+                      Log.e("abagaga", "first")
                     if (firstName.isNotEmpty() &&
                         lastName.isNotEmpty() &&
                         phoneNumber.isNotEmpty() &&

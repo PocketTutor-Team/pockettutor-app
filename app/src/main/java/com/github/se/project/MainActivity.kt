@@ -39,45 +39,25 @@ import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
 
-  var testMode = false
   override fun onCreate(savedInstanceState: Bundle?) {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     // enableEdgeToEdge()
 
-    // Check if the Intent has been passed to the Activity
-    val isIntentPassed = intent != null
-    if (isIntentPassed) {
-      // Print "true" to Log or Toast
-      Log.e("Intent Passed", "true")
-    }
-    if(testMode){
-      Log.e("MainActivity", "Test mode enabled")
-      setContent {
-        SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp(true) } }
-      }
-    }
 
     setContent {
-      SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
+      SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp(authenticationViewModel = viewModel(), listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory), lessonViewModel = viewModel(factory = LessonViewModel.Factory)) } }
     }
   }
 }
 
 @Composable
-fun PocketTutorApp(testMode: Boolean = false) {
+fun PocketTutorApp(testMode: Boolean = false, authenticationViewModel: AuthenticationViewModel, listProfilesViewModel: ListProfilesViewModel, lessonViewModel: LessonViewModel) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
 
-  // View models
-  val authenticationViewModel: AuthenticationViewModel = viewModel()
-
-  val listProfilesViewModel: ListProfilesViewModel =
-      viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
-
-  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -91,7 +71,7 @@ fun PocketTutorApp(testMode: Boolean = false) {
       composable(Screen.AUTH) {
         if(testMode){
           SignInScreen(
-            onSignInClick = {googleUid = "mockUid"
+            onSignInClick = {googleUid = "hr5PpMgalxdvMOIxSEqkyEqGZ3Z2"
               navigationActions.navigateTo(Screen.CREATE_PROFILE)}
           )
         }
