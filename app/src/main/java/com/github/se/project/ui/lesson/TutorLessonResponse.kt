@@ -75,11 +75,12 @@ fun TutorLessonResponseScreen(
       }) { paddingValues ->
         Column(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState())
-                    .testTag("tutorLessonResponseScreen"),
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .testTag("tutorLessonResponseScreen"),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
@@ -105,7 +106,10 @@ fun TutorLessonResponseScreen(
                 Button(
                     onClick = { showConfirmDialog = true },
                     modifier =
-                        Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .testTag("confirmButton")) {
                       Icon(
                           Icons.Default.Send,
                           contentDescription = null,
@@ -118,7 +122,10 @@ fun TutorLessonResponseScreen(
                   Button(
                       onClick = { showDeclineDialog = true },
                       modifier =
-                          Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("cancelButton")) {
+                      Modifier
+                          .fillMaxWidth()
+                          .padding(bottom = 16.dp)
+                          .testTag("cancelButton")) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = null,
@@ -147,9 +154,9 @@ fun TutorLessonResponseScreen(
                               tutorUid = lesson.tutorUid + currentProfile.uid,
                               price = currentProfile.price.toDouble(),
                               status =
-                                  if (lesson.status == LessonStatus.STUDENT_REQUESTED)
+                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
                                       LessonStatus.CONFIRMED
-                                  else LessonStatus.TUTOR_REQUESTED,
+                                  else LessonStatus.STUDENT_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
@@ -177,8 +184,8 @@ fun TutorLessonResponseScreen(
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
-                              tutorUid = "",
-                              status = LessonStatus.PENDING,
+                              tutorUid = listOf(),
+                              status = LessonStatus.STUDENT_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
@@ -201,7 +208,9 @@ fun TutorLessonResponseScreen(
 @Composable
 private fun ErrorState(message: String) {
   Column(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center) {
         Icon(

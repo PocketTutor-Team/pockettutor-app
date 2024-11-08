@@ -173,7 +173,7 @@ fun LessonEditor(
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              lesson?.status ?: LessonStatus.PENDING,
+              if(lesson != null) lesson.status else LessonStatus.STUDENT_REQUESTED,
               selectedLocation.first,
               selectedLocation.second))
     }
