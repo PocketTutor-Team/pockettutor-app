@@ -95,8 +95,9 @@ fun ProfileInfoScreen(
                     modifier = Modifier.testTag("profileName"))
                 Spacer(modifier = Modifier.height(8.dp))
                 ProfileDetails(userProfile)
-                Spacer(modifier = Modifier.height(32.dp),
-                    )
+                Spacer(
+                    modifier = Modifier.height(32.dp),
+                )
 
                 Text(
                     text =
@@ -104,14 +105,14 @@ fun ProfileInfoScreen(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.testTag("lessonsCount"))
 
-              Box(modifier = Modifier.fillMaxSize().weight(1f).padding(top = 16.dp)) {
+                Box(modifier = Modifier.fillMaxSize().weight(1f).padding(top = 16.dp)) {
                   Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                      DisplayLessons(
-                          lessons = completedLessons,
-                          isTutor = isTutor,
-                          listProfilesViewModel = listProfilesViewModel)
+                    DisplayLessons(
+                        lessons = completedLessons,
+                        isTutor = isTutor,
+                        listProfilesViewModel = listProfilesViewModel)
                   }
-              }
+                }
               }
         }
             ?: run {

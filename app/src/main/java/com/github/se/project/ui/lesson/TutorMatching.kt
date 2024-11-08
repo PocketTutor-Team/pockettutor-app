@@ -59,22 +59,26 @@ fun TutorMatchingScreen(
           ?: return Text("No lesson selected. Should not happen.")
 
   val allTutorProfiles by
-      listProfilesViewModel.profiles.filter { profiles: List<Profile> ->
-          profiles.any { profile -> profile.role == Role.TUTOR }
-      }.collectAsState(listOf())
+      listProfilesViewModel.profiles
+          .filter { profiles: List<Profile> ->
+            profiles.any { profile -> profile.role == Role.TUTOR }
+          }
+          .collectAsState(listOf())
 
   val filteredTutor =
       if (currentLesson.status == LessonStatus.MATCHING) {
         allTutorProfiles.filter { profile -> // TODO: think of the filtering
-            profile.subjects.contains(currentLesson.subject) &&
-              profile.price <= currentLesson.maxPrice && profile.price >= currentLesson.minPrice &&
+          profile.subjects.contains(currentLesson.subject) &&
+              profile.price <= currentLesson.maxPrice &&
+              profile.price >= currentLesson.minPrice &&
               isTutorAvailable(profile.schedule, currentLesson.timeSlot)
         }
       } else {
-        val tutorList = allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid)}
-          tutorList.ifEmpty {
-              return Text("No tutor for the selected lesson. Should not happen.")
-          }
+        val tutorList =
+            allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid) }
+        tutorList.ifEmpty {
+          return Text("No tutor for the selected lesson. Should not happen.")
+        }
       }
 
   var showConfirmDialog by remember { mutableStateOf(false) }
@@ -180,7 +184,8 @@ fun TutorMatchingScreen(
                               status =
                                   if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
                                       LessonStatus.CONFIRMED
-                                  else LessonStatus.PENDING_TUTOR_CONFIRMATION, // TODO: update state
+                                  else
+                                      LessonStatus.PENDING_TUTOR_CONFIRMATION, // TODO: update state
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForStudent(currentProfile.uid)

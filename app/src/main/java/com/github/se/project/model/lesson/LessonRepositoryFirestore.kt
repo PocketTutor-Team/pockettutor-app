@@ -8,7 +8,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 
 class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepository {
 
@@ -57,7 +56,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("studentUid", studentUid) // Filter lessons by user field (tutorUid or studentUid)
+        .whereEqualTo(
+            "studentUid", studentUid) // Filter lessons by user field (tutorUid or studentUid)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -79,22 +79,21 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-      db.collection(collectionPath)
-          .whereArrayContains("tutorUid", tutorUid)
-          .get()
-          .addOnCompleteListener { task ->
-              if (task.isSuccessful) {
-                  val lessons = task.result?.mapNotNull { document ->
-                      documentToLesson(document)
-                  } ?: emptyList()
-                  onSuccess(lessons)
-              } else {
-                  task.exception?.let { e ->
-                      Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
-                      onFailure(e)
-                  }
-              }
+    db.collection(collectionPath)
+        .whereArrayContains("tutorUid", tutorUid)
+        .get()
+        .addOnCompleteListener { task ->
+          if (task.isSuccessful) {
+            val lessons =
+                task.result?.mapNotNull { document -> documentToLesson(document) } ?: emptyList()
+            onSuccess(lessons)
+          } else {
+            task.exception?.let { e ->
+              Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
+              onFailure(e)
+            }
           }
+        }
   }
 
   // Add a new lesson

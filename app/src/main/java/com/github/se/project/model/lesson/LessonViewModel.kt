@@ -3,7 +3,6 @@ package com.github.se.project.model.lesson
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.github.se.project.model.profile.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -134,28 +133,27 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param tutorUid The UID of the tutor.
    * @param onComplete Callback to execute when the operation completes.
    */
-    fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
-        repository.getLessonsForTutor(
-            tutorUid = tutorUid,
-            onSuccess = { fetchedLessons ->
-                _currentUserLessons.value = fetchedLessons.filter { lesson ->
-                    when (lesson.status) {
-                        LessonStatus.STUDENT_REQUESTED ->
-                            lesson.tutorUid.contains(tutorUid)
-                        LessonStatus.PENDING_TUTOR_CONFIRMATION,
-                        LessonStatus.CONFIRMED,
-                        LessonStatus.COMPLETED -> true
-                        else -> false
-                    }
+  fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
+    repository.getLessonsForTutor(
+        tutorUid = tutorUid,
+        onSuccess = { fetchedLessons ->
+          _currentUserLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
+                  LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                  LessonStatus.CONFIRMED,
+                  LessonStatus.COMPLETED -> true
+                  else -> false
                 }
-                onComplete()
-            },
-            onFailure = {
-                Log.e("LessonViewModel", "Error fetching tutor's lessons", it)
-                onComplete()
-            }
-        )
-    }
+              }
+          onComplete()
+        },
+        onFailure = {
+          Log.e("LessonViewModel", "Error fetching tutor's lessons", it)
+          onComplete()
+        })
+  }
 
   /**
    * Fetches all lessons for a specific student.

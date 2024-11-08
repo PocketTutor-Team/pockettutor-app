@@ -53,24 +53,24 @@ fun HomeScreen(
       }
 
   val onLessonClick = { lesson: Lesson ->
-    if (currentProfile?.role == Role.STUDENT ) {
+    if (currentProfile?.role == Role.STUDENT) {
       if (lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isNotEmpty()) {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.TUTOR_MATCH)
-      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED ) {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-      } else if(lesson.status == LessonStatus.CONFIRMED) {
-          //lessonViewModel.selectLesson(lesson)
-          //TODO: navigationActions.navigateTo(Screen : LessonInfo )
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.TUTOR_MATCH)
+      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+      } else if (lesson.status == LessonStatus.CONFIRMED) {
+        // lessonViewModel.selectLesson(lesson)
+        // TODO: navigationActions.navigateTo(Screen : LessonInfo )
       }
     } else {
       if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
       } else { // State STUDENT_REQUESTED or CONFIRMED
-        //lessonViewModel.selectLesson(lesson)
-        //TODO : navigationActions.navigateTo(Screen : LessonInfo )
+        // lessonViewModel.selectLesson(lesson)
+        // TODO : navigationActions.navigateTo(Screen : LessonInfo )
       }
     }
   }
@@ -151,25 +151,19 @@ private fun TutorSections(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-    val sections = listOf(
-        SectionInfo(
-            "Waiting for your confirmation",
-            LessonStatus.PENDING_TUTOR_CONFIRMATION,
-            Icons.Default.Notifications
-        ),
-        SectionInfo(
-            "Waiting for the Student Confirmation",
-            LessonStatus.STUDENT_REQUESTED,
-            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)
-        ),
-        SectionInfo(
-            "Upcoming Lessons",
-            LessonStatus.CONFIRMED,
-            Icons.Default.Check
-        )
-    )
+  val sections =
+      listOf(
+          SectionInfo(
+              "Waiting for your confirmation",
+              LessonStatus.PENDING_TUTOR_CONFIRMATION,
+              Icons.Default.Notifications),
+          SectionInfo(
+              "Waiting for the Student Confirmation",
+              LessonStatus.STUDENT_REQUESTED,
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
-    LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
+  LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
 
 @Composable
@@ -180,8 +174,10 @@ private fun StudentSections(
 ) {
   val sections =
       listOf(
-
-          SectionInfo("Waiting for your Confirmation", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications),
+          SectionInfo(
+              "Waiting for your Confirmation",
+              LessonStatus.STUDENT_REQUESTED,
+              Icons.Default.Notifications),
           SectionInfo(
               "Waiting for a Tutor proposal",
               LessonStatus.STUDENT_REQUESTED,
@@ -312,4 +308,9 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector, val tutorEmpty: Boolean = false)
+private data class SectionInfo(
+    val title: String,
+    val status: LessonStatus,
+    val icon: ImageVector,
+    val tutorEmpty: Boolean = false
+)

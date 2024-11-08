@@ -173,7 +173,7 @@ fun LessonEditor(
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              if(lesson != null) lesson.status else LessonStatus.MATCHING,
+              if (lesson != null) lesson.status else LessonStatus.MATCHING,
               selectedLocation.first,
               selectedLocation.second))
     }

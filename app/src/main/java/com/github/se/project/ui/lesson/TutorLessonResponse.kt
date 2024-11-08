@@ -2,7 +2,6 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -75,12 +74,11 @@ fun TutorLessonResponseScreen(
       }) { paddingValues ->
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
-                .testTag("tutorLessonResponseScreen"),
+                Modifier.fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .testTag("tutorLessonResponseScreen"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
@@ -107,10 +105,7 @@ fun TutorLessonResponseScreen(
                     shape = MaterialTheme.shapes.medium,
                     onClick = { showConfirmDialog = true },
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .testTag("confirmButton")) {
+                        Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
                       Icon(
                           Icons.Default.Send,
                           contentDescription = null,
@@ -124,12 +119,10 @@ fun TutorLessonResponseScreen(
                       shape = MaterialTheme.shapes.medium,
                       onClick = { showDeclineDialog = true },
                       modifier =
-                      Modifier
-                          .fillMaxWidth()
-                          .padding(bottom = 16.dp)
-                          .testTag("cancelButton"),
-                      colors = ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.error)) {
+                          Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("cancelButton"),
+                      colors =
+                          ButtonDefaults.buttonColors(
+                              containerColor = MaterialTheme.colorScheme.error)) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = null,
@@ -151,27 +144,27 @@ fun TutorLessonResponseScreen(
                     "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?")
               },
               confirmButton = {
-                  Button(
-                      onClick = {
-                          lessonViewModel.updateLesson(
-                              lesson.copy(
-                                  tutorUid = lesson.tutorUid + currentProfile.uid,
-                                  price = currentProfile.price.toDouble(),
-                                  status = if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
+                Button(
+                    onClick = {
+                      lessonViewModel.updateLesson(
+                          lesson.copy(
+                              tutorUid = lesson.tutorUid + currentProfile.uid,
+                              price = currentProfile.price.toDouble(),
+                              status =
+                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
                                       LessonStatus.CONFIRMED
                                   else LessonStatus.STUDENT_REQUESTED,
-                              ),
-                              onComplete = {
-                                  lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                                  lessonViewModel.getAllRequestedLessons()
-                                  Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT).show()
-                                  navigationActions.navigateTo(Screen.HOME)
-                              }
-                          )
-                      }
-                  ) {
+                          ),
+                          onComplete = {
+                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                            lessonViewModel.getAllRequestedLessons()
+                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                            navigationActions.navigateTo(Screen.HOME)
+                          })
+                    }) {
                       Text("Confirm")
-                  }
+                    }
               },
               dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
@@ -213,9 +206,7 @@ fun TutorLessonResponseScreen(
 @Composable
 private fun ErrorState(message: String) {
   Column(
-      modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center) {
         Icon(

@@ -1,7 +1,6 @@
 package com.github.se.project.ui.profile
 
 import android.widget.Toast
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -104,8 +103,8 @@ fun CreateProfileScreen(
                             shape = SegmentedButtonDefaults.baseShape,
                             selected = r == role,
                             onClick = { role = r },
-                            colors = SegmentedButtonDefaults.colors(
-                                activeContentColor = Color.White),
+                            colors =
+                                SegmentedButtonDefaults.colors(activeContentColor = Color.White),
                             modifier =
                                 Modifier.padding(4.dp)
                                     .testTag(
@@ -114,8 +113,7 @@ fun CreateProfileScreen(
                               Text(
                                   text = if (r == Role.STUDENT) "Student" else "Tutor",
                                   style = MaterialTheme.typography.labelLarge)
-
-                        }
+                            }
                       }
                     }
               }
