@@ -98,7 +98,10 @@ fun ProfileInfoScreen(
                         "${completedLessons.size} ${if (isTutor) "lessons given" else "lessons taken"} since you joined PocketTutor",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.testTag("lessonsCount"))
-                DisplayLessons(lessons = completedLessons, isTutor = isTutor)
+                DisplayLessons(
+                    lessons = completedLessons,
+                    isTutor = isTutor,
+                    listProfilesViewModel = listProfilesViewModel)
               }
         }
             ?: run {

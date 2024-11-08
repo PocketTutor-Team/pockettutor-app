@@ -67,7 +67,11 @@ fun CreateTutorSchedule(
             modifier = Modifier.fillMaxWidth().padding(14.dp).testTag("FindStudentButton"),
             shape = MaterialTheme.shapes.medium,
             onClick = {
-              listProfilesViewModel.updateProfile(profile.copy(schedule = currentSchedule))
+              val updatedProfile = profile.copy(schedule = currentSchedule)
+
+              listProfilesViewModel.updateProfile(updatedProfile)
+              listProfilesViewModel.setCurrentProfile(updatedProfile)
+
               navigationActions.navigateTo(Screen.HOME)
             }) {
               Text(text = "Let's find a student!", fontSize = 16.sp)
