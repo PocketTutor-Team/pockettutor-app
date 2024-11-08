@@ -66,25 +66,16 @@ class EndToEndTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
-    /*whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
-      ->
-      val onComplete = invocation.arguments[1] as (List<Lesson>) -> Unit
-      if (currentLesson != null) {
-        onComplete(listOf(currentLesson!!)) // Simulate a successful update
-      }
-    }*/
   }
 
   // End to end test, for the whole app, firebase included
   @Test
-  fun EndToEnd() {
+  fun signIn_profileEdit_lessonCreation_e2eStudentTest() {
     // Start the app in test mode
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
     Thread.sleep(30000)
-
-    // Espresso.onView(isRoot()).check(matches(isDisplayed()))
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -150,10 +141,5 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     Log.e("abagaga", "profile: ${currentLesson.toString()}")
-    /*assert(currentLesson != null)
-    assert(currentLesson!!.title == "End-to-end testing")
-    assert(currentLesson!!.description == "Teach me how to write tests :(")
-    assert(currentLesson!!.subject == Subject.AICC)
-    assert(currentLesson!!.languages.contains(Language.ENGLISH))*/
   }
 }
