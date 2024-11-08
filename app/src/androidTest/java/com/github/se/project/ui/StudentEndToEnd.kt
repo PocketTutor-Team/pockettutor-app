@@ -68,7 +68,8 @@ class EndToEndTest {
     }
   }
 
-  // End to end test, for the whole app, firebase included
+  // The test interacts with the UI components to simulate the entire user journey, from logging in
+  // and editing profile information to creating and scheduling a lesson.
   @Test
   fun signIn_profileEdit_lessonCreation_e2eStudentTest() {
     // Start the app in test mode
