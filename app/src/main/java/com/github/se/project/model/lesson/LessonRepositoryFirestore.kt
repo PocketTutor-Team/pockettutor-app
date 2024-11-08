@@ -27,12 +27,12 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
     }
   }
 
-  override fun getAllRequestedLessons(
+  override fun getAllPendingLessons(
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("status", LessonStatus.STUDENT_REQUESTED.name)
+        .whereEqualTo("status", LessonStatus.PENDING.name)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {

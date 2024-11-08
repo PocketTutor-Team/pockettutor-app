@@ -122,6 +122,11 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     _selectedLesson.value = lesson
   }
 
+  /** Un-Select the selected lesson. */
+  fun unselectLesson() {
+    _selectedLesson.value = null
+  }
+
   /**
    * Fetches all lessons for a specific tutor.
    *
@@ -166,7 +171,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param onComplete Callback to execute when the operation completes.
    */
   fun getAllRequestedLessons(onComplete: () -> Unit = {}) {
-    repository.getAllRequestedLessons(
+    repository.getAllPendingLessons(
         onSuccess = { fetchedLessons ->
           requestedLessons_.value = fetchedLessons
           onComplete()
