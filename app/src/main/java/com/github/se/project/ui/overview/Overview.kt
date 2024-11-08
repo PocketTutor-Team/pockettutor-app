@@ -131,7 +131,7 @@ private fun LessonsContent(
       modifier =
           Modifier.fillMaxSize()
               .padding(paddingValues)
-              .padding(horizontal = 16.dp)
+              .padding(16.dp)
               .testTag("lessonsColumn")) {
         Box(modifier = Modifier.fillMaxSize().weight(1f)) {
           Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
@@ -151,19 +151,25 @@ private fun TutorSections(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  val sections =
-      listOf(
-          SectionInfo(
-              "Waiting for your confirmation",
-              LessonStatus.PENDING_TUTOR_CONFIRMATION,
-              Icons.Default.Notifications),
-          SectionInfo(
-              "Waiting for the Student Confirmation",
-              LessonStatus.STUDENT_REQUESTED,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+    val sections = listOf(
+        SectionInfo(
+            "Waiting for your confirmation",
+            LessonStatus.PENDING_TUTOR_CONFIRMATION,
+            Icons.Default.Notifications
+        ),
+        SectionInfo(
+            "Waiting for the Student Confirmation",
+            LessonStatus.STUDENT_REQUESTED,
+            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)
+        ),
+        SectionInfo(
+            "Upcoming Lessons",
+            LessonStatus.CONFIRMED,
+            Icons.Default.Check
+        )
+    )
 
-  LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
+    LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
 
 @Composable
@@ -174,6 +180,11 @@ private fun StudentSections(
 ) {
   val sections =
       listOf(
+          SectionInfo(
+              "Waiting for a Tutor proposal",
+              LessonStatus.STUDENT_REQUESTED,
+              Icons.Default.Notifications,
+              true),
           SectionInfo("Waiting for your Confirmation", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications),
           SectionInfo(
               "Waiting for the Tutor Confirmation",

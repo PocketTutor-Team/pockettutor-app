@@ -64,7 +64,7 @@ fun TutorMatchingScreen(
       }.collectAsState(listOf())
 
   val filteredTutor =
-      if (currentLesson.status == LessonStatus.STUDENT_REQUESTED && currentLesson.tutorUid.isEmpty()) {
+      if (currentLesson.status == LessonStatus.MATCHING) {
         allTutorProfiles.filter { profile -> // TODO: think of the filtering
             profile.subjects.contains(currentLesson.subject) &&
               profile.price <= currentLesson.maxPrice && profile.price >= currentLesson.minPrice &&
@@ -118,12 +118,12 @@ fun TutorMatchingScreen(
             })
       },
       bottomBar = {
-        if (currentLesson.status == LessonStatus.STUDENT_REQUESTED) {
+        if (currentLesson.status == LessonStatus.MATCHING) {
           Button(
               modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
               onClick = {
                 lessonViewModel.addLesson(
-                    currentLesson,
+                    currentLesson.copy(status = LessonStatus.STUDENT_REQUESTED),
                     onComplete = {
                       lessonViewModel.getLessonsForStudent(currentProfile.uid)
                       Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)

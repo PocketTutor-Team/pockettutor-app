@@ -118,7 +118,7 @@ fun TutorLessonResponseScreen(
                       Text("Offer to Teach (${currentProfile.price}.-/hour)")
                     }
 
-                if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+                if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
                   Button(
                       onClick = { showDeclineDialog = true },
                       modifier =
@@ -147,26 +147,27 @@ fun TutorLessonResponseScreen(
                     "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?")
               },
               confirmButton = {
-                Button(
-                    onClick = {
-                      lessonViewModel.updateLesson(
-                          lesson.copy(
-                              tutorUid = lesson.tutorUid + currentProfile.uid,
-                              price = currentProfile.price.toDouble(),
-                              status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
+                  Button(
+                      onClick = {
+                          lessonViewModel.updateLesson(
+                              lesson.copy(
+                                  tutorUid = lesson.tutorUid + currentProfile.uid,
+                                  price = currentProfile.price.toDouble(),
+                                  status = if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
                                       LessonStatus.CONFIRMED
                                   else LessonStatus.STUDENT_REQUESTED,
-                          ),
-                          onComplete = {
-                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                .show()
-                            navigationActions.navigateTo(Screen.HOME)
-                          })
-                    }) {
+                              ),
+                              onComplete = {
+                                  lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                                  lessonViewModel.getAllRequestedLessons()
+                                  Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT).show()
+                                  navigationActions.navigateTo(Screen.HOME)
+                              }
+                          )
+                      }
+                  ) {
                       Text("Confirm")
-                    }
+                  }
               },
               dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }

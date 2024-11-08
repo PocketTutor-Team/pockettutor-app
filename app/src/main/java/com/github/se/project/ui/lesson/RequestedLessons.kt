@@ -59,7 +59,9 @@ fun RequestedLessonsScreen(
 
         val subjectMatches = selectedSubject?.let { subject -> lesson.subject == subject } ?: true
 
-        dateMatches && subjectMatches
+        val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
+
+        dateMatches && subjectMatches && notAlreadyResponded
     }.sortedBy { parseLessonDate(it.timeSlot) }
 
     Scaffold(
