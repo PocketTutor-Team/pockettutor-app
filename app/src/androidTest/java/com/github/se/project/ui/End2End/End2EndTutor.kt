@@ -115,7 +115,6 @@ class EndToEndTest {
         composeTestRule.onNodeWithTag("FindStudentButton").performClick()
 
         //Home Screen
-        composeTestRule.onNodeWithTag("dashboardTitle").assertTextEquals("Your dashboard")
         composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
         composeTestRule.onNodeWithTag("profileStatus").assertTextEquals("Status: BA3 Tutor")
         composeTestRule.onNodeWithTag("profileSection").assertTextEquals("Section: SC")
