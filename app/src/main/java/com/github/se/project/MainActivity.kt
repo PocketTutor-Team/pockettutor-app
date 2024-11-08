@@ -40,25 +40,30 @@ class MainActivity : ComponentActivity() {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {
-      SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
+      SampleAppTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          PocketTutorApp(
+              authenticationViewModel = viewModel(),
+              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
+        }
+      }
     }
   }
 }
 
 @Composable
-fun PocketTutorApp() {
+fun PocketTutorApp(
+    testMode: Boolean = false,
+    authenticationViewModel: AuthenticationViewModel,
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
+) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
 
-  // View models
-  val authenticationViewModel: AuthenticationViewModel = viewModel()
-
-  val listProfilesViewModel: ListProfilesViewModel =
-      viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
-
-  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -70,24 +75,33 @@ fun PocketTutorApp() {
     // Authentication flow
     navigation(startDestination = Screen.AUTH, route = Route.AUTH) {
       composable(Screen.AUTH) {
-        SignInScreen(
-            onSignInClick = {
-              authenticationViewModel.handleGoogleSignIn(
-                  context,
-                  onSuccess = { uid ->
-                    googleUid = uid
-                    val profile = profiles.value.find { it.googleUid == googleUid }
+        if (testMode) {
+          SignInScreen(
+              onSignInClick = {
+                googleUid = "testingUid"
+                navigationActions.navigateTo(Screen.CREATE_PROFILE)
+              })
+        } else {
+          SignInScreen(
+              onSignInClick = {
+                authenticationViewModel.handleGoogleSignIn(
+                    context,
+                    onSuccess = { uid ->
+                      googleUid = uid
+                      val profile = profiles.value.find { it.googleUid == googleUid }
 
-                    if (profile != null) {
-                      // If the user already has a profile, navigate to the home screen
-                      listProfilesViewModel.setCurrentProfile(profile)
-                      navigationActions.navigateTo(Screen.HOME)
-                    } else {
-                      // If the user doesn't have a profile, navigate to the profile creation screen
-                      navigationActions.navigateTo(Screen.CREATE_PROFILE)
-                    }
-                  })
-            })
+                      if (profile != null) {
+                        // If the user already has a profile, navigate to the home screen
+                        listProfilesViewModel.setCurrentProfile(profile)
+                        navigationActions.navigateTo(Screen.HOME)
+                      } else {
+                        // If the user doesn't have a profile, navigate to the profile creation
+                        // screen
+                        navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                      }
+                    })
+              })
+        }
       }
       // For debugging purposes (when sign-in error)
       // composable(Screen.AUTH) {
