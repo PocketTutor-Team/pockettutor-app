@@ -1,12 +1,16 @@
 package com.github.se.project.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
@@ -91,17 +95,23 @@ fun ProfileInfoScreen(
                     modifier = Modifier.testTag("profileName"))
                 Spacer(modifier = Modifier.height(8.dp))
                 ProfileDetails(userProfile)
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp),
+                    )
 
                 Text(
                     text =
                         "${completedLessons.size} ${if (isTutor) "lessons given" else "lessons taken"} since you joined PocketTutor",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.testTag("lessonsCount"))
-                DisplayLessons(
-                    lessons = completedLessons,
-                    isTutor = isTutor,
-                    listProfilesViewModel = listProfilesViewModel)
+
+              Box(modifier = Modifier.fillMaxSize().weight(1f).padding(top = 16.dp)) {
+                  Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                      DisplayLessons(
+                          lessons = completedLessons,
+                          isTutor = isTutor,
+                          listProfilesViewModel = listProfilesViewModel)
+                  }
+              }
               }
         }
             ?: run {

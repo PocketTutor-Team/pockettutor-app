@@ -81,7 +81,7 @@ fun TutorLessonResponseScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
                 .testTag("tutorLessonResponseScreen"),
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
                 ErrorState(message = "Cannot retrieve student profile")
@@ -104,6 +104,7 @@ fun TutorLessonResponseScreen(
 
                 // Confirmation button
                 Button(
+                    shape = MaterialTheme.shapes.medium,
                     onClick = { showConfirmDialog = true },
                     modifier =
                     Modifier
@@ -120,12 +121,15 @@ fun TutorLessonResponseScreen(
 
                 if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
                   Button(
+                      shape = MaterialTheme.shapes.medium,
                       onClick = { showDeclineDialog = true },
                       modifier =
                       Modifier
                           .fillMaxWidth()
                           .padding(bottom = 16.dp)
-                          .testTag("cancelButton")) {
+                          .testTag("cancelButton"),
+                      colors = ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.error)) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = null,
@@ -200,7 +204,7 @@ fun TutorLessonResponseScreen(
                     }
               },
               dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showDeclineDialog = false }) { Text("Cancel") }
               })
         }
       }

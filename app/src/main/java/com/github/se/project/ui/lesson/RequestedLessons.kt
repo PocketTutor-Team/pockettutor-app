@@ -115,7 +115,8 @@ fun RequestedLessonsScreen(
                                     lessonViewModel.selectLesson(lesson)
                                     navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
                                 },
-                                listProfilesViewModel = listProfilesViewModel
+                                listProfilesViewModel = listProfilesViewModel,
+                                requestedScreen = true
                             )
                         }
                     }

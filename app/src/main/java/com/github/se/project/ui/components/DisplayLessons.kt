@@ -42,20 +42,23 @@ object LessonColors {
     private val LightCompleted = Color(0xFFE8F5E9)  // Vert pastel clair
     private val LightConfirmed = Color(0xFFE3F2FD)  // Bleu pastel clair
     private val LightPending = Color(0xFFFFF3E0)    // Orange pastel clair
-    private val LightRequested = Color(0xFFF3E5F5)  // Violet pastel clair
+    private val LightUrgent = Color(0xFFF3E5F5)  // Violet pastel clair
     private val LightCancelled = Color(0xFFFFEBEE)  // Rouge pastel clair
 
     private val DarkCompleted = Color(0xFF2E7D32)   // Vert foncé
     private val DarkConfirmed = Color(0xFF1565C0)   // Bleu foncé
-    private val DarkPending = Color(0xFF8F5E15)     // Orange foncé
-    private val DarkRequested = Color(0xFF6A1B9A)   // Violet foncé
+    private val DarkPending = Color(0xFFD87F00)     // Orange foncé
+    private val DarkUrgent = Color(0xFF571E98)   // Violet foncé
     private val DarkCancelled = Color(0xFF8E0000)   // Rouge foncé
 
     @Composable
-    fun getLessonColor(status: LessonStatus, hasTutor: Boolean = false): Color {
+    fun getLessonColor(status: LessonStatus, hasTutor: Boolean = false, isTutor: Boolean = false, tutorProposed: Boolean = false): Color {
         val isDarkTheme = isSystemInDarkTheme()
 
         return when {
+            tutorProposed ->
+                if (isDarkTheme) DarkUrgent else LightUrgent
+
             status == LessonStatus.COMPLETED ->
                 if (isDarkTheme) DarkCompleted else LightCompleted
 
@@ -63,13 +66,25 @@ object LessonColors {
                 if (isDarkTheme) DarkConfirmed else LightConfirmed
 
             status == LessonStatus.PENDING_TUTOR_CONFIRMATION ->
-                if (isDarkTheme) DarkPending else LightPending
+                if (isDarkTheme) {
+                    if (isTutor) DarkUrgent else DarkPending
+                } else {
+                    if (isTutor) LightUrgent else LightPending
+                }
 
             status == LessonStatus.STUDENT_REQUESTED && hasTutor ->
-                if (isDarkTheme) DarkPending else LightPending
+                if (isDarkTheme) {
+                    if (!isTutor) DarkUrgent else DarkPending
+                } else {
+                    if (!isTutor) LightPending else LightPending
+                }
 
             status == LessonStatus.STUDENT_REQUESTED ->
-                if (isDarkTheme) DarkRequested else LightRequested
+                if (isDarkTheme) {
+                    if (!isTutor) DarkPending else DarkUrgent
+                } else {
+                    if (!isTutor) LightPending else LightUrgent
+                }
 
             status == LessonStatus.CANCELED ->
                 if (isDarkTheme) DarkCancelled else LightCancelled
@@ -87,7 +102,8 @@ fun DisplayLessons(
     isTutor: Boolean,
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
-    listProfilesViewModel: ListProfilesViewModel
+    listProfilesViewModel: ListProfilesViewModel,
+    requestedScreen: Boolean = false
 ) {
     val filteredLessons = statusFilter?.let {
         lessons.filter { lesson ->
@@ -120,7 +136,9 @@ fun DisplayLessons(
                 colors = CardDefaults.cardColors(
                     containerColor = LessonColors.getLessonColor(
                         status = lesson.status,
-                        hasTutor = lesson.tutorUid.isNotEmpty()
+                        hasTutor = lesson.tutorUid.isNotEmpty(),
+                        isTutor,
+                        requestedScreen
                     ),
                     contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black
                 ),
@@ -160,7 +178,7 @@ fun DisplayLessons(
                         Surface(
                             modifier = Modifier.padding(start = 8.dp),
                             shape = MaterialTheme.shapes.small,
-                            color = getLessonColor(status = lesson.status, hasTutor = lesson.tutorUid.isNotEmpty()).copy(alpha = 0.2f),
+                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
                             tonalElevation = 2.dp
                         ) {
                             Text(

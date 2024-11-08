@@ -372,7 +372,7 @@ fun LessonEditor(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError),
+                            contentColor = MaterialTheme.colorScheme.onSurface),
                     onClick = { onDelete(lesson!!) }) {
                       Text("Delete")
                     }

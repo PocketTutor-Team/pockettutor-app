@@ -78,18 +78,18 @@ fun HomeScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            modifier = Modifier.testTag("topBar"),
+            modifier = Modifier.testTag("topBar").padding(top = 8.dp),
             title = {
               Text(
                   text = "Welcome, ${currentProfile?.firstName}",
-                  style = MaterialTheme.typography.headlineMedium)
+                  style = MaterialTheme.typography.titleLarge)
             },
             actions = {
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = "Profile Icon",
-                    Modifier.testTag("Profile Icon"))
+                    Modifier.testTag("Profile Icon").size(32.dp))
               }
             })
       },
@@ -131,7 +131,7 @@ private fun LessonsContent(
       modifier =
           Modifier.fillMaxSize()
               .padding(paddingValues)
-              .padding(16.dp)
+              .padding(horizontal = 16.dp)
               .testTag("lessonsColumn")) {
         Box(modifier = Modifier.fillMaxSize().weight(1f)) {
           Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
@@ -180,12 +180,13 @@ private fun StudentSections(
 ) {
   val sections =
       listOf(
+
+          SectionInfo("Waiting for your Confirmation", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications),
           SectionInfo(
               "Waiting for a Tutor proposal",
               LessonStatus.STUDENT_REQUESTED,
-              Icons.Default.Notifications,
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
               true),
-          SectionInfo("Waiting for your Confirmation", LessonStatus.STUDENT_REQUESTED, Icons.Default.Notifications),
           SectionInfo(
               "Waiting for the Tutor Confirmation",
               LessonStatus.PENDING_TUTOR_CONFIRMATION,
