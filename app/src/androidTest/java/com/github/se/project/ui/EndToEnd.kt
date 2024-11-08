@@ -82,6 +82,9 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
+    Thread.sleep(30000)
+
+    // Espresso.onView(isRoot()).check(matches(isDisplayed()))
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
