@@ -49,7 +49,7 @@ class EndToEndTest {
     private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
     //private var currentProfile : Profile = Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890", role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.BA1, languages = listOf(), subjects = listOf(), schedule = listOf())
-    var currentProfile: Profile? = null
+    //var currentProfile: Profile? = null
 
     private val mockUid = "mockUid"
 
