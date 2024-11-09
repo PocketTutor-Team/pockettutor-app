@@ -16,7 +16,6 @@ import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.navigation.NavigationActions
@@ -33,88 +32,93 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class EndToEndTest {
 
-    @Mock
-    lateinit var navigationActions: NavigationActions
+  @Mock lateinit var navigationActions: NavigationActions
 
-    @Mock
-    lateinit var context: Context
+  @Mock lateinit var context: Context
 
-    // Mock du ProfilesRepository
-    private val mockProfileRepository = mock(ProfilesRepository::class.java)
+  // Mock du ProfilesRepository
+  private val mockProfileRepository = mock(ProfilesRepository::class.java)
 
-    private val mockProfileViewModel = ListProfilesViewModel(mockProfileRepository)
+  private val mockProfileViewModel = ListProfilesViewModel(mockProfileRepository)
 
-    private val mockLessonRepository = mock(LessonRepository::class.java)
+  private val mockLessonRepository = mock(LessonRepository::class.java)
 
-    private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
+  private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
-    //private var currentProfile : Profile = Profile(uid = "1", googleUid = "googleUid", firstName = "First", lastName = "Last", phoneNumber = "1234567890", role = Role.STUDENT, section = Section.GM, academicLevel = AcademicLevel.BA1, languages = listOf(), subjects = listOf(), schedule = listOf())
-    //var currentProfile: Profile? = null
+  // private var currentProfile : Profile = Profile(uid = "1", googleUid = "googleUid", firstName =
+  // "First", lastName = "Last", phoneNumber = "1234567890", role = Role.STUDENT, section =
+  // Section.GM, academicLevel = AcademicLevel.BA1, languages = listOf(), subjects = listOf(),
+  // schedule = listOf())
+  // var currentProfile: Profile? = null
 
-    private val mockUid = "mockUid"
+  private val mockUid = "mockUid"
 
-    @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Before
-    fun setUp() {
-        context = mock(Context::class.java)
-        whenever(mockProfileRepository.addProfile(any(), any(), any())).thenAnswer { invocation ->
-            val onSuccess = invocation.arguments[1] as () -> Unit
-            onSuccess() // Simulate a successful update
-        }
-        whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
+  @Before
+  fun setUp() {
+    context = mock(Context::class.java)
+    whenever(mockProfileRepository.addProfile(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful update
     }
+    whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
+  }
 
-    @Test
-    fun TutorEndToEndTest() {
-        composeTestRule.setContent { PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel) }
-        //Sign In Screen
-        composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("loginButton").performClick()
-        composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-
-        //Create Profile Screen
-        composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
-        composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
-        composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0213456789")
-        composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
-        composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-        composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
-        composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
-        composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
-        composeTestRule.onNodeWithTag("confirmButton").performClick()
-        assertEquals(Role.TUTOR, mockProfileViewModel.currentProfile.value?.role)
-
-        //Create Tutor Profile Screen
-        composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("checkbox_FRENCH").performClick()
-        composeTestRule.onNodeWithTag("subjectButton").performClick()
-        composeTestRule.onNodeWithTag("dropdownANALYSIS").performClick()
-        composeTestRule.onNodeWithTag("subjectButton").performClick()
-        composeTestRule.onNodeWithTag("priceSlider").performGesture { swipeRight() }
-        composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-        //Create Tutor Schedule Screen
-        composeTestRule
-            .onNodeWithTag("welcomeText")
-            .assertTextEquals("John, show us your availabilities")
-        composeTestRule.onNodeWithTag("Slot_0_0").performClick()
-        composeTestRule.onNodeWithTag("Slot_0_3").performClick()
-        composeTestRule.onNodeWithTag("Slot_0_2").performClick()
-        composeTestRule.onNodeWithTag("Slot_0_6").performClick()
-        composeTestRule.onNodeWithTag("FindStudentButton").performClick()
-
-        //Home Screen
-        composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
-        composeTestRule.onNodeWithTag("profileStatus").assertTextEquals("Status: BA3 Tutor")
-        composeTestRule.onNodeWithTag("profileSection").assertTextEquals("Section: SC")
-        composeTestRule.onNodeWithTag("profilePrice").assertTextEquals("Price: 50.- per hour")
-        composeTestRule.onNodeWithTag("lessonsCount").assertTextEquals("0 lessons given since you joined PocketTutor")
-        composeTestRule.onNodeWithTag("closeButton").performClick()
-        composeTestRule.onNodeWithTag("Find a Student").performClick()
-        composeTestRule.onNodeWithTag("Find a Student").performClick()
-        composeTestRule.onNodeWithTag("My Work Space").performClick()
-
-        Thread.sleep(5000)
+  @Test
+  fun TutorEndToEndTest() {
+    composeTestRule.setContent {
+      PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
+    // Sign In Screen
+    composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("loginButton").performClick()
+    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+
+    // Create Profile Screen
+    composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
+    composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0213456789")
+    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    assertEquals(Role.TUTOR, mockProfileViewModel.currentProfile.value?.role)
+
+    // Create Tutor Profile Screen
+    composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("checkbox_FRENCH").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("dropdownANALYSIS").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("priceSlider").performGesture { swipeRight() }
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // Create Tutor Schedule Screen
+    composeTestRule
+        .onNodeWithTag("welcomeText")
+        .assertTextEquals("John, show us your availabilities")
+    composeTestRule.onNodeWithTag("Slot_0_0").performClick()
+    composeTestRule.onNodeWithTag("Slot_0_3").performClick()
+    composeTestRule.onNodeWithTag("Slot_0_2").performClick()
+    composeTestRule.onNodeWithTag("Slot_0_6").performClick()
+    composeTestRule.onNodeWithTag("FindStudentButton").performClick()
+
+    // Home Screen
+    composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
+    composeTestRule.onNodeWithTag("profileStatus").assertTextEquals("Status: BA3 Tutor")
+    composeTestRule.onNodeWithTag("profileSection").assertTextEquals("Section: SC")
+    composeTestRule.onNodeWithTag("profilePrice").assertTextEquals("Price: 50.- per hour")
+    composeTestRule
+        .onNodeWithTag("lessonsCount")
+        .assertTextEquals("0 lessons given since you joined PocketTutor")
+    composeTestRule.onNodeWithTag("closeButton").performClick()
+    composeTestRule.onNodeWithTag("Find a Student").performClick()
+    composeTestRule.onNodeWithTag("Find a Student").performClick()
+    composeTestRule.onNodeWithTag("My Work Space").performClick()
+
+    Thread.sleep(5000)
+  }
 }
