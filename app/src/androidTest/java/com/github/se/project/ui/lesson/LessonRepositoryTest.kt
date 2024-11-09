@@ -29,7 +29,7 @@ class LessonRepositoryFirestoreTest {
     // Given
     val document = mock<DocumentSnapshot>()
     val languagesList = listOf("FRENCH", "ENGLISH")
-    val tutorList = listOf("tutor123")
+    val tutorList = listOf("tutor1", "tutor2")
 
     `when`(document.id).thenReturn("testId")
     `when`(document.getString("title")).thenReturn("Test Title")
@@ -40,7 +40,7 @@ class LessonRepositoryFirestoreTest {
     `when`(document.getDouble("maxPrice")).thenReturn(20.0)
     `when`(document.getDouble("price")).thenReturn(15.0)
     `when`(document.getString("timeSlot")).thenReturn("2024-01-01")
-    `when`(document.getString("status")).thenReturn("MATCHING")
+    `when`(document.getString("status")).thenReturn("STUDENT_REQUESTED")
     `when`(document.get("languages")).thenReturn(languagesList)
     `when`(document.get("tutorUid")).thenReturn(tutorList)
 
@@ -58,7 +58,7 @@ class LessonRepositoryFirestoreTest {
     assertEquals(20.0, lesson?.maxPrice)
     assertEquals(15.0, lesson?.price)
     assertEquals("2024-01-01", lesson?.timeSlot)
-    assertEquals(LessonStatus.MATCHING, lesson?.status)
+    assertEquals(LessonStatus.STUDENT_REQUESTED, lesson?.status)
     assertEquals(listOf(Language.FRENCH, Language.ENGLISH), lesson?.languages)
   }
 
