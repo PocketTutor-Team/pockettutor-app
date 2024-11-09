@@ -43,9 +43,9 @@ class MainActivity : ComponentActivity() {
       SampleAppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
           PocketTutorApp(
-            authenticationViewModel = viewModel(),
-            listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-            lessonViewModel = viewModel(factory = LessonViewModel.Factory))
+              authenticationViewModel = viewModel(),
+              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
         }
       }
     }
@@ -54,10 +54,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PocketTutorApp(
-  testMode: Boolean = false,
-  authenticationViewModel: AuthenticationViewModel,
-  listProfilesViewModel: ListProfilesViewModel,
-  lessonViewModel: LessonViewModel
+    testMode: Boolean = false,
+    authenticationViewModel: AuthenticationViewModel,
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
 ) {
   // Navigation
   val navController = rememberNavController()
@@ -77,30 +77,30 @@ fun PocketTutorApp(
       composable(Screen.AUTH) {
         if (testMode) {
           SignInScreen(
-            onSignInClick = {
-              googleUid = "testingUid"
-              navigationActions.navigateTo(Screen.CREATE_PROFILE)
-            })
+              onSignInClick = {
+                googleUid = "testingUid"
+                navigationActions.navigateTo(Screen.CREATE_PROFILE)
+              })
         } else {
           SignInScreen(
-            onSignInClick = {
-              authenticationViewModel.handleGoogleSignIn(
-                context,
-                onSuccess = { uid ->
-                  googleUid = uid
-                  val profile = profiles.value.find { it.googleUid == googleUid }
+              onSignInClick = {
+                authenticationViewModel.handleGoogleSignIn(
+                    context,
+                    onSuccess = { uid ->
+                      googleUid = uid
+                      val profile = profiles.value.find { it.googleUid == googleUid }
 
-                  if (profile != null) {
-                    // If the user already has a profile, navigate to the home screen
-                    listProfilesViewModel.setCurrentProfile(profile)
-                    navigationActions.navigateTo(Screen.HOME)
-                  } else {
-                    // If the user doesn't have a profile, navigate to the profile creation
-                    // screen
-                    navigationActions.navigateTo(Screen.CREATE_PROFILE)
-                  }
-                })
-            })
+                      if (profile != null) {
+                        // If the user already has a profile, navigate to the home screen
+                        listProfilesViewModel.setCurrentProfile(profile)
+                        navigationActions.navigateTo(Screen.HOME)
+                      } else {
+                        // If the user doesn't have a profile, navigate to the profile creation
+                        // screen
+                        navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                      }
+                    })
+              })
         }
       }
       // For debugging purposes (when sign-in error)
@@ -130,8 +130,8 @@ fun PocketTutorApp(
     }
 
     navigation(
-      startDestination = Screen.LESSONS_REQUESTED,
-      route = Route.FIND_STUDENT,
+        startDestination = Screen.LESSONS_REQUESTED,
+        route = Route.FIND_STUDENT,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -145,8 +145,8 @@ fun PocketTutorApp(
     }
 
     navigation(
-      startDestination = Screen.HOME,
-      route = Route.HOME,
+        startDestination = Screen.HOME,
+        route = Route.HOME,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -164,8 +164,8 @@ fun PocketTutorApp(
     }
 
     navigation(
-      startDestination = Screen.ADD_LESSON,
-      route = Route.FIND_TUTOR,
+        startDestination = Screen.ADD_LESSON,
+        route = Route.FIND_TUTOR,
     ) {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
