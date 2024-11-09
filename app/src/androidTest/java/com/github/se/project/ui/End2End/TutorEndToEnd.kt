@@ -6,7 +6,6 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.performTextInput
@@ -16,32 +15,23 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.navigation.NavigationActions
-import com.github.se.project.ui.navigation.TopLevelDestinations
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class EndToEndTest {
-
-    @Mock
-    lateinit var listProfilesViewModel: ListProfilesViewModel
 
     @Mock
     lateinit var navigationActions: NavigationActions
@@ -50,7 +40,7 @@ class EndToEndTest {
     lateinit var context: Context
 
     // Mock du ProfilesRepository
-    private val mockProfileRepository = Mockito.mock(ProfilesRepository::class.java)
+    private val mockProfileRepository = mock(ProfilesRepository::class.java)
 
     private val mockProfileViewModel = ListProfilesViewModel(mockProfileRepository)
 
@@ -76,7 +66,7 @@ class EndToEndTest {
     }
 
     @Test
-    fun skipSignIn() {
+    fun TutorEndToEndTest() {
         composeTestRule.setContent { PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel) }
         //Sign In Screen
         composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
