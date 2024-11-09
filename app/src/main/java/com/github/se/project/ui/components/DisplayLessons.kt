@@ -82,7 +82,7 @@ object LessonColors {
           } else {
             if (!isTutor) LightPending else LightUrgent
           }
-      status == LessonStatus.CANCELED -> if (isDarkTheme) DarkCancelled else LightCancelled
+      status == LessonStatus.CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
       else -> MaterialTheme.colorScheme.surface
     }
   }

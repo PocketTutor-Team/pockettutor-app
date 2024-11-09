@@ -22,7 +22,7 @@ class LessonTest {
     assertEquals(0.0, lesson.minPrice)
     assertEquals(0.0, lesson.maxPrice)
     assertEquals("", lesson.timeSlot)
-    assertEquals(LessonStatus.PENDING, lesson.status)
+    assertEquals(LessonStatus.MATCHING, lesson.status)
     assertEquals(listOf<Language>(), lesson.languages)
     assertEquals(0.0, lesson.latitude)
     assertEquals(0.0, lesson.longitude)
@@ -36,7 +36,7 @@ class LessonTest {
             title = "Kotlin Basics",
             description = "Introduction to Kotlin",
             subject = Subject.ICC,
-            tutorUid = "tutor123",
+            tutorUid = listOf("tutor123"),
             studentUid = "student456",
             minPrice = 50.0,
             maxPrice = 100.0,
@@ -49,7 +49,7 @@ class LessonTest {
     assertEquals("Kotlin Basics", lesson.title)
     assertEquals("Introduction to Kotlin", lesson.description)
     assertEquals(Subject.ICC, lesson.subject)
-    assertEquals("tutor123", lesson.tutorUid)
+    assertEquals("tutor123", lesson.tutorUid.toString())
     assertEquals("student456", lesson.studentUid)
     assertEquals(50.0, lesson.minPrice)
     assertEquals(100.0, lesson.maxPrice)
@@ -62,9 +62,12 @@ class LessonTest {
 
   @Test
   fun testLessonStatusValues() {
-    assertNotNull(LessonStatus.valueOf("PENDING"))
-    assertNotNull(LessonStatus.valueOf("CONFIRMED"))
+    assertNotNull(LessonStatus.valueOf("STUDENT_REQUESTED"))
+    assertNotNull(LessonStatus.valueOf("PENDING_TUTOR_CONFIRMATION"))
     assertNotNull(LessonStatus.valueOf("COMPLETED"))
     assertNotNull(LessonStatus.valueOf("CANCELLED"))
+      assertNotNull(LessonStatus.valueOf("MATCHING"))
+    assertNotNull(LessonStatus.valueOf("CONFIRMED"))
+
   }
 }

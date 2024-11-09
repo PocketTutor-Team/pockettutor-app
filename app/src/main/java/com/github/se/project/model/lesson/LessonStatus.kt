@@ -6,6 +6,6 @@ enum class LessonStatus {
   PENDING_TUTOR_CONFIRMATION,
   CONFIRMED, // Lesson has been confirmed by both student and tutor
   COMPLETED,
-  CANCELED, // Lesson has been canceled by either student or tutor,
+  CANCELLED, // Lesson has been canceled by either student or tutor,
   MATCHING // Matching is processed
 }

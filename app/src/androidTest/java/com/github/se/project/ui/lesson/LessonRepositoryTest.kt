@@ -34,7 +34,6 @@ class LessonRepositoryFirestoreTest {
     `when`(document.getString("title")).thenReturn("Test Title")
     `when`(document.getString("description")).thenReturn("Test Description")
     `when`(document.getString("subject")).thenReturn("AICC")
-    `when`(document.getString("tutorUid")).thenReturn("tutor123")
     `when`(document.getString("studentUid")).thenReturn("student123")
     `when`(document.getDouble("minPrice")).thenReturn(10.0)
     `when`(document.getDouble("maxPrice")).thenReturn(20.0)
@@ -52,13 +51,12 @@ class LessonRepositoryFirestoreTest {
     assertEquals("Test Title", lesson?.title)
     assertEquals("Test Description", lesson?.description)
     assertEquals(Subject.AICC, lesson?.subject)
-    assertEquals("tutor123", lesson?.tutorUid)
     assertEquals("student123", lesson?.studentUid)
     assertEquals(10.0, lesson?.minPrice)
     assertEquals(20.0, lesson?.maxPrice)
     assertEquals(15.0, lesson?.price)
     assertEquals("2024-01-01", lesson?.timeSlot)
-    assertEquals(LessonStatus.PENDING, lesson?.status)
+    assertEquals(LessonStatus.MATCHING, lesson?.status)
     assertEquals(listOf(Language.FRENCH, Language.ENGLISH), lesson?.languages)
   }
 
