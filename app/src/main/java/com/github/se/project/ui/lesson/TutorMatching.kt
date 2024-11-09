@@ -189,6 +189,7 @@ fun TutorMatchingScreen(
                             navigationActions.navigateTo(Screen.HOME)
                           })
                     }) {
+                      Modifier.testTag("confirmButton")
                       Text("Confirm")
                     }
               },

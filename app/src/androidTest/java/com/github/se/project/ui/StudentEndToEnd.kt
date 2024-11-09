@@ -1,12 +1,12 @@
 package com.github.se.project.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.InstrumentationRegistry
@@ -18,9 +18,16 @@ import androidx.test.uiautomator.UiDevice
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import org.junit.Before
 import org.junit.Rule
@@ -48,6 +55,21 @@ class EndToEndTest {
 
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
+  private val mockTutor =
+      Profile(
+          "mockTutor",
+          "mockTutor",
+          "Ozymandias",
+          "Halifax",
+          "1234567890",
+          Role.TUTOR,
+          Section.IN,
+          AcademicLevel.BA3,
+          listOf(Language.ENGLISH),
+          listOf(Subject.AICC),
+          List(7) { List(12) { 1 } },
+          5)
+
   var currentLesson: Lesson? = null
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -59,6 +81,10 @@ class EndToEndTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
+    whenever(mockProfileRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf(mockTutor)) // Simulate a list of profiles with our beloved Ozymandias
+    }
     whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
     whenever(mockLessonRepository.getNewUid()).thenReturn("mockUid")
     whenever(mockLessonRepository.addLesson(any(), any(), any())).thenAnswer { invocation ->
@@ -66,17 +92,38 @@ class EndToEndTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
+    whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
+      currentLesson = invocation.arguments[0] as Lesson
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful update
+    }
+    whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
+      ->
+      val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+      if (currentLesson == null) {
+        onSuccess(emptyList()) // Simulate an empty list of lessons
+      } else {
+        onSuccess(listOf(currentLesson!!))
+      } // Simulate a list of lessons with our current lesson
+    }
+    whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
+      currentLesson = null
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful deletion
+    }
   }
 
   // The test interacts with the UI components to simulate the entire user journey, from logging in
-  // and editing profile information to creating and scheduling a lesson.
+  // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
+  // displayed to students are tested: requesting a specific tutor, creating an open request, having
+  // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
-  fun signIn_profileEdit_lessonCreation_e2eStudentTest() {
+  fun endToEndStudentTest() {
     // Start the app in test mode
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(30000)
+    Thread.sleep(50000)
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -118,15 +165,15 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Status: BA5 Student").assertIsDisplayed()
     composeTestRule.onNodeWithText("Section: MA").assertIsDisplayed()
 
-    // Go back to the home screen
+    // Navigate to the lesson creation screen
     composeTestRule.onNodeWithTag("closeButton").performClick()
-
     composeTestRule.onNodeWithText("Find a Tutor").performClick()
 
+    // Create a new lesson
     composeTestRule.onNodeWithTag("titleField").performTextInput("End-to-end testing")
     composeTestRule
         .onNodeWithTag("DescriptionField")
-        .performTextInput("Teach me how to write tests :(")
+        .performTextInput("Teach me how to write tests pls")
     composeTestRule.onNodeWithTag("DateButton").performClick()
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("TimeButton").performClick()
@@ -136,11 +183,134 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("map").performClick()
-    Thread.sleep(2000)
+    Thread.sleep(2000) // Wait for the map to load
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.click(device.displayWidth / 2, device.displayHeight / 2)
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    Log.e("abagaga", "profile: ${currentLesson.toString()}")
+
+    // Select a tutor
+    composeTestRule.onNodeWithTag("tutorCard_0").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // Navigate to lesson editing screen
+    composeTestRule.onNodeWithText("End-to-end testing").assertIsDisplayed()
+    composeTestRule.onNodeWithText("End-to-end testing").performClick()
+
+    // Edit the lesson
+    composeTestRule.onNodeWithTag("titleField").performClick()
+    composeTestRule.onNodeWithTag("titleField").performTextClearance()
+    composeTestRule.onNodeWithTag("titleField").performTextInput("NVM got it :)")
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // Check if the lesson was updated correctly
+    composeTestRule.onNodeWithText("NVM got it :)").assertIsDisplayed()
+
+    // Delete the lesson
+    composeTestRule.onNodeWithText("NVM got it :)").performClick()
+    composeTestRule.onNodeWithTag("deleteButton").performClick()
+
+    // Check if the lesson was deleted correctly
+    composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
+
+    // Navigate to the lesson creation screen
+    composeTestRule.onNodeWithText("Find a Tutor").performClick()
+
+    // Create a new lesson
+    composeTestRule.onNodeWithTag("titleField").performTextInput("Help how do I write tests")
+    composeTestRule
+        .onNodeWithTag("DescriptionField")
+        .performTextInput("Teach me how to write tests pls")
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    onView(withText("OK")).perform(click())
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    onView(withText("OK")).perform(click())
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("dropdownAICC").performClick()
+    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("map").performClick()
+    Thread.sleep(2000) // Wait for the map to load
+    device.click(device.displayWidth / 2, device.displayHeight / 2)
+    composeTestRule.onNodeWithTag("confirmLocation").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // Do not select any tutors
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // check if the lesson is displayed
+    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+
+    // Simulate a lesson being created, then accepted by the tutor
+    currentLesson =
+        Lesson(
+            "mockUid",
+            "Ozymandias is helping :)",
+            "Teach me how to write tests pls",
+            Subject.AICC,
+            listOf(Language.ENGLISH),
+            "mockTutor",
+            "mockUid",
+            0.0,
+            0.0,
+            5.0,
+            "30/10/2024T10:00:00",
+            LessonStatus.CONFIRMED,
+            0.0,
+            0.0)
+
+    // Reload the home screen and check if the lesson is displayed
+    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+    composeTestRule.onNodeWithTag("closeButton").performClick()
+    composeTestRule.onNodeWithText("Ozymandias is helping :)").assertIsDisplayed()
+
+    // Simulate the lesson being completed
+    currentLesson =
+        Lesson(
+            "mockUid",
+            "Ozymandias is the goat :)",
+            "Teach me how to write tests pls",
+            Subject.AICC,
+            listOf(Language.ENGLISH),
+            "mockTutor",
+            "mockUid",
+            0.0,
+            0.0,
+            5.0,
+            "30/10/2024T10:00:00",
+            LessonStatus.COMPLETED,
+            0.0,
+            0.0)
+
+    // Go to the profile info screen and check it is displayed
+    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+    composeTestRule.onNodeWithText("Ozymandias is the goat :)").assertIsDisplayed()
+
+    // Simulate a lesson being tutor requested
+    currentLesson =
+        Lesson(
+            "mockUid",
+            "Ozymandias needs money",
+            "Teach me how to write tests pls",
+            Subject.AICC,
+            listOf(Language.ENGLISH),
+            "mockTutor",
+            "",
+            0.0,
+            0.0,
+            30.0,
+            "30/10/2024T10:00:00",
+            LessonStatus.TUTOR_REQUESTED,
+            0.0,
+            0.0)
+
+    // Reload the home screen and accept the lesson
+    composeTestRule.onNodeWithTag("closeButton").performClick()
+    composeTestRule.onNodeWithText("Ozymandias needs money").performClick()
+    composeTestRule.onNodeWithTag("tutorCard_0").performClick()
+    composeTestRule.onNodeWithText("Confirm").performClick()
+
+    // Check if the lesson is displayed
+    composeTestRule.onNodeWithText("Ozymandias needs money").assertIsDisplayed()
   }
 }
