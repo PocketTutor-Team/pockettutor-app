@@ -17,7 +17,7 @@ class LessonTest {
     assertEquals("", lesson.title)
     assertEquals("", lesson.description)
     assertEquals(Subject.NONE, lesson.subject)
-    assertEquals("", lesson.tutorUid)
+    assertEquals(listOf<String>(), lesson.tutorUid)
     assertEquals("", lesson.studentUid)
     assertEquals(0.0, lesson.minPrice)
     assertEquals(0.0, lesson.maxPrice)
@@ -49,7 +49,7 @@ class LessonTest {
     assertEquals("Kotlin Basics", lesson.title)
     assertEquals("Introduction to Kotlin", lesson.description)
     assertEquals(Subject.ICC, lesson.subject)
-    assertEquals("tutor123", lesson.tutorUid.toString())
+    assertEquals(listOf("tutor123"), lesson.tutorUid)
     assertEquals("student456", lesson.studentUid)
     assertEquals(50.0, lesson.minPrice)
     assertEquals(100.0, lesson.maxPrice)
@@ -66,8 +66,7 @@ class LessonTest {
     assertNotNull(LessonStatus.valueOf("PENDING_TUTOR_CONFIRMATION"))
     assertNotNull(LessonStatus.valueOf("COMPLETED"))
     assertNotNull(LessonStatus.valueOf("CANCELLED"))
-      assertNotNull(LessonStatus.valueOf("MATCHING"))
+    assertNotNull(LessonStatus.valueOf("MATCHING"))
     assertNotNull(LessonStatus.valueOf("CONFIRMED"))
-
   }
 }

@@ -74,7 +74,7 @@ object LessonColors {
           if (isDarkTheme) {
             if (!isTutor) DarkUrgent else DarkPending
           } else {
-            if (!isTutor) LightPending else LightPending
+            if (!isTutor) LightUrgent else LightPending
           }
       status == LessonStatus.STUDENT_REQUESTED ->
           if (isDarkTheme) {
