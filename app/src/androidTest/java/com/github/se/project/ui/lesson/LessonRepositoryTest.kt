@@ -29,19 +29,20 @@ class LessonRepositoryFirestoreTest {
     // Given
     val document = mock<DocumentSnapshot>()
     val languagesList = listOf("FRENCH", "ENGLISH")
+    val tutorList = listOf("tutor1", "tutor2")
 
     `when`(document.id).thenReturn("testId")
     `when`(document.getString("title")).thenReturn("Test Title")
     `when`(document.getString("description")).thenReturn("Test Description")
     `when`(document.getString("subject")).thenReturn("AICC")
-    `when`(document.getString("tutorUid")).thenReturn("tutor123")
     `when`(document.getString("studentUid")).thenReturn("student123")
     `when`(document.getDouble("minPrice")).thenReturn(10.0)
     `when`(document.getDouble("maxPrice")).thenReturn(20.0)
     `when`(document.getDouble("price")).thenReturn(15.0)
     `when`(document.getString("timeSlot")).thenReturn("2024-01-01")
-    `when`(document.getString("status")).thenReturn("PENDING")
+    `when`(document.getString("status")).thenReturn("STUDENT_REQUESTED")
     `when`(document.get("languages")).thenReturn(languagesList)
+    `when`(document.get("tutorUid")).thenReturn(tutorList)
 
     // When
     val lesson = repository.documentToLesson(document)
@@ -52,13 +53,12 @@ class LessonRepositoryFirestoreTest {
     assertEquals("Test Title", lesson?.title)
     assertEquals("Test Description", lesson?.description)
     assertEquals(Subject.AICC, lesson?.subject)
-    assertEquals("tutor123", lesson?.tutorUid)
     assertEquals("student123", lesson?.studentUid)
     assertEquals(10.0, lesson?.minPrice)
     assertEquals(20.0, lesson?.maxPrice)
     assertEquals(15.0, lesson?.price)
     assertEquals("2024-01-01", lesson?.timeSlot)
-    assertEquals(LessonStatus.PENDING, lesson?.status)
+    assertEquals(LessonStatus.STUDENT_REQUESTED, lesson?.status)
     assertEquals(listOf(Language.FRENCH, Language.ENGLISH), lesson?.languages)
   }
 
@@ -81,20 +81,21 @@ class LessonRepositoryFirestoreTest {
     // Given
     val document = mock<DocumentSnapshot>()
     val languagesList = listOf("FRENCH", "INVALID_LANGUAGE")
+    val tutorList = listOf("tutor123")
 
     // Setup all required fields
     `when`(document.id).thenReturn("testId")
     `when`(document.getString("title")).thenReturn("Test Title")
     `when`(document.getString("description")).thenReturn("Test Description")
     `when`(document.getString("subject")).thenReturn("AICC")
-    `when`(document.getString("tutorUid")).thenReturn("tutor123")
     `when`(document.getString("studentUid")).thenReturn("student123")
     `when`(document.getDouble("minPrice")).thenReturn(10.0)
     `when`(document.getDouble("maxPrice")).thenReturn(20.0)
     `when`(document.getDouble("price")).thenReturn(15.0)
     `when`(document.getString("timeSlot")).thenReturn("2024-01-01")
-    `when`(document.getString("status")).thenReturn("PENDING")
+    `when`(document.getString("status")).thenReturn("MATCHING")
     `when`(document.get("languages")).thenReturn(languagesList)
+    `when`(document.get("tutorUid")).thenReturn(tutorList)
 
     // When
     val lesson = repository.documentToLesson(document)

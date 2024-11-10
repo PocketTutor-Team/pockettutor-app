@@ -9,13 +9,13 @@ data class Lesson(
     val description: String = "", // Description of the lesson
     val subject: Subject = Subject.NONE,
     val languages: List<Language> = listOf(), // Languages spoken in the lesson
-    val tutorUid: String = "", // User ID of the tutor
+    val tutorUid: List<String> = listOf(), // User ID of the tutor
     val studentUid: String = "", // User ID of the student (if booked)
     val minPrice: Double = 0.0, // Price for the lesson
     val maxPrice: Double = 0.0, // Price for the lesson
     val price: Double = 0.0, // Price for the lesson
     val timeSlot: String = "", // Time slot for the lesson (e.g., "30/10/2024T10:00:00")
-    val status: LessonStatus = LessonStatus.PENDING, // Status of the lesson
+    var status: LessonStatus = LessonStatus.MATCHING, // Status of the lesson
     val latitude: Double, // Latitude for lesson location
     val longitude: Double // Longitude for lesson location
 )
