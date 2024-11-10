@@ -43,12 +43,12 @@ class LessonsRequestedScreenTest {
               description = "Mechanics and Thermodynamics",
               subject = Subject.PHYSICS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = "tutor123",
+              tutorUid = listOf("tutor123"),
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
-              status = LessonStatus.PENDING,
+              status = LessonStatus.STUDENT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0),
           Lesson(
@@ -57,12 +57,12 @@ class LessonsRequestedScreenTest {
               description = "Algebra and Calculus",
               subject = Subject.ANALYSIS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = "tutor123",
+              tutorUid = listOf("tutor123"),
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.PENDING,
+              status = LessonStatus.MATCHING,
               latitude = 0.0,
               longitude = 0.0))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
@@ -87,7 +87,7 @@ class LessonsRequestedScreenTest {
         }
 
     doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
-    doNothing().`when`(lessonRepository).getAllPendingLessons(any(), any())
+    doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
 
     doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }

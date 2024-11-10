@@ -40,6 +40,7 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.components.DisplayTutors
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,23 +58,26 @@ fun TutorMatchingScreen(
       lessonViewModel.selectedLesson.collectAsState().value
           ?: return Text("No lesson selected. Should not happen.")
 
-  val allProfiles by
-      listProfilesViewModel.profiles.collectAsState() // TODO: add field to get only tutor profiles
+  val tutorProfilesFlow = remember {
+    listProfilesViewModel.profiles.filter { profiles: List<Profile> ->
+      profiles.any { profile -> profile.role == Role.TUTOR }
+    }
+  }
+  val allTutorProfiles by tutorProfilesFlow.collectAsState(listOf())
 
   val filteredTutor =
-      if (currentLesson.status == LessonStatus.PENDING) {
-        allProfiles.filter { profile -> // TODO: think of the filtering
-          profile.role == Role.TUTOR &&
-              profile.subjects.contains(currentLesson.subject) &&
+      if (currentLesson.status == LessonStatus.MATCHING) {
+        allTutorProfiles.filter { profile -> // TODO: think of the filtering
+          profile.subjects.contains(currentLesson.subject) &&
               profile.price <= currentLesson.maxPrice &&
+              profile.price >= currentLesson.minPrice &&
               isTutorAvailable(profile.schedule, currentLesson.timeSlot)
         }
       } else {
-        val tutorProfile = allProfiles.find { profile -> profile.uid == currentLesson.tutorUid }
-        if (tutorProfile == null) {
+        val tutorList =
+            allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid) }
+        tutorList.ifEmpty {
           return Text("No tutor for the selected lesson. Should not happen.")
-        } else {
-          listOf(tutorProfile)
         }
       }
 
@@ -118,12 +122,12 @@ fun TutorMatchingScreen(
             })
       },
       bottomBar = {
-        if (currentLesson.status == LessonStatus.PENDING) {
+        if (currentLesson.status == LessonStatus.MATCHING) {
           Button(
               modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
               onClick = {
                 lessonViewModel.addLesson(
-                    currentLesson,
+                    currentLesson.copy(status = LessonStatus.STUDENT_REQUESTED),
                     onComplete = {
                       lessonViewModel.getLessonsForStudent(currentProfile.uid)
                       Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
@@ -175,12 +179,13 @@ fun TutorMatchingScreen(
                     onClick = {
                       lessonViewModel.addLesson(
                           currentLesson.copy(
-                              tutorUid = chosenTutor.uid,
+                              tutorUid = listOf(chosenTutor.uid),
                               price = chosenTutor.price.toDouble(),
                               status =
-                                  if (currentLesson.status == LessonStatus.TUTOR_REQUESTED)
+                                  if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
                                       LessonStatus.CONFIRMED
-                                  else LessonStatus.STUDENT_REQUESTED, // TODO: update state
+                                  else
+                                      LessonStatus.PENDING_TUTOR_CONFIRMATION, // TODO: update state
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForStudent(currentProfile.uid)

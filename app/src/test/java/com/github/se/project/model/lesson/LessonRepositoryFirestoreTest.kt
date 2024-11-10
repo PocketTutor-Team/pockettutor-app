@@ -39,12 +39,12 @@ class LessonRepositoryFirestoreTest {
           description = "Mechanics",
           subject = Subject.PHYSICS,
           languages = listOf(Language.ENGLISH),
-          tutorUid = "tutor123",
+          tutorUid = listOf("tutor123"),
           studentUid = "student123",
           minPrice = 20.0,
           maxPrice = 40.0,
           timeSlot = "2024-10-10T10:00:00",
-          status = LessonStatus.PENDING,
+          status = LessonStatus.STUDENT_REQUESTED,
           latitude = 0.0,
           longitude = 0.0)
 
