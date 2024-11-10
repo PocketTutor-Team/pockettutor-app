@@ -13,12 +13,17 @@ import androidx.compose.ui.test.swipeRight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.PocketTutorApp
+import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -45,13 +50,38 @@ class EndToEndTest {
 
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
-  // private var currentProfile : Profile = Profile(uid = "1", googleUid = "googleUid", firstName =
-  // "First", lastName = "Last", phoneNumber = "1234567890", role = Role.STUDENT, section =
-  // Section.GM, academicLevel = AcademicLevel.BA1, languages = listOf(), subjects = listOf(),
-  // schedule = listOf())
-  // var currentProfile: Profile? = null
-
-  private val mockUid = "mockUid"
+  private val mockLessons =
+    listOf(
+      Lesson(
+        id = "1",
+        title = "Physics Tutoring",
+        description = "Mechanics and Thermodynamics",
+        subject = Subject.PHYSICS,
+        languages = listOf(Language.ENGLISH),
+        tutorUid = "mockUid",
+        studentUid = "student123",
+        minPrice = 20.0,
+        maxPrice = 40.0,
+        timeSlot = "2024-10-10T10:00:00",
+        status = LessonStatus.PENDING,
+        latitude = 0.0,
+        longitude = 0.0),
+      Lesson(
+        id = "2",
+        title = "Math Tutoring",
+        description = "Algebra and Calculus",
+        subject = Subject.ANALYSIS,
+        languages = listOf(Language.ENGLISH),
+        tutorUid = "mockUid",
+        studentUid = "student123",
+        minPrice = 20.0,
+        maxPrice = 40.0,
+        timeSlot = "2024-10-10T11:00:00",
+        status = LessonStatus.PENDING,
+        latitude = 0.0,
+        longitude = 0.0)
+    )
+  private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -70,6 +100,7 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
+      Thread.sleep(30000)
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
