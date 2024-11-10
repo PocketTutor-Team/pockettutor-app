@@ -134,11 +134,9 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param onComplete Callback to execute when the operation completes.
    */
   fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
-    println("HELLO ?? " + tutorUid)
     repository.getLessonsForTutor(
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
-          println("-> " + fetchedLessons)
           _currentUserLessons.value = fetchedLessons
           onComplete() // Call the provided callback on success
         },
