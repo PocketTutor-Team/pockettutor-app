@@ -167,13 +167,13 @@ fun LessonEditor(
               description,
               selectedSubject.value,
               selectedLanguages.toList(),
-              "",
+              listOf(),
               profile.uid,
               minPrice,
               maxPrice,
               0.0,
               "${selectedDate}T${selectedTime}:00",
-              lesson?.status ?: LessonStatus.PENDING,
+              if (lesson != null) lesson.status else LessonStatus.MATCHING,
               selectedLocation.first,
               selectedLocation.second))
     }
@@ -372,7 +372,7 @@ fun LessonEditor(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError),
+                            contentColor = MaterialTheme.colorScheme.onSurface),
                     onClick = { onDelete(lesson!!) }) {
                       Text("Delete")
                     }

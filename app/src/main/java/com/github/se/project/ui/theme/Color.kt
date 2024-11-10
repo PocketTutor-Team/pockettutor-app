@@ -18,7 +18,7 @@ val OnTertiaryLight = Color(0xFF000000) // Black text on tertiary
 val BackgroundLight = Color(0xFFFFFFFF) // White background
 val OnBackgroundLight = Color(0xFF212121) // Dark gray text on background
 
-val SurfaceLight = Color(0xFFF1F1F1) // Light surface
+val SurfaceLight = Color(0xFFFFFFFF) // Light surface
 val OnSurfaceLight = Color(0xFF333333) // Darker text on light surface
 
 val InverseSurfaceLight = Color(0xFF6042AC) // Inverse surface (violet)

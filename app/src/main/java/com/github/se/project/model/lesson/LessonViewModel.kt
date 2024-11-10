@@ -137,12 +137,21 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.getLessonsForTutor(
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
-          _currentUserLessons.value = fetchedLessons
-          onComplete() // Call the provided callback on success
+          _currentUserLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
+                  LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                  LessonStatus.CONFIRMED,
+                  LessonStatus.COMPLETED -> true
+                  else -> false
+                }
+              }
+          onComplete()
         },
         onFailure = {
           Log.e("LessonViewModel", "Error fetching tutor's lessons", it)
-          onComplete() // Call the callback even if there's a failure
+          onComplete()
         })
   }
 
@@ -171,7 +180,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param onComplete Callback to execute when the operation completes.
    */
   fun getAllRequestedLessons(onComplete: () -> Unit = {}) {
-    repository.getAllPendingLessons(
+    repository.getAllRequestedLessons(
         onSuccess = { fetchedLessons ->
           requestedLessons_.value = fetchedLessons
           onComplete()

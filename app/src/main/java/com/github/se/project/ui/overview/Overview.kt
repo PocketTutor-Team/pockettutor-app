@@ -54,16 +54,18 @@ fun HomeScreen(
 
   val onLessonClick = { lesson: Lesson ->
     if (currentProfile?.role == Role.STUDENT) {
-      if (lesson.status == LessonStatus.STUDENT_REQUESTED ||
-          lesson.status == LessonStatus.PENDING) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-      } else {
+      if (lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isNotEmpty()) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.TUTOR_MATCH)
+      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+      } else if (lesson.status == LessonStatus.CONFIRMED) {
+        // lessonViewModel.selectLesson(lesson)
+        // TODO: navigationActions.navigateTo(Screen : LessonInfo )
       }
     } else {
-      if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+      if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
       } else if (lesson.status == LessonStatus.CONFIRMED) {
@@ -76,18 +78,18 @@ fun HomeScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            modifier = Modifier.testTag("topBar"),
+            modifier = Modifier.testTag("topBar").padding(top = 8.dp),
             title = {
               Text(
                   text = "Welcome, ${currentProfile?.firstName}",
-                  style = MaterialTheme.typography.headlineMedium)
+                  style = MaterialTheme.typography.titleLarge)
             },
             actions = {
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = "Profile Icon",
-                    Modifier.testTag("Profile Icon"))
+                    Modifier.testTag("Profile Icon").size(32.dp))
               }
             })
       },
@@ -131,7 +133,6 @@ private fun LessonsContent(
               .padding(paddingValues)
               .padding(horizontal = 16.dp)
               .testTag("lessonsColumn")) {
-        Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxSize().weight(1f)) {
           Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             if (profile.role == Role.TUTOR) {
@@ -153,12 +154,12 @@ private fun TutorSections(
   val sections =
       listOf(
           SectionInfo(
-              "Matched Student Lessons",
-              LessonStatus.STUDENT_REQUESTED,
+              "Waiting for your confirmation",
+              LessonStatus.PENDING_TUTOR_CONFIRMATION,
               Icons.Default.Notifications),
           SectionInfo(
-              "Waiting for Students Confirmation",
-              LessonStatus.TUTOR_REQUESTED,
+              "Waiting for the Student Confirmation",
+              LessonStatus.STUDENT_REQUESTED,
               ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
           SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
@@ -173,14 +174,18 @@ private fun StudentSections(
 ) {
   val sections =
       listOf(
-          SectionInfo("Tutor Offers", LessonStatus.TUTOR_REQUESTED, Icons.Default.Notifications),
           SectionInfo(
-              "Waiting for Tutors Matching",
-              LessonStatus.PENDING,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo(
-              "Waiting for Tutors Confirmation",
+              "Waiting for your Confirmation",
               LessonStatus.STUDENT_REQUESTED,
+              Icons.Default.Notifications),
+          SectionInfo(
+              "Waiting for a Tutor proposal",
+              LessonStatus.STUDENT_REQUESTED,
+              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+              true),
+          SectionInfo(
+              "Waiting for the Tutor Confirmation",
+              LessonStatus.PENDING_TUTOR_CONFIRMATION,
               ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
           SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
@@ -249,8 +254,9 @@ private fun ExpandableLessonSection(
                 lessons = lessons,
                 statusFilter = section.status,
                 isTutor = isTutor,
+                tutorEmpty = section.tutorEmpty,
                 onCardClick = onClick,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 listProfilesViewModel = listProfilesViewModel)
           }
         }
@@ -302,4 +308,9 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-private data class SectionInfo(val title: String, val status: LessonStatus, val icon: ImageVector)
+private data class SectionInfo(
+    val title: String,
+    val status: LessonStatus,
+    val icon: ImageVector,
+    val tutorEmpty: Boolean = false
+)
