@@ -28,7 +28,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   // Default value is currently set to Lausanne EPFL
   // TODO: Change default value to user's current location
   private val _selectedLocation = MutableStateFlow<Pair<Double, Double>>(46.520374 to 6.568339)
-  val selectedLocation = _selectedLocation.asStateFlow()
+  open val selectedLocation = _selectedLocation.asStateFlow()
 
   // Function to update location
   fun updateSelectedLocation(location: Pair<Double, Double>) {
@@ -134,9 +134,11 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    * @param onComplete Callback to execute when the operation completes.
    */
   fun getLessonsForTutor(tutorUid: String, onComplete: () -> Unit = {}) {
+    println("HELLO ?? " + tutorUid)
     repository.getLessonsForTutor(
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
+          println("-> " + fetchedLessons)
           _currentUserLessons.value = fetchedLessons
           onComplete() // Call the provided callback on success
         },

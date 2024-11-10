@@ -66,6 +66,9 @@ fun HomeScreen(
       if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+      } else if (lesson.status == LessonStatus.CONFIRMED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     }
   }

@@ -19,9 +19,9 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
+import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
 import com.github.se.project.ui.lesson.RequestedLessonsScreen
-import com.github.se.project.ui.lesson.ScheduleLessonScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.lesson.TutorMatchingScreen
 import com.github.se.project.ui.navigation.NavigationActions
@@ -88,7 +88,7 @@ fun PocketTutorApp(
                 authenticationViewModel.handleGoogleSignIn(
                     context,
                     onSuccess = { uid ->
-                      googleUid = uid
+                      googleUid = "xlzX82nBo2cO43YTT2iks1EhnH53"
                       val profile = profiles.value.find { it.googleUid == googleUid }
 
                       if (profile != null) {
@@ -143,8 +143,8 @@ fun PocketTutorApp(
       composable(Screen.TUTOR_LESSON_RESPONSE) {
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
-      composable(Screen.SCHEDULE_LESSON) {
-        ScheduleLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      composable(Screen.CONFIRMED_LESSON) {
+        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 

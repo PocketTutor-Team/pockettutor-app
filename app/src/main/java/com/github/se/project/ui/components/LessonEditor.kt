@@ -163,7 +163,6 @@ fun LessonEditor(
       onConfirm(
           Lesson(
               lesson?.id ?: "",
-              lesson?.id ?: "",
               title,
               description,
               selectedSubject.value,

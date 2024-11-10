@@ -9,7 +9,6 @@ import com.github.se.project.ui.components.LessonEditor
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
-
 @Composable
 fun AddLessonScreen(
     navigationActions: NavigationActions,
