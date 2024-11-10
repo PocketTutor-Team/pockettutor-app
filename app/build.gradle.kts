@@ -43,17 +43,17 @@ android {
         create("release") {
             keyAlias = "pocketTutor-key"
             keyPassword = "pocketTutor"
-            storeFile = file("pocketTutor-release-key.jks")
+            storeFile = file("../pocketTutor-release-key.jks")
             storePassword = "pocketTutor" }
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             enableUnitTestCoverage = true
