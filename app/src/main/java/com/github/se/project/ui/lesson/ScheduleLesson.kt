@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ fun ScheduleLessonScreen(
     val tutorProfile = listProfilesViewModel.getProfileById(lesson.tutorUid)!!
 
 
+
     Scaffold(
         topBar = {
             Row(
@@ -44,7 +46,7 @@ fun ScheduleLessonScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Edit scheduled lesson",
+                    text = "Scheduled lesson",
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center
                 )
