@@ -22,7 +22,7 @@ interface LessonRepository {
   )
 
   // Method to retrieve all requested lessons of the database
-  fun getAllPendingLessons(onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit)
+  fun getAllRequestedLessons(onSuccess: (List<Lesson>) -> Unit, onFailure: (Exception) -> Unit)
 
   // Method to add a new lesson
   fun addLesson(lesson: Lesson, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)

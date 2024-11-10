@@ -27,12 +27,12 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
     }
   }
 
-  override fun getAllPendingLessons(
+  override fun getAllRequestedLessons(
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("status", LessonStatus.PENDING.name)
+        .whereEqualTo("status", LessonStatus.STUDENT_REQUESTED.name)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -50,14 +50,14 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
   }
 
   // General method to retrieve lessons based on a user field (tutor or student)
-  private fun getLessonsByUserField(
-      userField: String,
-      userUid: String,
+  override fun getLessonsForStudent(
+      studentUid: String,
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo(userField, userUid) // Filter lessons by user field (tutorUid or studentUid)
+        .whereEqualTo(
+            "studentUid", studentUid) // Filter lessons by user field (tutorUid or studentUid)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -79,16 +79,21 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-    getLessonsByUserField("tutorUid", tutorUid, onSuccess, onFailure)
-  }
-
-  // Retrieve all lessons for a specific student
-  override fun getLessonsForStudent(
-      studentUid: String,
-      onSuccess: (List<Lesson>) -> Unit,
-      onFailure: (Exception) -> Unit
-  ) {
-    getLessonsByUserField("studentUid", studentUid, onSuccess, onFailure)
+    db.collection(collectionPath)
+        .whereArrayContains("tutorUid", tutorUid)
+        .get()
+        .addOnCompleteListener { task ->
+          if (task.isSuccessful) {
+            val lessons =
+                task.result?.mapNotNull { document -> documentToLesson(document) } ?: emptyList()
+            onSuccess(lessons)
+          } else {
+            task.exception?.let { e ->
+              Log.e("LessonRepositoryFirestore", "Error getting lessons", e)
+              onFailure(e)
+            }
+          }
+        }
   }
 
   // Add a new lesson
@@ -151,7 +156,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
       val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
-      val tutorUid = document.getString("tutorUid") ?: return null
+
       val studentUid = document.getString("studentUid") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null
@@ -160,6 +165,18 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val status = LessonStatus.valueOf(document.getString("status") ?: return null)
       val latitude = document.getDouble("latitude") ?: return null
       val longitude = document.getDouble("longitude") ?: return null
+
+      val tutorUid =
+          document.get("tutorUid")?.let { tutorUid ->
+            (tutorUid as List<*>).mapNotNull {
+              try {
+                it.toString()
+              } catch (e: IllegalArgumentException) {
+                Log.e("LessonRepositoryFirestore", "Invalid tutorId in document: $it", e)
+                null
+              }
+            }
+          } ?: emptyList()
 
       val language =
           document.get("languages")?.let { languagesList ->

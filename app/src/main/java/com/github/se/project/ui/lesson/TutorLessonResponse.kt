@@ -79,7 +79,7 @@ fun TutorLessonResponseScreen(
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
                     .testTag("tutorLessonResponseScreen"),
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
                 ErrorState(message = "Cannot retrieve student profile")
@@ -102,6 +102,7 @@ fun TutorLessonResponseScreen(
 
                 // Confirmation button
                 Button(
+                    shape = MaterialTheme.shapes.medium,
                     onClick = { showConfirmDialog = true },
                     modifier =
                         Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
@@ -113,11 +114,15 @@ fun TutorLessonResponseScreen(
                       Text("Offer to Teach (${currentProfile.price}.-/hour)")
                     }
 
-                if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
+                if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
                   Button(
+                      shape = MaterialTheme.shapes.medium,
                       onClick = { showDeclineDialog = true },
                       modifier =
-                          Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("cancelButton")) {
+                          Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("cancelButton"),
+                      colors =
+                          ButtonDefaults.buttonColors(
+                              containerColor = MaterialTheme.colorScheme.error)) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = null,
@@ -143,15 +148,16 @@ fun TutorLessonResponseScreen(
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
-                              tutorUid = currentProfile.uid,
+                              tutorUid = lesson.tutorUid + currentProfile.uid,
                               price = currentProfile.price.toDouble(),
                               status =
-                                  if (lesson.status == LessonStatus.STUDENT_REQUESTED)
+                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
                                       LessonStatus.CONFIRMED
-                                  else LessonStatus.TUTOR_REQUESTED,
+                                  else LessonStatus.STUDENT_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                            lessonViewModel.getAllRequestedLessons()
                             Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
                                 .show()
                             navigationActions.navigateTo(Screen.HOME)
@@ -176,8 +182,8 @@ fun TutorLessonResponseScreen(
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
-                              tutorUid = "",
-                              status = LessonStatus.PENDING,
+                              tutorUid = listOf(),
+                              status = LessonStatus.STUDENT_REQUESTED,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
@@ -191,7 +197,7 @@ fun TutorLessonResponseScreen(
                     }
               },
               dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showDeclineDialog = false }) { Text("Cancel") }
               })
         }
       }
