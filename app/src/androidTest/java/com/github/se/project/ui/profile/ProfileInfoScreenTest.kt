@@ -97,7 +97,6 @@ class ProfileInfoScreenTest {
     }
 
     composeTestRule.onNodeWithTag("profileTopBar").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("calendarButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editProfileButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed()
   }

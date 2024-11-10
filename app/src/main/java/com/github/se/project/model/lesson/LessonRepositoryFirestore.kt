@@ -27,12 +27,12 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
     }
   }
 
-  override fun getAllRequestedLessons(
+  override fun getAllPendingLessons(
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
     db.collection(collectionPath)
-        .whereEqualTo("status", LessonStatus.REQUESTED.name)
+        .whereEqualTo("status", LessonStatus.PENDING.name)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -158,6 +158,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val price = document.getDouble("price") ?: return null
       val timeSlot = document.getString("timeSlot") ?: return null
       val status = LessonStatus.valueOf(document.getString("status") ?: return null)
+      val latitude = document.getDouble("latitude") ?: return null
+      val longitude = document.getDouble("longitude") ?: return null
 
       val language =
           document.get("languages")?.let { languagesList ->
@@ -183,7 +185,9 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
           maxPrice,
           price,
           timeSlot,
-          status)
+          status,
+          latitude,
+          longitude)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)
       null

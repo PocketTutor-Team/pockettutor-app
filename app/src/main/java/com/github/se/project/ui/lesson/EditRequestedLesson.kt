@@ -1,6 +1,7 @@
 package com.github.se.project.ui.lesson
 
 import android.widget.Toast
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.lesson.Lesson
@@ -12,19 +13,17 @@ import com.github.se.project.ui.navigation.Screen
 
 @Composable
 fun EditRequestedLessonScreen(
-    lessonId: String,
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
 ) {
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
+  val selectedLocation by lessonViewModel.selectedLocation.collectAsState()
 
-  val lessons = lessonViewModel.currentUserLessons.collectAsState()
-  val lesson = lessons.value.find { it.id == lessonId }
-  if (lesson == null) {
-    return
-  }
+  val currentLesson =
+      lessonViewModel.selectedLesson.collectAsState().value
+          ?: return Text("No lesson selected. Should not happen")
 
   val context = LocalContext.current
 
@@ -53,9 +52,8 @@ fun EditRequestedLessonScreen(
   LessonEditor(
       mainTitle = "Edit requested lesson",
       profile = profile.value!!,
-      lesson = lesson,
+      lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = onDelete,
-  )
+      onDelete = onDelete)
 }

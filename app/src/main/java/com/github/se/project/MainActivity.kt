@@ -1,6 +1,5 @@
 package com.github.se.project
 
-import RequestedLessonsScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,20 +10,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
+import com.github.se.project.ui.lesson.RequestedLessonsScreen
 import com.github.se.project.ui.lesson.ScheduleLessonScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
+import com.github.se.project.ui.lesson.TutorMatchingScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -32,7 +31,7 @@ import com.github.se.project.ui.overview.HomeScreen
 import com.github.se.project.ui.profile.CreateProfileScreen
 import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
-import com.github.se.project.ui.profile.EditTutorProfile
+import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
@@ -41,27 +40,31 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
-    // enableEdgeToEdge()
     setContent {
-      SampleAppTheme { Surface(modifier = Modifier.fillMaxSize()) { PocketTutorApp() } }
+      SampleAppTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          PocketTutorApp(
+              authenticationViewModel = viewModel(),
+              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
+        }
+      }
     }
   }
 }
 
 @Composable
-fun PocketTutorApp() {
+fun PocketTutorApp(
+    testMode: Boolean = false,
+    authenticationViewModel: AuthenticationViewModel,
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
+) {
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
 
-  // View models
-  val authenticationViewModel: AuthenticationViewModel = viewModel()
-
-  val listProfilesViewModel: ListProfilesViewModel =
-      viewModel(factory = ListProfilesViewModel.Factory)
   val profiles = listProfilesViewModel.profiles
-
-  val lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -73,24 +76,33 @@ fun PocketTutorApp() {
     // Authentication flow
     navigation(startDestination = Screen.AUTH, route = Route.AUTH) {
       composable(Screen.AUTH) {
-        SignInScreen(
-            onSignInClick = {
-              authenticationViewModel.handleGoogleSignIn(
-                  context,
-                  onSuccess = { uid ->
-                    googleUid = uid
-                    val profile = profiles.value.find { it.googleUid == googleUid }
+        if (testMode) {
+          SignInScreen(
+              onSignInClick = {
+                googleUid = "testingUid"
+                navigationActions.navigateTo(Screen.CREATE_PROFILE)
+              })
+        } else {
+          SignInScreen(
+              onSignInClick = {
+                authenticationViewModel.handleGoogleSignIn(
+                    context,
+                    onSuccess = { uid ->
+                      googleUid = uid
+                      val profile = profiles.value.find { it.googleUid == googleUid }
 
-                    if (profile != null) {
-                      // If the user already has a profile, navigate to the home screen
-                      listProfilesViewModel.setCurrentProfile(profile)
-                      navigationActions.navigateTo(Screen.HOME)
-                    } else {
-                      // If the user doesn't have a profile, navigate to the profile creation screen
-                      navigationActions.navigateTo(Screen.CREATE_PROFILE)
-                    }
-                  })
-            })
+                      if (profile != null) {
+                        // If the user already has a profile, navigate to the home screen
+                        listProfilesViewModel.setCurrentProfile(profile)
+                        navigationActions.navigateTo(Screen.HOME)
+                      } else {
+                        // If the user doesn't have a profile, navigate to the profile creation
+                        // screen
+                        navigationActions.navigateTo(Screen.CREATE_PROFILE)
+                      }
+                    })
+              })
+        }
       }
       // For debugging purposes (when sign-in error)
       // composable(Screen.AUTH) {
@@ -143,6 +155,16 @@ fun PocketTutorApp() {
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
+      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
+      composable(Screen.EDIT_SCHEDULE) {
+        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      }
+      composable(Screen.EDIT_REQUESTED_LESSON) {
+        EditRequestedLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+      }
+      composable(Screen.TUTOR_LESSON_RESPONSE) {
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
     }
 
     navigation(
@@ -155,19 +177,18 @@ fun PocketTutorApp() {
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
-      composable(Screen.EDIT_PROFILE) { EditTutorProfile(navigationActions, listProfilesViewModel) }
-      composable(Screen.EDIT_SCHEDULE) {
-        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      composable(Screen.TUTOR_MATCH) {
+        TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
-      composable(
-          Screen.EDIT_REQUESTED_LESSON + "/{Lesson ID}",
-          arguments = listOf(navArgument("Lesson ID") { type = NavType.StringType })) { entry ->
-            val lessonId = entry.arguments?.getString("Lesson ID")!!
-            EditRequestedLessonScreen(
-                lessonId, navigationActions, listProfilesViewModel, lessonViewModel)
-          }
-
-
+      //      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions,
+      // listProfilesViewModel) }
+      //      composable(Screen.EDIT_SCHEDULE) {
+      //        EditTutorSchedule(navigationActions, listProfilesViewModel)
+      //      }
+      //      composable(Screen.EDIT_REQUESTED_LESSON) {
+      //        EditRequestedLessonScreen(
+      //          navigationActions, listProfilesViewModel, lessonViewModel)
+      //      }
     }
   }
 }

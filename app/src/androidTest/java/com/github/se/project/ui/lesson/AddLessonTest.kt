@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
@@ -39,7 +40,10 @@ class AddLessonTest {
       mock(ListProfilesViewModel::class.java).apply {
         `when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(profile))
       }
-  private val mockLessons = mock(LessonViewModel::class.java)
+  private val mockLessons =
+      mock(LessonViewModel::class.java).apply {
+        `when`(selectedLesson).thenReturn(MutableStateFlow<Lesson?>(null))
+      }
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
@@ -51,7 +55,7 @@ class AddLessonTest {
   @Test
   fun sliderTest() {
     var changed = false
-    composeTestRule.setContent { PriceRangeSlider("testLabel") { a, b -> changed = true } }
+    composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
   }
@@ -65,7 +69,9 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "time") == null)
+            "time",
+            1.0,
+            1.0) == null)
     assert(
         validateLessonInput(
             "title",
@@ -73,7 +79,9 @@ class AddLessonTest {
             mutableStateOf(Subject.AICC),
             listOf(Language.ENGLISH),
             "date",
-            "") == "time is missing")
+            "",
+            1.0,
+            1.0) == "time is missing")
   }
 
   @Test
