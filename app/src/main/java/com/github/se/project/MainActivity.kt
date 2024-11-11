@@ -2,11 +2,13 @@ package com.github.se.project
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
@@ -65,6 +68,9 @@ fun PocketTutorApp(
   val navigationActions = NavigationActions(navController)
 
   val profiles = listProfilesViewModel.profiles
+  val currentProfile = listProfilesViewModel.currentProfile.collectAsState().value
+  val isStudent = currentProfile!!.role == Role.STUDENT
+
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""
@@ -139,7 +145,7 @@ fun PocketTutorApp(
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CONFIRMED_LESSON) {
-        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions, )
+        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions, isStudent)
       }
     }
 

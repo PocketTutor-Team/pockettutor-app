@@ -22,7 +22,7 @@ fun ConfirmedLessonScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
-    navigationActions: NavigationActions
+    navigationActions: NavigationActions,
     isStudent: Boolean
 ) {
 

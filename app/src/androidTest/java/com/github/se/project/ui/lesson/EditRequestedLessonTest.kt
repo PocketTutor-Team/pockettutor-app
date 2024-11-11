@@ -4,7 +4,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -12,10 +15,13 @@ import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.components.validateLessonInput
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class EditRequestedLessonTest {
@@ -45,7 +51,7 @@ class EditRequestedLessonTest {
               description = "Mechanics and Thermodynamics",
               subject = Subject.PHYSICS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = "tutor123",
+              tutorUid = mutableListOf("tutor123"),
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
@@ -59,7 +65,7 @@ class EditRequestedLessonTest {
               description = "Algebra and Calculus",
               subject = Subject.ANALYSIS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = "tutor123",
+              tutorUid = mutableListOf("tutor123"),
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
@@ -71,16 +77,32 @@ class EditRequestedLessonTest {
       mock(ListProfilesViewModel::class.java).apply {
         `when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(profile))
       }
-  private val mockLessons =
-      mock(LessonViewModel::class.java).apply {
-        `when`(selectedLesson).thenReturn(MutableStateFlow<Lesson?>(lessons[0]))
-        `when`(selectedLocation).thenReturn(MutableStateFlow(Pair(1.0, 1.0)))
-      }
+
+          private val mockLessonRepository = mock(LessonRepository::class.java)
+          private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
+
+    @Before
+    fun setup() {
+        whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
+            val onSuccess = invocation.arguments[1] as () -> Unit
+            onSuccess() // Simulate a successful update
+        }
+        whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
+            ->
+            val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+            onSuccess(lessons)
+        }
+        whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
+            val onSuccess = invocation.arguments[1] as () -> Unit
+            onSuccess() // Simulate a successful deletion
+        }
+        mockLessonViewModel.selectLesson(lessons[0])
+    }
 
   @Test
   fun EditRequestedLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessons)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
@@ -121,7 +143,7 @@ class EditRequestedLessonTest {
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessons)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
@@ -130,7 +152,7 @@ class EditRequestedLessonTest {
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessons)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
 
     // Fill in the required fields
@@ -150,8 +172,16 @@ class EditRequestedLessonTest {
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
     composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
+
+      // Select location
+      composeTestRule.onNodeWithTag("mapButton").performClick()
+      composeTestRule.onNodeWithTag("map").performClick()
+      Thread.sleep(2000) // Wait for the map to load
+      val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+      device.click(device.displayWidth / 2, device.displayHeight / 2)
+      composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
@@ -161,7 +191,7 @@ class EditRequestedLessonTest {
   @Test
   fun testInitialState() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessons)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
