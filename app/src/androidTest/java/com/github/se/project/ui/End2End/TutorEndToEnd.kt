@@ -51,9 +51,9 @@ class EndToEndTest {
 
   private val mockProfileViewModel = ListProfilesViewModel(mockProfileRepository)
 
-  private lateinit var mockLessonRepository : LessonRepository
+  private val mockLessonRepository = mock(LessonRepository::class.java)
 
-  private lateinit var mockLessonViewModel : LessonViewModel
+  private var mockLessonViewModel = spy(LessonViewModel(mockLessonRepository))
 
   private val mockLessons =
     listOf(
@@ -63,11 +63,11 @@ class EndToEndTest {
         description = "Mechanics and Thermodynamics",
         subject = Subject.PHYSICS,
         languages = listOf(Language.ENGLISH),
-        tutorUid = listOf("mockUid"),
+        tutorUid = listOf(),
         studentUid = "student123",
         minPrice = 20.0,
         maxPrice = 40.0,
-        timeSlot = "2024-10-10T10:00:00",
+        timeSlot = "16/11/2024T12:00:00",
         status = LessonStatus.STUDENT_REQUESTED,
         latitude = 0.0,
         longitude = 0.0),
@@ -81,7 +81,7 @@ class EndToEndTest {
         studentUid = "student123",
         minPrice = 20.0,
         maxPrice = 40.0,
-        timeSlot = "2024-10-10T11:00:00",
+        timeSlot = "16/11/2024T12:00:00",
         status = LessonStatus.STUDENT_REQUESTED,
         latitude = 0.0,
         longitude = 0.0)
@@ -100,12 +100,11 @@ class EndToEndTest {
     listOf(Subject.AICC),
     List(7) { List(12) { 0 } })
 
-  private val requestedLessonsFlow = MutableStateFlow(mockLessons)
-
   @get:Rule val composeTestRule = createComposeRule()
 
   @Before
   fun setUp() {
+    context = mock(Context::class.java)
     whenever(mockProfileRepository.addProfile(any(), any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
@@ -115,13 +114,18 @@ class EndToEndTest {
       onSuccess(listOf(mockStudent)) // Simulate a list of profiles with our beloved Ozymandias
     }
     whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
+    /*whenever(mockLessonRepository.getLessonsForTutor(any(), any(), any())).thenAnswer { invocation
+      ->
+      val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+        onSuccess(mockLessons)
+    }*/
+    whenever(mockLessonRepository.getAllRequestedLessons(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Lesson>) -> Unit
+      onSuccess(mockLessons)
+    }
 
-    mockLessonRepository = mock(LessonRepository::class.java)
-    mockLessonViewModel = LessonViewModel(mockLessonRepository)
-    mockLessonViewModel = spy(mockLessonViewModel)
-
-    doReturn(requestedLessonsFlow).`when`(mockLessonViewModel).requestedLessons
-    doNothing().`when`(mockLessonRepository).getAllRequestedLessons(any(), any())
+    val mockLessonFlow = MutableStateFlow<Lesson?>(mockLessons[0])
+    doReturn(mockLessonFlow).`when`(mockLessonViewModel).selectedLesson
 
   }
 
@@ -151,8 +155,10 @@ class EndToEndTest {
     // Create Tutor Profile Screen
     composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("checkbox_FRENCH").performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownANALYSIS").performClick()
+    composeTestRule.onNodeWithTag("dropdownPHYSICS").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("priceSlider").performGesture { swipeRight() }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
@@ -176,10 +182,13 @@ class EndToEndTest {
         .onNodeWithTag("lessonsCount")
         .assertTextEquals("0 lessons given since you joined PocketTutor")
     composeTestRule.onNodeWithTag("closeButton").performClick()
+    composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
     composeTestRule.onNodeWithTag("Find a Student").performClick()
       composeTestRule.onNodeWithTag("screenTitle").assertExists()
-    val filteredDate = "2024-10-10"
-    requestedLessonsFlow.value = mockLessons.filter { it.timeSlot.contains(filteredDate) }
+    composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("physics").assertIsDisplayed()
+    composeTestRule.onNodeWithText("physics").performClick()
+    composeTestRule.onNodeWithText("lessonCard_").assertExists()
 
 
     Thread.sleep(5000)
