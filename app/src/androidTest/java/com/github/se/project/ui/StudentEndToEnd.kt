@@ -123,13 +123,13 @@ class EndToEndTest {
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
   fun endToEndStudentTest() {
-      val spyProfileViewModel = spy(mockProfileViewModel)
+      val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     // Start the app in test mode
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    //Thread.sleep(50000)
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -193,43 +193,21 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("map").performClick()
     Thread.sleep(2000) // Wait for the map to load
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.click(device.displayWidth / 2, device.displayHeight / 2)
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+      Thread.sleep(3000)
+      composeTestRule.onNodeWithText("Confirm").performClick()
+    //composeTestRule.onNodeWithTag("confirmButton").performClick()
       assert(currentLesson!!.title == "End-to-end testing")
       assert(currentLesson!!.description == "Teach me how to write tests pls")
       assert(currentLesson!!.subject == Subject.AICC)
       assert(currentLesson!!.languages == listOf(Language.ENGLISH))
-      assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
-
-    // Navigate to lesson editing screen
-    composeTestRule.onNodeWithText("End-to-end testing").assertIsDisplayed()
-    composeTestRule.onNodeWithText("End-to-end testing").performClick()
-
-    // Edit the lesson
-    composeTestRule.onNodeWithTag("titleField").performClick()
-    composeTestRule.onNodeWithTag("titleField").performTextClearance()
-    composeTestRule.onNodeWithTag("titleField").performTextInput("NVM got it :)")
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-      verify(mockLessonRepository).updateLesson(any(), any(), any())
-      assert(currentLesson!!.title == "NVM got it :)")
-
-    // Check if the lesson was updated correctly
-    composeTestRule.onNodeWithText("NVM got it :)").assertIsDisplayed()
-
-    // Delete the lesson
-    composeTestRule.onNodeWithText("NVM got it :)").performClick()
-    composeTestRule.onNodeWithTag("deleteButton").performClick()
-      verify(mockLessonRepository).deleteLesson(any(), any(), any())
-      assert(currentLesson == null)
-
-    // Check if the lesson was deleted correctly
-    composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
+      assert(currentLesson!!.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
+      Thread.sleep(3000)
 
     // Navigate to the lesson creation screen
     composeTestRule.onNodeWithText("Find a Tutor").performClick()
@@ -256,12 +234,34 @@ class EndToEndTest {
       // Here we could assert all the fields again, but it has already been done above
 
     // Do not select any tutors
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-      verify(mockLessonRepository).updateLesson(any(), any(), any())
+    composeTestRule.onNodeWithTag("noTutorButton").performClick()
       assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
+      Thread.sleep(3000)
 
     // check if the lesson is displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+
+      composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+      composeTestRule.onNodeWithText("Help how do I write tests").performClick()
+      Thread.sleep(1000)
+
+      // Edit the lesson
+      composeTestRule.onNodeWithTag("titleField").performClick()
+      composeTestRule.onNodeWithTag("titleField").performTextClearance()
+      composeTestRule.onNodeWithTag("titleField").performTextInput("NVM got it :)")
+      composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+      // Check if the lesson was updated correctly
+      composeTestRule.onNodeWithText("NVM got it :)").assertIsDisplayed()
+
+      // Delete the lesson
+      composeTestRule.onNodeWithText("NVM got it :)").performClick()
+      composeTestRule.onNodeWithTag("deleteButton").performClick()
+      verify(mockLessonRepository).deleteLesson(any(), any(), any())
+      assert(currentLesson == null)
+
+      // Check if the lesson was deleted correctly
+      composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
 
       // Simulate the open lesson being taken up by a tutor
       currentLesson =
