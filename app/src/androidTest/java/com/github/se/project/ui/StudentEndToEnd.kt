@@ -34,7 +34,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -47,7 +46,7 @@ class EndToEndTest {
   @Mock lateinit var context: Context
 
   // Mock du ProfilesRepository
-  private val mockProfileRepository = Mockito.mock(ProfilesRepository::class.java)
+  private val mockProfileRepository = mock(ProfilesRepository::class.java)
 
   private val mockProfileViewModel = ListProfilesViewModel(mockProfileRepository)
 
@@ -70,7 +69,7 @@ class EndToEndTest {
           List(7) { List(12) { 1 } },
           5)
 
-  var currentLesson: Lesson? = null
+  private var currentLesson: Lesson? = null
 
   @get:Rule val composeTestRule = createComposeRule()
 
