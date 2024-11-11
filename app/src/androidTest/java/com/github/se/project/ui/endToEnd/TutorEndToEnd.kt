@@ -222,7 +222,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
     composeTestRule.onNodeWithTag("closeButton").performClick()
     //
-    composeTestRule.onNodeWithTag("section_Waiting for your confirmation").assertExists()
+    composeTestRule.onNodeWithTag("section_Waiting for your Confirmation").assertExists()
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
     composeTestRule.onNodeWithText("Maths Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("analysis").assertIsDisplayed()
