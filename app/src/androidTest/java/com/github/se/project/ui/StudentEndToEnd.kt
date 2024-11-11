@@ -29,12 +29,15 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 
@@ -122,10 +125,11 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    //Thread.sleep(50000)
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
+      verify(navigationActions).navigateTo(Screen.CREATE_PROFILE)
 
     // Enter valid data for all fields
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
