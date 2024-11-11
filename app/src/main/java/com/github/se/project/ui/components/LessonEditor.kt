@@ -71,7 +71,9 @@ fun LessonEditor(
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
   val selectedLanguages = remember { mutableStateListOf<Language>() }
-    val tutorUid = remember { mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } } }
+  val tutorUid = remember {
+    mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
+  }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }

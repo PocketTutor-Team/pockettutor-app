@@ -24,7 +24,6 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   private val _selectedLesson = MutableStateFlow<Lesson?>(null)
   open val selectedLesson: StateFlow<Lesson?> = _selectedLesson.asStateFlow()
 
-
   init {
     repository.init {}
   }
