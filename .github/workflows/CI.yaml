@@ -144,7 +144,7 @@ jobs:
 
       - name: Sign APK
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore pocketTutor-release-key.jks -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD app/build/outputs/apk/release/app-release-unsigned.apk $KEY_ALIAS
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore pocketTutor-release-key.jks -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD -signedjar app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release-unsigned.apk $KEY_ALIAS
 
       - name: Verify APK
         run: |
