@@ -149,7 +149,7 @@ jobs:
 
       - name: Verify APK
         run: |
-          jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release-unsigned.apk
+          jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release.apk
 
       # - name: Align APK (Optional)
       #  run: |
