@@ -37,6 +37,7 @@ import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
@@ -55,7 +56,7 @@ class EndToEndTest {
 
   private var mockLessonViewModel = spy(LessonViewModel(mockLessonRepository))
 
-  private val mockLessons =
+  private var mockLessons =
     listOf(
       Lesson(
         id = "1",
@@ -69,12 +70,12 @@ class EndToEndTest {
         maxPrice = 40.0,
         timeSlot = "16/11/2024T12:00:00",
         status = LessonStatus.STUDENT_REQUESTED,
-        latitude = 0.0,
-        longitude = 0.0),
+        latitude = 46.518973490411526,
+        longitude = 6.5685102716088295),
       Lesson(
         id = "2",
-        title = "Math Tutoring",
-        description = "Algebra and Calculus",
+        title = "Maths Tutoring",
+        description = "Fourrier Transform",
         subject = Subject.ANALYSIS,
         languages = listOf(Language.ENGLISH),
         tutorUid = listOf("mockUid"),
@@ -82,9 +83,9 @@ class EndToEndTest {
         minPrice = 20.0,
         maxPrice = 40.0,
         timeSlot = "16/11/2024T12:00:00",
-        status = LessonStatus.STUDENT_REQUESTED,
-        latitude = 0.0,
-        longitude = 0.0)
+        status = LessonStatus.PENDING_TUTOR_CONFIRMATION,
+        latitude = 46.518973490411526,
+        longitude = 6.5685102716088295)
     )
 
   private val mockStudent = Profile(
@@ -114,11 +115,16 @@ class EndToEndTest {
       onSuccess(listOf(mockStudent)) // Simulate a list of profiles with our beloved Ozymandias
     }
     whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
-    /*whenever(mockLessonRepository.getLessonsForTutor(any(), any(), any())).thenAnswer { invocation
+    whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
+      mockLessons = listOf(invocation.arguments[0] as Lesson)
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful update
+    }
+    whenever(mockLessonRepository.getLessonsForTutor(eq("mockUid"), any(), any())).thenAnswer { invocation
       ->
       val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
         onSuccess(mockLessons)
-    }*/
+    }
     whenever(mockLessonRepository.getAllRequestedLessons(any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[0] as (List<Lesson>) -> Unit
       onSuccess(mockLessons)
@@ -134,7 +140,7 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-      Thread.sleep(30000)
+      //Thread.sleep(30000)
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -188,7 +194,15 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").performClick()
-    composeTestRule.onNodeWithText("lessonCard_").assertExists()
+    composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertExists()
+    composeTestRule.onNodeWithText("Ozymandias Halifax").assertExists()
+    composeTestRule.onNodeWithText("Offer to Teach (50.-/hour)").assertExists()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithText("Would you like to offer to teach this lesson at your standard rate of 50.-/hour?").assertExists()
+    composeTestRule.onNodeWithTag("confirmLessonButton").performClick()
+    composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
+    //composeTestRule.onNodeWithTag("section_Waiting for your confirmation").performClick()
+    //composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
 
 
     Thread.sleep(5000)
