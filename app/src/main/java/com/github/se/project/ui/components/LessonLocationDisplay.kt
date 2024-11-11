@@ -148,7 +148,6 @@ fun getCameraPositionForBothLocations(
     //adjust the zoom level to fit both locations
 
 
-
     // Adjust the camera to fit both locations
     return CameraPosition.fromLatLngZoom(bounds.center, 10f) // Set a zoom level that works for both locations
 }
