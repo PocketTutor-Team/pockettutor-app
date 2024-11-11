@@ -73,7 +73,6 @@ fun LessonLocationDisplay(
         }
   }
 
-  // Map UI
   if (isLocationChecked) {
     Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Text(text = "Lesson Location", style = MaterialTheme.typography.titleMedium)
@@ -102,7 +101,6 @@ fun LessonLocationDisplay(
   }
 }
 
-
 /**
  * Utility function to calculate the bounds to show both the user's location and lesson location,
  * and update the camera position to fit them.
@@ -111,70 +109,70 @@ fun getCameraPositionForBothLocations(
     userLocation: LatLng?,
     lessonLocation: LatLng,
 ): CameraPosition {
-    // If we don't have the user's location, just focus on the lesson location
-    if (userLocation == null) {
-        return CameraPosition.fromLatLngZoom(lessonLocation, 10f)
-    }
+  // If we don't have the user's location, just focus on the lesson location
+  if (userLocation == null) {
+    return CameraPosition.fromLatLngZoom(lessonLocation, 10f)
+  }
 
-    // Otherwise, calculate the bounds to fit both locations
-    val latitudes = listOf(userLocation.latitude, lessonLocation.latitude)
-    val longitudes = listOf(userLocation.longitude, lessonLocation.longitude)
+  // Otherwise, calculate the bounds to fit both locations
+  val latitudes = listOf(userLocation.latitude, lessonLocation.latitude)
+  val longitudes = listOf(userLocation.longitude, lessonLocation.longitude)
 
-    // Get the bounds to show both locations
-    val latMin = latitudes.minOrNull() ?: userLocation.latitude
-    val latMax = latitudes.maxOrNull() ?: userLocation.latitude
-    val lonMin = longitudes.minOrNull() ?: userLocation.longitude
-    val lonMax = longitudes.maxOrNull() ?: userLocation.longitude
+  // Get the bounds to show both locations
+  val latMin = latitudes.minOrNull() ?: userLocation.latitude
+  val latMax = latitudes.maxOrNull() ?: userLocation.latitude
+  val lonMin = longitudes.minOrNull() ?: userLocation.longitude
+  val lonMax = longitudes.maxOrNull() ?: userLocation.longitude
 
-    // Create the bounds
-    val bounds = LatLngBounds(LatLng(latMin, lonMin), LatLng(latMax, lonMax))
+  // Create the bounds
+  val bounds = LatLngBounds(LatLng(latMin, lonMin), LatLng(latMax, lonMax))
 
-    // Calculate the zoom level based on the distance between the two locations
-    val distance = calculateDistance(userLocation, lessonLocation)
-    val zoomLevel = adjustZoomBasedOnDistance(distance)
+  // Calculate the zoom level based on the distance between the two locations
+  val distance = calculateDistance(userLocation, lessonLocation)
+  val zoomLevel = adjustZoomBasedOnDistance(distance)
 
-    // Adjust the camera to fit both locations with appropriate zoom
-    return CameraPosition.fromLatLngZoom(bounds.center, zoomLevel)
+  // Adjust the camera to fit both locations with appropriate zoom
+  return CameraPosition.fromLatLngZoom(bounds.center, zoomLevel)
 }
 
-/**
- * Private function to calculate the distance (in meters) between two locations.
- */
+/** Private function to calculate the distance (in meters) between two locations. */
 fun calculateDistance(userLocation: LatLng?, lessonLocation: LatLng): Float {
-    if (userLocation == null) return 0f
+  if (userLocation == null) return 0f
 
-    val lat1 = userLocation.latitude
-    val lon1 = userLocation.longitude
-    val lat2 = lessonLocation.latitude
-    val lon2 = lessonLocation.longitude
+  val lat1 = userLocation.latitude
+  val lon1 = userLocation.longitude
+  val lat2 = lessonLocation.latitude
+  val lon2 = lessonLocation.longitude
 
-    val earthRadius = 6371 // Radius of the Earth in kilometers
-    val latDiff = Math.toRadians(lat2 - lat1)
-    val lonDiff = Math.toRadians(lon2 - lon1)
+  val earthRadius = 6371 // Radius of the Earth in kilometers
+  val latDiff = Math.toRadians(lat2 - lat1)
+  val lonDiff = Math.toRadians(lon2 - lon1)
 
-    val a = sin(latDiff / 2).pow(2.0) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(lonDiff / 2).pow(2.0)
-    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+  val a =
+      sin(latDiff / 2).pow(2.0) +
+          cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(lonDiff / 2).pow(2.0)
+  val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-    // Distance in kilometers
-    val distanceInKm = earthRadius * c
+  // Distance in kilometers
+  val distanceInKm = earthRadius * c
 
-    // Convert to meters
-    return (distanceInKm * 1000).toFloat()
+  // Convert to meters
+  return (distanceInKm * 1000).toFloat()
 }
 
 /**
- * Private function to adjust the zoom level based on the distance between two locations.
- * The further the locations, the lower the zoom level.
+ * Private function to adjust the zoom level based on the distance between two locations. The
+ * further the locations, the lower the zoom level.
  */
 fun adjustZoomBasedOnDistance(distance: Float): Float {
-    return when {
-        distance < 100 -> 15f // If the distance is less than 100 meters, zoom in more
-        distance < 500 -> 14f // If the distance is between 100-500 meters, zoom in a bit
-        distance < 2000 -> 12f // If the distance is between 500m-2km, zoom out a bit
-        distance < 10000 -> 10f // If the distance is between 2km-10km, zoom out even more
-        distance < 20000 -> 8f // If the distance is between 10km-20km, zoom out further
-        distance < 50000 -> 7f // If the distance is between 20km-50km, zoom out even further
-        distance < 100000 -> 6f // If the distance is between 50km-100km, zoom out even further
-        else -> 5f // If the distance is more than 100km, zoom out further
-    }
+  return when {
+    distance < 100 -> 15f // If the distance is less than 100 meters, zoom in more
+    distance < 500 -> 14f // If the distance is between 100-500 meters, zoom in a bit
+    distance < 2000 -> 12f // If the distance is between 500m-2km, zoom out a bit
+    distance < 10000 -> 10f // If the distance is between 2km-10km, zoom out even more
+    distance < 20000 -> 8f // If the distance is between 10km-20km, zoom out further
+    distance < 50000 -> 7f // If the distance is between 20km-50km, zoom out even further
+    distance < 100000 -> 6f // If the distance is between 50km-100km, zoom out even further
+    else -> 5f // If the distance is more than 100km, zoom out further
+  }
 }
