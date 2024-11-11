@@ -2,7 +2,6 @@ package com.github.se.project
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,7 +69,6 @@ fun PocketTutorApp(
   val profiles = listProfilesViewModel.profiles
   val currentProfile = listProfilesViewModel.currentProfile.collectAsState().value
   val isStudent = currentProfile!!.role == Role.STUDENT
-
 
   // Google user unique id (as var to be able to pass from the SignIn to CreateProfile screens)
   var googleUid = ""

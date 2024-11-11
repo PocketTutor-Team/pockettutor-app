@@ -78,26 +78,26 @@ class EditRequestedLessonTest {
         `when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(profile))
       }
 
-          private val mockLessonRepository = mock(LessonRepository::class.java)
-          private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
+  private val mockLessonRepository = mock(LessonRepository::class.java)
+  private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
-    @Before
-    fun setup() {
-        whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
-            val onSuccess = invocation.arguments[1] as () -> Unit
-            onSuccess() // Simulate a successful update
-        }
-        whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
-            ->
-            val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
-            onSuccess(lessons)
-        }
-        whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
-            val onSuccess = invocation.arguments[1] as () -> Unit
-            onSuccess() // Simulate a successful deletion
-        }
-        mockLessonViewModel.selectLesson(lessons[0])
+  @Before
+  fun setup() {
+    whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful update
     }
+    whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
+      ->
+      val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+      onSuccess(lessons)
+    }
+    whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful deletion
+    }
+    mockLessonViewModel.selectLesson(lessons[0])
+  }
 
   @Test
   fun EditRequestedLessonIsProperlyDisplayed() {
@@ -175,13 +175,13 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
     composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
 
-      // Select location
-      composeTestRule.onNodeWithTag("mapButton").performClick()
-      composeTestRule.onNodeWithTag("map").performClick()
-      Thread.sleep(2000) // Wait for the map to load
-      val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-      device.click(device.displayWidth / 2, device.displayHeight / 2)
-      composeTestRule.onNodeWithTag("confirmLocation").performClick()
+    // Select location
+    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("map").performClick()
+    Thread.sleep(2000) // Wait for the map to load
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.click(device.displayWidth / 2, device.displayHeight / 2)
+    composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
