@@ -57,7 +57,6 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
    */
   fun getNewUid(): String {
     return repository.getNewUid()
-    return repository.getNewUid()
   }
 
   /**
