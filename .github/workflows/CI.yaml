@@ -151,9 +151,9 @@ jobs:
         run: |
           jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release-unsigned.apk
 
-      - name: Align APK (Optional)
-        run: |
-          zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
+      # - name: Align APK (Optional)
+      #  run: |
+      #    zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
