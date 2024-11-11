@@ -139,21 +139,9 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease --parallel --build-cache
 
-      # - name: Sign APK
-      #   env:
-      #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-      #    KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      #     KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      #   run: |
-      #     jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore pocketTutor-release-key.jks -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD -signedjar app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/app-release-unsigned.apk $KEY_ALIAS
-
       - name: Verify APK
         run: |
           jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release.apk
-
-      # - name: Align APK (Optional)
-      #  run: |
-      #    zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
