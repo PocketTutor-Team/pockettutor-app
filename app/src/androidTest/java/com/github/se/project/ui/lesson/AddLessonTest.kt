@@ -9,7 +9,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
-import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -48,18 +47,21 @@ class AddLessonTest {
       mock(ListProfilesViewModel::class.java).apply {
         `when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(profile))
       }
-    private val mockLessonRepository = mock(LessonRepository::class.java)
+  private val mockLessonRepository = mock(LessonRepository::class.java)
 
-    private val mockLessons = LessonViewModel(mockLessonRepository)
+  private val mockLessons = LessonViewModel(mockLessonRepository)
 
-    @Before
-    fun setUp() {
-        whenever(mockLessonRepository.getNewUid()).thenReturn("mockUid")
-        whenever(mockLessonRepository.addLesson(org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenAnswer { invocation ->
-            val onSuccess = invocation.arguments[1] as () -> Unit
-            onSuccess() // Simulate a successful update
+  @Before
+  fun setUp() {
+    whenever(mockLessonRepository.getNewUid()).thenReturn("mockUid")
+    whenever(
+            mockLessonRepository.addLesson(
+                org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+        .thenAnswer { invocation ->
+          val onSuccess = invocation.arguments[1] as () -> Unit
+          onSuccess() // Simulate a successful update
         }
-    }
+  }
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
@@ -116,35 +118,35 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
 
     // Select Date and Time
-      composeTestRule.onNodeWithTag("DateButton").performClick()
-      onView(withText("OK")).perform(click())
-      composeTestRule.onNodeWithTag("TimeButton").performClick()
-      onView(withText("OK")).perform(click())
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    onView(withText("OK")).perform(click())
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    onView(withText("OK")).perform(click())
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-      composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
-      // Select location
-      composeTestRule.onNodeWithTag("mapButton").performClick()
-      composeTestRule.onNodeWithTag("map").performClick()
-      Thread.sleep(2000) // Wait for the map to load
-      val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-      device.click(device.displayWidth / 2, device.displayHeight / 2)
-      composeTestRule.onNodeWithTag("confirmLocation").performClick()
+    // Select location
+    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("map").performClick()
+    Thread.sleep(2000) // Wait for the map to load
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    device.click(device.displayWidth / 2, device.displayHeight / 2)
+    composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
-    @Test
-    fun goBack(){
-        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
-        composeTestRule.onNodeWithTag("backButton").performClick()
-        verify(navigationActions).navigateTo(anyString())
-    }
+  @Test
+  fun goBack() {
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.onNodeWithTag("backButton").performClick()
+    verify(navigationActions).navigateTo(anyString())
+  }
 
   @Test
   fun testInitialState() {
