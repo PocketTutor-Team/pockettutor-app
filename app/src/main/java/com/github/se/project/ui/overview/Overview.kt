@@ -61,8 +61,8 @@ fun HomeScreen(
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
       } else if (lesson.status == LessonStatus.CONFIRMED) {
-        // lessonViewModel.selectLesson(lesson)
-        // TODO: navigationActions.navigateTo(Screen : LessonInfo )
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     } else {
       if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
