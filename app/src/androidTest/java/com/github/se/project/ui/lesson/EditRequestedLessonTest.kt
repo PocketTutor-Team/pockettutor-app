@@ -3,6 +3,9 @@ package com.github.se.project.ui.lesson
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -146,7 +149,7 @@ class EditRequestedLessonTest {
       EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions, never()).navigateTo(anyString())
+    verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
@@ -163,12 +166,15 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithTag("DateButton").performClick()
     // Assuming DatePickerDialog is shown, set selectedDate manually for test (mock behavior if
     // possible)
+
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
+    onView(withText("OK")).perform(click())
 
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     // Assuming TimePickerDialog is shown, set selectedTime manually for test (mock behavior if
     // possible)
     composeTestRule.onNodeWithText("10:00").assertExists()
+    onView(withText("OK")).perform(click())
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
