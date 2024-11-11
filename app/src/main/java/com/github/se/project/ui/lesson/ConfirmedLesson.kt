@@ -23,10 +23,12 @@ fun ConfirmedLessonScreen(
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions
+    isStudent: Boolean
 ) {
 
   val lesson = lessonViewModel.selectedLesson.collectAsState().value!!
-  val tutorProfile = listProfilesViewModel.getProfileById(lesson.tutorUid)!!
+  val tutorProfile = listProfilesViewModel.getProfileById(lesson.tutorUid[0])!!
+    val studenProfile = listProfilesViewModel.getProfileById(lesson.studentUid)!!
 
   Scaffold(
       topBar = {
@@ -47,12 +49,19 @@ fun ConfirmedLessonScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp).padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
-              // Use DisplayLessonDetails to show lesson and tutor details
-              DisplayLessonDetails(
-                  lesson = lesson, studentProfile = tutorProfile // Passing the tutor's profile
-                  )
-              LessonLocationDisplay(lesson.latitude, lesson.longitude, lesson.title)
+            // Use DisplayLessonDetails to show lesson and tutor details
+
+            if (isStudent) {
+                DisplayLessonDetails(
+                    lesson = lesson, studentProfile = tutorProfile // Passing the tutor's profile
+                )
+            }   else {
+                DisplayLessonDetails(
+                    lesson = lesson, studentProfile = studenProfile // Passing the tutor's profile
+                )
             }
+            LessonLocationDisplay(lesson.latitude, lesson.longitude, lesson.title)
+        }
       },
       bottomBar = {
         Button(

@@ -139,7 +139,7 @@ fun PocketTutorApp(
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CONFIRMED_LESSON) {
-        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions, )
       }
     }
 
