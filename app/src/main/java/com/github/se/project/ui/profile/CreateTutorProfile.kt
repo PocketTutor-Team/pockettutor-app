@@ -36,6 +36,7 @@ fun CreateTutorProfile(
   val selectedSubjects = remember { mutableStateListOf<Subject>() }
   val sliderValue = remember { mutableFloatStateOf(5f) }
   val showError = remember { mutableStateOf(false) }
+  var description by remember { mutableStateOf("") }
 
   val context = LocalContext.current
 
@@ -88,6 +89,18 @@ fun CreateTutorProfile(
                   modifier = Modifier.testTag("priceText"))
               PriceSlider(sliderValue)
             }
+
+        // Description text field
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("experienceField"),
+            label = {
+              Text(
+                  "Share your previous tutoring experience, or if you don't have any, explain why you would be a great tutor.")
+            },
+            shape = MaterialTheme.shapes.medium,
+            maxLines = 4)
       },
       bottomBar = {
         // Confirmation Button with Validation
@@ -110,7 +123,8 @@ fun CreateTutorProfile(
                     profile.copy(
                         languages = selectedLanguages.toList(),
                         subjects = selectedSubjects.toList(),
-                        price = sliderValue.floatValue.toInt())
+                        price = sliderValue.floatValue.toInt(),
+                        description = description)
 
                 listProfilesViewModel.updateProfile(updatedProfile)
                 listProfilesViewModel.setCurrentProfile(updatedProfile)
