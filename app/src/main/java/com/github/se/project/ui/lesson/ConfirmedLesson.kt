@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
@@ -22,13 +23,13 @@ fun ConfirmedLessonScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
-    navigationActions: NavigationActions,
-    isStudent: Boolean
+    navigationActions: NavigationActions
 ) {
 
   val lesson = lessonViewModel.selectedLesson.collectAsState().value!!
   val tutorProfile = listProfilesViewModel.getProfileById(lesson.tutorUid[0])!!
-  val studenProfile = listProfilesViewModel.getProfileById(lesson.studentUid)!!
+  val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)!!
+  val isStudent = listProfilesViewModel.currentProfile.collectAsState().value!!.role == Role.STUDENT
 
   Scaffold(
       topBar = {
@@ -57,7 +58,7 @@ fun ConfirmedLessonScreen(
                     )
               } else {
                 DisplayLessonDetails(
-                    lesson = lesson, studentProfile = studenProfile // Passing the tutor's profile
+                    lesson = lesson, studentProfile = studentProfile // Passing the tutor's profile
                     )
               }
               LessonLocationDisplay(lesson.latitude, lesson.longitude, lesson.title)

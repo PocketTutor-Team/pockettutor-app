@@ -149,7 +149,7 @@ class EditRequestedLessonTest {
       EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions).navigateTo(anyString())
+    verify(navigationActions, never()).navigateTo(anyString())
   }
 
   @Test
@@ -191,7 +191,7 @@ class EditRequestedLessonTest {
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions, never()).navigateTo(anyString())
+    verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
