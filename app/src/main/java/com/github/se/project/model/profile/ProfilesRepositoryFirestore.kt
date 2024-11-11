@@ -103,7 +103,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val role = Role.valueOf(document.getString("role") ?: return null)
       val section = Section.valueOf(document.getString("section") ?: return null)
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
-      val description = document.getString("description") ?: return null
+      val description = document.getString("description") ?: ""
 
       val languages =
           document.get("languages")?.let { languagesList ->
