@@ -71,7 +71,7 @@ class AddLessonTest {
   @Test
   fun sliderTest() {
     var changed = false
-    composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
+    composeTestRule.setContent { PriceRangeSlider("testLabel", { _, _ -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
   }
@@ -138,6 +138,13 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
+
+    @Test
+    fun goBack(){
+        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+        composeTestRule.onNodeWithTag("backButton").performClick()
+        verify(navigationActions).navigateTo(anyString())
+    }
 
   @Test
   fun testInitialState() {
