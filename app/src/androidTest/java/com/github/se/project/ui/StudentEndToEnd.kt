@@ -1,6 +1,7 @@
 package com.github.se.project.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -121,6 +123,8 @@ class EndToEndTest {
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
   fun endToEndStudentTest() {
+      val spyProfileViewModel = spy(mockProfileViewModel)
+
     // Start the app in test mode
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
@@ -129,7 +133,6 @@ class EndToEndTest {
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
-      verify(navigationActions).navigateTo(Screen.CREATE_PROFILE)
 
     // Enter valid data for all fields
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
@@ -145,6 +148,7 @@ class EndToEndTest {
 
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
+      verify(mockProfileRepository).addProfile(any(), any(), any())
 
     // Go to the profile viewing screen
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
@@ -157,12 +161,14 @@ class EndToEndTest {
     // Go to the edit profile screen
     composeTestRule.onNodeWithTag("editProfileButton").performClick()
 
+
     // Change the profile info
     composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
     composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA5").performClick()
     composeTestRule.onNodeWithTag("sectionDropdown").performClick()
     composeTestRule.onNodeWithTag("sectionDropdownItem-MA").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
+      verify(mockProfileRepository).updateProfile(any(), any(), any())
 
     // Check if the profile info updated correctly
     composeTestRule.onNodeWithText("Status: BA5 Student").assertIsDisplayed()
@@ -195,6 +201,11 @@ class EndToEndTest {
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
+      assert(currentLesson!!.title == "End-to-end testing")
+      assert(currentLesson!!.description == "Teach me how to write tests pls")
+      assert(currentLesson!!.subject == Subject.AICC)
+      assert(currentLesson!!.languages == listOf(Language.ENGLISH))
+      assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
 
     // Navigate to lesson editing screen
     composeTestRule.onNodeWithText("End-to-end testing").assertIsDisplayed()
@@ -205,6 +216,8 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("titleField").performTextClearance()
     composeTestRule.onNodeWithTag("titleField").performTextInput("NVM got it :)")
     composeTestRule.onNodeWithTag("confirmButton").performClick()
+      verify(mockLessonRepository).updateLesson(any(), any(), any())
+      assert(currentLesson!!.title == "NVM got it :)")
 
     // Check if the lesson was updated correctly
     composeTestRule.onNodeWithText("NVM got it :)").assertIsDisplayed()
@@ -212,6 +225,8 @@ class EndToEndTest {
     // Delete the lesson
     composeTestRule.onNodeWithText("NVM got it :)").performClick()
     composeTestRule.onNodeWithTag("deleteButton").performClick()
+      verify(mockLessonRepository).deleteLesson(any(), any(), any())
+      assert(currentLesson == null)
 
     // Check if the lesson was deleted correctly
     composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
@@ -238,40 +253,50 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
+      // Here we could assert all the fields again, but it has already been done above
+
     // Do not select any tutors
     composeTestRule.onNodeWithTag("confirmButton").performClick()
+      verify(mockLessonRepository).updateLesson(any(), any(), any())
+      assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
 
     // check if the lesson is displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
 
-    // Simulate a lesson being created, then accepted by the tutor
-    currentLesson =
-        Lesson(
-            "mockUid",
-            "Ozymandias is helping :)",
-            "Teach me how to write tests pls",
-            Subject.AICC,
-            listOf(Language.ENGLISH),
-            listOf("mockTutor"),
-            "mockUid",
-            0.0,
-            0.0,
-            5.0,
-            "30/10/2024T10:00:00",
-            LessonStatus.CONFIRMED,
-            0.0,
-            0.0)
+      // Simulate the open lesson being taken up by a tutor
+      currentLesson =
+          Lesson(
+              "mockUid",
+              "Help how do I write tests",
+              "Teach me how to write tests pls",
+              Subject.AICC,
+              listOf(Language.ENGLISH),
+              listOf("mockTutor"),
+              "",
+              0.0,
+              0.0,
+              30.0,
+              "30/10/2024T10:00:00",
+              LessonStatus.STUDENT_REQUESTED,
+              0.0,
+              0.0)
 
-    // Reload the home screen and check if the lesson is displayed
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
-    composeTestRule.onNodeWithTag("closeButton").performClick()
-    composeTestRule.onNodeWithText("Ozymandias is helping :)").assertIsDisplayed()
+      // Reload the home screen and accept the lesson
+      composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+      composeTestRule.onNodeWithTag("closeButton").performClick()
+      composeTestRule.onNodeWithText("Help how do I write tests").performClick()
+      composeTestRule.onNodeWithTag("tutorCard_0").performClick()
+      composeTestRule.onNodeWithText("Confirm").performClick()
+
+      // Check if the lesson is updated and displayed
+      composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+      assert(currentLesson!!.status == LessonStatus.CONFIRMED)
 
     // Simulate the lesson being completed
     currentLesson =
         Lesson(
             "mockUid",
-            "Ozymandias is the goat :)",
+            "Help how do I write tests",
             "Teach me how to write tests pls",
             Subject.AICC,
             listOf(Language.ENGLISH),
@@ -287,33 +312,6 @@ class EndToEndTest {
 
     // Go to the profile info screen and check it is displayed
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
-    composeTestRule.onNodeWithText("Ozymandias is the goat :)").assertIsDisplayed()
-
-    // Simulate a lesson being tutor requested
-    currentLesson =
-        Lesson(
-            "mockUid",
-            "Ozymandias needs money",
-            "Teach me how to write tests pls",
-            Subject.AICC,
-            listOf(Language.ENGLISH),
-            listOf("mockTutor"),
-            "",
-            0.0,
-            0.0,
-            30.0,
-            "30/10/2024T10:00:00",
-            LessonStatus.STUDENT_REQUESTED,
-            0.0,
-            0.0)
-
-    // Reload the home screen and accept the lesson
-    composeTestRule.onNodeWithTag("closeButton").performClick()
-    composeTestRule.onNodeWithText("Ozymandias needs money").performClick()
-    composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    composeTestRule.onNodeWithText("Confirm").performClick()
-
-    // Check if the lesson is displayed
-    composeTestRule.onNodeWithText("Ozymandias needs money").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
   }
 }

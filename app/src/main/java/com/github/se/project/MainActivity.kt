@@ -103,11 +103,6 @@ fun PocketTutorApp(
               })
         }
       }
-      // For debugging purposes (when sign-in error)
-      // composable(Screen.AUTH) {
-      //   googleUid = "1234"
-      //   CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
-      // }
 
       composable(Screen.HOME) {
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -176,15 +171,6 @@ fun PocketTutorApp(
       composable(Screen.TUTOR_MATCH) {
         TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
-      //      composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions,
-      // listProfilesViewModel) }
-      //      composable(Screen.EDIT_SCHEDULE) {
-      //        EditTutorSchedule(navigationActions, listProfilesViewModel)
-      //      }
-      //      composable(Screen.EDIT_REQUESTED_LESSON) {
-      //        EditRequestedLessonScreen(
-      //          navigationActions, listProfilesViewModel, lessonViewModel)
-      //      }
     }
   }
 }
