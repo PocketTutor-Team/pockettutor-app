@@ -194,7 +194,6 @@ class EndToEndTest {
 
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    //Thread.sleep(3000)
     composeTestRule.onNodeWithText("Confirm").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
@@ -202,7 +201,6 @@ class EndToEndTest {
     assert(currentLesson!!.subject == Subject.AICC)
     assert(currentLesson!!.languages == listOf(Language.ENGLISH))
     assert(currentLesson!!.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
-    Thread.sleep(3000)
 
     // Navigate to the lesson creation screen
     composeTestRule.onNodeWithText("Find a Tutor").performClick()
@@ -231,7 +229,6 @@ class EndToEndTest {
     // Do not select any tutors
     composeTestRule.onNodeWithTag("noTutorButton").performClick()
     assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
-    Thread.sleep(3000)
 
     // check if the lesson is displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
