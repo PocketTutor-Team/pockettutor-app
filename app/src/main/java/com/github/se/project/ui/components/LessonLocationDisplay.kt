@@ -35,7 +35,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
- * A component that displays a Google Map showing the lesson location and user's location
+ * A component that displays a map showing the lesson's location and the user's location
  *
  * @param latitude The latitude coordinate of the lesson location
  * @param longitude The longitude coordinate of the lesson location

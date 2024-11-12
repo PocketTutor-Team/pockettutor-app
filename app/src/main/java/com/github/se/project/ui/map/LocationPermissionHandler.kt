@@ -54,7 +54,8 @@ fun fetchUserLocation(context: android.content.Context, onLocationReceived: (Lat
           if (location != null) {
             onLocationReceived(LatLng(location.latitude, location.longitude))
           } else {
-            Toast.makeText(context, "Location not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Location of your phone is not activated", Toast.LENGTH_SHORT)
+                .show()
             onLocationReceived(null)
           }
         }
@@ -63,8 +64,7 @@ fun fetchUserLocation(context: android.content.Context, onLocationReceived: (Lat
           onLocationReceived(null)
         }
   } else {
-    Toast.makeText(context, "Location permission was not granted by the user", Toast.LENGTH_SHORT)
-        .show()
+    Toast.makeText(context, "Location permission was not granted", Toast.LENGTH_SHORT).show()
     onLocationReceived(null)
   }
 }
