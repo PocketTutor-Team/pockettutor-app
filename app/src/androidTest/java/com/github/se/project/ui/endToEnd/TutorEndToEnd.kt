@@ -39,7 +39,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
-class EndToEndTest {
+class TutorEndToEndTest {
 
   @Mock lateinit var navigationActions: NavigationActions
 
@@ -129,11 +129,11 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-      //Thread.sleep(50000)
-      composeTestRule.waitUntil(timeoutMillis = 5000) {
-          composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
-          true
-      }
+    // Thread.sleep(50000)
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
+      true
+    }
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
