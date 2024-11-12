@@ -129,7 +129,6 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(70000)
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -242,7 +241,5 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("section_Upcoming Lessons").assertExists()
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
     composeTestRule.onNodeWithText("Student: Ozymandias Halifax").assertIsDisplayed()
-
-    Thread.sleep(5000)
   }
 }
