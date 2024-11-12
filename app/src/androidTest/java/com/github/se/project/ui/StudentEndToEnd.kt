@@ -125,7 +125,7 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    //Thread.sleep(50000)
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -194,7 +194,7 @@ class EndToEndTest {
 
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    Thread.sleep(3000)
+    //Thread.sleep(3000)
     composeTestRule.onNodeWithText("Confirm").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
@@ -238,7 +238,6 @@ class EndToEndTest {
 
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
-    Thread.sleep(1000)
 
     // Edit the lesson
     composeTestRule.onNodeWithTag("titleField").performClick()
