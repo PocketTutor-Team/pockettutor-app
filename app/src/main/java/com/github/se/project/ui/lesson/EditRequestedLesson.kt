@@ -19,7 +19,6 @@ fun EditRequestedLessonScreen(
 ) {
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
-  val selectedLocation by lessonViewModel.selectedLocation.collectAsState()
 
   val currentLesson =
       lessonViewModel.selectedLesson.collectAsState().value
