@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.swipeRight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -87,6 +88,9 @@ class TutorEndToEndTest {
           List(7) { List(12) { 0 } })
 
   @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @Before
   fun setUp() {
@@ -129,7 +133,7 @@ class TutorEndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    // Thread.sleep(50000)
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -183,6 +187,7 @@ class TutorEndToEndTest {
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").performClick()
+    Thread.sleep(5000)
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertExists()
     composeTestRule.onNodeWithText("Ozymandias Halifax").assertExists()
     composeTestRule.onNodeWithText("Offer to Teach (50.-/hour)").assertExists()
