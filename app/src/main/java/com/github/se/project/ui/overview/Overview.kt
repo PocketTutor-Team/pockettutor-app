@@ -7,8 +7,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +29,8 @@ import com.github.se.project.model.lesson.*
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,16 +67,16 @@ fun HomeScreen(
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
       } else if (lesson.status == LessonStatus.CONFIRMED) {
-        // lessonViewModel.selectLesson(lesson)
-        // TODO: navigationActions.navigateTo(Screen : LessonInfo )
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     } else {
       if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-      } else { // State STUDENT_REQUESTED or CONFIRMED
-        // lessonViewModel.selectLesson(lesson)
-        // TODO : navigationActions.navigateTo(Screen : LessonInfo )
+      } else if (lesson.status == LessonStatus.CONFIRMED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     }
   }
@@ -111,7 +117,8 @@ fun HomeScreen(
                 lessons = lessons,
                 onClick = onLessonClick,
                 paddingValues = paddingValues,
-                listProfilesViewModel = listProfileViewModel)
+                listProfilesViewModel = listProfileViewModel,
+                lessonViewModel = lessonViewModel)
           } else {
             EmptyLessonsState(paddingValues)
           }
@@ -119,21 +126,40 @@ fun HomeScreen(
       }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun LessonsContent(
     profile: Profile,
     lessons: List<Lesson>,
     onClick: (Lesson) -> Unit,
     paddingValues: PaddingValues,
-    listProfilesViewModel: ListProfilesViewModel
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
 ) {
+  var refreshing by remember { mutableStateOf(false) }
+  val refreshScope = rememberCoroutineScope()
+
+  fun refresh() =
+      refreshScope.launch {
+        refreshing = true
+        when (profile.role) {
+          Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+          Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+          else -> {}
+        }
+        delay(1000)
+        refreshing = false
+      }
+
+  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+
   Column(
       modifier =
           Modifier.fillMaxSize()
               .padding(paddingValues)
               .padding(horizontal = 16.dp)
               .testTag("lessonsColumn")) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
+        Box(modifier = Modifier.fillMaxSize().weight(1f).pullRefresh(pullRefreshState)) {
           Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             if (profile.role == Role.TUTOR) {
               TutorSections(lessons, onClick, listProfilesViewModel)
@@ -141,6 +167,13 @@ private fun LessonsContent(
               StudentSections(lessons, onClick, listProfilesViewModel)
             }
           }
+
+          PullRefreshIndicator(
+              refreshing = refreshing,
+              state = pullRefreshState,
+              modifier = Modifier.align(Alignment.TopCenter),
+              backgroundColor = MaterialTheme.colorScheme.surface,
+              contentColor = MaterialTheme.colorScheme.primary)
         }
       }
 }
