@@ -187,7 +187,7 @@ private fun TutorSections(
   val sections =
       listOf(
           SectionInfo(
-              "Waiting for your confirmation",
+              "Waiting for your Confirmation",
               LessonStatus.PENDING_TUTOR_CONFIRMATION,
               Icons.Default.Notifications),
           SectionInfo(
