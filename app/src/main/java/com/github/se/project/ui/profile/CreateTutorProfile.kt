@@ -88,19 +88,21 @@ fun CreateTutorProfile(
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("priceText"))
               PriceSlider(sliderValue)
-            }
 
-        // Description text field
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("experienceField"),
-            label = {
-              Text(
-                  "Share your previous tutoring experience, or if you don't have any, explain why you would be a great tutor.")
-            },
-            shape = MaterialTheme.shapes.medium,
-            maxLines = 4)
+              // Description text field
+              OutlinedTextField(
+                  value = description,
+                  onValueChange = { description = it },
+                  modifier =
+                      Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("experienceField"),
+                  label = { Text("Do you have any experience as a tutor ?") },
+                  placeholder = {
+                    Text(
+                        "Share your previous tutoring experience, or if you don't have any, explain why you would be a great tutor.")
+                  },
+                  shape = MaterialTheme.shapes.medium,
+                  maxLines = 4)
+            }
       },
       bottomBar = {
         // Confirmation Button with Validation
