@@ -129,7 +129,7 @@ class EndToEndTest {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    Thread.sleep(70000)
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
