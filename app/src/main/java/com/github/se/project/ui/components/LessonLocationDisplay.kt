@@ -173,6 +173,6 @@ fun adjustZoomBasedOnDistance(distance: Float): Float {
     distance < 20000 -> 8f // If the distance is between 10km-20km, zoom out further
     distance < 50000 -> 7f // If the distance is between 20km-50km, zoom out even further
     distance < 100000 -> 6f // If the distance is between 50km-100km, zoom out even further
-    else -> 5f // If the distance is more than 100km, zoom out further
+    else -> 0.1f // If the distance is more than 100km, zoom out the most possible
   }
 }

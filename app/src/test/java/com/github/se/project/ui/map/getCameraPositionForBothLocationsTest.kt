@@ -9,7 +9,7 @@ import org.junit.Test
 class CameraUtilsTest {
 
     // Helper locations for testing
-    private val lessonLocation = LatLng(40.748817, -73.985428) // Example: NYC
+    private val lessonLocation = LatLng(40.748817, -73.985428)
     private val nearbyUserLocation = LatLng(40.748817, -73.985500) // Nearby location
     private val distantUserLocation = LatLng(34.052235, -118.243683) // Distant location, LA
 
