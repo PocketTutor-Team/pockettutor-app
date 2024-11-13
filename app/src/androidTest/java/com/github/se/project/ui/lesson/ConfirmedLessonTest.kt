@@ -1,5 +1,6 @@
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.MutableLiveData
@@ -37,8 +38,8 @@ public class ConfirmedLessonTest {
     // Mock dependencies
     val mockProfilesRepository = mock(ProfilesRepository::class.java)
     val mockNavigationActions = mock(NavigationActions::class.java)
-    val mockLessonViewModel = LessonViewModel(mockLessonRepository)
-    val mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
+    var mockLessonViewModel = LessonViewModel(mockLessonRepository)
+    private lateinit var mockListProfilesViewModel: ListProfilesViewModel
 
 
     private val mockStudentProfile = Profile(
@@ -54,6 +55,8 @@ public class ConfirmedLessonTest {
         price = 50
     )
 
+    private val mockProfileFlow = MutableStateFlow<Profile?>(mockStudentProfile)
+
     private val mockLesson = Lesson(
         id = "lesson1",
         title = "Math Lesson",
@@ -68,12 +71,19 @@ public class ConfirmedLessonTest {
     @Before
     fun setUp() {
 
+        // Initialize the ViewModel with a spy
+        mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
+        mockListProfilesViewModel = spy(mockListProfilesViewModel)
 
-        // Mocking the getProfiles function to return a successful result
-        whenever(mockProfilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
-            val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
-            onSuccess(listOf(mockStudentProfile))
-        }
+
+        // Stub the init and getProfiles method in the repository to simulate success
+        doNothing().`when`(mockProfilesRepository).init(org.mockito.kotlin.any())
+        doNothing().`when`(mockProfilesRepository).getProfiles(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
+        mockListProfilesViewModel.setCurrentProfile(mockStudentProfile)
+        Log.e("LeProfileBG", "${mockListProfilesViewModel.currentProfile}")
     }
 
     @Test
