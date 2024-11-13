@@ -71,6 +71,9 @@ fun LessonEditor(
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
   val selectedLanguages = remember { mutableStateListOf<Language>() }
+  val tutorUid = remember {
+    mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
+  }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -167,7 +170,7 @@ fun LessonEditor(
               description,
               selectedSubject.value,
               selectedLanguages.toList(),
-              listOf(),
+              tutorUid,
               profile.uid,
               minPrice,
               maxPrice,
@@ -234,7 +237,7 @@ fun LessonEditor(
                   style = MaterialTheme.typography.headlineMedium,
                   textAlign = TextAlign.Center)
 
-              IconButton(onClick = onBack) {
+              IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
             }
@@ -309,7 +312,7 @@ fun LessonEditor(
 
               Button(
                   onClick = { showMapDialog = true },
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.testTag("mapButton").fillMaxWidth(),
                   colors =
                       ButtonDefaults.buttonColors(
                           containerColor = MaterialTheme.colorScheme.secondaryContainer,

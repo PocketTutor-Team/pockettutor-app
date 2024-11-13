@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.CameraPosition
@@ -76,15 +75,14 @@ fun LessonLocationDisplay(
 
   if (isLocationChecked) {
     Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text(text = "Lesson Location", style = MaterialTheme.typography.titleMedium,
-          modifier = Modifier.testTag("LessonLocationText"))
+      Text(text = "Lesson Location", style = MaterialTheme.typography.titleMedium)
 
       Card(
-          modifier = Modifier.fillMaxWidth().testTag("LessonLocationCard"),
+          modifier = Modifier.fillMaxWidth(),
           elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-            Box(modifier = Modifier.fillMaxWidth().height(200.dp).testTag("MapBox") ) {
+            Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
               GoogleMap(
-                  modifier = Modifier.fillMaxSize().testTag("GoogleMap"),
+                  modifier = Modifier.fillMaxSize(),
                   cameraPositionState = cameraPositionState,
                   properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
                   uiSettings =

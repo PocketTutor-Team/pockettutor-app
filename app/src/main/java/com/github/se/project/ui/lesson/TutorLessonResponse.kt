@@ -162,7 +162,8 @@ fun TutorLessonResponseScreen(
                                 .show()
                             navigationActions.navigateTo(Screen.HOME)
                           })
-                    }) {
+                    },
+                    modifier = Modifier.testTag("confirmLessonButton")) {
                       Text("Confirm")
                     }
               },

@@ -58,12 +58,12 @@ fun TutorMatchingScreen(
       lessonViewModel.selectedLesson.collectAsState().value
           ?: return Text("No lesson selected. Should not happen.")
 
-  val allTutorProfiles by
-      listProfilesViewModel.profiles
-          .filter { profiles: List<Profile> ->
-            profiles.any { profile -> profile.role == Role.TUTOR }
-          }
-          .collectAsState(listOf())
+  val tutorProfilesFlow = remember {
+    listProfilesViewModel.profiles.filter { profiles: List<Profile> ->
+      profiles.any { profile -> profile.role == Role.TUTOR }
+    }
+  }
+  val allTutorProfiles by tutorProfilesFlow.collectAsState(listOf())
 
   val filteredTutor =
       if (currentLesson.status == LessonStatus.MATCHING) {
@@ -124,7 +124,7 @@ fun TutorMatchingScreen(
       bottomBar = {
         if (currentLesson.status == LessonStatus.MATCHING) {
           Button(
-              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
+              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("noTutorButton"),
               onClick = {
                 lessonViewModel.addLesson(
                     currentLesson.copy(status = LessonStatus.STUDENT_REQUESTED),
@@ -137,7 +137,7 @@ fun TutorMatchingScreen(
               }) {
                 Text(
                     "Ask other tutor for your lesson",
-                    modifier = Modifier.testTag("confirmButtonText"))
+                    modifier = Modifier.testTag("noTutorButtonText"))
               }
         }
       }) { innerPadding ->
@@ -194,6 +194,7 @@ fun TutorMatchingScreen(
                             navigationActions.navigateTo(Screen.HOME)
                           })
                     }) {
+                      Modifier.testTag("confirmButton")
                       Text("Confirm")
                     }
               },
