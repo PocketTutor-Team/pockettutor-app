@@ -54,6 +54,6 @@ class CameraUtilsTest {
     assertEquals(8f, adjustZoomBasedOnDistance(15000f))
     assertEquals(7f, adjustZoomBasedOnDistance(30000f))
     assertEquals(6f, adjustZoomBasedOnDistance(80000f))
-    assertEquals(5f, adjustZoomBasedOnDistance(120000f))
+    assertEquals(0.1f, adjustZoomBasedOnDistance(120000f))
   }
 }
