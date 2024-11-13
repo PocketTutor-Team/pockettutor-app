@@ -164,14 +164,19 @@ fun TutorLessonResponseScreen(
         // Confirmation Dialog
         if (showConfirmDialog) {
           AlertDialog(
+              modifier = Modifier.testTag("confirmDialog"),
               onDismissRequest = { showConfirmDialog = false },
-              title = { Text("Confirm Your Offer") },
+              title = {
+                Text(text = "Confirm Your Offer", modifier = Modifier.testTag("confirmDialogTitle"))
+              },
               text = {
                 Text(
-                    "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?")
+                    "Would you like to offer to teach this lesson at your standard rate of ${currentProfile.price}.-/hour?",
+                    modifier = Modifier.testTag("confirmDialogText"))
               },
               confirmButton = {
                 Button(
+                    modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
@@ -194,18 +199,30 @@ fun TutorLessonResponseScreen(
                     }
               },
               dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+                TextButton(
+                    modifier = Modifier.testTag("confirmDialogCancelButton"),
+                    onClick = { showConfirmDialog = false }) {
+                      Text("Cancel")
+                    }
               })
         }
 
         // Decline Dialog
         if (showDeclineDialog) {
           AlertDialog(
+              modifier = Modifier.testTag("declineDialog"),
               onDismissRequest = { showDeclineDialog = false },
-              title = { Text("Dismiss the Lesson") },
-              text = { Text("Are you sure you want to dismiss this lesson?") },
+              title = {
+                Text(text = "Dismiss the Lesson", modifier = Modifier.testTag("declineDialogTitle"))
+              },
+              text = {
+                Text(
+                    text = "Are you sure you want to dismiss this lesson?",
+                    modifier = Modifier.testTag("declineDialogText"))
+              },
               confirmButton = {
                 Button(
+                    modifier = Modifier.testTag("declineDialogConfirmButton"),
                     onClick = {
                       lessonViewModel.updateLesson(
                           lesson.copy(
@@ -224,7 +241,11 @@ fun TutorLessonResponseScreen(
                     }
               },
               dismissButton = {
-                TextButton(onClick = { showDeclineDialog = false }) { Text("Cancel") }
+                TextButton(
+                    modifier = Modifier.testTag("declineDialogCancelButton"),
+                    onClick = { showDeclineDialog = false }) {
+                      Text("Cancel")
+                    }
               })
         }
       }
@@ -233,18 +254,19 @@ fun TutorLessonResponseScreen(
 @Composable
 private fun ErrorState(message: String) {
   Column(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("errorStateColumn"),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center) {
         Icon(
             Icons.Default.Close,
             contentDescription = null,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(48.dp).testTag("errorIcon"),
             tint = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error)
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.testTag("errorMessage"))
       }
 }
