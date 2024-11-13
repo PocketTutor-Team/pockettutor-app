@@ -30,8 +30,6 @@ class MapPickerBoxTest {
             )
         }
 
-        // Check if the map container is displayed
-        //composeTestRule.onNodeWithTag("mapContainer").assertIsDisplayed()
 
         // Check if the map itself is displayed
         composeTestRule.onNodeWithTag("googleMap").assertIsDisplayed()
