@@ -15,7 +15,6 @@ import com.google.maps.android.compose.*
 @Composable
 fun MapPickerBox(
     initialLocation: Pair<Double, Double>,
-    lessonTitle: String,
     onLocationSelected: (Pair<Double, Double>) -> Unit
 ) {
   val EPFLCoordinates = LatLng(46.520374, 6.568339)
@@ -40,11 +39,11 @@ fun MapPickerBox(
       verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // Map
         Card(
-            modifier = Modifier.testTag("map").fillMaxWidth().aspectRatio(8f / 9f),
+            modifier = Modifier.testTag("mapContainer") .fillMaxWidth().aspectRatio(8f / 9f),
             shape = MaterialTheme.shapes.large,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
               GoogleMap(
-                  modifier = Modifier.fillMaxSize(),
+                  modifier = Modifier.fillMaxSize().testTag("googleMap"),
                   cameraPositionState = cameraPositionState,
                   onMapClick = { latLng ->
                     selectedPosition = latLng
@@ -64,7 +63,8 @@ fun MapPickerBox(
                 else "Tap anywhere on the map to select a location",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.testTag("helperText"))
 
         // Confirm button
         Button(
