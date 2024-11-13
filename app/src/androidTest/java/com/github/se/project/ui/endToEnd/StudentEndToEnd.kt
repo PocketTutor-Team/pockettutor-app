@@ -186,7 +186,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("map").performClick()
+    composeTestRule.onNodeWithTag("mapContainer").performClick()
     Thread.sleep(2000) // Wait for the map to load
     device.click(device.displayWidth / 2, device.displayHeight / 2)
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
