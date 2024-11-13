@@ -39,7 +39,7 @@ fun MapPickerBox(
       verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // Map
         Card(
-            modifier = Modifier.testTag("mapContainer") .fillMaxWidth().aspectRatio(8f / 9f),
+            modifier = Modifier.testTag("mapContainer").fillMaxWidth().aspectRatio(8f / 9f),
             shape = MaterialTheme.shapes.large,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
               GoogleMap(

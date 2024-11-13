@@ -1,4 +1,4 @@
-package com.github.se.project.ui
+package com.github.se.project.ui.endToEnd
 
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
