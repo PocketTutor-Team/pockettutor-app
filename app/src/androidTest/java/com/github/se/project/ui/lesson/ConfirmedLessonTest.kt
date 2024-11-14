@@ -2,6 +2,7 @@ import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -25,6 +26,9 @@ import org.mockito.kotlin.whenever
 public class ConfirmedLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   val mockLessonRepository = mock(LessonRepository::class.java)
 
