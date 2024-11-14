@@ -211,7 +211,6 @@ fun LessonEditor(
                   Box() {
                     MapPickerBox(
                         initialLocation = selectedLocation,
-                        lessonTitle = title,
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
                           showMapDialog = false

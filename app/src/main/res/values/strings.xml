@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">SampleApp</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="app_name">PocketTutor</string>
+    <string name="title_activity_main">PocketTutor</string>
     <string name="title_activity_second">SecondActivity</string>
     <string name="web_client_id">475882605501-gv47hlfhkd5j459vjv0kc1cj97ensm15.apps.googleusercontent.com</string>
 </resources>
