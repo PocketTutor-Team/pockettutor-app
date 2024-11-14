@@ -149,26 +149,27 @@ class TutorMatchingScreenTest {
     composeTestRule.onNodeWithTag("noTutorMessage").assertIsDisplayed()
   }
 
-    @Test
-    fun everythingIsDisplayed() {
-        composeTestRule.setContent {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
-
-        // Verify the top bar is correctly displayed
-        composeTestRule.onNodeWithTag("topAppBar").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("AvailableTutorsTitle")
-            .assertIsDisplayed()
-            .assertTextEquals("Available Tutors")
-        composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed()
-
-        // Verify the tutor list is displayed
-        composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
-
-        // Verify the bottom bar is displayed
-        composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+  @Test
+  fun everythingIsDisplayed() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+
+    // Verify the top bar is correctly displayed
+    composeTestRule.onNodeWithTag("topAppBar").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("AvailableTutorsTitle")
+        .assertIsDisplayed()
+        .assertTextEquals("Available Tutors")
+    composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed()
+
+    // Verify the tutor list is displayed
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+
+    // Verify the bottom bar is displayed
+    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+  }
 
   @Test
   fun testConfirmButton_whenNoTutorSelected() {
@@ -180,68 +181,73 @@ class TutorMatchingScreenTest {
     verify(navigationActions).navigateTo(Screen.HOME)
   }
 
-    @Test
-    fun selectAndConfirmLessonWithTutor() {
-        composeTestRule.setContent {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
-
-        // Select a tutor
-        composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
-
-        // Check if the dialog is displayed
-        composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("confirmDialogTitle")
-            .assertIsDisplayed().assertTextEquals("Confirm Your Choice")
-        composeTestRule.onNodeWithTag("confirmDialogText")
-            .assertIsDisplayed().assertTextEquals("Would you like to choose this tutor for your lesson and pay a price of 30.-/hour?")
-        composeTestRule.onNodeWithTag("confirmDialogButton").assertIsDisplayed().performClick()
-
-        // Verify the lesson is updated and the user is navigated to the home screen
-        verify(lessonRepository).addLesson(any(), any(), any())
-        verify(navigationActions).navigateTo(Screen.HOME)
+  @Test
+  fun selectAndConfirmLessonWithTutor() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun selectThenDismissLessonWithTutor() {
-        composeTestRule.setContent {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
+    // Select a tutor
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
 
-        // Select a tutor
-        composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
+    // Check if the dialog is displayed
+    composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("confirmDialogTitle")
+        .assertIsDisplayed()
+        .assertTextEquals("Confirm Your Choice")
+    composeTestRule
+        .onNodeWithTag("confirmDialogText")
+        .assertIsDisplayed()
+        .assertTextEquals(
+            "Would you like to choose this tutor for your lesson and pay a price of 30.-/hour?")
+    composeTestRule.onNodeWithTag("confirmDialogButton").assertIsDisplayed().performClick()
 
-        // Check if the dialog is displayed
-        composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("confirmDialogTitle").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("confirmDialogText").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("confirmDialogCancelButton").assertIsDisplayed().performClick()
+    // Verify the lesson is updated and the user is navigated to the home screen
+    verify(lessonRepository).addLesson(any(), any(), any())
+    verify(navigationActions).navigateTo(Screen.HOME)
+  }
 
-        // Verify the lesson is updated and the user is navigated to the home screen
-        composeTestRule.onNodeWithTag("confirmDialog").assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+  @Test
+  fun selectThenDismissLessonWithTutor() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun goBackButton_navigateBack() {
-        composeTestRule.setContent {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
+    // Select a tutor
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
 
-        composeTestRule.onNodeWithTag("backButton").assertIsDisplayed().performClick()
-        verify(navigationActions).goBack()
+    // Check if the dialog is displayed
+    composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmDialogTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmDialogText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmDialogCancelButton").assertIsDisplayed().performClick()
+
+    // Verify the lesson is updated and the user is navigated to the home screen
+    composeTestRule.onNodeWithTag("confirmDialog").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+  }
+
+  @Test
+  fun goBackButton_navigateBack() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun confirmButtonNotDisplayed_whenStatusIsNotMatching() {
-        lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+    composeTestRule.onNodeWithTag("backButton").assertIsDisplayed().performClick()
+    verify(navigationActions).goBack()
+  }
 
-        composeTestRule.setContent {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
+  @Test
+  fun confirmButtonNotDisplayed_whenStatusIsNotMatching() {
+    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
 
-        composeTestRule.onNodeWithTag("confirmButton").assertIsNotDisplayed()
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+
+    composeTestRule.onNodeWithTag("confirmButton").assertIsNotDisplayed()
+  }
 }
