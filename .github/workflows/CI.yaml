@@ -1,4 +1,4 @@
-name: Bootcamp CI - Test Runner
+name: PocketTutor CI - Test Runner
 
 # Run the workflow when commits are pushed on main or when a PR is modified
 on:
@@ -108,10 +108,10 @@ jobs:
           arch: x86_64
           avd-name: github
           force-avd-creation: true
-          emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -skin 1080x1920
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -skin 1080x1920
           disable-animations: true
+          disable-linux-hw-accel: true
           script: ./gradlew connectedCheck --parallel --build-cache
-          idling-resources: true
 
       # This step generates the coverage report which will be used later in the semester for monitoring purposes
       - name: Generate coverage
