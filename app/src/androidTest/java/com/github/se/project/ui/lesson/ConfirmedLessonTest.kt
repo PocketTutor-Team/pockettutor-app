@@ -106,13 +106,13 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly() {
-    Thread.sleep(100)
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     Log.e("hello", "${listProfilesViewModel.profiles.value}")
     Log.e("hello", "${listProfilesViewModel.currentProfile.value}")
