@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - chore/ci-random-error
 
   pull_request:
     types:
