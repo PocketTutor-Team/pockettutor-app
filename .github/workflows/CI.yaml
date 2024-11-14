@@ -101,7 +101,7 @@ jobs:
       - name: Run instrumentation tests
         # This action assumes that Android sdk is already present in the runner. Which is true for the bootcamp, but won't be for your own project.
         # If you want to use this CI for your project, replace the following line with: uses: reactivecircus/android-emulator-runner@v2
-        uses: reactivecircus/android-emulator-runner@v4
+        uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
