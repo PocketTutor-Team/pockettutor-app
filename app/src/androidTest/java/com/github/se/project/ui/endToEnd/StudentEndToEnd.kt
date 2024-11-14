@@ -193,6 +193,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
+    Thread.sleep(5000) // Wait for the tutor matching screen to load
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
     composeTestRule.onNodeWithText("Confirm").performClick()

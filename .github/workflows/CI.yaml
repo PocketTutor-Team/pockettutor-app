@@ -110,7 +110,6 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -skin 1080x1920
           disable-animations: true
-          disable-linux-hw-accel: true
           script: ./gradlew connectedCheck --parallel --build-cache
 
       # This step generates the coverage report which will be used later in the semester for monitoring purposes
