@@ -104,7 +104,7 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
    *
    * @param profile The Profile document to be selected.
    */
-  fun setCurrentProfile(profile: Profile?) {
+  fun setCurrentProfile(profile: Profile) {
     currentProfile_.value = profile
   }
 }
