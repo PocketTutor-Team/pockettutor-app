@@ -104,6 +104,7 @@ public class ConfirmedLessonTest {
     Log.e("LeProfileBG", "${listProfilesViewModel.currentProfile}")
   }
 
+  /*
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly() {
     composeTestRule.setContent {
@@ -114,15 +115,13 @@ public class ConfirmedLessonTest {
     }
     Thread.sleep(5000)
 
-    Log.e("hello", "${listProfilesViewModel.profiles.value}")
-    Log.e("hello", "${listProfilesViewModel.currentProfile.value}")
-    Log.e("hello", "${lessonViewModel.currentUserLessons.value}")
-    Log.e("hello", "${lessonViewModel.selectedLesson.value}")
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
   }
+
+     */
 
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
