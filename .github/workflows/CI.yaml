@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - chore/ci-random-error
 
   pull_request:
     types:
@@ -100,7 +101,7 @@ jobs:
       - name: Run instrumentation tests
         # This action assumes that Android sdk is already present in the runner. Which is true for the bootcamp, but won't be for your own project.
         # If you want to use this CI for your project, replace the following line with: uses: reactivecircus/android-emulator-runner@v2
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v4
         with:
           api-level: 34
           target: google_apis
@@ -110,6 +111,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -skin 1080x1920
           disable-animations: true
           script: ./gradlew connectedCheck --parallel --build-cache
+          idling-resources: true
 
       # This step generates the coverage report which will be used later in the semester for monitoring purposes
       - name: Generate coverage
