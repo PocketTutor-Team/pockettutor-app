@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
+import com.github.se.project.utils.formatDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -49,8 +50,25 @@ fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modi
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
               // Time and date section
-              TimeAndDateSection(lesson.timeSlot)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary)
+                    Text(
+                        text = formatDate(lesson.timeSlot),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.testTag("lessonDate"))
+                }
             }
+        }
       }
 }
 
@@ -132,45 +150,5 @@ private fun LessonInfoSection(lesson: Lesson) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             overflow = TextOverflow.Ellipsis,
             maxLines = 3)
-      }
-}
-
-@Composable
-private fun TimeAndDateSection(timeSlot: String) {
-  val dateTime = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-  val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")
-  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-      verticalAlignment = Alignment.CenterVertically) {
-        // Date
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)) {
-              Icon(
-                  imageVector = Icons.Default.DateRange,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.primary)
-              Text(
-                  text = dateTime.format(dateFormatter),
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.testTag("lessonDate"))
-            }
-
-        // Time
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-              CustomIcon(
-                  imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
-                  contentDescription = "Custom Icon")
-              Text(
-                  text = dateTime.format(timeFormatter),
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.testTag("lessonTime"))
-            }
       }
 }
