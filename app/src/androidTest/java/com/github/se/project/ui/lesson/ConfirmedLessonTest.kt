@@ -129,6 +129,7 @@ public class ConfirmedLessonTest {
           navigationActions = mockNavigationActions)
     }
     composeTestRule.waitForIdle()
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
@@ -142,6 +143,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     // Click on the "Message Tutor/Student" button
     composeTestRule.onNodeWithTag("contactButton").performClick()
@@ -158,6 +160,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithText("No profile found. Should not happen.").assertIsDisplayed()
   }
@@ -173,6 +176,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
   }
