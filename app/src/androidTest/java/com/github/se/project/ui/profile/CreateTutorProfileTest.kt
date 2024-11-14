@@ -2,12 +2,14 @@ package com.github.se.project.ui.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.swipeRight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -38,21 +40,24 @@ class CreateTutorProfileTest {
         Mockito.`when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(null))
       }
 
+  // Helper function to create a mock Profile
+  private fun getMockProfile() =
+      Profile(
+          uid = "1",
+          googleUid = "googleUid",
+          firstName = "First",
+          lastName = "Last",
+          phoneNumber = "1234567890",
+          role = Role.TUTOR,
+          section = Section.GM,
+          academicLevel = AcademicLevel.MA2,
+          languages = listOf(),
+          subjects = listOf(),
+          schedule = listOf())
+
   @Test
   fun createTutorProfileScreen_rendersCorrectly() {
-    (mockViewModel.currentProfile as MutableStateFlow).value =
-        Profile(
-            uid = "1",
-            googleUid = "googleUid",
-            firstName = "First",
-            lastName = "Last",
-            phoneNumber = "1234567890",
-            role = Role.STUDENT,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = listOf(),
-            subjects = listOf(),
-            schedule = listOf())
+    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
     // Set the screen in the test environment
     composeTestRule.setContent {
       CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -65,23 +70,13 @@ class CreateTutorProfileTest {
     composeTestRule.onNodeWithTag("priceText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("languageText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("experienceField").assertIsDisplayed()
   }
 
   @Test
   fun formValidation_displaysToastWhenFieldsAreEmpty() {
-    (mockViewModel.currentProfile as MutableStateFlow).value =
-        Profile(
-            uid = "1",
-            googleUid = "googleUid",
-            firstName = "First",
-            lastName = "Last",
-            phoneNumber = "1234567890",
-            role = Role.STUDENT,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = listOf(),
-            subjects = listOf(),
-            schedule = listOf())
+    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+
     // Set the screen in the test environment
     composeTestRule.setContent {
       CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -136,19 +131,8 @@ class CreateTutorProfileTest {
 
   @Test
   fun sliderTextTest() {
-    (mockViewModel.currentProfile as MutableStateFlow).value =
-        Profile(
-            uid = "1",
-            googleUid = "googleUid",
-            firstName = "First",
-            lastName = "Last",
-            phoneNumber = "1234567890",
-            role = Role.STUDENT,
-            section = Section.GM,
-            academicLevel = AcademicLevel.MA2,
-            languages = listOf(),
-            subjects = listOf(),
-            schedule = listOf())
+    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+
     // Set the screen in the test environment
     composeTestRule.setContent {
       CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -177,5 +161,23 @@ class CreateTutorProfileTest {
     composeTestRule
         .onNodeWithTag("noProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
+  }
+
+  @Test
+  fun descriptionField_updatesCorrectly() {
+    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+
+    composeTestRule.setContent {
+      CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
+    }
+
+    composeTestRule
+        .onNodeWithTag("experienceField")
+        .assertTextContains("Do you have any experience as a tutor ?")
+
+    val descriptionText = "I have experience teaching math and physics."
+    composeTestRule.onNodeWithTag("experienceField").performTextInput(descriptionText)
+
+    composeTestRule.onNodeWithTag("experienceField").assertTextContains(descriptionText)
   }
 }

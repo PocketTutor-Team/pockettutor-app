@@ -39,6 +39,7 @@ class AddLessonTest {
           Role.TUTOR,
           Section.AR,
           AcademicLevel.BA1,
+          "",
           listOf(Language.ENGLISH),
           listOf(Subject.ANALYSIS),
           List(7) { List(12) { 0 } },

@@ -10,6 +10,7 @@ data class Profile(
     val role: Role, // Role of the user
     var section: Section, // Section of the user
     var academicLevel: AcademicLevel, // Academic level of the user
+    var description: String = "", // Description of the user
     var languages: List<Language> = listOf(),
     var subjects: List<Subject> = listOf(),
     var schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule

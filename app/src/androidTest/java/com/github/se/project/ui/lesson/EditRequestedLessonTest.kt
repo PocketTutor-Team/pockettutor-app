@@ -42,6 +42,7 @@ class EditRequestedLessonTest {
           Role.TUTOR,
           Section.AR,
           AcademicLevel.BA1,
+          "I have experience teaching math and physics.",
           listOf(Language.ENGLISH),
           listOf(Subject.ANALYSIS),
           List(7) { List(12) { 0 } },
