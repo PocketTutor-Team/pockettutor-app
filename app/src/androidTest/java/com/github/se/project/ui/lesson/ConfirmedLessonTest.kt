@@ -101,7 +101,7 @@ public class ConfirmedLessonTest {
   }
 
   @Test
-  fun confirmedLessonScreen_everythingDisplayedCorrectly() {
+  fun confirmedLessonScreenEverythingDisplayedCorrectly() {
     Thread.sleep(100)
     composeTestRule.setContent {
       ConfirmedLessonScreen(
