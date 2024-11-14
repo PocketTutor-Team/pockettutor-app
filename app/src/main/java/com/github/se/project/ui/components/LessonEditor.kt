@@ -4,6 +4,7 @@ import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -32,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -55,6 +58,10 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.map.LocationPermissionHandler
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +74,7 @@ fun LessonEditor(
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
+    couldBeInstant: Boolean = false
 ) {
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
@@ -74,6 +82,8 @@ fun LessonEditor(
   val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
+    var canBeInstant = remember { mutableStateOf(couldBeInstant) }
+    val instant = remember { mutableStateOf(false)}
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -87,6 +97,11 @@ fun LessonEditor(
   var selectedLocation by remember {
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
+    var userLocation by remember { mutableStateOf<LatLng?>(null) }
+    var isLocationChecked by remember { mutableStateOf(false) }
+
+    val cameraPositionState = rememberCameraPositionState {}
+
   var showMapDialog by remember { mutableStateOf(false) }
 
   val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
@@ -105,6 +120,15 @@ fun LessonEditor(
 
   // Context for the Toast messages
   val context = LocalContext.current
+
+    LocationPermissionHandler { location ->
+        userLocation = location
+        isLocationChecked = true
+
+        if(userLocation == null){
+            canBeInstant.value = false
+        }
+    }
 
   // Date Picker
   val datePickerDialog =
@@ -237,6 +261,21 @@ fun LessonEditor(
                   style = MaterialTheme.typography.headlineMedium,
                   textAlign = TextAlign.Center)
 
+            if(canBeInstant.value) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.testTag("instantRow").padding(vertical = 2.dp, horizontal = 2.dp)) {
+                    Text(
+                        "Now",
+                        style = MaterialTheme.typography.labelSmall)
+                    Switch(
+                        checked = instant.value,
+                        onCheckedChange = { instant.value = !instant.value },
+                        modifier = Modifier.testTag("instantSwitch")
+                    )
+                }
+            }
+
               IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
@@ -273,36 +312,44 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
+            if(!instant.value){
               Text(
                   "Select the desired date and time for the lesson",
                   style = MaterialTheme.typography.titleSmall)
 
               Row(modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = { datePickerDialog.show() },
-                    modifier = Modifier.weight(1f).testTag("DateButton"),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                  Button(
+                      onClick = { datePickerDialog.show() },
+                      modifier = Modifier.weight(1f).testTag("DateButton"),
+                      colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          contentColor = MaterialTheme.colorScheme.onPrimary
+                      )
+                  ) {
                       Text(
                           selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.titleSmall)
-                    }
+                          style = MaterialTheme.typography.titleSmall
+                      )
+                  }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                  Spacer(modifier = Modifier.width(8.dp))
 
-                Button(
-                    onClick = { timePickerDialog.show() },
-                    modifier = Modifier.weight(1f).testTag("TimeButton"),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                  Button(
+                      onClick = { timePickerDialog.show() },
+                      modifier = Modifier.weight(1f).testTag("TimeButton"),
+                      colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          contentColor = MaterialTheme.colorScheme.onPrimary
+                      )
+                  ) {
                       Text(
                           selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.titleSmall)
-                    }
+                          style = MaterialTheme.typography.titleSmall
+                      )
+                  }
+              }
               }
 
               Spacer(modifier = Modifier.height(8.dp))

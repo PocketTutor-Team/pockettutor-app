@@ -29,10 +29,11 @@ fun AddLessonScreen(
   }
 
   LessonEditor(
-      mainTitle = "Schedule a new lesson",
+      mainTitle = "Schedule a lesson",
       profile = profile.value!!,
       lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = null)
+      onDelete = null,
+      couldBeInstant = true)
 }
