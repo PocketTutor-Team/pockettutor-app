@@ -35,7 +35,6 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import java.time.LocalDateTime
 import com.github.se.project.utils.formatDate
 
 object LessonColors {

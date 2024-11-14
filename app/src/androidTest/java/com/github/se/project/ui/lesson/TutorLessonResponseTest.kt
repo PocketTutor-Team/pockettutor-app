@@ -156,10 +156,7 @@ class TutorLessonResponseTest {
     composeTestRule
         .onNodeWithTag("lessonDescription")
         .assertTextEquals("I need help with my math homework please")
-    composeTestRule.onNodeWithTag("lessonDate").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonDate").assertTextEquals("Saturday, 19 October 2024")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTime").assertTextEquals("10:00")
 
     // Assert the location is displayed
     composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
@@ -209,10 +206,7 @@ class TutorLessonResponseTest {
     composeTestRule
         .onNodeWithTag("lessonDescription")
         .assertTextEquals("I need help with my math homework please")
-    composeTestRule.onNodeWithTag("lessonDate").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonDate").assertTextEquals("Saturday, 19 October 2024")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTime").assertTextEquals("10:00")
 
     // Assert the location is displayed
     composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()

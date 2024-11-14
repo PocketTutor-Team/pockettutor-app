@@ -28,8 +28,6 @@ import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.utils.formatDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /** Displays detailed information about a lesson and the associated student. */
 @Composable
@@ -39,36 +37,37 @@ fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modi
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(
             modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
               // Student information section
               StudentInfoSection(studentProfile)
 
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
+              // Time and date section
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(16.dp),
+                  verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)) {
+                          Icon(
+                              imageVector = Icons.Default.DateRange,
+                              contentDescription = null,
+                              tint = MaterialTheme.colorScheme.primary)
+                          Text(
+                              text = formatDate(lesson.timeSlot),
+                              style = MaterialTheme.typography.bodyMedium,
+                              modifier = Modifier.testTag("lessonDate"))
+                        }
+                  }
+
               // Lesson information section
               LessonInfoSection(lesson)
 
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
-
-              // Time and date section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary)
-                    Text(
-                        text = formatDate(lesson.timeSlot),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.testTag("lessonDate"))
-                }
             }
-        }
       }
 }
 
