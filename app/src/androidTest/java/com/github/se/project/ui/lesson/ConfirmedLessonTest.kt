@@ -1,9 +1,6 @@
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -13,7 +10,6 @@ import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
-import com.github.se.project.model.profile.ProfilesRepositoryFirestore
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
@@ -23,12 +19,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 public class ConfirmedLessonTest {
+
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -38,11 +34,11 @@ public class ConfirmedLessonTest {
     // Mock dependencies
     val mockProfilesRepository = mock(ProfilesRepository::class.java)
     val mockNavigationActions = mock(NavigationActions::class.java)
-    var mockLessonViewModel = LessonViewModel(mockLessonRepository)
-    private lateinit var mockListProfilesViewModel: ListProfilesViewModel
+    val lessonViewModel = LessonViewModel(mockLessonRepository)
+    val listProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
 
 
-    private val mockStudentProfile = Profile(
+    private val tutorProfile = Profile(
         uid = "12345",
         googleUid = "67890",
         firstName = "John",
@@ -55,9 +51,20 @@ public class ConfirmedLessonTest {
         price = 50
     )
 
-    private val mockProfileFlow = MutableStateFlow<Profile?>(mockStudentProfile)
+    private val studentProfile = Profile(
+        uid = "1",
+        googleUid = "67890",
+        firstName = "James",
+        lastName = "Donovan",
+        phoneNumber = "1234567890",
+        role = Role.STUDENT,
+        section = Section.GM,
+        academicLevel = AcademicLevel.BA2,
+        schedule = List(7) { List(12) { 0 } },
+        price = 50
+    )
 
-    private val mockLesson = Lesson(
+    private val lesson = Lesson(
         id = "lesson1",
         title = "Math Lesson",
         timeSlot = "30/12/2024T14:00:00",
@@ -70,32 +77,48 @@ public class ConfirmedLessonTest {
 
     @Before
     fun setUp() {
-
-        // Initialize the ViewModel with a spy
-        mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
-        mockListProfilesViewModel = spy(mockListProfilesViewModel)
-
-
-        // Stub the init and getProfiles method in the repository to simulate success
-        doNothing().`when`(mockProfilesRepository).init(org.mockito.kotlin.any())
-        doNothing().`when`(mockProfilesRepository).getProfiles(
+        whenever(mockProfilesRepository.getProfiles(
             org.mockito.kotlin.any(),
             org.mockito.kotlin.any()
-        )
-        mockListProfilesViewModel.setCurrentProfile(mockStudentProfile)
-        Log.e("LeProfileBG", "${mockListProfilesViewModel.currentProfile}")
+        )).thenAnswer { invocation ->
+            val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+            onSuccess(listOf(tutorProfile, studentProfile)) // Simulate a list of profiles with our beloved Ozymandias
+        }
+
+        whenever(mockLessonRepository.getLessonsForTutor(
+            org.mockito.kotlin.eq(tutorProfile.uid),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )).thenAnswer {
+                invocation ->
+            val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+            onSuccess(listOf(lesson))
+        }
+
+
+        listProfilesViewModel.getProfiles()
+        lessonViewModel.getLessonsForTutor(tutorProfile.uid, {})
+
+        lessonViewModel.selectLesson(lesson)
+        listProfilesViewModel.setCurrentProfile(tutorProfile)
+        Log.e("LeProfileBG", "${listProfilesViewModel.currentProfile}")
     }
 
     @Test
     fun confirmedLessonScreen_everythingDisplayedCorrectly() {
+        Thread.sleep(100)
         composeTestRule.setContent {
             ConfirmedLessonScreen(
-                listProfilesViewModel = mockListProfilesViewModel,
-                lessonViewModel = mockLessonViewModel,
+                listProfilesViewModel = listProfilesViewModel,
+                lessonViewModel = lessonViewModel,
                 navigationActions = mockNavigationActions
             )
         }
 
+        Log.e("hello", "${listProfilesViewModel.profiles.value}")
+        Log.e("hello", "${listProfilesViewModel.currentProfile.value}")
+        Log.e("hello", "${lessonViewModel.currentUserLessons.value}")
+        Log.e("hello", "${lessonViewModel.selectedLesson.value}")
         composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
         composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
         composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
@@ -106,11 +129,12 @@ public class ConfirmedLessonTest {
     fun confirmedLessonScreen_navigatesBack_whenBackButtonClicked() {
         composeTestRule.setContent {
             ConfirmedLessonScreen(
-                listProfilesViewModel = mockListProfilesViewModel,
-                lessonViewModel = mockLessonViewModel,
+                listProfilesViewModel = listProfilesViewModel,
+                lessonViewModel = lessonViewModel,
                 navigationActions = mockNavigationActions
             )
         }
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithTag("backButton").performClick()
         verify(mockNavigationActions).goBack()
@@ -120,8 +144,8 @@ public class ConfirmedLessonTest {
     fun confirmedLessonScreen_opensSmsApp_whenContactButtonClicked() {
         composeTestRule.setContent {
             ConfirmedLessonScreen(
-                listProfilesViewModel = mockListProfilesViewModel,
-                lessonViewModel = mockLessonViewModel,
+                listProfilesViewModel = listProfilesViewModel,
+                lessonViewModel = lessonViewModel,
                 navigationActions = mockNavigationActions
             )
         }
@@ -133,12 +157,12 @@ public class ConfirmedLessonTest {
     @Test
     fun confirmedLessonScreen_displaysError_whenNoProfileFound() {
         // Mock no profile found
-        whenever(mockListProfilesViewModel.currentProfile).thenReturn(MutableStateFlow(null))
+        listProfilesViewModel.setCurrentProfile(null)
 
         composeTestRule.setContent {
             ConfirmedLessonScreen(
-                listProfilesViewModel = mockListProfilesViewModel,
-                lessonViewModel = mockLessonViewModel,
+                listProfilesViewModel = listProfilesViewModel,
+                lessonViewModel = lessonViewModel,
                 navigationActions = mockNavigationActions
             )
         }
@@ -149,12 +173,12 @@ public class ConfirmedLessonTest {
     @Test
     fun confirmedLessonScreen_displaysError_whenNoLessonSelected() {
         // Mock no lesson selected
-        whenever(mockLessonViewModel.selectedLesson).thenReturn(MutableStateFlow(null))
+        lessonViewModel.unselectLesson()
 
         composeTestRule.setContent {
             ConfirmedLessonScreen(
-                listProfilesViewModel = mockListProfilesViewModel,
-                lessonViewModel = mockLessonViewModel,
+                listProfilesViewModel = listProfilesViewModel,
+                lessonViewModel = lessonViewModel,
                 navigationActions = mockNavigationActions
             )
         }
