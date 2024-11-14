@@ -193,8 +193,10 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
+    Thread.sleep(5000) // Wait for the tutor matching screen to load
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
+    Thread.sleep(500) // Wait for the dialog to be shown
     composeTestRule.onNodeWithText("Confirm").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
@@ -277,7 +279,9 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
+    Thread.sleep(5000) // Wait for the tutor matching screen to load
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
+    Thread.sleep(500) // Wait for the dialog to be shown
     composeTestRule.onNodeWithText("Confirm").performClick()
 
     // Check if the lesson is updated and displayed
