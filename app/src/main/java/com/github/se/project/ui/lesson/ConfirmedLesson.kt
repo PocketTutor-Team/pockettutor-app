@@ -50,7 +50,6 @@ fun ConfirmedLessonScreen(
       } ?: return Text("Cannot retrieve profile")
 
   val context = LocalContext.current
-
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
       topBar = {
