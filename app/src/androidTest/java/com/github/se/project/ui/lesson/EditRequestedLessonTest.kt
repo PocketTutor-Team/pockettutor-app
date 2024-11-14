@@ -184,7 +184,7 @@ class EditRequestedLessonTest {
 
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("map").performClick()
+    composeTestRule.onNodeWithTag("mapContainer").performClick()
     Thread.sleep(2000) // Wait for the map to load
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.click(device.displayWidth / 2, device.displayHeight / 2)
