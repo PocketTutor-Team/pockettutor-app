@@ -75,17 +75,17 @@ class TutorEndToEndTest {
 
   private val mockStudent =
       Profile(
-          "student123",
-          "mockTutor",
-          "Ozymandias",
-          "Halifax",
-          "1234567890",
-          Role.STUDENT,
-          Section.IN,
-          AcademicLevel.BA3,
-          listOf(Language.ENGLISH),
-          listOf(Subject.AICC),
-          List(7) { List(12) { 0 } })
+          uid = "student123",
+          googleUid = "mockTutor",
+          firstName = "Ozymandias",
+          lastName = "Halifax",
+          phoneNumber = "1234567890",
+          role = Role.STUDENT,
+          section = Section.IN,
+          academicLevel = AcademicLevel.BA3,
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.AICC),
+          schedule = List(7) { List(12) { 0 } })
 
   @get:Rule val composeTestRule = createComposeRule()
   @get:Rule

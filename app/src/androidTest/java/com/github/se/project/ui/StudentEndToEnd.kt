@@ -65,6 +65,7 @@ class EndToEndTest {
           Role.TUTOR,
           Section.IN,
           AcademicLevel.BA3,
+          "I have experience teaching math and physics.",
           listOf(Language.ENGLISH),
           listOf(Subject.AICC),
           List(7) { List(12) { 1 } },
