@@ -196,7 +196,7 @@ class TutorEndToEndTest {
         .onNodeWithText(
             "Would you like to offer to teach this lesson at your standard rate of 50.-/hour?")
         .assertExists()
-    composeTestRule.onNodeWithTag("confirmLessonButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogConfirmButton").performClick()
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
     composeTestRule
         .onNodeWithTag("section_Waiting for the Student Confirmation")
@@ -242,7 +242,7 @@ class TutorEndToEndTest {
         .onNodeWithText(
             "Would you like to offer to teach this lesson at your standard rate of 50.-/hour?")
         .assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmLessonButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogConfirmButton").performClick()
 
     composeTestRule.onNodeWithTag("section_Upcoming Lessons").assertExists()
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()

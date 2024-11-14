@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.CameraPosition
@@ -74,30 +75,35 @@ fun LessonLocationDisplay(
   }
 
   if (isLocationChecked) {
-    Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text(text = "Lesson Location", style = MaterialTheme.typography.titleMedium)
+    Column(
+        modifier = modifier.padding(16.dp).testTag("lessonLocationColumn"),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(
+              text = "Lesson Location",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("lessonLocationTitle"))
 
-      Card(
-          modifier = Modifier.fillMaxWidth(),
-          elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-            Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-              GoogleMap(
-                  modifier = Modifier.fillMaxSize(),
-                  cameraPositionState = cameraPositionState,
-                  properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
-                  uiSettings =
-                      MapUiSettings(
-                          zoomControlsEnabled = false,
-                          scrollGesturesEnabled = false,
-                          zoomGesturesEnabled = false,
-                          tiltGesturesEnabled = false,
-                          rotationGesturesEnabled = false)) {
-                    // Marker for the lesson location
-                    Marker(state = MarkerState(position = lessonLocation), title = lessonTitle)
-                  }
-            }
-          }
-    }
+          Card(
+              modifier = Modifier.fillMaxWidth().testTag("lessonLocationCard"),
+              elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                  GoogleMap(
+                      modifier = Modifier.fillMaxSize().testTag("lessonLocationMap"),
+                      cameraPositionState = cameraPositionState,
+                      properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
+                      uiSettings =
+                          MapUiSettings(
+                              zoomControlsEnabled = false,
+                              scrollGesturesEnabled = false,
+                              zoomGesturesEnabled = false,
+                              tiltGesturesEnabled = false,
+                              rotationGesturesEnabled = false)) {
+                        // Marker for the lesson location
+                        Marker(state = MarkerState(position = lessonLocation), title = lessonTitle)
+                      }
+                }
+              }
+        }
   }
 }
 
@@ -173,6 +179,6 @@ fun adjustZoomBasedOnDistance(distance: Float): Float {
     distance < 20000 -> 8f // If the distance is between 10km-20km, zoom out further
     distance < 50000 -> 7f // If the distance is between 20km-50km, zoom out even further
     distance < 100000 -> 6f // If the distance is between 50km-100km, zoom out even further
-    else -> 5f // If the distance is more than 100km, zoom out further
+    else -> 0.1f // If the distance is more than 100km, zoom out the most possible
   }
 }

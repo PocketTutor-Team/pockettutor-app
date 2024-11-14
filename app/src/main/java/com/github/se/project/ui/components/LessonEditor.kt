@@ -211,7 +211,6 @@ fun LessonEditor(
                   Box() {
                     MapPickerBox(
                         initialLocation = selectedLocation,
-                        lessonTitle = title,
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
                           showMapDialog = false
@@ -375,7 +374,7 @@ fun LessonEditor(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onSurface),
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     onClick = { onDelete(lesson!!) }) {
                       Text("Delete")
                     }
