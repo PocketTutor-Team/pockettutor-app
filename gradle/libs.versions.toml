@@ -34,6 +34,8 @@ playServicesMaps = "19.0.0"
 googleIdentity= "1.1.1"
 mapsCompose = "4.3.3"
 mapsComposeUtils = "4.3.0"
+maps = "2.5.3"
+location = "21.0.1"
 
 # Networking
 okhttp = "4.12.0"
@@ -120,6 +122,7 @@ mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "location" }
 google-identity = { module="com.google.android.libraries.identity.googleid:googleid", version.ref ="googleIdentity"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }

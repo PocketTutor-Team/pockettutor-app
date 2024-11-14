@@ -126,7 +126,7 @@ fun TutorMatchingScreen(
       bottomBar = {
         if (currentLesson.status == LessonStatus.MATCHING) {
           Button(
-              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
+              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("noTutorButton"),
               onClick = {
                 lessonViewModel.addLesson(
                     currentLesson.copy(status = LessonStatus.STUDENT_REQUESTED),
@@ -139,7 +139,7 @@ fun TutorMatchingScreen(
               }) {
                 Text(
                     "Ask other tutor for your lesson",
-                    modifier = Modifier.testTag("confirmButtonText"))
+                    modifier = Modifier.testTag("noTutorButtonText"))
               }
         }
       }) { innerPadding ->
@@ -202,6 +202,7 @@ fun TutorMatchingScreen(
                             navigationActions.navigateTo(Screen.HOME)
                           })
                     }) {
+                      Modifier.testTag("confirmButton")
                       Text("Confirm")
                     }
               },

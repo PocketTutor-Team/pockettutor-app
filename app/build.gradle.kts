@@ -39,8 +39,17 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = "pocketTutor-key"
+            keyPassword = "pocketTutor"
+            storeFile = file("../pocketTutor-release-key.jks")
+            storePassword = "pocketTutor" }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -160,6 +169,9 @@ dependencies {
     implementation(libs.maps.compose.utils)
     implementation(libs.play.services.auth)
     implementation(libs.google.identity)
+    implementation(libs.play.services.location)
+
+
 
     // Firebase
     implementation(libs.firebase.database.ktx)
