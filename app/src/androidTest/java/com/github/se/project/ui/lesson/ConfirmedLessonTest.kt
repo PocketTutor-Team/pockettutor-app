@@ -104,7 +104,6 @@ public class ConfirmedLessonTest {
     Log.e("LeProfileBG", "${listProfilesViewModel.currentProfile}")
   }
 
-  /*
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly() {
     composeTestRule.setContent {
@@ -120,8 +119,6 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
   }
-
-     */
 
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
