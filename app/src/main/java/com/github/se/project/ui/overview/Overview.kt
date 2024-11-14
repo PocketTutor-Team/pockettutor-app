@@ -120,7 +120,7 @@ fun HomeScreen(
                 listProfilesViewModel = listProfileViewModel,
                 lessonViewModel = lessonViewModel)
           } else {
-            EmptyLessonsState(paddingValues)
+            EmptyLessonsState(paddingValues, lessonViewModel, profile)
           }
         } ?: NoProfileFoundScreen(context, navigationActions)
       }
@@ -159,14 +159,18 @@ private fun LessonsContent(
               .padding(paddingValues)
               .padding(horizontal = 16.dp)
               .testTag("lessonsColumn")) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f).pullRefresh(pullRefreshState)) {
-          Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-            if (profile.role == Role.TUTOR) {
-              TutorSections(lessons, onClick, listProfilesViewModel)
-            } else {
-              StudentSections(lessons, onClick, listProfilesViewModel)
-            }
-          }
+        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
+          Column(
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .verticalScroll(rememberScrollState())
+                      .pullRefresh(pullRefreshState)) {
+                if (profile.role == Role.TUTOR) {
+                  TutorSections(lessons, onClick, listProfilesViewModel)
+                } else {
+                  StudentSections(lessons, onClick, listProfilesViewModel)
+                }
+              }
 
           PullRefreshIndicator(
               refreshing = refreshing,
@@ -296,14 +300,38 @@ private fun ExpandableLessonSection(
       }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun EmptyLessonsState(paddingValues: PaddingValues) {
+private fun EmptyLessonsState(
+    paddingValues: PaddingValues,
+    lessonViewModel: LessonViewModel,
+    profile: Profile
+) {
+  var refreshing by remember { mutableStateOf(false) }
+  val refreshScope = rememberCoroutineScope()
+
+  fun refresh() =
+      refreshScope.launch {
+        refreshing = true
+        when (profile.role) {
+          Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+          Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+          else -> {}
+        }
+        delay(1000)
+        refreshing = false
+      }
+
+  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+
   Box(
-      modifier = Modifier.fillMaxSize().padding(paddingValues).padding(32.dp),
+      modifier = Modifier.fillMaxSize().padding(paddingValues).pullRefresh(pullRefreshState),
       contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier =
+                Modifier.fillMaxWidth().padding(32.dp).verticalScroll(rememberScrollState())) {
               Image(
                   painter = painterResource(id = R.drawable.logopocket),
                   contentDescription = null,
@@ -319,6 +347,13 @@ private fun EmptyLessonsState(paddingValues: PaddingValues) {
                   textAlign = TextAlign.Center,
                   color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+
+        PullRefreshIndicator(
+            refreshing = refreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary)
       }
 }
 
