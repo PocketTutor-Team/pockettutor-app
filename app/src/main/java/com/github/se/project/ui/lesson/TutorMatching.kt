@@ -205,7 +205,24 @@ fun TutorMatchingScreen(
       }
 }
 
-// TODO: fill this function
 fun isTutorAvailable(tutorSchedule: List<List<Int>>, timeSlot: String): Boolean {
-  return true
+    if (tutorSchedule.size != 7 || tutorSchedule.any { it.size != 12 }) {
+        throw IllegalArgumentException("Schedule must be 7x12 matrix")
+    }
+
+    try {
+        val dateTime = java.time.LocalDateTime.parse(timeSlot)
+
+        val dayIndex = dateTime.dayOfWeek.value - 1
+
+        val hourIndex = dateTime.hour - 8
+
+        if (hourIndex !in 0..11) {
+            return false
+        }
+
+        return tutorSchedule[dayIndex][hourIndex] == 0
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Invalid timeSlot format. Expected: yyyy-MM-ddTHH:mm:ss")
+    }
 }
