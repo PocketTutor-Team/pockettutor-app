@@ -59,7 +59,7 @@ fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modi
                           Text(
                               text = formatDate(lesson.timeSlot),
                               style = MaterialTheme.typography.bodyMedium,
-                              modifier = Modifier.testTag("lessonDate"))
+                              modifier = Modifier.testTag("lessonTime"))
                         }
                   }
 
