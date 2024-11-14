@@ -168,7 +168,7 @@ class TutorMatchingScreenTest {
     composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
 
     // Verify the bottom bar is displayed
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noTutorButton").assertIsDisplayed()
   }
 
   @Test
@@ -177,7 +177,7 @@ class TutorMatchingScreenTest {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("noTutorButton").performClick()
     verify(navigationActions).navigateTo(Screen.HOME)
   }
 
