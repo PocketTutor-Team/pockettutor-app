@@ -1,6 +1,8 @@
-import android.util.Log
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
@@ -19,7 +21,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
@@ -101,7 +104,6 @@ public class ConfirmedLessonTest {
 
     lessonViewModel.selectLesson(lesson)
     listProfilesViewModel.setCurrentProfile(tutorProfile)
-    Log.e("LeProfileBG", "${listProfilesViewModel.currentProfile}")
   }
 
   @Test
@@ -129,6 +131,7 @@ public class ConfirmedLessonTest {
           navigationActions = mockNavigationActions)
     }
     composeTestRule.waitForIdle()
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
@@ -142,6 +145,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     // Click on the "Message Tutor/Student" button
     composeTestRule.onNodeWithTag("contactButton").performClick()
@@ -158,6 +162,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithText("No profile found. Should not happen.").assertIsDisplayed()
   }
@@ -173,6 +178,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
   }

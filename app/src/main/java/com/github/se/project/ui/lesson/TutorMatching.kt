@@ -99,13 +99,15 @@ fun TutorMatchingScreen(
   Scaffold(
       topBar = {
         TopAppBar(
+            modifier = Modifier.testTag("topAppBar"),
             navigationIcon = {
-              IconButton(onClick = { navigationActions.goBack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back arrow",
-                    modifier = Modifier.testTag("backButton"))
-              }
+              IconButton(
+                  modifier = Modifier.testTag("backButton"),
+                  onClick = { navigationActions.goBack() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back arrow")
+                  }
             },
             title = {
               Text(
@@ -168,14 +170,21 @@ fun TutorMatchingScreen(
         // Confirmation Dialog
         if (showConfirmDialog) {
           AlertDialog(
+              modifier = Modifier.testTag("confirmDialog"),
               onDismissRequest = { showConfirmDialog = false },
-              title = { Text("Confirm Your Choice") },
+              title = {
+                Text(
+                    text = "Confirm Your Choice", modifier = Modifier.testTag("confirmDialogTitle"))
+              },
               text = {
                 Text(
-                    "Would you like to choose this tutor for your lesson and pay a price of ${chosenTutor.price}.-/hour?")
+                    text =
+                        "Would you like to choose this tutor for your lesson and pay a price of ${chosenTutor.price}.-/hour?",
+                    modifier = Modifier.testTag("confirmDialogText"))
               },
               confirmButton = {
                 Button(
+                    modifier = Modifier.testTag("confirmDialogButton"),
                     onClick = {
                       lessonViewModel.addLesson(
                           currentLesson.copy(
@@ -184,8 +193,7 @@ fun TutorMatchingScreen(
                               status =
                                   if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
                                       LessonStatus.CONFIRMED
-                                  else
-                                      LessonStatus.PENDING_TUTOR_CONFIRMATION, // TODO: update state
+                                  else LessonStatus.PENDING_TUTOR_CONFIRMATION,
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForStudent(currentProfile.uid)
@@ -199,7 +207,11 @@ fun TutorMatchingScreen(
                     }
               },
               dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) { Text("Cancel") }
+                TextButton(
+                    modifier = Modifier.testTag("confirmDialogCancelButton"),
+                    onClick = { showConfirmDialog = false }) {
+                      Text("Cancel")
+                    }
               })
         }
       }
