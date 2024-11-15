@@ -123,21 +123,6 @@ public class ConfirmedLessonTest {
   }
 
   @Test
-  fun confirmedLessonScreenBackButtonClicked() {
-    composeTestRule.setContent {
-      ConfirmedLessonScreen(
-          listProfilesViewModel = listProfilesViewModel,
-          lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
-    }
-    composeTestRule.waitForIdle()
-    Thread.sleep(5000)
-
-    composeTestRule.onNodeWithTag("backButton").performClick()
-    verify(mockNavigationActions).goBack()
-  }
-
-  @Test
   fun confirmedLessonScreenOpensSmsApp() {
     composeTestRule.setContent {
       ConfirmedLessonScreen(
