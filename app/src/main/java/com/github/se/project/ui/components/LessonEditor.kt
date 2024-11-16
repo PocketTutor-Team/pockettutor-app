@@ -4,7 +4,6 @@ import MapPickerBox
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -173,16 +172,15 @@ fun LessonEditor(
 
   val onConfirmClick = {
     if (instant.value) {
-        var lat : Double
-        var lon : Double
-        if(userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
-            lat = lesson!!.latitude
-            lon = lesson.longitude
-        }
-        else{
-            lat = userLocation?.latitude ?: 0.0
-            lon = userLocation?.longitude ?: 0.0
-        }
+      var lat: Double
+      var lon: Double
+      if (userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
+        lat = lesson!!.latitude
+        lon = lesson.longitude
+      } else {
+        lat = userLocation?.latitude ?: 0.0
+        lon = userLocation?.longitude ?: 0.0
+      }
       val error =
           validateLessonInput(
               title,

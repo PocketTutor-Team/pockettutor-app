@@ -108,7 +108,7 @@ fun RequestedLessonsScreen(
                           isTutor = (currentProfile?.role == Role.TUTOR),
                           onCardClick = { lesson ->
                             lessonViewModel.selectLesson(lesson)
-                              Log.e("InstantTesting", "Lesson: $lesson")
+                            Log.e("InstantTesting", "Lesson: $lesson")
                             navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
                           },
                           listProfilesViewModel = listProfilesViewModel,

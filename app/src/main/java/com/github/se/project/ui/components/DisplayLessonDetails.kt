@@ -137,15 +137,19 @@ private fun LessonInfoSection(lesson: Lesson) {
 
 @Composable
 private fun TimeAndDateSection(timeSlot: String) {
-    var formattedDate = ""
-    var formattedTime = ""
-    try {
-        formattedTime = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")).format(DateTimeFormatter.ofPattern("HH:mm"))
-        formattedDate = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy"))
-    } catch (e: Exception) {
-        formattedTime = "Instant Lesson"
-        formattedDate = "Today"
-    }
+  var formattedDate = ""
+  var formattedTime = ""
+  try {
+    formattedTime =
+        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
+            .format(DateTimeFormatter.ofPattern("HH:mm"))
+    formattedDate =
+        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
+            .format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy"))
+  } catch (e: Exception) {
+    formattedTime = "Instant Lesson"
+    formattedDate = "Today"
+  }
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(16.dp),

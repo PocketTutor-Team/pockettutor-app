@@ -71,7 +71,7 @@ fun TutorLessonResponseScreen(
   val context = LocalContext.current
 
   var showDeclineDialog by remember { mutableStateOf(false) }
-    Log.e("InstantTesting", "Response Setup")
+  Log.e("InstantTesting", "Response Setup")
 
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
