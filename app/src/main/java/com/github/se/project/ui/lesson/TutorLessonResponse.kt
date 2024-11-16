@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,6 +71,7 @@ fun TutorLessonResponseScreen(
   val context = LocalContext.current
 
   var showDeclineDialog by remember { mutableStateOf(false) }
+    Log.e("InstantTesting", "Response Setup")
 
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,

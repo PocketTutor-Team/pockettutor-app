@@ -81,7 +81,7 @@ fun LessonEditor(
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
   val canBeInstant = remember { mutableStateOf(couldBeInstant) }
-  val instant = remember { mutableStateOf(false) }
+  val instant = remember { mutableStateOf((lesson?.timeSlot?.last() ?: "no") == 't') }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -173,6 +173,16 @@ fun LessonEditor(
 
   val onConfirmClick = {
     if (instant.value) {
+        var lat : Double
+        var lon : Double
+        if(userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
+            lat = lesson!!.latitude
+            lon = lesson.longitude
+        }
+        else{
+            lat = userLocation?.latitude ?: 0.0
+            lon = userLocation?.longitude ?: 0.0
+        }
       val error =
           validateLessonInput(
               title,
@@ -181,13 +191,11 @@ fun LessonEditor(
               selectedLanguages,
               "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}",
               "instant",
-              userLocation?.latitude ?: 0.0,
-              userLocation?.longitude ?: 0.0)
+              lat,
+              lon)
       if (error != null) {
-        Log.e("instantTesting", "Error: $error")
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
       } else {
-        Log.e("instantTesting", "Ca passe")
         selectedDate =
             "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
         onConfirm(
@@ -204,8 +212,8 @@ fun LessonEditor(
                 0.0,
                 "${selectedDate}Tinstant",
                 lesson?.status ?: LessonStatus.STUDENT_REQUESTED,
-                userLocation!!.latitude,
-                userLocation!!.longitude))
+                lat,
+                lon))
       }
     } else {
       val error =

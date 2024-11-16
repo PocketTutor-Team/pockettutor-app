@@ -137,10 +137,15 @@ private fun LessonInfoSection(lesson: Lesson) {
 
 @Composable
 private fun TimeAndDateSection(timeSlot: String) {
-  val dateTime = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-  val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")
-  val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
+    var formattedDate = ""
+    var formattedTime = ""
+    try {
+        formattedTime = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")).format(DateTimeFormatter.ofPattern("HH:mm"))
+        formattedDate = LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy"))
+    } catch (e: Exception) {
+        formattedTime = "Instant Lesson"
+        formattedDate = "Today"
+    }
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -155,7 +160,7 @@ private fun TimeAndDateSection(timeSlot: String) {
                   contentDescription = null,
                   tint = MaterialTheme.colorScheme.primary)
               Text(
-                  text = dateTime.format(dateFormatter),
+                  text = formattedDate,
                   style = MaterialTheme.typography.bodyMedium,
                   modifier = Modifier.testTag("lessonDate"))
             }
@@ -168,7 +173,7 @@ private fun TimeAndDateSection(timeSlot: String) {
                   imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
                   contentDescription = "Custom Icon")
               Text(
-                  text = dateTime.format(timeFormatter),
+                  text = formattedTime,
                   style = MaterialTheme.typography.bodyMedium,
                   modifier = Modifier.testTag("lessonTime"))
             }
