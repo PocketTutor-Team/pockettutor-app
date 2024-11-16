@@ -1,7 +1,9 @@
 package com.github.se.project.ui.lesson
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -18,14 +20,24 @@ fun AddLessonScreen(
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
+  val context = LocalContext.current
+
   val currentLesson = lessonViewModel.selectedLesson.collectAsState().value
 
   val onConfirm = { lesson: Lesson ->
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
-    }
-    lessonViewModel.selectLesson(lesson)
-    navigationActions.navigateTo(Screen.TUTOR_MATCH)
+      if (lesson.timeSlot.last() == 't') {
+        lessonViewModel.addLesson(
+            lesson,
+            onComplete = {
+              lessonViewModel.getLessonsForStudent(profile.value!!.uid)
+              Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+              lessonViewModel.selectLesson(lesson)
+              navigationActions.navigateTo(Screen.HOME)
+            })
+      }
+    } else navigationActions.navigateTo(Screen.TUTOR_MATCH)
   }
 
   LessonEditor(

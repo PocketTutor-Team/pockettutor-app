@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -145,10 +146,15 @@ fun DisplayLessons(
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                              Text(
-                                  text = lesson.title,
-                                  style = MaterialTheme.typography.titleMedium,
-                                  modifier = Modifier.testTag("lessonTitle_$index"))
+                              Row {
+                                if (lesson.timeSlot.last() == 't') {
+                                  Icon(Icons.Default.Warning, "instantWarning")
+                                }
+                                Text(
+                                    text = lesson.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.testTag("lessonTitle_$index"))
+                              }
 
                               Text(
                                   text = formatDateTime(lesson.timeSlot),
@@ -206,11 +212,14 @@ fun DisplayLessons(
 }
 
 private fun formatDateTime(timeSlot: String): String {
-  return try {
-    val dateTime =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-    dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
-  } catch (e: Exception) {
-    timeSlot
-  }
+  return if (timeSlot.last() == 't') {
+    "Instant Lesson: Today Only"
+  } else
+      try {
+        val dateTime =
+            LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
+        dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
+      } catch (e: Exception) {
+        timeSlot
+      }
 }

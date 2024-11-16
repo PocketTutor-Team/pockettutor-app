@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -59,7 +58,6 @@ import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Calendar
@@ -82,8 +80,8 @@ fun LessonEditor(
   val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
-    var canBeInstant = remember { mutableStateOf(couldBeInstant) }
-    val instant = remember { mutableStateOf(false)}
+  val canBeInstant = remember { mutableStateOf(couldBeInstant) }
+  val instant = remember { mutableStateOf(false) }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -97,10 +95,10 @@ fun LessonEditor(
   var selectedLocation by remember {
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
-    var userLocation by remember { mutableStateOf<LatLng?>(null) }
-    var isLocationChecked by remember { mutableStateOf(false) }
+  var userLocation by remember { mutableStateOf<LatLng?>(null) }
+  var isLocationChecked by remember { mutableStateOf(false) }
 
-    val cameraPositionState = rememberCameraPositionState {}
+  val cameraPositionState = rememberCameraPositionState {}
 
   var showMapDialog by remember { mutableStateOf(false) }
 
@@ -121,14 +119,14 @@ fun LessonEditor(
   // Context for the Toast messages
   val context = LocalContext.current
 
-    LocationPermissionHandler { location ->
-        userLocation = location
-        isLocationChecked = true
+  LocationPermissionHandler { location ->
+    userLocation = location
+    isLocationChecked = true
 
-        if(userLocation == null){
-            canBeInstant.value = false
-        }
+    if (userLocation == null) {
+      canBeInstant.value = false
     }
+  }
 
   // Date Picker
   val datePickerDialog =
@@ -174,35 +172,72 @@ fun LessonEditor(
           true)
 
   val onConfirmClick = {
-    val error =
-        validateLessonInput(
-            title,
-            description,
-            selectedSubject,
-            selectedLanguages,
-            selectedDate,
-            selectedTime,
-            selectedLocation.first,
-            selectedLocation.second)
-    if (error != null) {
-      Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-    } else {
-      onConfirm(
-          Lesson(
-              lesson?.id ?: "",
+    if (instant.value) {
+      val error =
+          validateLessonInput(
               title,
               description,
-              selectedSubject.value,
-              selectedLanguages.toList(),
-              tutorUid,
-              profile.uid,
-              minPrice,
-              maxPrice,
-              0.0,
-              "${selectedDate}T${selectedTime}:00",
-              if (lesson != null) lesson.status else LessonStatus.MATCHING,
+              selectedSubject,
+              selectedLanguages,
+              "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}",
+              "instant",
+              userLocation?.latitude ?: 0.0,
+              userLocation?.longitude ?: 0.0)
+      if (error != null) {
+        Log.e("instantTesting", "Error: $error")
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+      } else {
+        Log.e("instantTesting", "Ca passe")
+        selectedDate =
+            "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+        onConfirm(
+            Lesson(
+                lesson?.id ?: "",
+                title,
+                description,
+                selectedSubject.value,
+                selectedLanguages.toList(),
+                tutorUid,
+                profile.uid,
+                minPrice,
+                maxPrice,
+                0.0,
+                "${selectedDate}Tinstant",
+                lesson?.status ?: LessonStatus.STUDENT_REQUESTED,
+                userLocation!!.latitude,
+                userLocation!!.longitude))
+      }
+    } else {
+      val error =
+          validateLessonInput(
+              title,
+              description,
+              selectedSubject,
+              selectedLanguages,
+              selectedDate,
+              selectedTime,
               selectedLocation.first,
-              selectedLocation.second))
+              selectedLocation.second)
+      if (error != null) {
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+      } else {
+        onConfirm(
+            Lesson(
+                lesson?.id ?: "",
+                title,
+                description,
+                selectedSubject.value,
+                selectedLanguages.toList(),
+                tutorUid,
+                profile.uid,
+                minPrice,
+                maxPrice,
+                0.0,
+                "${selectedDate}T${selectedTime}:00",
+                if (lesson != null) lesson.status else LessonStatus.MATCHING,
+                selectedLocation.first,
+                selectedLocation.second))
+      }
     }
   }
   // Format location for display
@@ -261,20 +296,19 @@ fun LessonEditor(
                   style = MaterialTheme.typography.headlineMedium,
                   textAlign = TextAlign.Center)
 
-            if(canBeInstant.value) {
+              if (canBeInstant.value) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.testTag("instantRow").padding(vertical = 2.dp, horizontal = 2.dp)) {
-                    Text(
-                        "Now",
-                        style = MaterialTheme.typography.labelSmall)
-                    Switch(
-                        checked = instant.value,
-                        onCheckedChange = { instant.value = !instant.value },
-                        modifier = Modifier.testTag("instantSwitch")
-                    )
-                }
-            }
+                    modifier =
+                        Modifier.testTag("instantColumn")
+                            .padding(vertical = 0.dp, horizontal = 0.dp)) {
+                      Text("Now", style = MaterialTheme.typography.labelSmall)
+                      Switch(
+                          checked = instant.value,
+                          onCheckedChange = { instant.value = !instant.value },
+                          modifier = Modifier.testTag("instantSwitch"))
+                    }
+              }
 
               IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
@@ -312,26 +346,23 @@ fun LessonEditor(
 
               Spacer(modifier = Modifier.height(8.dp))
 
-            if(!instant.value){
-              Text(
-                  "Select the desired date and time for the lesson",
-                  style = MaterialTheme.typography.titleSmall)
+              if (!instant.value) {
+                Text(
+                    "Select the desired date and time for the lesson",
+                    style = MaterialTheme.typography.titleSmall)
 
-              Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth()) {
                   Button(
                       onClick = { datePickerDialog.show() },
                       modifier = Modifier.weight(1f).testTag("DateButton"),
                       colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          contentColor = MaterialTheme.colorScheme.onPrimary
-                      )
-                  ) {
-                      Text(
-                          selectedDate.ifEmpty { "Select Date" },
-                          style = MaterialTheme.typography.titleSmall
-                      )
-                  }
+                          ButtonDefaults.buttonColors(
+                              containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                              contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                        Text(
+                            selectedDate.ifEmpty { "Select Date" },
+                            style = MaterialTheme.typography.titleSmall)
+                      }
 
                   Spacer(modifier = Modifier.width(8.dp))
 
@@ -339,41 +370,39 @@ fun LessonEditor(
                       onClick = { timePickerDialog.show() },
                       modifier = Modifier.weight(1f).testTag("TimeButton"),
                       colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          contentColor = MaterialTheme.colorScheme.onPrimary
-                      )
-                  ) {
-                      Text(
-                          selectedTime.ifEmpty { "Select Time" },
-                          style = MaterialTheme.typography.titleSmall
-                      )
-                  }
+                          ButtonDefaults.buttonColors(
+                              containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                              contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                        Text(
+                            selectedTime.ifEmpty { "Select Time" },
+                            style = MaterialTheme.typography.titleSmall)
+                      }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    "Select the location for the lesson",
+                    style = MaterialTheme.typography.titleSmall)
+
+                Button(
+                    onClick = { showMapDialog = true },
+                    modifier = Modifier.testTag("mapButton").fillMaxWidth(),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                      Icon(
+                          if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0)
+                              Icons.Default.Check
+                          else Icons.Default.LocationOn,
+                          contentDescription = null,
+                          modifier = Modifier.padding(end = 8.dp))
+                      Text(locationText, style = MaterialTheme.typography.titleSmall)
+                    }
+
+                Spacer(modifier = Modifier.height(8.dp))
               }
-              }
-
-              Spacer(modifier = Modifier.height(8.dp))
-
-              Text(
-                  "Select the location for the lesson", style = MaterialTheme.typography.titleSmall)
-
-              Button(
-                  onClick = { showMapDialog = true },
-                  modifier = Modifier.testTag("mapButton").fillMaxWidth(),
-                  colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          contentColor = MaterialTheme.colorScheme.onPrimary)) {
-                    Icon(
-                        if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0)
-                            Icons.Default.Check
-                        else Icons.Default.LocationOn,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp))
-                    Text(locationText, style = MaterialTheme.typography.titleSmall)
-                  }
-
-              Spacer(modifier = Modifier.height(8.dp))
 
               Text(
                   "Select the subject you want to study",
