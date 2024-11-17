@@ -499,10 +499,10 @@ fun validateLessonInput(
   return null // All inputs are valid
 }
 
-fun isInstant (lesson: Lesson?): Boolean {
-    return ((lesson?.timeSlot?.last() ?: "no") == 't')
+fun isInstant(lesson: Lesson?): Boolean {
+  return ((lesson?.timeSlot?.last() ?: "no") == 't')
 }
 
-fun isInstant (timeSlot: String): Boolean {
-    return timeSlot.last() == 't'
+fun isInstant(timeSlot: String): Boolean {
+  return timeSlot.last() == 't'
 }
