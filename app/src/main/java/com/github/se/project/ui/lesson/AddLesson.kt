@@ -28,17 +28,20 @@ fun AddLessonScreen(
   val onConfirm = { lesson: Lesson ->
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
-      if (isInstant(lesson)) {
-        lessonViewModel.addLesson(
-            lesson,
-            onComplete = {
-              lessonViewModel.getLessonsForStudent(profile.value!!.uid)
-              Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
-              lessonViewModel.selectLesson(lesson)
-              navigationActions.navigateTo(Screen.HOME)
-            })
-      }
-    } else navigationActions.navigateTo(Screen.TUTOR_MATCH)
+    }
+    if (isInstant(lesson)) {
+      lessonViewModel.addLesson(
+          lesson,
+          onComplete = {
+            lessonViewModel.getLessonsForStudent(profile.value!!.uid)
+            Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+            lessonViewModel.selectLesson(lesson)
+            navigationActions.navigateTo(Screen.HOME)
+          })
+    } else {
+      lessonViewModel.selectLesson(lesson)
+      navigationActions.navigateTo(Screen.TUTOR_MATCH)
+    }
   }
 
   LessonEditor(
