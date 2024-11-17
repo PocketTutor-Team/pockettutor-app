@@ -8,6 +8,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonEditor
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -27,7 +28,7 @@ fun AddLessonScreen(
   val onConfirm = { lesson: Lesson ->
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
-      if (lesson.timeSlot.last() == 't') {
+      if (isInstant(lesson)) {
         lessonViewModel.addLesson(
             lesson,
             onComplete = {

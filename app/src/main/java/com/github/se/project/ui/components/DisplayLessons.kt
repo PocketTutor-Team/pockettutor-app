@@ -147,7 +147,7 @@ fun DisplayLessons(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)) {
                               Row {
-                                if (lesson.timeSlot.last() == 't') {
+                                if (isInstant(lesson)) {
                                   Icon(Icons.Default.Warning, "instantWarning")
                                 }
                                 Text(
@@ -212,7 +212,7 @@ fun DisplayLessons(
 }
 
 private fun formatDateTime(timeSlot: String): String {
-  return if (timeSlot.last() == 't') {
+  return if (isInstant(timeSlot)) {
     "Instant Lesson: Today Only"
   } else
       try {

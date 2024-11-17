@@ -80,7 +80,7 @@ fun LessonEditor(
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
   val canBeInstant = remember { mutableStateOf(couldBeInstant) }
-  val instant = remember { mutableStateOf((lesson?.timeSlot?.last() ?: "no") == 't') }
+  val instant = remember { mutableStateOf(isInstant(lesson)) }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -497,4 +497,12 @@ fun validateLessonInput(
   }
 
   return null // All inputs are valid
+}
+
+fun isInstant (lesson: Lesson?): Boolean {
+    return ((lesson?.timeSlot?.last() ?: "no") == 't')
+}
+
+fun isInstant (timeSlot: String): Boolean {
+    return timeSlot.last() == 't'
 }
