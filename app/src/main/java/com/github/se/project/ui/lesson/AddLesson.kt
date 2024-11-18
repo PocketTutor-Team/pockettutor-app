@@ -50,6 +50,5 @@ fun AddLessonScreen(
       lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = null,
-      couldBeInstant = true)
+      onDelete = null)
 }

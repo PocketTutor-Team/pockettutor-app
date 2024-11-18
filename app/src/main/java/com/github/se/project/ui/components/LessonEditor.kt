@@ -79,7 +79,7 @@ fun LessonEditor(
   val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
-  val canBeInstant = remember { mutableStateOf(couldBeInstant) }
+  val canBeInstant = remember { mutableStateOf(lesson == null) }
   val instant = remember { mutableStateOf(isInstant(lesson)) }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
@@ -172,8 +172,8 @@ fun LessonEditor(
 
   val onConfirmClick = {
     if (instant.value) {
-      var lat: Double
-      var lon: Double
+      val lat: Double
+      val lon: Double
       if (userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
         lat = lesson!!.latitude
         lon = lesson.longitude
