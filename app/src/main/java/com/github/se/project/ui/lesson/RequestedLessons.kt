@@ -129,7 +129,7 @@ fun RequestedLessonsScreen(
 
           Box(modifier = Modifier.fillMaxSize().weight(1f)) {
             if (filteredLessons.isEmpty()) {
-              EmptyState()
+              EmptyState(showInstants)
             } else {
               LazyColumn(
                   modifier = Modifier.fillMaxSize().testTag("lessonsList"),
@@ -284,7 +284,7 @@ private fun FilterDialog(
 }
 
 @Composable
-private fun EmptyState() {
+private fun EmptyState(showInstant: MutableState<Boolean>) {
   Column(
       modifier = Modifier.fillMaxSize().padding(32.dp),
       verticalArrangement = Arrangement.Center,
@@ -295,16 +295,29 @@ private fun EmptyState() {
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "No lessons available",
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.testTag("noLessonsMessage"))
-        Text(
-            text = "Try adjusting your filters or check back later",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+      if(showInstant.value) {
+          Text(
+              text = "No instant lessons currently pending",
+              style = MaterialTheme.typography.titleLarge,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("noLessonsMessage"))
+          Button({showInstant.value = false}) {
+              Text("Show all lessons")
+          }
+      }else {
+          Text(
+              text = "No lessons available",
+              style = MaterialTheme.typography.titleLarge,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("noLessonsMessage")
+          )
+          Text(
+              text = "Try adjusting your filters or check back later",
+              style = MaterialTheme.typography.bodyMedium,
+              textAlign = TextAlign.Center,
+              color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+      }
       }
 }
 
