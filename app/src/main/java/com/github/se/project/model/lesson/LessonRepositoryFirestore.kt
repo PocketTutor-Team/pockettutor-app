@@ -7,6 +7,7 @@ import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepository {
@@ -31,8 +32,9 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
+      val filter = Filter.inArray("status", listOf(LessonStatus.STUDENT_REQUESTED.name, LessonStatus.INSTANT_REQUESTED.name))
     db.collection(collectionPath)
-        .whereEqualTo("status", LessonStatus.STUDENT_REQUESTED.name)
+        .where(filter)
         .get()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {

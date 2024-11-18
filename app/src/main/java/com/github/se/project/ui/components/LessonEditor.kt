@@ -209,7 +209,7 @@ fun LessonEditor(
                 maxPrice,
                 0.0,
                 "${selectedDate}Tinstant",
-                lesson?.status ?: LessonStatus.STUDENT_REQUESTED,
+                lesson?.status ?: LessonStatus.INSTANT_REQUESTED,
                 lat,
                 lon))
       }

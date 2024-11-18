@@ -28,6 +28,7 @@ import com.github.se.project.R
 import com.github.se.project.model.lesson.*
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -189,16 +190,36 @@ private fun TutorSections(
     listProfilesViewModel: ListProfilesViewModel
 ) {
   val sections =
-      listOf(
-          SectionInfo(
-              "Waiting for your Confirmation",
-              LessonStatus.PENDING_TUTOR_CONFIRMATION,
-              Icons.Default.Notifications),
-          SectionInfo(
-              "Waiting for the Student Confirmation",
-              LessonStatus.STUDENT_REQUESTED,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      if(lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+        listOf(
+            SectionInfo(
+                "Waiting for your Confirmation",
+                LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for the Student Confirmation",
+                LessonStatus.STUDENT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+            SectionInfo(
+                "Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                Icons.Default.Notifications),
+            SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      } else {
+          listOf(
+              SectionInfo(
+                  "Waiting for your Confirmation",
+                  LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                  Icons.Default.Notifications
+              ),
+              SectionInfo(
+                  "Waiting for the Student Confirmation",
+                  LessonStatus.STUDENT_REQUESTED,
+                  ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)
+              ),
+              SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check)
+          )
+      }
 
   LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
@@ -210,6 +231,74 @@ private fun StudentSections(
     listProfilesViewModel: ListProfilesViewModel
 ) {
   val sections =
+      if(lessons.any { it.status == LessonStatus.INSTANT_REQUESTED } &&
+          lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+        listOf(
+            SectionInfo(
+                "Pending instant Lesson",
+                LessonStatus.INSTANT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                true),
+            SectionInfo(
+                "Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for your Confirmation",
+                LessonStatus.STUDENT_REQUESTED,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for a Tutor proposal",
+                LessonStatus.STUDENT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                true),
+            SectionInfo(
+                "Waiting for the Tutor Confirmation",
+                LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+            SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      } else if(lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {
+        listOf(
+            SectionInfo(
+                "Pending instant Lesson",
+                LessonStatus.INSTANT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                true),
+            SectionInfo(
+                "Waiting for your Confirmation",
+                LessonStatus.STUDENT_REQUESTED,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for a Tutor proposal",
+                LessonStatus.STUDENT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                true),
+            SectionInfo(
+                "Waiting for the Tutor Confirmation",
+                LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+            SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      } else if(lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED}){
+            listOf(
+                SectionInfo(
+                    "Instant Lesson",
+                    LessonStatus.INSTANT_CONFIRMED,
+                    Icons.Default.Notifications),
+                SectionInfo(
+                    "Waiting for your Confirmation",
+                    LessonStatus.STUDENT_REQUESTED,
+                    Icons.Default.Notifications),
+                SectionInfo(
+                    "Waiting for a Tutor proposal",
+                    LessonStatus.STUDENT_REQUESTED,
+                    ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+                    true),
+                SectionInfo(
+                    "Waiting for the Tutor Confirmation",
+                    LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                    ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+                SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+        } else
       listOf(
           SectionInfo(
               "Waiting for your Confirmation",

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -51,6 +52,8 @@ fun RequestedLessonsScreen(
 
   val canSeeInstants = remember { mutableStateOf(false) }
   val showInstants = remember { mutableStateOf(false) }
+    val maxDistance = remember { mutableStateOf(1500) }
+    val distanceSliderOpen = remember { mutableStateOf(false) }
 
   // Collect states
   val currentProfile by listProfilesViewModel.currentProfile.collectAsState()
@@ -73,7 +76,7 @@ fun RequestedLessonsScreen(
   LaunchedEffect(Unit) { lessonViewModel.getAllRequestedLessons() }
 
   // Filter lessons
-  val filteredLessons =
+  var filteredLessons =
       requestedLessons
           .filter { lesson ->
             val dateMatches =
@@ -91,7 +94,7 @@ fun RequestedLessonsScreen(
             val lessonLocation = LatLng(lesson.latitude, lesson.longitude)
 
             val distanceFilter =
-                !showInstants.value || calculateDistance(userLocation, lessonLocation) < 3000
+                (!showInstants.value) || (maxDistance.value == 5100) || calculateDistance(userLocation, lessonLocation) < maxDistance.value
 
             dateMatches &&
                 subjectMatches &&
@@ -99,7 +102,13 @@ fun RequestedLessonsScreen(
                 instantaneityCorresponds &&
                 distanceFilter
           }
-          .sortedBy { parseLessonDate(it.timeSlot) }
+
+    if(showInstants.value){
+        filteredLessons = filteredLessons.sortedBy { calculateDistance(userLocation, LatLng(it.latitude, it.longitude)) }
+    } else{
+        filteredLessons = filteredLessons.sortedBy { parseLessonDate(it.timeSlot) }
+    }
+
 
   Scaffold(
       topBar = {
@@ -108,7 +117,8 @@ fun RequestedLessonsScreen(
             onDateSelected = { selectedDate = it },
             onFilterClick = { showFilterDialog = true },
             canSeeInstants,
-            showInstants)
+            showInstants,
+            onDistanceClick = { distanceSliderOpen.value = true })
       },
       bottomBar = {
         BottomNavigationMenu(
@@ -116,50 +126,59 @@ fun RequestedLessonsScreen(
             tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
             selectedItem = navigationActions.currentRoute())
       }) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+      Column(modifier = Modifier.fillMaxSize().padding(padding)) {
           // Subject filter chip
           if (selectedSubject != null) {
-            FilterChip(
-                selected = true,
-                onClick = { selectedSubject = null },
-                label = { Text(selectedSubject?.name ?: "All Subjects") },
-                leadingIcon = { Icon(Icons.Default.Clear, "Clear filter") },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+              FilterChip(
+                  selected = true,
+                  onClick = { selectedSubject = null },
+                  label = { Text(selectedSubject?.name ?: "All Subjects") },
+                  leadingIcon = { Icon(Icons.Default.Clear, "Clear filter") },
+                  modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+              )
           }
 
           Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-            if (filteredLessons.isEmpty()) {
-              EmptyState(showInstants)
-            } else {
-              LazyColumn(
-                  modifier = Modifier.fillMaxSize().testTag("lessonsList"),
-                  contentPadding = PaddingValues(horizontal = 16.dp),
-                  verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(filteredLessons.size) { index ->
-                      DisplayLessons(
-                          lessons = listOf(filteredLessons[index]),
-                          isTutor = (currentProfile?.role == Role.TUTOR),
-                          onCardClick = { lesson ->
-                            lessonViewModel.selectLesson(lesson)
-                            Log.e("InstantTesting", "Lesson: $lesson")
-                            navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-                          },
-                          listProfilesViewModel = listProfilesViewModel,
-                          requestedScreen = true)
-                    }
+              if (filteredLessons.isEmpty()) {
+                  EmptyState(showInstants)
+              } else {
+                  LazyColumn(
+                      modifier = Modifier.fillMaxSize().testTag("lessonsList"),
+                      contentPadding = PaddingValues(horizontal = 16.dp),
+                      verticalArrangement = Arrangement.spacedBy(8.dp)
+                  ) {
+                      items(filteredLessons.size) { index ->
+                          DisplayLessons(
+                              lessons = listOf(filteredLessons[index]),
+                              isTutor = (currentProfile?.role == Role.TUTOR),
+                              onCardClick = { lesson ->
+                                  lessonViewModel.selectLesson(lesson)
+                                  navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+                              },
+                              listProfilesViewModel = listProfilesViewModel,
+                              requestedScreen = true
+                          )
+                      }
                   }
-            }
+              }
           }
-        }
+      }
 
-        // Filter dialog
-        if (showFilterDialog) {
+      // Filter dialog
+      if (showFilterDialog) {
           FilterDialog(
               currentSubject = selectedSubject,
               onSubjectSelected = { selectedSubject = it },
               onDismiss = { showFilterDialog = false })
-        }
       }
+
+      if (distanceSliderOpen.value) {
+          DistanceDialog (
+                currentDistance = maxDistance,
+              onDismiss = { distanceSliderOpen.value = false }
+          )
+      }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -169,7 +188,8 @@ fun LessonsRequestedTopBar(
     onDateSelected: (LocalDate) -> Unit,
     onFilterClick: () -> Unit,
     canSeeInstants: MutableState<Boolean>,
-    instant: MutableState<Boolean>
+    instant: MutableState<Boolean>,
+    onDistanceClick: () -> Unit,
 ) {
   val context = LocalContext.current
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM")
@@ -211,23 +231,33 @@ fun LessonsRequestedTopBar(
                     onCheckedChange = { instant.value = !instant.value },
                     modifier = Modifier.testTag("instantSwitch"))
               }
+            if(instant.value){
+            IconButton(onClick = onDistanceClick, modifier = Modifier.testTag("distanceButton")) {
+                Icon(Icons.Outlined.LocationOn, "Distance")
+            }
+            }
         }
         // Date picker button
-        Surface(
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.clickable { datePickerDialog.show() }.testTag("datePicker"),
-            color = MaterialTheme.colorScheme.background) {
-              Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        "Calendar",
-                        tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(selectedDate?.format(dateFormatter) ?: "-/-")
+          if(!instant.value) {
+              Surface(
+                  shape = RoundedCornerShape(8.dp),
+                  modifier = Modifier.clickable { datePickerDialog.show() }.testTag("datePicker"),
+                  color = MaterialTheme.colorScheme.background
+              ) {
+                  Row(
+                      verticalAlignment = Alignment.CenterVertically,
+                      modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                  ) {
+                      Icon(
+                          Icons.Default.DateRange,
+                          "Calendar",
+                          tint = MaterialTheme.colorScheme.primary
+                      )
+                      Spacer(modifier = Modifier.width(4.dp))
+                      Text(selectedDate?.format(dateFormatter) ?: "-/-")
                   }
-            }
+              }
+          }
 
         // Filter button
         IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
@@ -283,6 +313,41 @@ private fun FilterDialog(
       dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } })
 }
 
+    @Composable
+    private fun DistanceDialog(
+        currentDistance: MutableState<Int>,
+        onDismiss: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Choose the maximum distance") },
+            text = {
+                Column {
+                    Slider(
+                        value = currentDistance.value.toFloat(),
+                        onValueChange = { currentDistance.value = it.toInt() },
+                        valueRange = 100f..5100f,
+                        steps = 49,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    if(currentDistance.value == 5100){
+                        Text("No limit")
+                    } else {
+                        Text("Maximum distance: ${currentDistance.value}m")
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                    }) {
+                    Text("Apply filter")
+                }
+            },
+            dismissButton = { TextButton(onClick = onDismiss) { Text("Close") } })
+    }
+
 @Composable
 private fun EmptyState(showInstant: MutableState<Boolean>) {
   Column(
@@ -329,7 +394,6 @@ private fun parseLessonDate(timeSlot: String): LocalDateTime? {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
     LocalDateTime.parse(timeSlot, formatter)
   } catch (e: Exception) {
-    Log.e("RequestedLessonsScreen", "Error parsing date: $timeSlot", e)
     null
   }
 }

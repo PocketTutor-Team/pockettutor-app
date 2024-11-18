@@ -185,10 +185,12 @@ fun TutorLessonResponseScreen(
                               tutorUid = lesson.tutorUid + currentProfile.uid,
                               price = currentProfile.price.toDouble(),
                               status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
-                                      isInstant(lesson))
-                                      LessonStatus.CONFIRMED
-                                  else LessonStatus.STUDENT_REQUESTED,
+                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION){
+                                      LessonStatus.CONFIRMED}
+                                  else if(isInstant(lesson)){
+                                        LessonStatus.INSTANT_CONFIRMED
+                                  }else{
+                                      LessonStatus.STUDENT_REQUESTED},
                           ),
                           onComplete = {
                             lessonViewModel.getLessonsForTutor(currentProfile.uid)
