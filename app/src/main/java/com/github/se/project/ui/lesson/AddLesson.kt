@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonEditor
@@ -25,12 +26,17 @@ fun AddLessonScreen(
 
   val currentLesson = lessonViewModel.selectedLesson.collectAsState().value
 
+    val lessons = lessonViewModel.currentUserLessons.collectAsState().value
+
   val onConfirm = { lesson: Lesson ->
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
     }
     if (isInstant(lesson)) {
-      lessonViewModel.addLesson(
+        if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED }) {
+            Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT).show()
+        }
+      else lessonViewModel.addLesson(
           lesson,
           onComplete = {
             lessonViewModel.getLessonsForStudent(profile.value!!.uid)

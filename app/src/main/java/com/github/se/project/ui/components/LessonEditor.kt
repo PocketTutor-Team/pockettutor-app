@@ -70,8 +70,7 @@ fun LessonEditor(
     lesson: Lesson?,
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
-    onDelete: ((Lesson) -> Unit)? = null,
-    couldBeInstant: Boolean = false
+    onDelete: ((Lesson) -> Unit)? = null
 ) {
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
@@ -500,7 +499,7 @@ fun validateLessonInput(
 }
 
 fun isInstant(lesson: Lesson?): Boolean {
-  return ((lesson?.timeSlot?.last() ?: "no") == 't')
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false || (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
 }
 
 fun isInstant(timeSlot: String): Boolean {
