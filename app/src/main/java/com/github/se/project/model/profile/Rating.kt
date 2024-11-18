@@ -32,7 +32,7 @@ data class Rating(
             comments.map { comment ->
               mapOf(
                   "grade" to comment.grade,
-                  "name" to comment.raterUid,
+                  "raterUid" to comment.raterUid,
                   "date" to comment.date,
                   "comment" to comment.comment)
             })
