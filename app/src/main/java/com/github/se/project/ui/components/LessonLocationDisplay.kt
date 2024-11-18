@@ -76,7 +76,11 @@ fun LessonLocationDisplay(
 
   if (isLocationChecked) {
     Column(
-        modifier = modifier.padding(16.dp).testTag("lessonLocationColumn"),
+        modifier =
+            modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+                .testTag("lessonLocationColumn"),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
               text = "Lesson Location",

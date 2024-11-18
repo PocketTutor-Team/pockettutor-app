@@ -27,8 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.formatDate
 
 /** Displays detailed information about a lesson and the associated student. */
 @Composable
@@ -38,18 +37,36 @@ fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modi
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(
             modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
               // Student information section
               StudentInfoSection(studentProfile)
 
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
+              // Time and date section
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(16.dp),
+                  verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)) {
+                          Icon(
+                              imageVector = Icons.Default.DateRange,
+                              contentDescription = null,
+                              tint = MaterialTheme.colorScheme.primary)
+                          Text(
+                              text = formatDate(lesson.timeSlot),
+                              style = MaterialTheme.typography.bodyMedium,
+                              modifier = Modifier.testTag("lessonTime"))
+                        }
+                  }
+
               // Lesson information section
               LessonInfoSection(lesson)
 
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
-
-              // Time and date section
-              TimeAndDateSection(lesson.timeSlot)
             }
       }
 }
@@ -132,54 +149,5 @@ private fun LessonInfoSection(lesson: Lesson) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             overflow = TextOverflow.Ellipsis,
             maxLines = 3)
-      }
-}
-
-@Composable
-private fun TimeAndDateSection(timeSlot: String) {
-  var formattedDate = ""
-  var formattedTime = ""
-  try {
-    formattedTime =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-            .format(DateTimeFormatter.ofPattern("HH:mm"))
-    formattedDate =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-            .format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy"))
-  } catch (e: Exception) {
-    formattedTime = "Instant Lesson"
-    formattedDate = "Today"
-  }
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-      verticalAlignment = Alignment.CenterVertically) {
-        // Date
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)) {
-              Icon(
-                  imageVector = Icons.Default.DateRange,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.primary)
-              Text(
-                  text = formattedDate,
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.testTag("lessonDate"))
-            }
-
-        // Time
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-              CustomIcon(
-                  imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
-                  contentDescription = "Custom Icon")
-              Text(
-                  text = formattedTime,
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.testTag("lessonTime"))
-            }
       }
 }

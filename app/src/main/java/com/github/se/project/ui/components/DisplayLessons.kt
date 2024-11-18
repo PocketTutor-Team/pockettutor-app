@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -36,8 +35,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.formatDate
 
 object LessonColors {
   private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
@@ -146,18 +144,13 @@ fun DisplayLessons(
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                              Row {
-                                if (isInstant(lesson)) {
-                                  Icon(Icons.Default.Warning, "instantWarning")
-                                }
-                                Text(
-                                    text = lesson.title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.testTag("lessonTitle_$index"))
-                              }
+                              Text(
+                                  text = lesson.title,
+                                  style = MaterialTheme.typography.titleMedium,
+                                  modifier = Modifier.testTag("lessonTitle_$index"))
 
                               Text(
-                                  text = formatDateTime(lesson.timeSlot),
+                                  text = formatDate(lesson.timeSlot),
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
@@ -209,17 +202,4 @@ fun DisplayLessons(
           }
     }
   }
-}
-
-private fun formatDateTime(timeSlot: String): String {
-  return if (isInstant(timeSlot)) {
-    "Instant Lesson: Today Only"
-  } else
-      try {
-        val dateTime =
-            LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-        dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
-      } catch (e: Exception) {
-        timeSlot
-      }
 }
