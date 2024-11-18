@@ -23,7 +23,11 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.ui.components.calculateDistance
+import com.github.se.project.ui.components.isInstant
+import com.github.se.project.ui.map.LocationPermissionHandler
 import com.github.se.project.ui.navigation.*
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -45,9 +49,25 @@ fun RequestedLessonsScreen(
   var selectedSubject by remember { mutableStateOf<Subject?>(null) }
   var showFilterDialog by remember { mutableStateOf(false) }
 
+  val canSeeInstants = remember { mutableStateOf(false) }
+  val showInstants = remember { mutableStateOf(false) }
+
   // Collect states
   val currentProfile by listProfilesViewModel.currentProfile.collectAsState()
   val requestedLessons by lessonViewModel.requestedLessons.collectAsState()
+
+  var userLocation by remember { mutableStateOf<LatLng?>(null) }
+  var isLocationChecked by remember { mutableStateOf(false) }
+
+  LocationPermissionHandler { location ->
+    userLocation = location
+    isLocationChecked = true
+
+    if (userLocation != null) {
+      canSeeInstants.value = true
+      showInstants.value = true
+    }
+  }
 
   // Update lessons when screen is launched
   LaunchedEffect(Unit) { lessonViewModel.getAllRequestedLessons() }
@@ -66,7 +86,18 @@ fun RequestedLessonsScreen(
 
             val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
-            dateMatches && subjectMatches && notAlreadyResponded
+            val instantaneityCorresponds = isInstant(lesson) == showInstants.value
+
+            val lessonLocation = LatLng(lesson.latitude, lesson.longitude)
+
+            val distanceFilter =
+                !showInstants.value || calculateDistance(userLocation, lessonLocation) < 3000
+
+            dateMatches &&
+                subjectMatches &&
+                notAlreadyResponded &&
+                instantaneityCorresponds &&
+                distanceFilter
           }
           .sortedBy { parseLessonDate(it.timeSlot) }
 
@@ -75,7 +106,9 @@ fun RequestedLessonsScreen(
         LessonsRequestedTopBar(
             selectedDate = selectedDate,
             onDateSelected = { selectedDate = it },
-            onFilterClick = { showFilterDialog = true })
+            onFilterClick = { showFilterDialog = true },
+            canSeeInstants,
+            showInstants)
       },
       bottomBar = {
         BottomNavigationMenu(
@@ -134,7 +167,9 @@ fun RequestedLessonsScreen(
 fun LessonsRequestedTopBar(
     selectedDate: LocalDate?,
     onDateSelected: (LocalDate) -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    canSeeInstants: MutableState<Boolean>,
+    instant: MutableState<Boolean>
 ) {
   val context = LocalContext.current
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM")
@@ -165,6 +200,18 @@ fun LessonsRequestedTopBar(
           TopAppBarDefaults.topAppBarColors()
               .copy(containerColor = MaterialTheme.colorScheme.background),
       actions = {
+        if (canSeeInstants.value) {
+          Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier =
+                  Modifier.testTag("instantColumn").padding(vertical = 0.dp, horizontal = 0.dp)) {
+                Text("Instant Lessons", style = MaterialTheme.typography.labelSmall)
+                Switch(
+                    checked = instant.value,
+                    onCheckedChange = { instant.value = !instant.value },
+                    modifier = Modifier.testTag("instantSwitch"))
+              }
+        }
         // Date picker button
         Surface(
             shape = RoundedCornerShape(8.dp),

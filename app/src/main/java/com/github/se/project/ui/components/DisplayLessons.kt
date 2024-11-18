@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -144,10 +145,15 @@ fun DisplayLessons(
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                              Text(
-                                  text = lesson.title,
-                                  style = MaterialTheme.typography.titleMedium,
-                                  modifier = Modifier.testTag("lessonTitle_$index"))
+                              Row {
+                                if (isInstant(lesson)) {
+                                  Icon(Icons.Default.Warning, "instantWarning")
+                                }
+                                Text(
+                                    text = lesson.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.testTag("lessonTitle_$index"))
+                              }
 
                               Text(
                                   text = formatDate(lesson.timeSlot),

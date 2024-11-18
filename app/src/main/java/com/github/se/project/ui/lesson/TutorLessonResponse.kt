@@ -47,6 +47,7 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.components.LessonLocationDisplay
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -184,7 +185,8 @@ fun TutorLessonResponseScreen(
                               tutorUid = lesson.tutorUid + currentProfile.uid,
                               price = currentProfile.price.toDouble(),
                               status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
+                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
+                                      isInstant(lesson))
                                       LessonStatus.CONFIRMED
                                   else LessonStatus.STUDENT_REQUESTED,
                           ),
