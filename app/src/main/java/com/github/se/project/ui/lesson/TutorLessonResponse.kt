@@ -180,6 +180,10 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
+                        if(isInstant(lesson) && lessonViewModel.currentUserLessons.value.any { it.status == LessonStatus.INSTANT_CONFIRMED }){
+                            Toast.makeText(context, "You already have an instant lesson scheduled!", Toast.LENGTH_SHORT).show()
+                        }
+                        else
                       lessonViewModel.updateLesson(
                           lesson.copy(
                               tutorUid = lesson.tutorUid + currentProfile.uid,
