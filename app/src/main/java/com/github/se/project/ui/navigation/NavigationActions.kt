@@ -29,6 +29,7 @@ object Screen {
   const val CALENDAR = "Calendar Screen"
   const val ADD_LESSON = "Add Lesson Screen"
   const val TUTOR_MATCH = "Tutor matching Screen"
+  const val SELECTED_TUTOR_DETAILS = "Selected Tutor Details Screen"
   const val EDIT_REQUESTED_LESSON = "Edit Requested Lesson"
   const val CONFIRMED_LESSON = "Confirmed Lesson Screen"
   const val CREATE_TUTOR_SCHEDULE = "Create tutor calendar Screen"
