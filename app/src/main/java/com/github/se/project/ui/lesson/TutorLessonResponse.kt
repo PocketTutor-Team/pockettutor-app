@@ -105,8 +105,7 @@ fun TutorLessonResponseScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
-                    .testTag("tutorLessonResponseScreen"),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    .testTag("tutorLessonResponseScreen")) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
                 ErrorState(message = "Cannot retrieve student profile")

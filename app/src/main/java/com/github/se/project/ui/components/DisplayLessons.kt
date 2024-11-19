@@ -35,8 +35,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.formatDate
 
 object LessonColors {
   private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
@@ -151,7 +150,7 @@ fun DisplayLessons(
                                   modifier = Modifier.testTag("lessonTitle_$index"))
 
                               Text(
-                                  text = formatDateTime(lesson.timeSlot),
+                                  text = formatDate(lesson.timeSlot),
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
@@ -202,15 +201,5 @@ fun DisplayLessons(
                 }
           }
     }
-  }
-}
-
-private fun formatDateTime(timeSlot: String): String {
-  return try {
-    val dateTime =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-    dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
-  } catch (e: Exception) {
-    timeSlot
   }
 }
