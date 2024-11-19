@@ -56,8 +56,7 @@ object SuitabilityScoreCalculator {
       return 0.0
     }
 
-    val tutorIsAvailable =
-        tutorProfile.schedule.getOrNull(dayOfWeekIndex - 1)?.getOrNull(hourIndex) == 1
+    val tutorIsAvailable = tutorProfile.schedule[dayOfWeekIndex - 1][hourIndex] == 1
 
     return if (tutorIsAvailable) 1.0 else 0.0
   }
