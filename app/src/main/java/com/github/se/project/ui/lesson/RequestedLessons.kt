@@ -24,6 +24,7 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.*
+import com.github.se.project.utils.SuitabilityScoreCalculator
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -68,7 +69,14 @@ fun RequestedLessonsScreen(
 
             dateMatches && subjectMatches && notAlreadyResponded
           }
-          .sortedBy { parseLessonDate(it.timeSlot) }
+          .sortedByDescending { lesson ->
+            val tutorProfile = currentProfile
+
+            SuitabilityScoreCalculator.calculateSuitabilityScore(
+                lesson,
+                tutorProfile!!,
+            )
+          }
 
   Scaffold(
       topBar = {

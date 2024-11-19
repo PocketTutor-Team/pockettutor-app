@@ -17,13 +17,13 @@ object SuitabilityScoreCalculator {
    */
   fun calculateSuitabilityScore(
       lesson: Lesson,
-      tutorProfile: Profile,
-      studentProfile: Profile
+      tutorProfile: Profile
+      // studentProfile: Profile
   ): Int {
     // weights
     val W1 = 0.35 // subject Match
     val W2 = 0.25 // schedule Compatibility
-    //val W3 = 0.15 // academic Level Compatibility
+    // val W3 = 0.15 // academic Level Compatibility
     val W4 = 0.25 // language Match
     val W5 = 0.10 // price Compatibility
     val W6 = 0.05 // distance Proximity
@@ -31,7 +31,7 @@ object SuitabilityScoreCalculator {
     // Feature Calculations
     val X1 = computeSubjectMatch(lesson, tutorProfile)
     val X2 = computeScheduleMatch(lesson, tutorProfile)
-    //val X3 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
+    // val X3 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
     val X4 = computeLanguageMatch(lesson, tutorProfile)
     val X5 = computePriceCompatibility(lesson, tutorProfile)
     val X6 = computeDistanceProximity(lesson, tutorProfile)
