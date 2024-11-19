@@ -10,6 +10,7 @@ ktfmt = "0.17.0"
 
 # UI Compose
 mockitoAndroid = "5.13.0"
+streamChatAndroidUiComponents = "4.13.0"
 ui = "1.6.8"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
@@ -125,6 +126,7 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "location" }
 google-identity = { module="com.google.android.libraries.identity.googleid:googleid", version.ref ="googleIdentity"}
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+stream-chat-android-ui-components = { module = "io.getstream:stream-chat-android-ui-components", version.ref = "streamChatAndroidUiComponents" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 
