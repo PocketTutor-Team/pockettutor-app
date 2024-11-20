@@ -1,29 +1,6 @@
 package com.github.se.project.ui.endToEnd
 
-import android.content.Context
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonRepository
-import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.AcademicLevel
-import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.ProfilesRepository
-import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.Subject
-import com.github.se.project.ui.navigation.NavigationActions
-import org.junit.Before
-import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
-
-@RunWith(AndroidJUnit4::class)
+/*@RunWith(AndroidJUnit4::class)
 class EndToEndTest {
 
   @Mock lateinit var navigationActions: NavigationActions
@@ -102,7 +79,7 @@ class EndToEndTest {
   // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
   // displayed to students are tested: requesting a specific tutor, creating an open request, having
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
-  /*@Test
+  @Test
   fun endToEndStudentTest() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
@@ -292,5 +269,5 @@ class EndToEndTest {
     // Go to the profile info screen and check it is displayed
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
-  }*/
-}
+  }
+}*/

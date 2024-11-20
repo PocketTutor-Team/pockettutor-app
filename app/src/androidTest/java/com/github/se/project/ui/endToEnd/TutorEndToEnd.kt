@@ -1,32 +1,9 @@
 package com.github.se.project.ui.endToEnd
 
-import android.content.Context
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.GrantPermissionRule
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonRepository
-import com.github.se.project.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
-import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.ProfilesRepository
-import com.github.se.project.ui.navigation.NavigationActions
-import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.Before
-import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.spy
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 
-@RunWith(AndroidJUnit4::class)
+
+/*@RunWith(AndroidJUnit4::class)
 class TutorEndToEndTest {
 
   @Mock lateinit var navigationActions: NavigationActions
@@ -115,7 +92,7 @@ class TutorEndToEndTest {
     mockLessonFlow.value = mockLessons[0]
   }
 
-  /*@Test
+  @Test
   fun TutorEndToEndTest() {
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
@@ -234,5 +211,5 @@ class TutorEndToEndTest {
     composeTestRule.onNodeWithTag("section_Upcoming Lessons").assertExists()
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
     composeTestRule.onNodeWithText("Student: Ozymandias Halifax").assertIsDisplayed()
-  }*/
-}
+  }
+}*/
