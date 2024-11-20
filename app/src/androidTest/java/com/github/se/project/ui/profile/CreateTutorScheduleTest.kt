@@ -69,7 +69,7 @@ class CreateTutorScheduleTest {
   @Test
   fun availabilityScreen_displaysProfileNameAndInstructions() {
     composeTestRule.setContent {
-      SampleAppTheme { CreateTutorSchedule(navigationActions, listProfilesViewModel) }
+      CreateTutorSchedule(navigationActions, listProfilesViewModel)
     }
 
     // Verify that the greeting text is displayed correctly
