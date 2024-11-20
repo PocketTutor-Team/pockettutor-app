@@ -2,8 +2,6 @@ package com.github.se.project.utils
 
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 object SuitabilityScoreCalculator {
 
@@ -17,21 +15,21 @@ object SuitabilityScoreCalculator {
    */
   fun calculateSuitabilityScore(
       lesson: Lesson,
-      tutorProfile: Profile
-      // studentProfile: Profile
+      tutorProfile: Profile,
+      studentProfile: Profile
   ): Int {
     // weights
     val W1 = 0.35 // subject Match
-    val W2 = 0.25 // schedule Compatibility
-    // val W3 = 0.15 // academic Level Compatibility
+    val W2 = 0.20 // schedule Compatibility
+    val W3 = 0.15 // academic Level Compatibility
     val W4 = 0.25 // language Match
     val W5 = 0.10 // price Compatibility
-    val W6 = 0.05 // distance Proximity
+    val W6 = 0.10 // distance Proximity
 
     // Feature Calculations
     val X1 = computeSubjectMatch(lesson, tutorProfile)
     val X2 = computeScheduleMatch(lesson, tutorProfile)
-    // val X3 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
+    val X3 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
     val X4 = computeLanguageMatch(lesson, tutorProfile)
     val X5 = computePriceCompatibility(lesson, tutorProfile)
     val X6 = computeDistanceProximity(lesson, tutorProfile)
@@ -47,7 +45,7 @@ object SuitabilityScoreCalculator {
   }
 
   private fun computeScheduleMatch(lesson: Lesson, tutorProfile: Profile): Double {
-    val lessonDateTime = parseLessonDate(lesson.timeSlot) ?: return 0.0
+    val lessonDateTime = lesson.parseLessonDate() ?: return 0.0
 
     val dayOfWeekIndex = (lessonDateTime.dayOfWeek.value % 7)
     val hourIndex = lessonDateTime.hour - 8 // schedule starts at 8h
@@ -61,7 +59,8 @@ object SuitabilityScoreCalculator {
     return if (tutorIsAvailable) 1.0 else 0.0
   }
 
-  // TODO: use this function but might be computationally costly to compare with student profile
+  // TODO: this function might be computationally costly to retrieve every student profile.
+  // I would like to ask the coaches
   private fun computeAcademicLevelCompatibility(
       tutorProfile: Profile,
       studentProfile: Profile
@@ -112,14 +111,5 @@ object SuitabilityScoreCalculator {
   private fun computeDistanceProximity(lesson: Lesson, tutorProfile: Profile): Double {
     // TODO: implement this compatibility function using tutor location
     return 1.0
-  }
-
-  private fun parseLessonDate(timeSlot: String): LocalDateTime? {
-    return try {
-      val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-      LocalDateTime.parse(timeSlot, formatter)
-    } catch (e: Exception) {
-      null
-    }
   }
 }
