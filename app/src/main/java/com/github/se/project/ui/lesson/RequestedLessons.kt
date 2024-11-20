@@ -25,6 +25,8 @@ import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.*
 import com.github.se.project.utils.SuitabilityScoreCalculator
+import com.github.se.project.utils.SuitabilityScoreCalculator.computeLanguageMatch
+import com.github.se.project.utils.SuitabilityScoreCalculator.computeSubjectMatch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -70,7 +72,17 @@ fun RequestedLessonsScreen(
 
             val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
-            dateMatches && subjectMatches && notAlreadyResponded
+            // lessons are not visible if the tutor's language/subject does not match lesson
+            val tutorSubjectMatches =
+                computeSubjectMatch(lesson, currentProfile ?: return@filter false)
+            val languageMatches =
+                computeLanguageMatch(lesson, currentProfile ?: return@filter false)
+
+            dateMatches &&
+                subjectMatches &&
+                notAlreadyResponded &&
+                tutorSubjectMatches &&
+                languageMatches
           }
           .mapNotNull { lesson ->
             val studentProfile =

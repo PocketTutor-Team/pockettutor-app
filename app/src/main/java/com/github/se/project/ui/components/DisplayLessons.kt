@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
@@ -161,8 +162,11 @@ fun DisplayLessons(
                               suitabilityScore?.let {
                                 Text(
                                     text = "Recommended at $it%",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = SuitabilityScoreCalculator.getColorForScore(it))
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Bold, // Make the text bold
+                                        color = SuitabilityScoreCalculator.getColorForScore(it, isSystemInDarkTheme())
+                                    )
+                                )
                               }
                             }
 

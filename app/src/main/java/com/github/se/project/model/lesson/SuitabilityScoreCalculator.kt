@@ -1,8 +1,10 @@
 package com.github.se.project.utils
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Profile
 
 object SuitabilityScoreCalculator {
@@ -21,29 +23,20 @@ object SuitabilityScoreCalculator {
       studentProfile: Profile
   ): Int {
     // weights
-    val W1 = 0.30 // subject Match
-    val W2 = 0.15 // schedule Compatibility
-    val W3 = 0.10 // academic Level Compatibility
-    val W4 = 0.25 // language Match
-    val W5 = 0.10 // price Compatibility
-    val W6 = 0.10 // distance Proximity
+    val W1 = 0.25 // schedule Compatibility
+    val W2 = 0.35 // academic Level Compatibility
+    val W3 = 0.25 // price Compatibility
+    val W4 = 0.15 // distance Proximity
 
     // Feature Calculations
-    val X1 = computeSubjectMatch(lesson, tutorProfile)
-    val X2 = computeScheduleMatch(lesson, tutorProfile)
-    val X3 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
-    val X4 = computeLanguageMatch(lesson, tutorProfile)
-    val X5 = computePriceCompatibility(lesson, tutorProfile)
-    val X6 = computeDistanceProximity(lesson, tutorProfile)
+    val X1 = computeScheduleMatch(lesson, tutorProfile)
+    val X2 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
+    val X3 = computePriceCompatibility(lesson, tutorProfile)
+    val X4 = computeDistanceProximity(lesson, tutorProfile)
 
     // Compute the total score
-    val score = (W1 * X1 + W2 * X2 + W3 * X3 + W4 * X4 + W5 * X5 + W6 * X6) * 100
-
+    val score = (W1 * X1 + W2 * X2 + W3 * X3 + W4 * X4) * 100
     return score.toInt()
-  }
-
-  private fun computeSubjectMatch(lesson: Lesson, tutorProfile: Profile): Double {
-    return if (tutorProfile.subjects.contains(lesson.subject)) 1.0 else 0.0
   }
 
   private fun computeScheduleMatch(lesson: Lesson, tutorProfile: Profile): Double {
@@ -69,27 +62,17 @@ object SuitabilityScoreCalculator {
   ): Double {
     val tutorLevelIndex = tutorProfile.academicLevel.ordinal
     val studentLevelIndex = studentProfile.academicLevel.ordinal
-
     val levelDifference = tutorLevelIndex - studentLevelIndex
 
-    // score is better if the tutor is at least 2 academic level above the student
-    val score =
-        when {
-          levelDifference >= 2 -> 1.0
-          levelDifference == 1 -> 0.75
-          levelDifference == 0 -> 0.5
-          else -> 0.0 // tutor is below student's level
-        }
+    if (levelDifference < 0) return 0.0
+
+    val maxLevelDiff = AcademicLevel.entries.size - studentLevelIndex
+    // Ensure the level difference is within bounds [0, maxLevelDiff]
+    val normalizedDifference = levelDifference.coerceIn(0, maxLevelDiff).toDouble() / maxLevelDiff.toDouble()
+
+    val score = 0.3 + 0.7 * normalizedDifference
 
     return score
-  }
-
-  private fun computeLanguageMatch(lesson: Lesson, tutorProfile: Profile): Double {
-    return if (lesson.languages.any { it in tutorProfile.languages }) {
-      1.0 // at least one language matches
-    } else {
-      0.0 // no matching languages
-    }
   }
 
   private fun computePriceCompatibility(lesson: Lesson, tutorProfile: Profile): Double {
@@ -115,22 +98,33 @@ object SuitabilityScoreCalculator {
     return 1.0
   }
 
+  fun computeSubjectMatch(lesson: Lesson, tutorProfile: Profile): Boolean {
+    return tutorProfile.subjects.contains(lesson.subject)
+  }
+
+  fun computeLanguageMatch(lesson: Lesson, tutorProfile: Profile): Boolean {
+    return lesson.languages.any { it in tutorProfile.languages }
+  }
+
   /**
    * Computes a smooth color based on the suitability score.
+   *
    * @param score The suitability score (0 to 100).
    * @return A Color object representing the score.
    */
-  fun getColorForScore(score: Int): Color {
+  fun getColorForScore(score: Int, isDarkTheme: Boolean): Color {
     val normalizedScore = (score / 100f).coerceIn(0f, 1f)
 
     // Define the colors for 0%, 50%, and 100%
     val red = Color(0xFFFF0000)
     val orange = Color(0xFFFFA500)
-    val green = Color(0xFF00FF00)
+    val green = if (isDarkTheme) Color(0xFF00FF00) else Color(0xFF009F00) // Darker green for light mode
 
     return when {
-      normalizedScore <= 0.5f -> lerp(red, orange, normalizedScore * 2) // Interpolate between red and orange
-      else -> lerp(orange, green, (normalizedScore - 0.5f) * 2) // Interpolate between orange and green
+      normalizedScore <= 0.5f ->
+          lerp(red, orange, normalizedScore * 2) // Interpolate between red and orange
+      else ->
+          lerp(orange, green, (normalizedScore - 0.5f) * 2) // Interpolate between orange and green
     }
   }
 }
