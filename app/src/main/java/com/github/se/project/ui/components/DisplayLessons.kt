@@ -162,11 +162,12 @@ fun DisplayLessons(
                               suitabilityScore?.let {
                                 Text(
                                     text = "Recommended at $it%",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold, // Make the text bold
-                                        color = SuitabilityScoreCalculator.getColorForScore(it, isSystemInDarkTheme())
-                                    )
-                                )
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold, // Make the text bold
+                                            color =
+                                                SuitabilityScoreCalculator.getColorForScore(
+                                                    it, isSystemInDarkTheme())))
                               }
                             }
 

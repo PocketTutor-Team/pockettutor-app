@@ -1,6 +1,5 @@
 package com.github.se.project.utils
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import com.github.se.project.model.lesson.Lesson
@@ -68,7 +67,8 @@ object SuitabilityScoreCalculator {
 
     val maxLevelDiff = AcademicLevel.entries.size - studentLevelIndex
     // Ensure the level difference is within bounds [0, maxLevelDiff]
-    val normalizedDifference = levelDifference.coerceIn(0, maxLevelDiff).toDouble() / maxLevelDiff.toDouble()
+    val normalizedDifference =
+        levelDifference.coerceIn(0, maxLevelDiff).toDouble() / maxLevelDiff.toDouble()
 
     val score = 0.3 + 0.7 * normalizedDifference
 
@@ -118,7 +118,8 @@ object SuitabilityScoreCalculator {
     // Define the colors for 0%, 50%, and 100%
     val red = Color(0xFFFF0000)
     val orange = Color(0xFFFFA500)
-    val green = if (isDarkTheme) Color(0xFF00FF00) else Color(0xFF009F00) // Darker green for light mode
+    val green =
+        if (isDarkTheme) Color(0xFF00FF00) else Color(0xFF009F00) // Darker green for light mode
 
     return when {
       normalizedScore <= 0.5f ->
