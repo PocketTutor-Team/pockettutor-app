@@ -10,7 +10,7 @@ ktfmt = "0.17.0"
 
 # UI Compose
 mockitoAndroid = "5.13.0"
-streamChatAndroidUiComponents = "4.13.0"
+streamChatAndroidUiComponents = "6.4.4"
 ui = "1.6.8"
 uiTestJunit4 = "1.6.8"
 uiTestManifest = "1.6.8"
@@ -72,6 +72,10 @@ fragmentKtx = "1.8.2"
 kotlinxSerializationJson = "1.6.2"
 androidxCoreKtx = "1.6.1"
 
+# stream chat
+streamChatCompose = "6.4.4"
+streamChatOffline = "6.4.4"
+
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistCoil" }
@@ -129,6 +133,9 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 stream-chat-android-ui-components = { module = "io.getstream:stream-chat-android-ui-components", version.ref = "streamChatAndroidUiComponents" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+
+stream-chat-compose = { module="io.getstream:stream-chat-android-compose", version.ref = "streamChatCompose"}
+stream-chat-offline = { module="io.getstream:stream-chat-android-offline", version.ref = "streamChatOffline"}
 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 
