@@ -160,9 +160,9 @@ fun DisplayLessons(
                               // Display the suitability score if available
                               suitabilityScore?.let {
                                 Text(
-                                    text = "Suitability Score: $it%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.primary)
+                                    text = "Recommended at $it%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                               }
                             }
 
