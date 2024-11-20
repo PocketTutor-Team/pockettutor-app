@@ -222,16 +222,7 @@ private fun TutorInfoSection(profile: Profile) {
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
         // Profile picture placeholder
-        Surface(
-            modifier = Modifier.size(48.dp),
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-              Icon(
-                  imageVector = Icons.Default.Person,
-                  contentDescription = null,
-                  modifier = Modifier.padding(8.dp).testTag("tutorProfilePicture"),
-                  tint = MaterialTheme.colorScheme.primary)
-            }
+        DisplayProfilePicture()
 
         // Tutor details
         Column(modifier = Modifier.weight(1f)) {
@@ -248,18 +239,7 @@ private fun TutorInfoSection(profile: Profile) {
 
         // Price and rating
         Column(horizontalAlignment = Alignment.End) {
-          Row {
-            Text(
-                text = "${profile.rating.averageRating}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.testTag("tutorRatingLabel"))
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = "Rating",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp).padding(start = 4.dp).testTag("tutorRatingIcon"))
-          }
+          DisplayRatingGrade(profile.rating.averageRating)
 
           Text(
               text = "${profile.price}.-/h",
@@ -335,16 +315,7 @@ private fun DisplayComments(comment: Comment, student: Profile) {
                   horizontalArrangement = Arrangement.spacedBy(8.dp),
                   verticalAlignment = Alignment.CenterVertically) {
                     // Profile picture placeholder
-                    Surface(
-                        modifier = Modifier.size(48.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-                          Icon(
-                              imageVector = Icons.Default.Person,
-                              contentDescription = null,
-                              modifier = Modifier.padding(8.dp).testTag("studentProfilePicture"),
-                              tint = MaterialTheme.colorScheme.primary)
-                        }
+                    DisplayProfilePicture()
 
                     // Student details
                     Column(modifier = Modifier.weight(1f)) {
@@ -363,21 +334,7 @@ private fun DisplayComments(comment: Comment, student: Profile) {
 
                     // Grade
                     Column(horizontalAlignment = Alignment.End) {
-                      Row {
-                        Text(
-                            text = "${comment.grade}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.testTag("studentRatingLabel"))
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier =
-                                Modifier.size(16.dp)
-                                    .padding(start = 4.dp)
-                                    .testTag("studentRatingIcon"))
-                      }
+                      DisplayRatingGrade(comment.grade.toDouble())
                     }
                   }
 
@@ -388,5 +345,35 @@ private fun DisplayComments(comment: Comment, student: Profile) {
                   style = MaterialTheme.typography.bodyMedium,
                   modifier = Modifier.testTag("studentComment"))
             }
+      }
+}
+
+@Composable
+private fun DisplayRatingGrade(grade: Double) {
+  Row {
+    Text(
+        text = "$grade",
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.testTag("tutorRatingLabel"))
+    Icon(
+        imageVector = Icons.Default.Star,
+        contentDescription = "Rating",
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(16.dp).padding(start = 4.dp).testTag("tutorRatingIcon"))
+  }
+}
+
+@Composable
+private fun DisplayProfilePicture() {
+  Surface(
+      modifier = Modifier.size(48.dp),
+      shape = MaterialTheme.shapes.medium,
+      color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)) {
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = null,
+            modifier = Modifier.padding(8.dp),
+            tint = MaterialTheme.colorScheme.primary)
       }
 }
