@@ -19,7 +19,7 @@ object SuitabilityScoreCalculator {
   fun calculateSuitabilityScore(
       lesson: Lesson,
       tutorProfile: Profile,
-      studentProfile: Profile
+      studentProfile: Profile?
   ): Int {
     // weights
     val W1 = 0.25 // schedule Compatibility
@@ -57,8 +57,12 @@ object SuitabilityScoreCalculator {
   // I would like to ask the coaches
   private fun computeAcademicLevelCompatibility(
       tutorProfile: Profile,
-      studentProfile: Profile
+      studentProfile: Profile?
   ): Double {
+    if (studentProfile == null) {
+      return 0.0 // return a default score if studentProfile is null
+    }
+
     val tutorLevelIndex = tutorProfile.academicLevel.ordinal
     val studentLevelIndex = studentProfile.academicLevel.ordinal
     val levelDifference = tutorLevelIndex - studentLevelIndex

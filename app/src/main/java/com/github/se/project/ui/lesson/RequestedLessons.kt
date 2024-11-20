@@ -73,11 +73,9 @@ fun RequestedLessonsScreen(
             val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
             // lessons are not visible if the tutor's language/subject does not match lesson
-            val tutorSubjectMatches =
-                computeSubjectMatch(lesson, currentProfile ?: return@filter false)
-            val languageMatches =
-                computeLanguageMatch(lesson, currentProfile ?: return@filter false)
 
+            val tutorSubjectMatches = computeSubjectMatch(lesson, currentProfile!!)
+            val languageMatches = computeLanguageMatch(lesson, currentProfile!!)
             dateMatches &&
                 subjectMatches &&
                 notAlreadyResponded &&
@@ -86,8 +84,7 @@ fun RequestedLessonsScreen(
           }
           .mapNotNull { lesson ->
             val studentProfile =
-                listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid }
-                    ?: return@mapNotNull null
+                listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid } ?: null
             val tutorProfile = currentProfile ?: return@mapNotNull null
 
             val score =
