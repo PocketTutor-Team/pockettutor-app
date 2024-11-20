@@ -1,6 +1,7 @@
 package com.github.se.project.ui.lesson
 
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -44,12 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.Comment
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.ErrorState
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +118,7 @@ fun SelectedTutorDetailsScreen(
                     colors =
                         CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-                      DisplayTutorDetails(tutorProfile)
+                      DisplayTutorDetails(tutorProfile, listProfilesViewModel)
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -186,7 +190,10 @@ fun SelectedTutorDetailsScreen(
 
 // Display the tutor details
 @Composable
-private fun DisplayTutorDetails(tutorProfile: Profile) {
+private fun DisplayTutorDetails(
+    tutorProfile: Profile,
+    listProfilesViewModel: ListProfilesViewModel
+) {
   Card(
       modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("tutorDetailsCard"),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
@@ -199,6 +206,11 @@ private fun DisplayTutorDetails(tutorProfile: Profile) {
 
               // Lesson information section
               TutorDescriptionSection(tutorProfile.description)
+
+              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+              // Tutor comments section
+              TutorCommentsSection(tutorProfile.rating.comments, listProfilesViewModel)
             }
       }
 }
@@ -234,8 +246,21 @@ private fun TutorInfoSection(profile: Profile) {
               modifier = Modifier.testTag("tutorAcademicInfo"))
         }
 
-        // Price
+        // Price and rating
         Column(horizontalAlignment = Alignment.End) {
+          Row {
+            Text(
+                text = "${profile.rating.averageRating}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.testTag("tutorRatingLabel"))
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = "Rating",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp).padding(start = 4.dp).testTag("tutorRatingIcon"))
+          }
+
           Text(
               text = "${profile.price}.-/h",
               style = MaterialTheme.typography.labelMedium,
@@ -261,5 +286,107 @@ private fun TutorDescriptionSection(description: String) {
               style = MaterialTheme.typography.bodyMedium,
               modifier = Modifier.testTag("tutorDescription"))
         }
+      }
+}
+
+@Composable
+private fun TutorCommentsSection(
+    comments: MutableList<Comment>,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.fillMaxWidth().testTag("tutorCommentsSection")) {
+        Text(
+            text = "Best reviews on this tutor",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("tutorCommentsTitle"))
+
+        if (comments.isEmpty()) {
+          Text(
+              text = "No reviews available.",
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.testTag("tutorCommentsEmpty"))
+        } else {
+          comments.sortByDescending { it.grade }
+          comments.take(3).forEach {
+            val student = listProfilesViewModel.getProfileById(it.raterUid)
+            if (student != null) {
+              DisplayComments(it, student)
+            }
+          }
+        }
+      }
+}
+
+@Composable
+private fun DisplayComments(comment: Comment, student: Profile) {
+  Card(
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(vertical = 8.dp)
+              .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
+              .testTag("commentCard"),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+        Column(
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = Alignment.CenterVertically) {
+                    // Profile picture placeholder
+                    Surface(
+                        modifier = Modifier.size(48.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
+                          Icon(
+                              imageVector = Icons.Default.Person,
+                              contentDescription = null,
+                              modifier = Modifier.padding(8.dp).testTag("studentProfilePicture"),
+                              tint = MaterialTheme.colorScheme.primary)
+                        }
+
+                    // Student details
+                    Column(modifier = Modifier.weight(1f)) {
+                      Text(
+                          text = "${student.firstName} ${student.lastName}",
+                          style = MaterialTheme.typography.titleMedium,
+                          modifier = Modifier.testTag("studentName"))
+
+                      Text(
+                          text =
+                              "Lesson booked on ${SimpleDateFormat("dd/MM/yyyy").format(comment.date.toDate())}",
+                          style = MaterialTheme.typography.bodyMedium,
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                          modifier = Modifier.testTag("studentCommentDate"))
+                    }
+
+                    // Grade
+                    Column(horizontalAlignment = Alignment.End) {
+                      Row {
+                        Text(
+                            text = "${comment.grade}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.testTag("studentRatingLabel"))
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier =
+                                Modifier.size(16.dp)
+                                    .padding(start = 4.dp)
+                                    .testTag("studentRatingIcon"))
+                      }
+                    }
+                  }
+
+              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+              Text(
+                  text = comment.comment,
+                  style = MaterialTheme.typography.bodyMedium,
+                  modifier = Modifier.testTag("studentComment"))
+            }
       }
 }

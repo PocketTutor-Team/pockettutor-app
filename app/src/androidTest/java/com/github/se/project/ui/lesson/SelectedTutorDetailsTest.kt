@@ -12,15 +12,19 @@ import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Comment
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Rating
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.google.firebase.Timestamp
+import java.util.Calendar
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
@@ -59,6 +63,7 @@ class SelectedTutorDetailsTest {
               section = Section.GM,
               academicLevel = AcademicLevel.MA2))
 
+  private val calendar = Calendar.getInstance().apply { set(2024, Calendar.OCTOBER, 19, 10, 0, 0) }
   private val tutorProfileFlow =
       MutableStateFlow(
           Profile(
@@ -74,7 +79,18 @@ class SelectedTutorDetailsTest {
               languages = listOf(Language.FRENCH, Language.ENGLISH),
               subjects = listOf(Subject.ANALYSIS, Subject.ALGEBRA),
               schedule = List(7) { List(12) { 0 } },
-              price = 30))
+              price = 30,
+              rating =
+                  Rating(
+                      averageRating = 5.0,
+                      totalRatings = 1,
+                      comments =
+                          mutableListOf(
+                              Comment(
+                                  grade = 5,
+                                  raterUid = studentProfileFlow.value.uid,
+                                  date = Timestamp(calendar.time),
+                                  comment = "Really great tutor!")))))
 
   private val lessonFlow =
       MutableStateFlow(
@@ -129,6 +145,13 @@ class SelectedTutorDetailsTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
+
+    whenever(profilesRepository.getProfiles(any(), any())).thenAnswer {
+      val onSuccess = it.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf(studentProfileFlow.value, tutorProfileFlow.value))
+    }
+
+    listProfilesViewModel.getProfiles()
   }
 
   @Test
@@ -150,7 +173,22 @@ class SelectedTutorDetailsTest {
     composeTestRule.onNodeWithTag("tutorName").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorAcademicInfo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorPrice").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorRatingLabel").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorRatingIcon").assertIsDisplayed()
+
+    // Check if the tutor description is correctly displayed
     composeTestRule.onNodeWithTag("tutorDescription").assertIsDisplayed()
+
+    // Check if comments are correctly displayed
+    composeTestRule.onNodeWithTag("tutorCommentsSection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorCommentsTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("commentCard").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentProfilePicture").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentName").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentCommentDate").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentRatingLabel").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentRatingIcon").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("studentComment").assertIsDisplayed()
 
     // Check if the confirmation button is correctly displayed
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
@@ -183,6 +221,20 @@ class SelectedTutorDetailsTest {
     // Verify the empty description message is displayed
     composeTestRule.onNodeWithTag("tutorDescriptionSection").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorDescriptionEmpty").assertIsDisplayed()
+  }
+
+  @Test
+  fun noReviewsIsDsiplayed_whenTutorHasNoReviews() {
+    // Set tutor profile to student
+    tutorProfileFlow.value = tutorProfileFlow.value.copy(rating = Rating(0.0, 0, mutableListOf()))
+
+    composeTestRule.setContent {
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Verify the no reviews message is displayed
+    composeTestRule.onNodeWithTag("tutorCommentsSection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorCommentsEmpty").assertIsDisplayed()
   }
 
   @Test
