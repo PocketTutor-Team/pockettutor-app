@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,14 +15,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,11 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.components.DisplayTutors
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
@@ -81,20 +75,7 @@ fun TutorMatchingScreen(
         }
       }
 
-  var showConfirmDialog by remember { mutableStateOf(false) }
   val context = LocalContext.current
-  var chosenTutor by remember {
-    mutableStateOf(
-        Profile(
-            "ERROR",
-            "ERROR",
-            "ERROR",
-            "ERROR",
-            "000000000",
-            Role.TUTOR,
-            Section.IN,
-            AcademicLevel.BA1))
-  }
 
   Scaffold(
       topBar = {
@@ -161,60 +142,10 @@ fun TutorMatchingScreen(
                         .testTag("tutorsList"),
                 tutors = filteredTutor,
                 onCardClick = { tutor ->
-                  // TODO: replace this by a screen to see the different rankings
-
-                  chosenTutor = tutor
-                  showConfirmDialog = true
+                  listProfilesViewModel.selectProfile(tutor)
+                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
                 })
           }
-        }
-
-        // Confirmation Dialog
-        if (showConfirmDialog) {
-          AlertDialog(
-              modifier = Modifier.testTag("confirmDialog"),
-              onDismissRequest = { showConfirmDialog = false },
-              title = {
-                Text(
-                    text = "Confirm Your Choice", modifier = Modifier.testTag("confirmDialogTitle"))
-              },
-              text = {
-                Text(
-                    text =
-                        "Would you like to choose this tutor for your lesson and pay a price of ${chosenTutor.price}.-/hour?",
-                    modifier = Modifier.testTag("confirmDialogText"))
-              },
-              confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("confirmDialogButton"),
-                    onClick = {
-                      lessonViewModel.addLesson(
-                          currentLesson.copy(
-                              tutorUid = listOf(chosenTutor.uid),
-                              price = chosenTutor.price.toDouble(),
-                              status =
-                                  if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
-                                      LessonStatus.CONFIRMED
-                                  else LessonStatus.PENDING_TUTOR_CONFIRMATION,
-                          ),
-                          onComplete = {
-                            lessonViewModel.getLessonsForStudent(currentProfile.uid)
-                            Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
-                                .show()
-                            navigationActions.navigateTo(Screen.HOME)
-                          })
-                    }) {
-                      Modifier.testTag("confirmButton")
-                      Text("Confirm")
-                    }
-              },
-              dismissButton = {
-                TextButton(
-                    modifier = Modifier.testTag("confirmDialogCancelButton"),
-                    onClick = { showConfirmDialog = false }) {
-                      Text("Cancel")
-                    }
-              })
         }
       }
 }
