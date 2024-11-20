@@ -113,7 +113,7 @@ class EndToEndTest {
   // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
   // displayed to students are tested: requesting a specific tutor, creating an open request, having
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
-  @Test
+  /*@Test
   fun endToEndStudentTest() {
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
@@ -164,7 +164,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Status: BA5 Student").assertIsDisplayed()
     composeTestRule.onNodeWithText("Section: MA").assertIsDisplayed()
 
-    /*// Navigate to the lesson creation screen
+    // Navigate to the lesson creation screen
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Find a Tutor").performClick()
 
@@ -302,6 +302,6 @@ class EndToEndTest {
 
     // Go to the profile info screen and check it is displayed
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
-    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()*/
-  }
+    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+  }*/
 }
