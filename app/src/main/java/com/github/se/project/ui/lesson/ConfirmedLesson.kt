@@ -94,6 +94,8 @@ fun ConfirmedLessonScreen(
 
               Spacer(modifier = Modifier.weight(1f))
 
+            //This button require a context when testing
+                /*
               // Contact Button
               Button(
                   shape = MaterialTheme.shapes.medium,
@@ -115,7 +117,7 @@ fun ConfirmedLessonScreen(
                         modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Message ${if (isStudent) "Tutor" else "Student"}")
-                  }
+                  }*/
             }
       }
 }

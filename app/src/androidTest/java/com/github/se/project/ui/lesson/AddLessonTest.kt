@@ -132,9 +132,17 @@ class AddLessonTest {
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
+      composeTestRule.waitForIdle()
+      composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+        composeTestRule.onNodeWithTag("googleMap").isDisplayed()
+      }
+      composeTestRule.onNodeWithTag("googleMap")
+          .performTouchInput { click(center) }
+      /*
     Thread.sleep(2000) // Wait for the map to load
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.click(device.displayWidth / 2, device.displayHeight / 2)
+       */
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
