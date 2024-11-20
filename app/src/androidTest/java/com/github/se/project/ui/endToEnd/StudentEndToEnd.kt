@@ -2,19 +2,19 @@ package com.github.se.project.ui.endToEnd
 
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.uiautomator.UiDevice
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -120,13 +120,12 @@ class EndToEndTest {
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
   fun endToEndStudentTest() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     // Start the app in test mode
     composeTestRule.setContent {
       PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
     }
-    Thread.sleep(50000)
+    composeTestRule.waitForIdle()
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -187,9 +186,10 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    composeTestRule.onNodeWithTag("mapContainer").performTouchInput { click(center) }
+    Thread.sleep(5000)
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
@@ -219,9 +219,10 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    composeTestRule.onNodeWithTag("mapContainer").performTouchInput { click(center) }
+    Thread.sleep(5000)
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 

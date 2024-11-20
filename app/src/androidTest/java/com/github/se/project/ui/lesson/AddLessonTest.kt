@@ -3,12 +3,10 @@ package com.github.se.project.ui.lesson
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.uiautomator.UiDevice
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -131,10 +129,10 @@ class AddLessonTest {
 
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    composeTestRule.onNodeWithTag("mapContainer").performTouchInput { click(center) }
+    Thread.sleep(5000)
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
