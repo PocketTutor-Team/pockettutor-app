@@ -19,9 +19,9 @@ object SuitabilityScoreCalculator {
       studentProfile: Profile
   ): Int {
     // weights
-    val W1 = 0.35 // subject Match
-    val W2 = 0.20 // schedule Compatibility
-    val W3 = 0.15 // academic Level Compatibility
+    val W1 = 0.30 // subject Match
+    val W2 = 0.15 // schedule Compatibility
+    val W3 = 0.10 // academic Level Compatibility
     val W4 = 0.25 // language Match
     val W5 = 0.10 // price Compatibility
     val W6 = 0.10 // distance Proximity
@@ -35,7 +35,7 @@ object SuitabilityScoreCalculator {
     val X6 = computeDistanceProximity(lesson, tutorProfile)
 
     // Compute the total score
-    val score = (W1 * X1 + W2 * X2 + W4 * X4 + W5 * X5 + W6 * X6) * 100
+    val score = (W1 * X1 + W2 * X2 + W3 * X3 + W4 * X4 + W5 * X5 + W6 * X6) * 100
 
     return score.toInt()
   }
