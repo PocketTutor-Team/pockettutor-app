@@ -170,7 +170,6 @@ fun SelectedTutorDetailsScreen(
                             navigationActions.navigateTo(Screen.HOME)
                           })
                     }) {
-                      Modifier.testTag("confirmButton")
                       Text("Confirm")
                     }
               },
@@ -218,7 +217,7 @@ private fun TutorInfoSection(profile: Profile) {
               Icon(
                   imageVector = Icons.Default.Person,
                   contentDescription = null,
-                  modifier = Modifier.padding(8.dp),
+                  modifier = Modifier.padding(8.dp).testTag("tutorProfilePicture"),
                   tint = MaterialTheme.colorScheme.primary)
             }
 
@@ -240,7 +239,8 @@ private fun TutorInfoSection(profile: Profile) {
           Text(
               text = "${profile.price}.-/h",
               style = MaterialTheme.typography.labelMedium,
-              color = MaterialTheme.colorScheme.primary)
+              color = MaterialTheme.colorScheme.primary,
+              modifier = Modifier.testTag("tutorPrice"))
         }
       }
 }
