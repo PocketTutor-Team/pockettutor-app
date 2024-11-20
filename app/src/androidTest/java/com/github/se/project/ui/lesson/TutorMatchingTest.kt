@@ -1,11 +1,43 @@
 package com.github.se.project.ui.lesson
 
-import androidx.compose.ui.test.*
+/*import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 
-/*class TutorMatchingScreenTest {
+class TutorMatchingScreenTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
 
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
@@ -165,43 +197,8 @@ import androidx.compose.ui.test.*
     composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
 
-    // Check if the dialog is displayed
-    composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
-    composeTestRule
-        .onNodeWithTag("confirmDialogTitle")
-        .assertIsDisplayed()
-        .assertTextEquals("Confirm Your Choice")
-    composeTestRule
-        .onNodeWithTag("confirmDialogText")
-        .assertIsDisplayed()
-        .assertTextEquals(
-            "Would you like to choose this tutor for your lesson and pay a price of 30.-/hour?")
-    composeTestRule.onNodeWithTag("confirmDialogButton").assertIsDisplayed().performClick()
-
-    // Verify the lesson is updated and the user is navigated to the home screen
-    verify(lessonRepository).addLesson(any(), any(), any())
-    verify(navigationActions).navigateTo(Screen.HOME)
-  }
-
-  @Test
-  fun selectThenDismissLessonWithTutor() {
-    composeTestRule.setContent {
-      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-
-    // Select a tutor
-    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed().performClick()
-
-    // Check if the dialog is displayed
-    composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmDialogTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmDialogText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmDialogCancelButton").assertIsDisplayed().performClick()
-
-    // Verify the lesson is updated and the user is navigated to the home screen
-    composeTestRule.onNodeWithTag("confirmDialog").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+    // Verify the user is navigated to the selected tutor screen
+    verify(navigationActions).navigateTo(Screen.SELECTED_TUTOR_DETAILS)
   }
 
   @Test
