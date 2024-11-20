@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.components.LessonLocationDisplay
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -70,6 +72,7 @@ fun TutorLessonResponseScreen(
   val context = LocalContext.current
 
   var showDeclineDialog by remember { mutableStateOf(false) }
+  Log.e("InstantTesting", "Response Setup")
 
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
@@ -177,22 +180,38 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
-                      lessonViewModel.updateLesson(
-                          lesson.copy(
-                              tutorUid = lesson.tutorUid + currentProfile.uid,
-                              price = currentProfile.price.toDouble(),
-                              status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
-                                      LessonStatus.CONFIRMED
-                                  else LessonStatus.STUDENT_REQUESTED,
-                          ),
-                          onComplete = {
-                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                            lessonViewModel.getAllRequestedLessons()
-                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                .show()
-                            navigationActions.navigateTo(Screen.HOME)
-                          })
+                      if (isInstant(lesson) &&
+                          lessonViewModel.currentUserLessons.value.any {
+                            it.status == LessonStatus.INSTANT_CONFIRMED
+                          }) {
+                        Toast.makeText(
+                                context,
+                                "You already have an instant lesson scheduled!",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      } else
+                          lessonViewModel.updateLesson(
+                              lesson.copy(
+                                  tutorUid = lesson.tutorUid + currentProfile.uid,
+                                  price = currentProfile.price.toDouble(),
+                                  status =
+                                      if (lesson.status ==
+                                          LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+                                        LessonStatus.CONFIRMED
+                                      } else if (isInstant(lesson)) {
+                                        LessonStatus.INSTANT_CONFIRMED
+                                      } else {
+                                        LessonStatus.STUDENT_REQUESTED
+                                      },
+                              ),
+                              onComplete = {
+                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                                lessonViewModel.getAllRequestedLessons()
+                                Toast.makeText(
+                                        context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                    .show()
+                                navigationActions.navigateTo(Screen.HOME)
+                              })
                     }) {
                       Text("Confirm")
                     }

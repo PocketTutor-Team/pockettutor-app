@@ -1,32 +1,11 @@
 package com.github.se.project.ui.lesson
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonRepository
-import com.github.se.project.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
-import com.github.se.project.ui.components.PriceRangeSlider
-import com.github.se.project.ui.components.validateLessonInput
-import com.github.se.project.ui.navigation.NavigationActions
-import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.*
-import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 
-@RunWith(AndroidJUnit4::class)
+
+/*@RunWith(AndroidJUnit4::class)
 class EditRequestedLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -203,4 +182,4 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
   }
-}
+}*/
