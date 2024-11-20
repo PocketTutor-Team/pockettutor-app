@@ -150,7 +150,9 @@ fun TutorMatchingScreen(
             Text(
                 text =
                     "No tutor available for your lesson: go back to change your lesson or click on the button to wait for a tutor to choose your lesson.",
-                modifier = Modifier.align(Alignment.Center).testTag("noTutorMessage"))
+                modifier =
+                    Modifier.align(Alignment.Center).padding(16.dp).testTag("noTutorMessage"),
+                style = MaterialTheme.typography.bodyMedium)
           } else {
             DisplayTutors(
                 modifier =
@@ -217,7 +219,31 @@ fun TutorMatchingScreen(
       }
 }
 
-// TODO: fill this function
 fun isTutorAvailable(tutorSchedule: List<List<Int>>, timeSlot: String): Boolean {
-  return true
+  if (tutorSchedule.size != 7 || tutorSchedule.any { it.size != 12 }) {
+    throw IllegalArgumentException("Invalid schedule dimensions")
+  }
+
+  try {
+    // Parse dd/MM/yyyyTHH:mm:ss format
+    val parts = timeSlot.split("T")
+    val dateParts = parts[0].split("/")
+    val timeParts = parts[1].split(":")
+
+    // Extract day and hour
+    val date =
+        java.time.LocalDate.of(dateParts[2].toInt(), dateParts[1].toInt(), dateParts[0].toInt())
+    val hour = timeParts[0].toInt()
+
+    val dayIndex = (date.dayOfWeek.value - 1) % 7
+    val hourIndex = hour - 8
+
+    if (hourIndex !in 0..11) {
+      return false
+    }
+
+    return tutorSchedule[dayIndex][hourIndex] == 1
+  } catch (e: Exception) {
+    throw IllegalArgumentException("Invalid timeSlot format. Expected: dd/MM/yyyyTHH:mm:ss")
+  }
 }
