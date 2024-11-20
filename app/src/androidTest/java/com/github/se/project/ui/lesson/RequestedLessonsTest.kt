@@ -16,6 +16,22 @@ import com.github.se.project.model.profile.*
 
   private lateinit var navigationActions: NavigationActions
 
+  private val mockTutorProfile =
+      Profile(
+          uid = "100",
+          googleUid = "150",
+          firstName = "Romeo",
+          lastName = "Tutor",
+          phoneNumber = "1234567890",
+          role = Role.TUTOR,
+          section = Section.IN,
+          academicLevel = AcademicLevel.MA2,
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.PHYSICS, Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 30)
+  private val currentUserFlow = MutableStateFlow(mockTutorProfile)
+
   private val mockLessons =
       listOf(
           Lesson(
@@ -43,7 +59,7 @@ import com.github.se.project.model.profile.*
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
-              status = LessonStatus.MATCHING,
+              status = LessonStatus.STUDENT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
@@ -69,6 +85,8 @@ import com.github.se.project.model.profile.*
 
     doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
     doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
+
+    doReturn(currentUserFlow).`when`(listProfilesViewModel).currentProfile
 
     doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }
@@ -116,7 +134,6 @@ import com.github.se.project.model.profile.*
     composeTestRule.setContent {
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
-
     // Verify that only the filtered lesson items are displayed
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()

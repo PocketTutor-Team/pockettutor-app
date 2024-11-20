@@ -1,6 +1,7 @@
 package com.github.se.project.ui.lesson
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,9 @@ import com.github.se.project.ui.components.calculateDistance
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.github.se.project.ui.navigation.*
+import com.github.se.project.utils.SuitabilityScoreCalculator
+import com.github.se.project.utils.SuitabilityScoreCalculator.computeLanguageMatch
+import com.github.se.project.utils.SuitabilityScoreCalculator.computeSubjectMatch
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -72,42 +76,65 @@ fun RequestedLessonsScreen(
   }
 
   // Update lessons when screen is launched
-  LaunchedEffect(Unit) { lessonViewModel.getAllRequestedLessons() }
+  LaunchedEffect(Unit) {
+    lessonViewModel.getAllRequestedLessons()
+    listProfilesViewModel.getProfiles()
+  }
 
   // Filter lessons
-  var filteredLessons =
-      requestedLessons.filter { lesson ->
-        val dateMatches =
-            selectedDate?.let { date -> parseLessonDate(lesson.timeSlot)?.toLocalDate() == date }
-                ?: true
+  var filteredLessonsWithScores =
+      requestedLessons
+          .filter { lesson ->
+            val dateMatches =
+                selectedDate?.let { date ->
+                  parseLessonDate(lesson.timeSlot)?.toLocalDate() == date
+                } ?: true
 
-        val subjectMatches = selectedSubject?.let { subject -> lesson.subject == subject } ?: true
+            val subjectMatches =
+                selectedSubject?.let { subject -> lesson.subject == subject } ?: true
 
-        val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
+            val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
-        val instantaneityCorresponds = isInstant(lesson) == showInstants.value
+            val instantaneityCorresponds = isInstant(lesson) == showInstants.value
 
-        val lessonLocation = LatLng(lesson.latitude, lesson.longitude)
+            val lessonLocation = LatLng(lesson.latitude, lesson.longitude)
 
-        val distanceFilter =
-            (!showInstants.value) ||
-                (maxDistance.value == 5100) ||
-                calculateDistance(userLocation, lessonLocation) < maxDistance.value
+            val distanceFilter =
+                (!showInstants.value) ||
+                    (maxDistance.value == 5100) ||
+                    calculateDistance(userLocation, lessonLocation) < maxDistance.value
 
-        dateMatches &&
-            subjectMatches &&
-            notAlreadyResponded &&
-            instantaneityCorresponds &&
-            distanceFilter
-      }
+            val tutorSubjectMatches = computeSubjectMatch(lesson, currentProfile!!)
+            val languageMatches = computeLanguageMatch(lesson, currentProfile!!)
+
+            dateMatches &&
+                subjectMatches &&
+                notAlreadyResponded &&
+                instantaneityCorresponds &&
+                distanceFilter &&
+                tutorSubjectMatches &&
+                languageMatches
+          }
+          .mapNotNull { lesson ->
+            val studentProfile =
+                listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid } ?: null
+            val tutorProfile = currentProfile ?: return@mapNotNull null
+
+            val score =
+                SuitabilityScoreCalculator.calculateSuitabilityScore(
+                    lesson, tutorProfile, studentProfile)
+            lesson to score
+          }
+          .sortedByDescending { it.second }
 
   if (showInstants.value) {
-    filteredLessons =
-        filteredLessons.sortedBy {
-          calculateDistance(userLocation, LatLng(it.latitude, it.longitude))
+    filteredLessonsWithScores =
+        filteredLessonsWithScores.sortedBy {
+          calculateDistance(userLocation, LatLng(it.first.latitude, it.first.longitude))
         }
   } else {
-    filteredLessons = filteredLessons.sortedBy { parseLessonDate(it.timeSlot) }
+    filteredLessonsWithScores =
+        filteredLessonsWithScores.sortedBy { parseLessonDate(it.first.timeSlot) }
   }
 
   Scaffold(
@@ -138,23 +165,25 @@ fun RequestedLessonsScreen(
           }
 
           Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-            if (filteredLessons.isEmpty()) {
+            if (filteredLessonsWithScores.isEmpty()) {
               EmptyState(showInstants)
             } else {
               LazyColumn(
                   modifier = Modifier.fillMaxSize().testTag("lessonsList"),
                   contentPadding = PaddingValues(horizontal = 16.dp),
                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(filteredLessons.size) { index ->
+                    items(filteredLessonsWithScores.size) { index ->
+                      val (lesson, score) = filteredLessonsWithScores[index]
                       DisplayLessons(
-                          lessons = listOf(filteredLessons[index]),
+                          lessons = listOf(lesson),
                           isTutor = (currentProfile?.role == Role.TUTOR),
                           onCardClick = { lesson ->
                             lessonViewModel.selectLesson(lesson)
                             navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
                           },
                           listProfilesViewModel = listProfilesViewModel,
-                          requestedScreen = true)
+                          requestedScreen = true,
+                          suitabilityScore = score)
                     }
                   }
             }
@@ -371,6 +400,7 @@ private fun parseLessonDate(timeSlot: String): LocalDateTime? {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
     LocalDateTime.parse(timeSlot, formatter)
   } catch (e: Exception) {
+    Log.e("RequestedLessonsScreen", "Error parsing date: $timeSlot", e)
     null
   }
 }

@@ -30,12 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
+import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
@@ -97,7 +99,8 @@ fun DisplayLessons(
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel,
-    requestedScreen: Boolean = false
+    requestedScreen: Boolean = false,
+    suitabilityScore: Int? = null
 ) {
   val filteredLessons =
       statusFilter?.let {
@@ -161,6 +164,18 @@ fun DisplayLessons(
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
+
+                              // Display the suitability score if available
+                              suitabilityScore?.let {
+                                Text(
+                                    text = "Recommended at $it%",
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold, // Make the text bold
+                                            color =
+                                                SuitabilityScoreCalculator.getColorForScore(
+                                                    it, isSystemInDarkTheme())))
+                              }
                             }
 
                         Surface(
