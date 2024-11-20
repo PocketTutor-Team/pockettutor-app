@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorState(message: String) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("errorStateColumn"),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+  Column(
+      modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("errorStateColumn"),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center) {
         Icon(
             Icons.Default.Close,
             contentDescription = null,
@@ -35,5 +35,5 @@ fun ErrorState(message: String) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.testTag("errorMessage"))
-    }
+      }
 }

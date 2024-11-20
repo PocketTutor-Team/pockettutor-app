@@ -14,14 +14,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,69 +54,68 @@ import com.github.se.project.ui.navigation.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectedTutorDetailsScreen(
-    listProfilesViewModel: ListProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions
 ) {
-    val tutorProfile =
-        listProfilesViewModel.selectedProfile.collectAsState().value
-            ?: return Text("No profile selected. Should not happen.")
+  val tutorProfile =
+      listProfilesViewModel.selectedProfile.collectAsState().value
+          ?: return Text("No profile selected. Should not happen.")
 
-    val currentProfile =
-        listProfilesViewModel.currentProfile.collectAsState().value
-            ?: return Text("No profile selected. Should not happen.")
+  val currentProfile =
+      listProfilesViewModel.currentProfile.collectAsState().value
+          ?: return Text("No profile selected. Should not happen.")
 
-    val currentLesson =
-        lessonViewModel.selectedLesson.collectAsState().value
-            ?: return Text("No lesson selected. Should not happen.")
+  val currentLesson =
+      lessonViewModel.selectedLesson.collectAsState().value
+          ?: return Text("No lesson selected. Should not happen.")
 
-    val context = LocalContext.current
-    var showConfirmDialog by remember { mutableStateOf(false) }
+  val context = LocalContext.current
+  var showConfirmDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                modifier = Modifier.testTag("topBar"),
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navigationActions.goBack() },
-                        modifier = Modifier.testTag("backButton")) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back")
-                    }
-                },
-                title = {
-                    Text(
-                        text = "Available Tutors",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.testTag("confirmLessonTitle"))
-
-                })
-        }
-    ) { paddingValues ->
+  Scaffold(
+      containerColor = MaterialTheme.colorScheme.background,
+      topBar = {
+        TopAppBar(
+            modifier = Modifier.testTag("topBar"),
+            navigationIcon = {
+              IconButton(
+                  onClick = { navigationActions.goBack() },
+                  modifier = Modifier.testTag("backButton")) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back")
+                  }
+            },
+            title = {
+              Text(
+                  text = "Available Tutors",
+                  style = MaterialTheme.typography.titleLarge,
+                  modifier = Modifier.testTag("confirmLessonTitle"))
+            })
+      }) { paddingValues ->
         Column(
             modifier =
-            Modifier.fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
-                .testTag("selectedTutorDetailsScreen"),
+                Modifier.fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .testTag("selectedTutorDetailsScreen"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            // Check if the given profile is a tutor
-            if (tutorProfile.role != Role.TUTOR) {
+              // Check if the given profile is a tutor
+              if (tutorProfile.role != Role.TUTOR) {
                 ErrorState(message = "No tutor selected. Should not happen.")
-
-            } else {
+              } else {
                 // Tutor information card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-                    DisplayTutorDetails(tutorProfile)
-                }
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                      DisplayTutorDetails(tutorProfile)
+                    }
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -124,149 +123,143 @@ fun SelectedTutorDetailsScreen(
                 Button(
                     shape = MaterialTheme.shapes.medium,
                     onClick = { showConfirmDialog = true },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
-                    Icon(
-                        Icons.Default.Send,
-                        contentDescription = "Confirmation Button Icon",
-                        modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Confirm your lesson")
-                }
+                    modifier =
+                        Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
+                      Icon(
+                          Icons.AutoMirrored.Filled.Send,
+                          contentDescription = "Confirmation Button Icon",
+                          modifier = Modifier.size(20.dp))
+                      Spacer(modifier = Modifier.width(8.dp))
+                      Text("Confirm your lesson")
+                    }
+              }
             }
-        }
 
         // Confirmation Dialog
         if (showConfirmDialog) {
-            AlertDialog(
-                modifier = Modifier.testTag("confirmDialog"),
-                onDismissRequest = { showConfirmDialog = false },
-                title = {
-                    Text(
-                        text = "Confirm Your Choice", modifier = Modifier.testTag("confirmDialogTitle"))
-                },
-                text = {
-                    Text(
-                        text = "Would you like to choose ${tutorProfile.firstName} ${tutorProfile.lastName} for your lesson and pay a price of ${tutorProfile.price}.-/hour?",
-                        modifier = Modifier.testTag("confirmDialogText"))
-                },
-                confirmButton = {
-                    Button(
-                        modifier = Modifier.testTag("confirmDialogButton"),
-                        onClick = {
-                            lessonViewModel.addLesson(
-                                currentLesson.copy(
-                                    tutorUid = listOf(tutorProfile.uid),
-                                    price = tutorProfile.price.toDouble(),
-                                    status =
-                                        if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
-                                            LessonStatus.CONFIRMED
-                                        else LessonStatus.PENDING_TUTOR_CONFIRMATION,
-                                ),
-                                onComplete = {
-                                    lessonViewModel.getLessonsForStudent(currentProfile.uid)
-                                    Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
-                                        .show()
-                                    navigationActions.navigateTo(Screen.HOME)
-                                })
-                        }) {
-                        Modifier.testTag("confirmButton")
-                        Text("Confirm")
+          AlertDialog(
+              modifier = Modifier.testTag("confirmDialog"),
+              onDismissRequest = { showConfirmDialog = false },
+              title = {
+                Text(
+                    text = "Confirm Your Choice", modifier = Modifier.testTag("confirmDialogTitle"))
+              },
+              text = {
+                Text(
+                    text =
+                        "Would you like to choose ${tutorProfile.firstName} ${tutorProfile.lastName} for your lesson and pay a price of ${tutorProfile.price}.-/hour?",
+                    modifier = Modifier.testTag("confirmDialogText"))
+              },
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("confirmDialogButton"),
+                    onClick = {
+                      lessonViewModel.addLesson(
+                          currentLesson.copy(
+                              tutorUid = listOf(tutorProfile.uid),
+                              price = tutorProfile.price.toDouble(),
+                              status =
+                                  if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
+                                      LessonStatus.CONFIRMED
+                                  else LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                          ),
+                          onComplete = {
+                            lessonViewModel.getLessonsForStudent(currentProfile.uid)
+                            Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
+                                .show()
+                            navigationActions.navigateTo(Screen.HOME)
+                          })
+                    }) {
+                      Modifier.testTag("confirmButton")
+                      Text("Confirm")
                     }
-                },
-                dismissButton = {
-                    TextButton(
-                        modifier = Modifier.testTag("confirmDialogCancelButton"),
-                        onClick = { showConfirmDialog = false }) {
-                        Text("Cancel")
+              },
+              dismissButton = {
+                TextButton(
+                    modifier = Modifier.testTag("confirmDialogCancelButton"),
+                    onClick = { showConfirmDialog = false }) {
+                      Text("Cancel")
                     }
-                })
+              })
         }
-    }
+      }
 }
-
 
 // Display the tutor details
 @Composable
-private fun DisplayTutorDetails(
-    tutorProfile: Profile
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("tutorDetailsCard"),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+private fun DisplayTutorDetails(tutorProfile: Profile) {
+  Card(
+      modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("tutorDetailsCard"),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Tutor information section
-            TutorInfoSection(tutorProfile)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+              // Tutor information section
+              TutorInfoSection(tutorProfile)
 
-            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            // Lesson information section
-            TutorDescriptionSection(tutorProfile.description)
-        }
-    }
+              // Lesson information section
+              TutorDescriptionSection(tutorProfile.description)
+            }
+      }
 }
 
 @Composable
 private fun TutorInfoSection(profile: Profile) {
-    Row(
-        modifier = Modifier.fillMaxWidth().testTag("tutorInfoRow"),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+  Row(
+      modifier = Modifier.fillMaxWidth().testTag("tutorInfoRow"),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically) {
         // Profile picture placeholder
         Surface(
             modifier = Modifier.size(48.dp),
             shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                modifier = Modifier.padding(8.dp),
-                tint = MaterialTheme.colorScheme.primary)
-        }
+              Icon(
+                  imageVector = Icons.Default.Person,
+                  contentDescription = null,
+                  modifier = Modifier.padding(8.dp),
+                  tint = MaterialTheme.colorScheme.primary)
+            }
 
         // Tutor details
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "${profile.firstName} ${profile.lastName}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.testTag("tutorName"))
-            Text(
-                text = "${profile.section} - ${profile.academicLevel}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag("tutorAcademicInfo"))
+          Text(
+              text = "${profile.firstName} ${profile.lastName}",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("tutorName"))
+          Text(
+              text = "${profile.section} - ${profile.academicLevel}",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.testTag("tutorAcademicInfo"))
         }
 
         // Price
         Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = "${profile.price}.-/h",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary)
+          Text(
+              text = "${profile.price}.-/h",
+              style = MaterialTheme.typography.labelMedium,
+              color = MaterialTheme.colorScheme.primary)
         }
-    }
+      }
 }
 
 @Composable
 private fun TutorDescriptionSection(description: String) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth().testTag("tutorDescriptionSection")
-    ) {
+  Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.fillMaxWidth().testTag("tutorDescriptionSection")) {
         if (description.isEmpty()) {
-            Text(
-                text = "No description available.",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.testTag("tutorDescriptionEmpty"))
+          Text(
+              text = "No description available.",
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.testTag("tutorDescriptionEmpty"))
         } else {
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.testTag("tutorDescription"))
+          Text(
+              text = description,
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.testTag("tutorDescription"))
         }
-    }
+      }
 }

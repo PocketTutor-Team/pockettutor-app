@@ -140,8 +140,8 @@ fun TutorMatchingScreen(
                         .testTag("tutorsList"),
                 tutors = filteredTutor,
                 onCardClick = { tutor ->
-                    listProfilesViewModel.selectProfile(tutor)
-                    navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                  listProfilesViewModel.selectProfile(tutor)
+                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
                 })
           }
         }

@@ -113,12 +113,12 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
     currentProfile_.value = profile
   }
 
-    /**
-     * Selects a Profile document
-     *
-     * @param profile the profile to select
-     */
-    fun selectProfile(profile: Profile) {
-        selectedProfile_.value = profile
-    }
+  /**
+   * Selects a Profile document
+   *
+   * @param profile the profile to select
+   */
+  fun selectProfile(profile: Profile) {
+    selectedProfile_.value = profile
+  }
 }
