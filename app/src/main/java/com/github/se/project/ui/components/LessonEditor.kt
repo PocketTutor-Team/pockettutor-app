@@ -499,7 +499,8 @@ fun validateLessonInput(
 }
 
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false || (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false ||
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
 }
 
 fun isInstant(timeSlot: String): Boolean {

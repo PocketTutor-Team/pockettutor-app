@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -37,7 +36,6 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import com.github.se.project.ui.theme.Shapes
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
@@ -110,7 +108,8 @@ fun DisplayLessons(
     filteredLessons.forEachIndexed { index, lesson ->
       var otherUserProfile by remember { mutableStateOf<Profile?>(null) }
 
-      if (lesson.status == LessonStatus.CONFIRMED || lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+      if (lesson.status == LessonStatus.CONFIRMED ||
+          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
         LaunchedEffect(lesson) {
           otherUserProfile =
               if (isTutor) {
@@ -180,7 +179,8 @@ fun DisplayLessons(
                       }
 
                   if (lesson.status == LessonStatus.COMPLETED ||
-                      lesson.status == LessonStatus.CONFIRMED || lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+                      lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     Divider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))

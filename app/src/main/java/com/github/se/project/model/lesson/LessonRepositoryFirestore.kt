@@ -32,23 +32,23 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       onSuccess: (List<Lesson>) -> Unit,
       onFailure: (Exception) -> Unit
   ) {
-      val filter = Filter.inArray("status", listOf(LessonStatus.STUDENT_REQUESTED.name, LessonStatus.INSTANT_REQUESTED.name))
-    db.collection(collectionPath)
-        .where(filter)
-        .get()
-        .addOnCompleteListener { task ->
-          if (task.isSuccessful) {
-            val lessons =
-                task.result?.documents?.mapNotNull { document -> documentToLesson(document) }
-                    ?: emptyList()
-            onSuccess(lessons)
-          } else {
-            task.exception?.let { e ->
-              Log.e("LessonRepositoryFirestore", "Error getting requested lessons", e)
-              onFailure(e)
-            }
-          }
+    val filter =
+        Filter.inArray(
+            "status",
+            listOf(LessonStatus.STUDENT_REQUESTED.name, LessonStatus.INSTANT_REQUESTED.name))
+    db.collection(collectionPath).where(filter).get().addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        val lessons =
+            task.result?.documents?.mapNotNull { document -> documentToLesson(document) }
+                ?: emptyList()
+        onSuccess(lessons)
+      } else {
+        task.exception?.let { e ->
+          Log.e("LessonRepositoryFirestore", "Error getting requested lessons", e)
+          onFailure(e)
         }
+      }
+    }
   }
 
   // General method to retrieve lessons based on a user field (tutor or student)

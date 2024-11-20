@@ -180,29 +180,38 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
-                        if(isInstant(lesson) && lessonViewModel.currentUserLessons.value.any { it.status == LessonStatus.INSTANT_CONFIRMED }){
-                            Toast.makeText(context, "You already have an instant lesson scheduled!", Toast.LENGTH_SHORT).show()
-                        }
-                        else
-                      lessonViewModel.updateLesson(
-                          lesson.copy(
-                              tutorUid = lesson.tutorUid + currentProfile.uid,
-                              price = currentProfile.price.toDouble(),
-                              status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION){
-                                      LessonStatus.CONFIRMED}
-                                  else if(isInstant(lesson)){
+                      if (isInstant(lesson) &&
+                          lessonViewModel.currentUserLessons.value.any {
+                            it.status == LessonStatus.INSTANT_CONFIRMED
+                          }) {
+                        Toast.makeText(
+                                context,
+                                "You already have an instant lesson scheduled!",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      } else
+                          lessonViewModel.updateLesson(
+                              lesson.copy(
+                                  tutorUid = lesson.tutorUid + currentProfile.uid,
+                                  price = currentProfile.price.toDouble(),
+                                  status =
+                                      if (lesson.status ==
+                                          LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+                                        LessonStatus.CONFIRMED
+                                      } else if (isInstant(lesson)) {
                                         LessonStatus.INSTANT_CONFIRMED
-                                  }else{
-                                      LessonStatus.STUDENT_REQUESTED},
-                          ),
-                          onComplete = {
-                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                            lessonViewModel.getAllRequestedLessons()
-                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                .show()
-                            navigationActions.navigateTo(Screen.HOME)
-                          })
+                                      } else {
+                                        LessonStatus.STUDENT_REQUESTED
+                                      },
+                              ),
+                              onComplete = {
+                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                                lessonViewModel.getAllRequestedLessons()
+                                Toast.makeText(
+                                        context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                    .show()
+                                navigationActions.navigateTo(Screen.HOME)
+                              })
                     }) {
                       Text("Confirm")
                     }

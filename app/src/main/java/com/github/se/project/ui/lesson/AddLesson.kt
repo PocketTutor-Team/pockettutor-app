@@ -26,24 +26,27 @@ fun AddLessonScreen(
 
   val currentLesson = lessonViewModel.selectedLesson.collectAsState().value
 
-    val lessons = lessonViewModel.currentUserLessons.collectAsState().value
+  val lessons = lessonViewModel.currentUserLessons.collectAsState().value
 
   val onConfirm = { lesson: Lesson ->
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
     }
     if (isInstant(lesson)) {
-        if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED }) {
-            Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT).show()
-        }
-      else lessonViewModel.addLesson(
-          lesson,
-          onComplete = {
-            lessonViewModel.getLessonsForStudent(profile.value!!.uid)
-            Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
-            lessonViewModel.selectLesson(lesson)
-            navigationActions.navigateTo(Screen.HOME)
-          })
+      if (lessons.any {
+        it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED
+      }) {
+        Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT)
+            .show()
+      } else
+          lessonViewModel.addLesson(
+              lesson,
+              onComplete = {
+                lessonViewModel.getLessonsForStudent(profile.value!!.uid)
+                Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+                lessonViewModel.selectLesson(lesson)
+                navigationActions.navigateTo(Screen.HOME)
+              })
     } else {
       lessonViewModel.selectLesson(lesson)
       navigationActions.navigateTo(Screen.TUTOR_MATCH)
