@@ -189,16 +189,31 @@ private fun TutorSections(
     listProfilesViewModel: ListProfilesViewModel
 ) {
   val sections =
-      listOf(
-          SectionInfo(
-              "Waiting for your Confirmation",
-              LessonStatus.PENDING_TUTOR_CONFIRMATION,
-              Icons.Default.Notifications),
-          SectionInfo(
-              "Waiting for the Student Confirmation",
-              LessonStatus.STUDENT_REQUESTED,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+        listOf(
+            SectionInfo(
+                "Waiting for your Confirmation",
+                LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for the Student Confirmation",
+                LessonStatus.STUDENT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+            SectionInfo(
+                "Instant Lesson", LessonStatus.INSTANT_CONFIRMED, Icons.Default.Notifications),
+            SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      } else {
+        listOf(
+            SectionInfo(
+                "Waiting for your Confirmation",
+                LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                Icons.Default.Notifications),
+            SectionInfo(
+                "Waiting for the Student Confirmation",
+                LessonStatus.STUDENT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
+            SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+      }
 
   LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
@@ -209,22 +224,36 @@ private fun StudentSections(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  val sections =
-      listOf(
-          SectionInfo(
-              "Waiting for your Confirmation",
-              LessonStatus.STUDENT_REQUESTED,
-              Icons.Default.Notifications),
-          SectionInfo(
-              "Waiting for a Tutor proposal",
-              LessonStatus.STUDENT_REQUESTED,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
-              true),
-          SectionInfo(
-              "Waiting for the Tutor Confirmation",
-              LessonStatus.PENDING_TUTOR_CONFIRMATION,
-              ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-          SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+  val sections = mutableListOf<SectionInfo>()
+  if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {
+    sections.add(
+        SectionInfo(
+            "Pending instant Lesson",
+            LessonStatus.INSTANT_REQUESTED,
+            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+            true))
+  }
+  if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+    sections.add(
+        SectionInfo("Instant Lesson", LessonStatus.INSTANT_CONFIRMED, Icons.Default.Notifications))
+  }
+  sections.add(
+      SectionInfo(
+          "Waiting for your Confirmation",
+          LessonStatus.STUDENT_REQUESTED,
+          Icons.Default.Notifications))
+  sections.add(
+      SectionInfo(
+          "Waiting for a Tutor proposal",
+          LessonStatus.STUDENT_REQUESTED,
+          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+          true))
+  sections.add(
+      SectionInfo(
+          "Waiting for the Tutor Confirmation",
+          LessonStatus.PENDING_TUTOR_CONFIRMATION,
+          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
+  sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
   LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
 }

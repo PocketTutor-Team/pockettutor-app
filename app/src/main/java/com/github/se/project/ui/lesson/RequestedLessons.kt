@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,10 +24,14 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.ui.components.calculateDistance
+import com.github.se.project.ui.components.isInstant
+import com.github.se.project.ui.map.LocationPermissionHandler
 import com.github.se.project.ui.navigation.*
 import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.SuitabilityScoreCalculator.computeLanguageMatch
 import com.github.se.project.utils.SuitabilityScoreCalculator.computeSubjectMatch
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -48,9 +53,27 @@ fun RequestedLessonsScreen(
   var selectedSubject by remember { mutableStateOf<Subject?>(null) }
   var showFilterDialog by remember { mutableStateOf(false) }
 
+  val canSeeInstants = remember { mutableStateOf(false) }
+  val showInstants = remember { mutableStateOf(false) }
+  val maxDistance = remember { mutableStateOf(1500) }
+  val distanceSliderOpen = remember { mutableStateOf(false) }
+
   // Collect states
   val currentProfile by listProfilesViewModel.currentProfile.collectAsState()
   val requestedLessons by lessonViewModel.requestedLessons.collectAsState()
+
+  var userLocation by remember { mutableStateOf<LatLng?>(null) }
+  var isLocationChecked by remember { mutableStateOf(false) }
+
+  LocationPermissionHandler { location ->
+    userLocation = location
+    isLocationChecked = true
+
+    if (userLocation != null) {
+      canSeeInstants.value = true
+      showInstants.value = true
+    }
+  }
 
   // Update lessons when screen is launched
   LaunchedEffect(Unit) {
@@ -59,7 +82,7 @@ fun RequestedLessonsScreen(
   }
 
   // Filter lessons
-  val filteredLessonsWithScores =
+  var filteredLessonsWithScores =
       requestedLessons
           .filter { lesson ->
             val dateMatches =
@@ -72,13 +95,23 @@ fun RequestedLessonsScreen(
 
             val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
-            // lessons are not visible if the tutor's language/subject does not match lesson
+            val instantaneityCorresponds = isInstant(lesson) == showInstants.value
+
+            val lessonLocation = LatLng(lesson.latitude, lesson.longitude)
+
+            val distanceFilter =
+                (!showInstants.value) ||
+                    (maxDistance.value == 5100) ||
+                    calculateDistance(userLocation, lessonLocation) < maxDistance.value
 
             val tutorSubjectMatches = computeSubjectMatch(lesson, currentProfile!!)
             val languageMatches = computeLanguageMatch(lesson, currentProfile!!)
+
             dateMatches &&
                 subjectMatches &&
                 notAlreadyResponded &&
+                instantaneityCorresponds &&
+                distanceFilter &&
                 tutorSubjectMatches &&
                 languageMatches
           }
@@ -94,12 +127,25 @@ fun RequestedLessonsScreen(
           }
           .sortedByDescending { it.second }
 
+  if (showInstants.value) {
+    filteredLessonsWithScores =
+        filteredLessonsWithScores.sortedBy {
+          calculateDistance(userLocation, LatLng(it.first.latitude, it.first.longitude))
+        }
+  } else {
+    filteredLessonsWithScores =
+        filteredLessonsWithScores.sortedBy { parseLessonDate(it.first.timeSlot) }
+  }
+
   Scaffold(
       topBar = {
         LessonsRequestedTopBar(
             selectedDate = selectedDate,
             onDateSelected = { selectedDate = it },
-            onFilterClick = { showFilterDialog = true })
+            onFilterClick = { showFilterDialog = true },
+            canSeeInstants,
+            showInstants,
+            onDistanceClick = { distanceSliderOpen.value = true })
       },
       bottomBar = {
         BottomNavigationMenu(
@@ -120,7 +166,7 @@ fun RequestedLessonsScreen(
 
           Box(modifier = Modifier.fillMaxSize().weight(1f)) {
             if (filteredLessonsWithScores.isEmpty()) {
-              EmptyState()
+              EmptyState(showInstants)
             } else {
               LazyColumn(
                   modifier = Modifier.fillMaxSize().testTag("lessonsList"),
@@ -151,6 +197,11 @@ fun RequestedLessonsScreen(
               onSubjectSelected = { selectedSubject = it },
               onDismiss = { showFilterDialog = false })
         }
+
+        if (distanceSliderOpen.value) {
+          DistanceDialog(
+              currentDistance = maxDistance, onDismiss = { distanceSliderOpen.value = false })
+        }
       }
 }
 
@@ -159,7 +210,10 @@ fun RequestedLessonsScreen(
 fun LessonsRequestedTopBar(
     selectedDate: LocalDate?,
     onDateSelected: (LocalDate) -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    canSeeInstants: MutableState<Boolean>,
+    instant: MutableState<Boolean>,
+    onDistanceClick: () -> Unit,
 ) {
   val context = LocalContext.current
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM")
@@ -190,22 +244,41 @@ fun LessonsRequestedTopBar(
           TopAppBarDefaults.topAppBarColors()
               .copy(containerColor = MaterialTheme.colorScheme.background),
       actions = {
-        // Date picker button
-        Surface(
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.clickable { datePickerDialog.show() }.testTag("datePicker"),
-            color = MaterialTheme.colorScheme.background) {
-              Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        "Calendar",
-                        tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(selectedDate?.format(dateFormatter) ?: "-/-")
-                  }
+        if (canSeeInstants.value) {
+          Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier =
+                  Modifier.testTag("instantColumn").padding(vertical = 0.dp, horizontal = 0.dp)) {
+                Text("Instant Lessons", style = MaterialTheme.typography.labelSmall)
+                Switch(
+                    checked = instant.value,
+                    onCheckedChange = { instant.value = !instant.value },
+                    modifier = Modifier.testTag("instantSwitch"))
+              }
+          if (instant.value) {
+            IconButton(onClick = onDistanceClick, modifier = Modifier.testTag("distanceButton")) {
+              Icon(Icons.Outlined.LocationOn, "Distance")
             }
+          }
+        }
+        // Date picker button
+        if (!instant.value) {
+          Surface(
+              shape = RoundedCornerShape(8.dp),
+              modifier = Modifier.clickable { datePickerDialog.show() }.testTag("datePicker"),
+              color = MaterialTheme.colorScheme.background) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                      Icon(
+                          Icons.Default.DateRange,
+                          "Calendar",
+                          tint = MaterialTheme.colorScheme.primary)
+                      Spacer(modifier = Modifier.width(4.dp))
+                      Text(selectedDate?.format(dateFormatter) ?: "-/-")
+                    }
+              }
+        }
 
         // Filter button
         IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
@@ -262,7 +335,31 @@ private fun FilterDialog(
 }
 
 @Composable
-private fun EmptyState() {
+private fun DistanceDialog(currentDistance: MutableState<Int>, onDismiss: () -> Unit) {
+  AlertDialog(
+      onDismissRequest = onDismiss,
+      title = { Text("Choose the maximum distance") },
+      text = {
+        Column {
+          Slider(
+              value = currentDistance.value.toFloat(),
+              onValueChange = { currentDistance.value = it.toInt() },
+              valueRange = 100f..5100f,
+              steps = 49,
+              modifier = Modifier.padding(horizontal = 16.dp))
+          if (currentDistance.value == 5100) {
+            Text("No limit")
+          } else {
+            Text("Maximum distance: ${currentDistance.value}m")
+          }
+        }
+      },
+      confirmButton = { TextButton(onClick = { onDismiss() }) { Text("Apply filter") } },
+      dismissButton = { TextButton(onClick = onDismiss) { Text("Close") } })
+}
+
+@Composable
+private fun EmptyState(showInstant: MutableState<Boolean>) {
   Column(
       modifier = Modifier.fillMaxSize().padding(32.dp),
       verticalArrangement = Arrangement.Center,
@@ -273,16 +370,25 @@ private fun EmptyState() {
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "No lessons available",
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.testTag("noLessonsMessage"))
-        Text(
-            text = "Try adjusting your filters or check back later",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (showInstant.value) {
+          Text(
+              text = "No instant lessons currently pending",
+              style = MaterialTheme.typography.titleLarge,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("noLessonsMessage"))
+          Button({ showInstant.value = false }) { Text("Show all lessons") }
+        } else {
+          Text(
+              text = "No lessons available",
+              style = MaterialTheme.typography.titleLarge,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("noLessonsMessage"))
+          Text(
+              text = "Try adjusting your filters or check back later",
+              style = MaterialTheme.typography.bodyMedium,
+              textAlign = TextAlign.Center,
+              color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
       }
 }
 
