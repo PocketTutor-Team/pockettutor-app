@@ -222,7 +222,7 @@ private fun TutorInfoSection(profile: Profile) {
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
         // Profile picture placeholder
-        DisplayProfilePicture()
+        DisplayProfilePicture("tutorProfilePicture")
 
         // Tutor details
         Column(modifier = Modifier.weight(1f)) {
@@ -239,7 +239,7 @@ private fun TutorInfoSection(profile: Profile) {
 
         // Price and rating
         Column(horizontalAlignment = Alignment.End) {
-          DisplayRatingGrade(profile.rating.averageRating)
+          DisplayRatingGrade(profile.rating.averageRating, "tutorRating")
 
           Text(
               text = "${profile.price}.-/h",
@@ -315,7 +315,7 @@ private fun DisplayComments(comment: Comment, student: Profile) {
                   horizontalArrangement = Arrangement.spacedBy(8.dp),
                   verticalAlignment = Alignment.CenterVertically) {
                     // Profile picture placeholder
-                    DisplayProfilePicture()
+                    DisplayProfilePicture("studentProfilePicture")
 
                     // Student details
                     Column(modifier = Modifier.weight(1f)) {
@@ -334,7 +334,7 @@ private fun DisplayComments(comment: Comment, student: Profile) {
 
                     // Grade
                     Column(horizontalAlignment = Alignment.End) {
-                      DisplayRatingGrade(comment.grade.toDouble())
+                      DisplayRatingGrade(comment.grade.toDouble(), "studentRating")
                     }
                   }
 
@@ -349,23 +349,23 @@ private fun DisplayComments(comment: Comment, student: Profile) {
 }
 
 @Composable
-private fun DisplayRatingGrade(grade: Double) {
+private fun DisplayRatingGrade(grade: Double, testTag: String) {
   Row {
     Text(
         text = "$grade",
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.testTag("tutorRatingLabel"))
+        modifier = Modifier.testTag(testTag + "Label"))
     Icon(
         imageVector = Icons.Default.Star,
         contentDescription = "Rating",
         tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(16.dp).padding(start = 4.dp).testTag("tutorRatingIcon"))
+        modifier = Modifier.size(16.dp).padding(start = 4.dp).testTag(testTag + "Icon"))
   }
 }
 
 @Composable
-private fun DisplayProfilePicture() {
+private fun DisplayProfilePicture(testTag: String) {
   Surface(
       modifier = Modifier.size(48.dp),
       shape = MaterialTheme.shapes.medium,
@@ -373,7 +373,7 @@ private fun DisplayProfilePicture() {
         Icon(
             imageVector = Icons.Default.Person,
             contentDescription = null,
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp).testTag(testTag),
             tint = MaterialTheme.colorScheme.primary)
       }
 }
