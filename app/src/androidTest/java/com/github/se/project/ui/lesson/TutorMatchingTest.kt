@@ -29,7 +29,7 @@ import androidx.compose.ui.test.*
               academicLevel = AcademicLevel.MA2,
               languages = listOf(),
               subjects = listOf(),
-              schedule = listOf()))
+              schedule = List(7) { List(12) { 1 } }))
 
   private val lessonFlow =
       MutableStateFlow(
@@ -43,7 +43,7 @@ import androidx.compose.ui.test.*
               studentUid = "student123",
               minPrice = 10.0,
               maxPrice = 50.0,
-              timeSlot = "2024-12-12T12:00",
+              timeSlot = "12/12/2024T12:00:00",
               status = LessonStatus.MATCHING,
               latitude = 0.0,
               longitude = 0.0))
@@ -62,7 +62,7 @@ import androidx.compose.ui.test.*
                   academicLevel = AcademicLevel.MA1,
                   languages = listOf(Language.ENGLISH),
                   subjects = listOf(Subject.ANALYSIS),
-                  schedule = listOf(),
+                  schedule = List(7) { List(12) { 1 } },
                   price = 30)))
 
   @Before
