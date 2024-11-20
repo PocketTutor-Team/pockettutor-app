@@ -35,6 +35,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
+import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
@@ -161,7 +162,7 @@ fun DisplayLessons(
                                 Text(
                                     text = "Recommended at $it%",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    color = SuitabilityScoreCalculator.getColorForScore(it))
                               }
                             }
 

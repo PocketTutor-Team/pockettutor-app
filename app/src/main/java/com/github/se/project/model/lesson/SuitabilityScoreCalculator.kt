@@ -1,5 +1,7 @@
 package com.github.se.project.utils
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
 
@@ -111,5 +113,24 @@ object SuitabilityScoreCalculator {
   private fun computeDistanceProximity(lesson: Lesson, tutorProfile: Profile): Double {
     // TODO: implement this compatibility function using tutor location
     return 1.0
+  }
+
+  /**
+   * Computes a smooth color based on the suitability score.
+   * @param score The suitability score (0 to 100).
+   * @return A Color object representing the score.
+   */
+  fun getColorForScore(score: Int): Color {
+    val normalizedScore = (score / 100f).coerceIn(0f, 1f)
+
+    // Define the colors for 0%, 50%, and 100%
+    val red = Color(0xFFFF0000)
+    val orange = Color(0xFFFFA500)
+    val green = Color(0xFF00FF00)
+
+    return when {
+      normalizedScore <= 0.5f -> lerp(red, orange, normalizedScore * 2) // Interpolate between red and orange
+      else -> lerp(orange, green, (normalizedScore - 0.5f) * 2) // Interpolate between orange and green
+    }
   }
 }
