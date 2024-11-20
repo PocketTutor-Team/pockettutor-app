@@ -51,10 +51,13 @@ fun RequestedLessonsScreen(
   val requestedLessons by lessonViewModel.requestedLessons.collectAsState()
 
   // Update lessons when screen is launched
-  LaunchedEffect(Unit) { lessonViewModel.getAllRequestedLessons() }
+  LaunchedEffect(Unit) {
+    lessonViewModel.getAllRequestedLessons()
+    listProfilesViewModel.getProfiles()
+  }
 
   // Filter lessons
-  val filteredLessons =
+  val filteredLessonsWithScores =
       requestedLessons
           .filter { lesson ->
             val dateMatches =
@@ -69,14 +72,18 @@ fun RequestedLessonsScreen(
 
             dateMatches && subjectMatches && notAlreadyResponded
           }
-          .sortedByDescending { lesson ->
-            val tutorProfile = currentProfile
+          .mapNotNull { lesson ->
+            val studentProfile =
+                listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid }
+                    ?: return@mapNotNull null
+            val tutorProfile = currentProfile ?: return@mapNotNull null
 
-            SuitabilityScoreCalculator.calculateSuitabilityScore(
-                lesson,
-                tutorProfile!!,
-            )
+            val score =
+                SuitabilityScoreCalculator.calculateSuitabilityScore(
+                    lesson, tutorProfile, studentProfile)
+            lesson to score
           }
+          .sortedByDescending { it.second }
 
   Scaffold(
       topBar = {
@@ -103,23 +110,25 @@ fun RequestedLessonsScreen(
           }
 
           Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-            if (filteredLessons.isEmpty()) {
+            if (filteredLessonsWithScores.isEmpty()) {
               EmptyState()
             } else {
               LazyColumn(
                   modifier = Modifier.fillMaxSize().testTag("lessonsList"),
                   contentPadding = PaddingValues(horizontal = 16.dp),
                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(filteredLessons.size) { index ->
+                    items(filteredLessonsWithScores.size) { index ->
+                      val (lesson, score) = filteredLessonsWithScores[index]
                       DisplayLessons(
-                          lessons = listOf(filteredLessons[index]),
+                          lessons = listOf(lesson),
                           isTutor = (currentProfile?.role == Role.TUTOR),
                           onCardClick = { lesson ->
                             lessonViewModel.selectLesson(lesson)
                             navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
                           },
                           listProfilesViewModel = listProfilesViewModel,
-                          requestedScreen = true)
+                          requestedScreen = true,
+                          suitabilityScore = score)
                     }
                   }
             }

@@ -97,7 +97,8 @@ fun DisplayLessons(
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel,
-    requestedScreen: Boolean = false
+    requestedScreen: Boolean = false,
+    suitabilityScore: Int? = null
 ) {
   val filteredLessons =
       statusFilter?.let {
@@ -155,6 +156,14 @@ fun DisplayLessons(
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
+
+                              // Display the suitability score if available
+                              suitabilityScore?.let {
+                                Text(
+                                    text = "Suitability Score: $it%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary)
+                              }
                             }
 
                         Surface(
