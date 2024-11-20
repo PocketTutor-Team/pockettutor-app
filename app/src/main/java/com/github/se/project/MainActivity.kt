@@ -22,6 +22,7 @@ import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
 import com.github.se.project.ui.lesson.RequestedLessonsScreen
+import com.github.se.project.ui.lesson.SelectedTutorDetailsScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.lesson.TutorMatchingScreen
 import com.github.se.project.ui.navigation.NavigationActions
@@ -174,6 +175,9 @@ fun PocketTutorApp(
       }
       composable(Screen.TUTOR_MATCH) {
         TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.SELECTED_TUTOR_DETAILS) {
+        SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
   }

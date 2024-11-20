@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,26 +31,46 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.ErrorState
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectedTutorDetailsScreen(
-    tutorProfile: Profile,
-    onChoiceConfirmation: (Profile) -> Unit,
+    listProfilesViewModel: ListProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions
 ) {
+    val tutorProfile =
+        listProfilesViewModel.selectedProfile.collectAsState().value
+            ?: return Text("No profile selected. Should not happen.")
+
+    val currentProfile =
+        listProfilesViewModel.currentProfile.collectAsState().value
+            ?: return Text("No profile selected. Should not happen.")
+
+    val currentLesson =
+        lessonViewModel.selectedLesson.collectAsState().value
+            ?: return Text("No lesson selected. Should not happen.")
+
+    val context = LocalContext.current
     var showConfirmDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -109,7 +130,7 @@ fun SelectedTutorDetailsScreen(
                         contentDescription = "Confirmation Button Icon",
                         modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Confirm your lesson with ${tutorProfile.firstName} ${tutorProfile.lastName}")
+                    Text("Confirm your lesson")
                 }
             }
         }
@@ -125,16 +146,28 @@ fun SelectedTutorDetailsScreen(
                 },
                 text = {
                     Text(
-                        text =
-                        "Would you like to choose this tutor for your lesson and pay a price of ${tutorProfile.price}.-/hour?",
+                        text = "Would you like to choose ${tutorProfile.firstName} ${tutorProfile.lastName} for your lesson and pay a price of ${tutorProfile.price}.-/hour?",
                         modifier = Modifier.testTag("confirmDialogText"))
                 },
                 confirmButton = {
                     Button(
                         modifier = Modifier.testTag("confirmDialogButton"),
                         onClick = {
-                            onChoiceConfirmation(tutorProfile)
-                            showConfirmDialog = false
+                            lessonViewModel.addLesson(
+                                currentLesson.copy(
+                                    tutorUid = listOf(tutorProfile.uid),
+                                    price = tutorProfile.price.toDouble(),
+                                    status =
+                                        if (currentLesson.status == LessonStatus.STUDENT_REQUESTED)
+                                            LessonStatus.CONFIRMED
+                                        else LessonStatus.PENDING_TUTOR_CONFIRMATION,
+                                ),
+                                onComplete = {
+                                    lessonViewModel.getLessonsForStudent(currentProfile.uid)
+                                    Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT)
+                                        .show()
+                                    navigationActions.navigateTo(Screen.HOME)
+                                })
                         }) {
                         Modifier.testTag("confirmButton")
                         Text("Confirm")
