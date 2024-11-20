@@ -23,8 +23,7 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +103,7 @@ fun ConfirmedLessonScreen(
                           data = Uri.parse("sms:${otherProfile.phoneNumber}")
                           putExtra(
                               "sms_body",
-                              "Hello, about our lesson ${formatDateTime(lesson.timeSlot)}...")
+                              "Hello, about our lesson ${formatDate(lesson.timeSlot)}...")
                         }
                     context.startActivity(intent)
                   },
@@ -119,18 +118,4 @@ fun ConfirmedLessonScreen(
                   }
             }
       }
-}
-
-private fun formatDateTime(timeSlot: String): String {
-  return try {
-    val pattern = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-    val dateTime = LocalDateTime.parse(timeSlot, pattern)
-
-    val dayFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
-    "on ${dateTime.format(dayFormatter)} at ${dateTime.format(timeFormatter)}"
-  } catch (e: Exception) {
-    "on $timeSlot"
-  }
 }
