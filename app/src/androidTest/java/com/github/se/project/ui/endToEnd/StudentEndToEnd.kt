@@ -15,6 +15,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -74,6 +75,10 @@ class EndToEndTest {
   private var currentLesson: Lesson? = null
 
   @get:Rule val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @Before
   fun setUp() {
@@ -203,7 +208,7 @@ class EndToEndTest {
     }
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-    testMapReady = false
+    //testMapReady = false
 
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
@@ -244,6 +249,7 @@ class EndToEndTest {
       testMapReady
     }
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+      testMapReady = false
 
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
