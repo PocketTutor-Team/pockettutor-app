@@ -300,15 +300,17 @@ fun LessonEditor(
                   modifier = Modifier.testTag("Title"),
                   style = MaterialTheme.typography.titleLarge)
 
+            if (canBeInstant.value) {
                 InstantButton(
                     isSelected = instant.value,
                     onToggle = { instant.value = it },
                     modifier = Modifier.testTag("instantButton"),
                     enabled = canBeInstant.value)
+            }
 
 
 
-              IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
+            IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
             }

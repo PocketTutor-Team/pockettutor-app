@@ -40,7 +40,7 @@ fun InstantButton(
 ) {
     val containerColor by animateColorAsState(
         targetValue = if (isSelected)
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.surfaceBright
         else
             MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
@@ -49,9 +49,9 @@ fun InstantButton(
 
     val contentColor by animateColorAsState(
         targetValue = if (isSelected)
-            MaterialTheme.colorScheme.onPrimaryContainer
+            MaterialTheme.colorScheme.onSurfaceVariant
         else
-            MaterialTheme.colorScheme.onSurfaceVariant,
+            MaterialTheme.colorScheme.primaryContainer,
         animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
         label = "contentColor"
     )

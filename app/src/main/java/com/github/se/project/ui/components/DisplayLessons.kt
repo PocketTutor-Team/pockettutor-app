@@ -50,12 +50,16 @@ object LessonColors {
   private val LightPending = Color(0xFFFFF3E0) // Orange pastel clair
   private val LightUrgent = Color(0xFFF3E5F5) // Violet pastel clair
   private val LightCancelled = Color(0xFFFFEBEE) // Rouge pastel clair
+    private val LightInstantConfirmed = Color(0xFFBBDEFB) // Bleu ciel pastel
+    private val LightInstantRequested = Color(0xFFC8E6C9) // Vert menthe pastel
 
   private val DarkCompleted = Color(0xFF2E7D32) // Vert foncé
   private val DarkConfirmed = Color(0xFF1565C0) // Bleu foncé
   private val DarkPending = Color(0xFFD87F00) // Orange foncé
   private val DarkUrgent = Color(0xFF571E98) // Violet foncé
   private val DarkCancelled = Color(0xFF8E0000) // Rouge foncé
+    private val DarkInstantConfirmed = Color(0xFF2196F3) // Bleu électrique
+    private val DarkInstantRequested = Color(0xFF4CAF50) // Vert dynamique
 
   @Composable
   fun getLessonColor(
@@ -88,6 +92,13 @@ object LessonColors {
           } else {
             if (!isTutor) LightPending else LightUrgent
           }
+        status == LessonStatus.INSTANT_REQUESTED ->
+            if (isDarkTheme) {
+                if (!isTutor) DarkInstantRequested else DarkPending
+            } else {
+                if (!isTutor) LightInstantConfirmed else LightPending
+            }
+        status == LessonStatus.INSTANT_CONFIRMED -> if (isDarkTheme) DarkInstantConfirmed else LightInstantConfirmed
       status == LessonStatus.CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
       else -> MaterialTheme.colorScheme.surface
     }
@@ -155,15 +166,6 @@ fun DisplayLessons(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(8.dp)) {
                               Row {
-                                if (isInstant(lesson)) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24),
-                                        contentDescription = "Bolt Filled",
-                                        tint = MaterialTheme.colorScheme.onBackground)
-
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
-
                                 Text(
                                     text = lesson.title,
                                     style = MaterialTheme.typography.titleMedium,
