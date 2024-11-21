@@ -8,14 +8,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.github.se.project.model.profile.Profile
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Composable
 fun MapPickerBox(
     initialLocation: Pair<Double, Double>,
-    onLocationSelected: (Pair<Double, Double>) -> Unit
+    onLocationSelected: (Pair<Double, Double>) -> Unit,
+    onMapReady: (Boolean) -> Unit
 ) {
   val EPFLCoordinates = LatLng(46.520374, 6.568339)
 
@@ -45,6 +50,7 @@ fun MapPickerBox(
               GoogleMap(
                   modifier = Modifier.fillMaxSize().testTag("googleMap"),
                   cameraPositionState = cameraPositionState,
+                  onMapLoaded = { onMapReady(true) },
                   onMapClick = { latLng ->
                     selectedPosition = latLng
                     markerState.position = selectedPosition

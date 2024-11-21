@@ -1,6 +1,8 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso.onView
@@ -106,7 +108,8 @@ class EditRequestedLessonTest {
   @Test
   fun EditRequestedLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel,
+          onMapReadyChange = {})
     }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
@@ -147,7 +150,8 @@ class EditRequestedLessonTest {
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel,
+          onMapReadyChange = {})
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
@@ -155,8 +159,10 @@ class EditRequestedLessonTest {
 
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
+      var testMapReady by mutableStateOf(false)
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
 
     // Fill in the required fields
@@ -185,9 +191,24 @@ class EditRequestedLessonTest {
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
+      //replace the following code with the composeTestRule equivalent as
+      //the Thread.sleep() method is not recommended and
+      //device.click() is not well supported in compose
+      composeTestRule.waitUntil(4000){
+          //wait max 4 seconds for the map to load,
+          //as soon as the map is ready, the next line will be executed
+          testMapReady
+      }
+
+
+      composeTestRule.onNodeWithTag("googleMap")
+          .performTouchInput { click(center) }
+
+      /*
     Thread.sleep(2000) // Wait for the map to load
     val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     device.click(device.displayWidth / 2, device.displayHeight / 2)
+       */
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
@@ -198,7 +219,8 @@ class EditRequestedLessonTest {
   @Test
   fun testInitialState() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel,
+          onMapReadyChange = {})
     }
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()

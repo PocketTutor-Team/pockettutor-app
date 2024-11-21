@@ -14,7 +14,9 @@ fun AddLessonScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    onMapReadyChange: (Boolean) -> Unit
 ) {
+
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
@@ -34,5 +36,7 @@ fun AddLessonScreen(
       lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = null)
+      onDelete = null,
+      onMapReady = onMapReadyChange
+  )
 }

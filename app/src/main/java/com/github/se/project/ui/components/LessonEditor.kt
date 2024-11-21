@@ -67,6 +67,7 @@ fun LessonEditor(
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
+    onMapReady: (Boolean) -> Unit
 ) {
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
@@ -88,10 +89,6 @@ fun LessonEditor(
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
   var showMapDialog by remember { mutableStateOf(false) }
-
-  val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
-    selectedLocation = newLocation
-  }
 
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
@@ -208,14 +205,16 @@ fun LessonEditor(
                       })
 
                   // Map content
-                  Box() {
-                    MapPickerBox(
-                        initialLocation = selectedLocation,
-                        onLocationSelected = { newLocation ->
-                          selectedLocation = newLocation
-                          showMapDialog = false
-                        })
-                  }
+                    Box() {
+                        MapPickerBox(
+                            initialLocation = selectedLocation,
+                            onLocationSelected = { newLocation ->
+                                selectedLocation = newLocation
+                                showMapDialog = false
+                            },
+                            onMapReady = onMapReady
+                        )
+                    }
                 }
               }
         }

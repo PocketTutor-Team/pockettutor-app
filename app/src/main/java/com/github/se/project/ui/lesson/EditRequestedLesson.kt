@@ -16,6 +16,7 @@ fun EditRequestedLessonScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    onMapReadyChange: (Boolean) -> Unit
 ) {
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
@@ -54,5 +55,7 @@ fun EditRequestedLessonScreen(
       lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
-      onDelete = onDelete)
+      onDelete = onDelete,
+      onMapReady = onMapReadyChange
+  )
 }

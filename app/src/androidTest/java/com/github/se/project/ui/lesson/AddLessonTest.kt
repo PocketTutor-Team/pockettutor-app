@@ -1,6 +1,9 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.InstrumentationRegistry
@@ -11,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
+//import com.github.se.project.ui.map.MapPickerBox
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.components.validateLessonInput
@@ -66,7 +70,8 @@ class AddLessonTest {
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons,
+        onMapReadyChange = { }) }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -105,14 +110,21 @@ class AddLessonTest {
 
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons,
+        onMapReadyChange = { }) }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
 
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    var testMapReady by mutableStateOf(false)
+
+    composeTestRule.setContent { AddLessonScreen(navigationActions,
+        mockProfiles,
+        mockLessons,
+        onMapReadyChange = { testMapReady = it }
+        ) }
 
     // Fill in the required fields
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
@@ -132,10 +144,16 @@ class AddLessonTest {
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
-      composeTestRule.waitForIdle()
-      composeTestRule.waitUntil(timeoutMillis = 8_000L) {
-        composeTestRule.onNodeWithTag("googleMap").isDisplayed()
+      //replace the following code with the composeTestRule equivalent as
+      //the Thread.sleep() method is not recommended and
+      //device.click() is not well supported in compose
+      composeTestRule.waitUntil(4000){
+          //wait max 4 seconds for the map to load,
+          //as soon as the map is ready, the next line will be executed
+            testMapReady
       }
+
+
       composeTestRule.onNodeWithTag("googleMap")
           .performTouchInput { click(center) }
       /*
@@ -152,14 +170,16 @@ class AddLessonTest {
 
   @Test
   fun goBack() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons,
+        onMapReadyChange = { }) }
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testInitialState() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons,
+        onMapReadyChange = { }) }
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
   }

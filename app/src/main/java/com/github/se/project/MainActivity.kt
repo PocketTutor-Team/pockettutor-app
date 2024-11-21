@@ -121,7 +121,8 @@ fun PocketTutorApp(
         ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
       composable(Screen.ADD_LESSON) {
-        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
+          onMapReadyChange = { })
       }
     }
 
@@ -155,7 +156,8 @@ fun PocketTutorApp(
         EditTutorSchedule(navigationActions, listProfilesViewModel)
       }
       composable(Screen.EDIT_REQUESTED_LESSON) {
-        EditRequestedLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+        EditRequestedLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
+          onMapReadyChange = { })
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -170,7 +172,8 @@ fun PocketTutorApp(
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.ADD_LESSON) {
-        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
+          onMapReadyChange = { })
       }
       composable(Screen.TUTOR_MATCH) {
         TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
