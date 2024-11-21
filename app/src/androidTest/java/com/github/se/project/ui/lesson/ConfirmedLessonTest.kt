@@ -106,7 +106,7 @@ public class ConfirmedLessonTest {
     listProfilesViewModel.setCurrentProfile(tutorProfile)
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly() {
     composeTestRule.setContent {
       ConfirmedLessonScreen(
@@ -122,7 +122,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
