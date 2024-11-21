@@ -158,13 +158,6 @@ class TutorLessonResponseTest {
         .assertTextEquals("I need help with my math homework please")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
 
-    // Assert the location is displayed
-    composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertTextEquals("Lesson Location")
-    composeTestRule.onNodeWithTag("lessonLocationCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationMap").assertIsDisplayed()
-
     // Assert the confirmation button is displayed
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
@@ -208,12 +201,7 @@ class TutorLessonResponseTest {
         .assertTextEquals("I need help with my math homework please")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
 
-    // Assert the location is displayed
-    composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertTextEquals("Lesson Location")
-    composeTestRule.onNodeWithTag("lessonLocationCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationMap").assertIsDisplayed()
+    // Assert the location is displayed is already tested in LessonLocationDisplayTest
 
     // Assert the confirmation and cancel button are displayed
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()

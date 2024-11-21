@@ -121,7 +121,8 @@ fun TutorLessonResponseScreen(
                       LessonLocationDisplay(
                           latitude = lesson.latitude,
                           longitude = lesson.longitude,
-                          lessonTitle = lesson.title)
+                          lessonTitle = lesson.title,
+                      )
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
