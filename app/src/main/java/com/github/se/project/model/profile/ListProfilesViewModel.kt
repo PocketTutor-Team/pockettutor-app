@@ -21,6 +21,11 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
   private val currentProfile_ = MutableStateFlow<Profile?>(null)
   open val currentProfile: StateFlow<Profile?> = currentProfile_.asStateFlow()
 
+  // This field is used to select another profile than the current user profile
+  // (used for example for the SelectedTutorDetails screen to select the tutor profile to display)
+  private val selectedProfile_ = MutableStateFlow<Profile?>(null)
+  open val selectedProfile: StateFlow<Profile?> = selectedProfile_.asStateFlow()
+
   init {
     repository.init { getProfiles() }
   }
@@ -106,5 +111,14 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
    */
   fun setCurrentProfile(profile: Profile?) {
     currentProfile_.value = profile
+  }
+
+  /**
+   * Selects a Profile document
+   *
+   * @param profile the profile to select
+   */
+  fun selectProfile(profile: Profile) {
+    selectedProfile_.value = profile
   }
 }

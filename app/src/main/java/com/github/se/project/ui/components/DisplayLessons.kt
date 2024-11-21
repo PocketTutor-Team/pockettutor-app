@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,14 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.SuitabilityScoreCalculator
+import com.github.se.project.utils.formatDate
 
 object LessonColors {
   private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
@@ -97,7 +99,8 @@ fun DisplayLessons(
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel,
-    requestedScreen: Boolean = false
+    requestedScreen: Boolean = false,
+    suitabilityScore: Int? = null
 ) {
   val filteredLessons =
       statusFilter?.let {
@@ -108,7 +111,8 @@ fun DisplayLessons(
     filteredLessons.forEachIndexed { index, lesson ->
       var otherUserProfile by remember { mutableStateOf<Profile?>(null) }
 
-      if (lesson.status == LessonStatus.CONFIRMED) {
+      if (lesson.status == LessonStatus.CONFIRMED ||
+          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
         LaunchedEffect(lesson) {
           otherUserProfile =
               if (isTutor) {
@@ -145,16 +149,33 @@ fun DisplayLessons(
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                              Text(
-                                  text = lesson.title,
-                                  style = MaterialTheme.typography.titleMedium,
-                                  modifier = Modifier.testTag("lessonTitle_$index"))
+                              Row {
+                                if (isInstant(lesson)) {
+                                  Icon(Icons.Filled.AddCircle, "instantWarning")
+                                }
+                                Text(
+                                    text = lesson.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.testTag("lessonTitle_$index"))
+                              }
 
                               Text(
-                                  text = formatDateTime(lesson.timeSlot),
+                                  text = formatDate(lesson.timeSlot),
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
+
+                              // Display the suitability score if available
+                              suitabilityScore?.let {
+                                Text(
+                                    text = "Recommended at $it%",
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold, // Make the text bold
+                                            color =
+                                                SuitabilityScoreCalculator.getColorForScore(
+                                                    it, isSystemInDarkTheme())))
+                              }
                             }
 
                         Surface(
@@ -173,7 +194,8 @@ fun DisplayLessons(
                       }
 
                   if (lesson.status == LessonStatus.COMPLETED ||
-                      lesson.status == LessonStatus.CONFIRMED) {
+                      lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     Divider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
@@ -202,15 +224,5 @@ fun DisplayLessons(
                 }
           }
     }
-  }
-}
-
-private fun formatDateTime(timeSlot: String): String {
-  return try {
-    val dateTime =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-    dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
-  } catch (e: Exception) {
-    timeSlot
   }
 }

@@ -132,6 +132,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
                   LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
                   LessonStatus.PENDING_TUTOR_CONFIRMATION,
                   LessonStatus.CONFIRMED,
+                  LessonStatus.INSTANT_CONFIRMED,
                   LessonStatus.COMPLETED -> true
                   else -> false
                 }

@@ -5,7 +5,6 @@ import androidx.compose.ui.test.performClick
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.profile.CreateTutorSchedule
-import com.github.se.project.ui.theme.SampleAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
@@ -68,9 +67,7 @@ class CreateTutorScheduleTest {
 
   @Test
   fun availabilityScreen_displaysProfileNameAndInstructions() {
-    composeTestRule.setContent {
-      SampleAppTheme { CreateTutorSchedule(navigationActions, listProfilesViewModel) }
-    }
+    composeTestRule.setContent { CreateTutorSchedule(navigationActions, listProfilesViewModel) }
 
     // Verify that the greeting text is displayed correctly
     composeTestRule
