@@ -1,5 +1,6 @@
 package com.github.se.project
 
+import android.Manifest
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -39,66 +40,60 @@ import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
-import android.Manifest
-import android.content.ContentValues.TAG
-import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
-  private val requestPermissionLauncher = registerForActivityResult( ActivityResultContracts.RequestPermission(),)
-  { isGranted: Boolean -> if (isGranted)
-  { }
-  else { }
-  }
+  private val requestPermissionLauncher =
+      registerForActivityResult(
+          ActivityResultContracts.RequestPermission(),
+      ) { isGranted: Boolean ->
+        if (isGranted) {} else {}
+      }
 
   private fun askNotificationPermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       when {
-        ContextCompat.checkSelfPermission(
-          this,
-          Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED -> {
+        ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED -> {
           // Permission is granted; proceed with notification functionality
-          Log.d(TAG, "Notification permission already granted.")
+          // Log.d(TAG, "Notification permission already granted.")
         }
-
         shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
           // Explain why the app needs this permission
-          Log.d(TAG, "Notification permission rationale shown.")
+          // Log.d(TAG, "Notification permission rationale shown.")
           requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-
         else -> {
           // Directly request permission
-          Log.d(TAG, "Requesting notification permission.")
+          // Log.d(TAG, "Requesting notification permission.")
           requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
       }
     }
   }
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
     askNotificationPermission()
-    FirebaseMessaging.getInstance().token.addOnCompleteListener(
-      OnCompleteListener { task ->
-        if (!task.isSuccessful) {
-          Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-          return@OnCompleteListener
-        }
+    FirebaseMessaging.getInstance()
+        .token
+        .addOnCompleteListener(
+            OnCompleteListener { task ->
+              if (!task.isSuccessful) {
+                // Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+              }
 
-        // Get new FCM registration token
-        val token = task.result
+              // Get new FCM registration token
+              val token = task.result
 
-        // Log and toast
-        val msg = "FCM Token: $token"
-        Log.d(TAG, msg)
+              // Log and toast
+              val msg = "FCM Token: $token"
+              // Log.d(TAG, msg)
 
-        //Implement this method to send token to your app server.
-        Log.d("MainActivity" ,"sendRegistrationTokenToServer($token)")
-      })
+              // Implement this method to send token to your app server.
+              // Log.d("MainActivity" ,"sendRegistrationTokenToServer($token)")
+            })
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {
