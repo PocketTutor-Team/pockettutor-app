@@ -56,6 +56,5 @@ fun EditRequestedLessonScreen(
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
       onDelete = onDelete,
-      onMapReady = onMapReadyChange
-  )
+      onMapReady = onMapReadyChange)
 }

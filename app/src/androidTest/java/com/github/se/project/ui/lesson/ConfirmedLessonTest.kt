@@ -114,8 +114,8 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
-    //This workaround might fail the CI
-    //Thread.sleep(5000)
+    // This workaround fail the CI
+    // Thread.sleep(5000)
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
@@ -132,7 +132,7 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
-      //This workaround might fail the CI
+
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("backButton").performClick()

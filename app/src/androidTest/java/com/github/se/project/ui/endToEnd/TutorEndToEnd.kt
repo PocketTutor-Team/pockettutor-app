@@ -131,9 +131,11 @@ class TutorEndToEndTest {
   @Test
   fun TutorEndToEndTest() {
     composeTestRule.setContent {
-      PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
+      PocketTutorApp(
+          true, viewModel(), mockProfileViewModel, mockLessonViewModel, onMapReadyChange = {})
     }
-    // Thread.sleep(50000)
+    composeTestRule.waitForIdle()
+
     // Sign In Screen
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -187,7 +189,9 @@ class TutorEndToEndTest {
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").assertIsDisplayed()
     composeTestRule.onNodeWithText("physics").performClick()
-    Thread.sleep(5000)
+    // Todo: replace the Thread.sleep with composeTestRule.waitForIdle() but not sure if it will
+    // work
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertExists()
     composeTestRule.onNodeWithText("Ozymandias Halifax").assertExists()
     composeTestRule.onNodeWithText("Offer to Teach (50.-/hour)").assertExists()

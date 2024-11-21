@@ -205,16 +205,15 @@ fun LessonEditor(
                       })
 
                   // Map content
-                    Box() {
-                        MapPickerBox(
-                            initialLocation = selectedLocation,
-                            onLocationSelected = { newLocation ->
-                                selectedLocation = newLocation
-                                showMapDialog = false
-                            },
-                            onMapReady = onMapReady
-                        )
-                    }
+                  Box() {
+                    MapPickerBox(
+                        initialLocation = selectedLocation,
+                        onLocationSelected = { newLocation ->
+                          selectedLocation = newLocation
+                          showMapDialog = false
+                        },
+                        onMapReady = onMapReady)
+                  }
                 }
               }
         }

@@ -129,7 +129,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Assert the screen is displayed
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertIsDisplayed()
@@ -177,7 +177,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Assert the screen is displayed
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertIsDisplayed()
@@ -228,7 +228,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -258,7 +258,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -288,7 +288,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -309,7 +309,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -330,7 +330,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
@@ -359,7 +359,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
@@ -381,7 +381,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Verify the error message is displayed
     composeTestRule.onNodeWithTag("errorStateColumn").assertIsDisplayed()

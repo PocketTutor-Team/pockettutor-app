@@ -46,7 +46,8 @@ class MainActivity : ComponentActivity() {
           PocketTutorApp(
               authenticationViewModel = viewModel(),
               listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+              onMapReadyChange = {})
         }
       }
     }
@@ -58,7 +59,8 @@ fun PocketTutorApp(
     testMode: Boolean = false,
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
-    lessonViewModel: LessonViewModel
+    lessonViewModel: LessonViewModel,
+    onMapReadyChange: (Boolean) -> Unit
 ) {
   // Navigation
   val navController = rememberNavController()
@@ -121,8 +123,11 @@ fun PocketTutorApp(
         ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
       composable(Screen.ADD_LESSON) {
-        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
-          onMapReadyChange = { })
+        AddLessonScreen(
+            navigationActions,
+            listProfilesViewModel,
+            lessonViewModel,
+            onMapReadyChange = onMapReadyChange)
       }
     }
 
@@ -156,8 +161,11 @@ fun PocketTutorApp(
         EditTutorSchedule(navigationActions, listProfilesViewModel)
       }
       composable(Screen.EDIT_REQUESTED_LESSON) {
-        EditRequestedLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
-          onMapReadyChange = { })
+        EditRequestedLessonScreen(
+            navigationActions,
+            listProfilesViewModel,
+            lessonViewModel,
+            onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -172,8 +180,11 @@ fun PocketTutorApp(
         HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.ADD_LESSON) {
-        AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel,
-          onMapReadyChange = { })
+        AddLessonScreen(
+            navigationActions,
+            listProfilesViewModel,
+            lessonViewModel,
+            onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.TUTOR_MATCH) {
         TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
