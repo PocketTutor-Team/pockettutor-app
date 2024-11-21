@@ -29,9 +29,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -100,7 +104,8 @@ fun DisplayLessons(
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel,
     requestedScreen: Boolean = false,
-    suitabilityScore: Int? = null
+    suitabilityScore: Int? = null,
+    distance: Int? = null
 ) {
   val filteredLessons =
       statusFilter?.let {
@@ -148,11 +153,17 @@ fun DisplayLessons(
                       verticalAlignment = Alignment.Top) {
                         Column(
                             modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            verticalArrangement = Arrangement.spacedBy(8.dp)) {
                               Row {
                                 if (isInstant(lesson)) {
-                                  Icon(Icons.Filled.AddCircle, "instantWarning")
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24),
+                                        contentDescription = "Bolt Filled",
+                                        tint = MaterialTheme.colorScheme.onBackground)
+
+                                    Spacer(modifier = Modifier.width(8.dp))
                                 }
+
                                 Text(
                                     text = lesson.title,
                                     style = MaterialTheme.typography.titleMedium,
@@ -165,18 +176,29 @@ fun DisplayLessons(
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
 
-                              // Display the suitability score if available
-                              suitabilityScore?.let {
-                                Text(
-                                    text = "Recommended at $it%",
-                                    style =
-                                        MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.Bold, // Make the text bold
-                                            color =
-                                                SuitabilityScoreCalculator.getColorForScore(
+                            if (!isInstant(lesson)) {
+                                suitabilityScore?.let {
+                                  Text(
+                                      text = "Recommended at $it%",
+                                      style =
+                                          MaterialTheme.typography.bodyMedium.copy(
+                                              fontWeight = FontWeight.Bold, // Make the text bold
+                                              color =
+                                                  SuitabilityScoreCalculator.getColorForScore(
+                                                      it, isSystemInDarkTheme())))
+                                }
+                            } else {
+                                distance?.let {
+                                    Text(
+                                        text = "Distance : $it m",
+                                        style =
+                                            MaterialTheme.typography.bodyMedium.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = getColorForDistance(
                                                     it, isSystemInDarkTheme())))
-                              }
+                                }
                             }
+                        }
 
                         Surface(
                             modifier = Modifier.padding(start = 8.dp),
@@ -225,4 +247,35 @@ fun DisplayLessons(
           }
     }
   }
+}
+
+
+fun getColorForDistance(distanceInMeters: Int, isDarkTheme: Boolean): Color {
+    val green = if (isDarkTheme) Color(0xFF00E676) else Color(0xFF2E7D32)
+    val yellow = if (isDarkTheme) Color(0xFFFFD740) else Color(0xFFFBC02D)
+    val red = if (isDarkTheme) Color(0xFFFF5252) else Color(0xFFD32F2F)
+
+    return when {
+        distanceInMeters <= 500 -> green
+        distanceInMeters <= 3000 -> {
+            // Interpolate between green and yellow for distances between 500m and 5km
+            val progress = (distanceInMeters - 500f) / 2500f
+            Color(
+                red = lerp(green.red, yellow.red, progress),
+                green = lerp(green.green, yellow.green, progress),
+                blue = lerp(green.blue, yellow.blue, progress),
+                alpha = 1f
+            )
+        }
+        else -> {
+            // Interpolate between yellow and red for distances beyond 5km
+            val progress = ((distanceInMeters - 3000f) / 3000f).coerceAtMost(1f)
+            Color(
+                red = lerp(yellow.red, red.red, progress),
+                green = lerp(yellow.green, red.green, progress),
+                blue = lerp(yellow.blue, red.blue, progress),
+                alpha = 1f
+            )
+        }
+    }
 }

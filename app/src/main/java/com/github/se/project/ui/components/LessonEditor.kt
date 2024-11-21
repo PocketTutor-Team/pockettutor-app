@@ -292,28 +292,21 @@ fun LessonEditor(
                 Modifier.testTag("topRow")
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.background)
-                    .padding(vertical = 32.dp, horizontal = 16.dp),
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
                   text = mainTitle,
                   modifier = Modifier.testTag("Title"),
-                  style = MaterialTheme.typography.headlineMedium,
-                  textAlign = TextAlign.Center)
+                  style = MaterialTheme.typography.titleLarge)
 
-              if (canBeInstant.value) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier =
-                        Modifier.testTag("instantColumn")
-                            .padding(vertical = 0.dp, horizontal = 0.dp)) {
-                      Text("Now", style = MaterialTheme.typography.labelSmall)
-                      Switch(
-                          checked = instant.value,
-                          onCheckedChange = { instant.value = !instant.value },
-                          modifier = Modifier.testTag("instantSwitch"))
-                    }
-              }
+                InstantButton(
+                    isSelected = instant.value,
+                    onToggle = { instant.value = it },
+                    modifier = Modifier.testTag("instantButton"),
+                    enabled = canBeInstant.value)
+
+
 
               IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")

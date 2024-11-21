@@ -136,50 +136,55 @@ private fun LessonsContent(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-  var refreshing by remember { mutableStateOf(false) }
-  val refreshScope = rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
 
-  fun refresh() =
-      refreshScope.launch {
+    fun refresh() = refreshScope.launch {
         refreshing = true
-        when (profile.role) {
-          Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
-          Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
-          else -> {}
+        try {
+            when (profile.role) {
+                Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+                Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+                else -> {}
+            }
+        } finally {
+            delay(1000)
+            refreshing = false
         }
-        delay(1000)
-        refreshing = false
-      }
+    }
 
-  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = refreshing,
+        onRefresh = { refresh() }
+    )
 
-  Column(
-      modifier =
-          Modifier.fillMaxSize()
-              .padding(paddingValues)
-              .padding(horizontal = 16.dp)
-              .testTag("lessonsColumn")) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-          Column(
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .verticalScroll(rememberScrollState())
-                      .pullRefresh(pullRefreshState)) {
-                if (profile.role == Role.TUTOR) {
-                  TutorSections(lessons, onClick, listProfilesViewModel)
-                } else {
-                  StudentSections(lessons, onClick, listProfilesViewModel)
-                }
-              }
-
-          PullRefreshIndicator(
-              refreshing = refreshing,
-              state = pullRefreshState,
-              modifier = Modifier.align(Alignment.TopCenter),
-              backgroundColor = MaterialTheme.colorScheme.surface,
-              contentColor = MaterialTheme.colorScheme.primary)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+            .pullRefresh(pullRefreshState)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
+            if (profile.role == Role.TUTOR) {
+                TutorSections(lessons, onClick, listProfilesViewModel)
+            } else {
+                StudentSections(lessons, onClick, listProfilesViewModel)
+            }
         }
-      }
+
+        PullRefreshIndicator(
+            refreshing = refreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @Composable
