@@ -9,7 +9,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -42,12 +41,12 @@ import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.SuitabilityScoreCalculator.computeLanguageMatch
 import com.github.se.project.utils.SuitabilityScoreCalculator.computeSubjectMatch
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Screen displaying all requested lessons that tutors can respond to. Includes filtering by date
@@ -146,148 +145,134 @@ fun RequestedLessonsScreen(
           calculateDistance(userLocation, LatLng(it.first.latitude, it.first.longitude))
         }
   } else {
-    filteredLessonsWithScores =
-        filteredLessonsWithScores.sortedBy { it.second }.reversed()
+    filteredLessonsWithScores = filteredLessonsWithScores.sortedBy { it.second }.reversed()
   }
 
-    var refreshing by remember { mutableStateOf(false) }
-    val refreshScope = rememberCoroutineScope()
+  var refreshing by remember { mutableStateOf(false) }
+  val refreshScope = rememberCoroutineScope()
 
-    fun refresh() = refreshScope.launch {
+  fun refresh() =
+      refreshScope.launch {
         refreshing = true
         lessonViewModel.getAllRequestedLessons()
         listProfilesViewModel.getProfiles()
         delay(1000)
         refreshing = false
-    }
+      }
 
-    val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
-    Scaffold(
-        topBar = {
-            LessonsRequestedTopBar(
-                selectedDate = selectedDate,
-                onDateSelected = { selectedDate = it },
-                onFilterClick = { showFilterDialog = true },
-                canSeeInstants = canSeeInstants,
-                instant = showInstants,
-                onDistanceClick = { distanceSliderOpen.value = true }
-            )
-        },
-        bottomBar = {
-            BottomNavigationMenu(
-                onTabSelect = { navigationActions.navigateTo(it) },
-                tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
-                selectedItem = navigationActions.currentRoute()
-            )
-        }
-    ) { padding ->
+  Scaffold(
+      topBar = {
+        LessonsRequestedTopBar(
+            selectedDate = selectedDate,
+            onDateSelected = { selectedDate = it },
+            onFilterClick = { showFilterDialog = true },
+            canSeeInstants = canSeeInstants,
+            instant = showInstants,
+            onDistanceClick = { distanceSliderOpen.value = true })
+      },
+      bottomBar = {
+        BottomNavigationMenu(
+            onTabSelect = { navigationActions.navigateTo(it) },
+            tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
+            selectedItem = navigationActions.currentRoute())
+      }) { padding ->
         var refreshing by remember { mutableStateOf(false) }
         val refreshScope = rememberCoroutineScope()
 
-        fun refresh() = refreshScope.launch {
-            refreshing = true
-            lessonViewModel.getAllRequestedLessons()
-            listProfilesViewModel.getProfiles()
-            delay(1000)
-            refreshing = false
-        }
+        fun refresh() =
+            refreshScope.launch {
+              refreshing = true
+              lessonViewModel.getAllRequestedLessons()
+              listProfilesViewModel.getProfiles()
+              delay(1000)
+              refreshing = false
+            }
 
         val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .pullRefresh(pullRefreshState)
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (selectedSubject != null) {
-                    FilterChip(
-                        selected = true,
-                        onClick = { selectedSubject = null },
-                        label = { Text(selectedSubject?.name ?: "All Subjects") },
-                        leadingIcon = { Icon(Icons.Default.Clear, "Clear filter") },
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    )
-                }
+        Box(modifier = Modifier.fillMaxSize().padding(padding).pullRefresh(pullRefreshState)) {
+          Column(modifier = Modifier.fillMaxSize()) {
+            if (selectedSubject != null) {
+              FilterChip(
+                  selected = true,
+                  onClick = { selectedSubject = null },
+                  label = { Text(selectedSubject?.name ?: "All Subjects") },
+                  leadingIcon = { Icon(Icons.Default.Clear, "Clear filter") },
+                  modifier = Modifier.padding(horizontal = 16.dp),
+                  colors =
+                      FilterChipDefaults.filterChipColors(
+                          selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                          selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary))
+            }
 
-                if (filteredLessonsWithScores.isEmpty()) {
-                    EmptyState(showInstants)
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().testTag("lessonsList"),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(filteredLessonsWithScores.size) { index ->
-                            val (lesson, score) = filteredLessonsWithScores[index]
-                            if (!showInstants.value) {
-                                DisplayLessons(
-                                    lessons = listOf(lesson),
-                                    isTutor = (currentProfile?.role == Role.TUTOR),
-                                    onCardClick = { lessonClicked ->
-                                        lessonViewModel.selectLesson(lessonClicked)
-                                        navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-                                    },
-                                    listProfilesViewModel = listProfilesViewModel,
-                                    requestedScreen = true,
-                                    suitabilityScore = score
-                                )
-                            } else {
-                                DisplayLessons(
-                                    lessons = listOf(lesson),
-                                    isTutor = (currentProfile?.role == Role.TUTOR),
-                                    onCardClick = { lessonClicked ->
-                                        lessonViewModel.selectLesson(lessonClicked)
-                                        navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-                                    },
-                                    listProfilesViewModel = listProfilesViewModel,
-                                    requestedScreen = true,
-                                    distance = calculateDistance(
-                                        userLocation,
-                                        LatLng(lesson.latitude, lesson.longitude)
-                                    ).toInt()
-                                )
-                            }
-                        }
+            if (filteredLessonsWithScores.isEmpty()) {
+              EmptyState(showInstants)
+            } else {
+              LazyColumn(
+                  modifier = Modifier.fillMaxSize().testTag("lessonsList"),
+                  contentPadding = PaddingValues(horizontal = 16.dp),
+                  verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(filteredLessonsWithScores.size) { index ->
+                      val (lesson, score) = filteredLessonsWithScores[index]
+                      if (!showInstants.value) {
+                        DisplayLessons(
+                            lessons = listOf(lesson),
+                            isTutor = (currentProfile?.role == Role.TUTOR),
+                            onCardClick = { lessonClicked ->
+                              lessonViewModel.selectLesson(lessonClicked)
+                              navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+                            },
+                            listProfilesViewModel = listProfilesViewModel,
+                            requestedScreen = true,
+                            suitabilityScore = score)
+                      } else {
+                        DisplayLessons(
+                            lessons = listOf(lesson),
+                            isTutor = (currentProfile?.role == Role.TUTOR),
+                            onCardClick = { lessonClicked ->
+                              lessonViewModel.selectLesson(lessonClicked)
+                              navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+                            },
+                            listProfilesViewModel = listProfilesViewModel,
+                            requestedScreen = true,
+                            distance =
+                                calculateDistance(
+                                        userLocation, LatLng(lesson.latitude, lesson.longitude))
+                                    .toInt())
+                      }
                     }
-                }
+                  }
             }
+          }
 
-            PullRefreshIndicator(
-                refreshing = refreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter),
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.primary
-            )
+          PullRefreshIndicator(
+              refreshing = refreshing,
+              state = pullRefreshState,
+              modifier = Modifier.align(Alignment.TopCenter),
+              backgroundColor = MaterialTheme.colorScheme.surface,
+              contentColor = MaterialTheme.colorScheme.primary)
 
-            if (showFilterDialog) {
-                FilterDialog(
-                    currentSubject = selectedSubject,
-                    onSubjectSelected = { selectedSubject = it },
-                    onDismiss = { showFilterDialog = false }
-                )
-            }
+          if (showFilterDialog) {
+            FilterDialog(
+                currentSubject = selectedSubject,
+                onSubjectSelected = { selectedSubject = it },
+                onDismiss = { showFilterDialog = false })
+          }
 
-            if (distanceSliderOpen.value) {
-                DistanceDialog(
-                    currentDistance = maxDistance,
-                    onDismiss = { distanceSliderOpen.value = false },
-                    onApply = { distance ->
-                        maxDistance.value = distance
-                        distanceSliderOpen.value = false
-                    }
-                )
-            }
+          if (distanceSliderOpen.value) {
+            DistanceDialog(
+                currentDistance = maxDistance,
+                onDismiss = { distanceSliderOpen.value = false },
+                onApply = { distance ->
+                  maxDistance.value = distance
+                  distanceSliderOpen.value = false
+                })
+          }
         }
-    }
+      }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -329,17 +314,14 @@ fun LessonsRequestedTopBar(
           TopAppBarDefaults.topAppBarColors()
               .copy(containerColor = MaterialTheme.colorScheme.background),
       actions = {
-          if (canSeeInstants.value) {
-              InstantButton(
-                  isSelected = instant.value,
-                  onToggle = { instant.value = it }
-              )
+        if (canSeeInstants.value) {
+          InstantButton(isSelected = instant.value, onToggle = { instant.value = it })
+        }
+        if (instant.value) {
+          IconButton(onClick = onDistanceClick, modifier = Modifier.testTag("distanceButton")) {
+            Icon(Icons.Outlined.LocationOn, "Distance")
           }
-          if (instant.value) {
-              IconButton(onClick = onDistanceClick, modifier = Modifier.testTag("distanceButton")) {
-                  Icon(Icons.Outlined.LocationOn, "Distance")
-              }
-            }
+        }
         // Date picker button
         if (!instant.value) {
           Surface(
@@ -382,11 +364,10 @@ private fun FilterDialog(
               .forEach { subject ->
                 Row(
                     modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable {
-                              onSubjectSelected(subject)
-                              onDismiss()
-                            },
+                        Modifier.fillMaxWidth().clickable {
+                          onSubjectSelected(subject)
+                          onDismiss()
+                        },
                     verticalAlignment = Alignment.CenterVertically) {
                       RadioButton(
                           selected = subject == currentSubject,
@@ -418,49 +399,40 @@ private fun DistanceDialog(
     onDismiss: () -> Unit,
     onApply: (Int) -> Unit
 ) {
-    var tempDistance by remember { mutableIntStateOf(currentDistance.value) }
-    val isSystemInDark = isSystemInDarkTheme()
+  var tempDistance by remember { mutableIntStateOf(currentDistance.value) }
+  val isSystemInDark = isSystemInDarkTheme()
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Choose the maximum distance") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Slider(
-                    value = tempDistance.toFloat(),
-                    onValueChange = { tempDistance = it.toInt() },
-                    valueRange = 100f..5100f,
-                    steps = 49,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    colors = SliderDefaults.colors(
-                        activeTrackColor = getColorForDistance(tempDistance, isSystemInDark),
-                        thumbColor = getColorForDistance(tempDistance, isSystemInDark)
-                    )
-                )
+  AlertDialog(
+      onDismissRequest = onDismiss,
+      title = { Text("Choose the maximum distance") },
+      text = {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+          Slider(
+              value = tempDistance.toFloat(),
+              onValueChange = { tempDistance = it.toInt() },
+              valueRange = 100f..5100f,
+              steps = 49,
+              modifier = Modifier.padding(horizontal = 16.dp),
+              colors =
+                  SliderDefaults.colors(
+                      activeTrackColor = getColorForDistance(tempDistance, isSystemInDark),
+                      thumbColor = getColorForDistance(tempDistance, isSystemInDark)))
 
-                Text(
-                    text = if (tempDistance == 5100) "No limit"
-                    else "Maximum distance: ${tempDistance}m",
-                    color = getColorForDistance(tempDistance, isSystemInDark)
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onApply(tempDistance)
-                    onDismiss()
-                }
-            ) {
-                Text("Apply filter")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Close")
-            }
+          Text(
+              text = if (tempDistance == 5100) "No limit" else "Maximum distance: ${tempDistance}m",
+              color = getColorForDistance(tempDistance, isSystemInDark))
         }
-    )
+      },
+      confirmButton = {
+        TextButton(
+            onClick = {
+              onApply(tempDistance)
+              onDismiss()
+            }) {
+              Text("Apply filter")
+            }
+      },
+      dismissButton = { TextButton(onClick = onDismiss) { Text("Close") } })
 }
 
 @Composable

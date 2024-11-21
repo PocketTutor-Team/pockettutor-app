@@ -72,7 +72,8 @@ fun HomeScreen(
       } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-      } else if (lesson.status == LessonStatus.CONFIRMED || lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+      } else if (lesson.status == LessonStatus.CONFIRMED ||
+          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       } else if (lesson.status == LessonStatus.INSTANT_REQUESTED) {
@@ -89,7 +90,7 @@ fun HomeScreen(
       } else if (lesson.status == LessonStatus.INSTANT_CONFIRMED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-          }
+      }
     }
   }
 
@@ -148,45 +149,39 @@ private fun LessonsContent(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-    var refreshing by remember { mutableStateOf(false) }
-    val refreshScope = rememberCoroutineScope()
+  var refreshing by remember { mutableStateOf(false) }
+  val refreshScope = rememberCoroutineScope()
 
-    fun refresh() = refreshScope.launch {
+  fun refresh() =
+      refreshScope.launch {
         refreshing = true
         try {
-            when (profile.role) {
-                Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
-                Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
-                else -> {}
-            }
+          when (profile.role) {
+            Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+            Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+            else -> {}
+          }
         } finally {
-            delay(1000)
-            refreshing = false
+          delay(1000)
+          refreshing = false
         }
-    }
+      }
 
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = { refresh() }
-    )
+  val pullRefreshState =
+      rememberPullRefreshState(refreshing = refreshing, onRefresh = { refresh() })
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 16.dp)
-            .pullRefresh(pullRefreshState)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (profile.role == Role.TUTOR) {
-                TutorSections(lessons, onClick, listProfilesViewModel)
-            } else {
-                StudentSections(lessons, onClick, listProfilesViewModel)
-            }
+  Box(
+      modifier =
+          Modifier.fillMaxSize()
+              .padding(paddingValues)
+              .padding(horizontal = 16.dp)
+              .pullRefresh(pullRefreshState)) {
+        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+          if (profile.role == Role.TUTOR) {
+            TutorSections(lessons, onClick, listProfilesViewModel)
+          } else {
+            StudentSections(lessons, onClick, listProfilesViewModel)
+          }
         }
 
         PullRefreshIndicator(
@@ -194,9 +189,8 @@ private fun LessonsContent(
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary
-        )
-    }
+            contentColor = MaterialTheme.colorScheme.primary)
+      }
 }
 
 @Composable
@@ -209,7 +203,10 @@ private fun TutorSections(
       if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
         listOf(
             SectionInfo(
-                "Instant Lesson", LessonStatus.INSTANT_CONFIRMED,ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)),
+                "Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                ImageVector.vectorResource(
+                    id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)),
             SectionInfo(
                 "Waiting for your Confirmation",
                 LessonStatus.PENDING_TUTOR_CONFIRMATION,
@@ -252,7 +249,11 @@ private fun StudentSections(
   }
   if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
     sections.add(
-        SectionInfo("Instant Lesson", LessonStatus.INSTANT_CONFIRMED, ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
+        SectionInfo(
+            "Instant Lesson",
+            LessonStatus.INSTANT_CONFIRMED,
+            ImageVector.vectorResource(
+                id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
   }
   sections.add(
       SectionInfo(
@@ -304,80 +305,71 @@ private fun ExpandableLessonSection(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-    val isInstant = lessons.any { isInstant(it) }
-    var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
+  val isInstant = lessons.any { isInstant(it) }
+  var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "iconBlink")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 0.3f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "blinkAlpha"
-    )
+  val infiniteTransition = rememberInfiniteTransition(label = "iconBlink")
+  val alpha by
+      infiniteTransition.animateFloat(
+          initialValue = 1f,
+          targetValue = 0.3f,
+          animationSpec =
+              infiniteRepeatable(animation = tween(500), repeatMode = RepeatMode.Reverse),
+          label = "blinkAlpha")
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("section_${section.title}"),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isInstant)
-                MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
-            else
-                MaterialTheme.colorScheme.surfaceContainerLowest
-        )
-    ) {
+  Card(
+      modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),
+      colors =
+          CardDefaults.cardColors(
+              containerColor =
+                  if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
+                  else MaterialTheme.colorScheme.surfaceContainerLowest)) {
         Column {
-            ListItem(
-                headlineContent = {
-                    Text(section.title, style = MaterialTheme.typography.titleMedium)
-                },
-                colors = ListItemDefaults.colors(
-                    containerColor = if (isInstant)
-                        MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.4f)
-                    else
-                        MaterialTheme.colorScheme.surfaceContainerLowest
-                ),
-                leadingContent = {
-                    Icon(
-                        imageVector = section.icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary.copy(
-                            alpha = if (isInstant) alpha else 1f
-                        )
-                    )
-                },
-                trailingContent = if (!isInstant) {
+          ListItem(
+              headlineContent = {
+                Text(section.title, style = MaterialTheme.typography.titleMedium)
+              },
+              colors =
+                  ListItemDefaults.colors(
+                      containerColor =
+                          if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.4f)
+                          else MaterialTheme.colorScheme.surfaceContainerLowest),
+              leadingContent = {
+                Icon(
+                    imageVector = section.icon,
+                    contentDescription = null,
+                    tint =
+                        MaterialTheme.colorScheme.primary.copy(
+                            alpha = if (isInstant) alpha else 1f))
+              },
+              trailingContent =
+                  if (!isInstant) {
                     {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                if (expanded) Icons.Default.KeyboardArrowDown
-                                else Icons.Default.KeyboardArrowLeft,
-                                contentDescription = if (expanded) "Collapse" else "Expand"
-                            )
-                        }
+                      IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            if (expanded) Icons.Default.KeyboardArrowDown
+                            else Icons.Default.KeyboardArrowLeft,
+                            contentDescription = if (expanded) "Collapse" else "Expand")
+                      }
                     }
-                } else null,
-                modifier = if (!isInstant) {
+                  } else null,
+              modifier =
+                  if (!isInstant) {
                     Modifier.clickable { expanded = !expanded }
-                } else Modifier
-            )
+                  } else Modifier)
 
-            if (expanded) {
-                DisplayLessons(
-                    lessons = lessons,
-                    statusFilter = section.status,
-                    isTutor = isTutor,
-                    tutorEmpty = section.tutorEmpty,
-                    onCardClick = onClick,
-                    modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
-                    listProfilesViewModel = listProfilesViewModel
-                )
-            }
+          if (expanded) {
+            DisplayLessons(
+                lessons = lessons,
+                statusFilter = section.status,
+                isTutor = isTutor,
+                tutorEmpty = section.tutorEmpty,
+                onCardClick = onClick,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
+                listProfilesViewModel = listProfilesViewModel)
+          }
         }
-    }
+      }
 }
 
 @OptIn(ExperimentalMaterialApi::class)

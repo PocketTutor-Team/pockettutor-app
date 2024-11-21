@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -47,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -300,17 +298,15 @@ fun LessonEditor(
                   modifier = Modifier.testTag("Title"),
                   style = MaterialTheme.typography.titleLarge)
 
-            if (canBeInstant.value) {
+              if (canBeInstant.value) {
                 InstantButton(
                     isSelected = instant.value,
                     onToggle = { instant.value = it },
                     modifier = Modifier.testTag("instantButton"),
                     enabled = canBeInstant.value)
-            }
+              }
 
-
-
-            IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
+              IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
               }
             }
