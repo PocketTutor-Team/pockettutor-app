@@ -176,12 +176,14 @@ class EditRequestedLessonTest {
     // possible)
 
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
 
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     // Assuming TimePickerDialog is shown, set selectedTime manually for test (mock behavior if
     // possible)
     composeTestRule.onNodeWithText("10:00").assertExists()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
 
     // Set Subject and Language

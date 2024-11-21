@@ -11,6 +11,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -29,6 +30,10 @@ import org.mockito.kotlin.whenever
 class AddLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -131,8 +136,12 @@ class AddLessonTest {
 
     // Select Date and Time
     composeTestRule.onNodeWithTag("DateButton").performClick()
+    Thread.sleep(2000)
+    // composeTestRule.onNodeWithText("OK").performClick()
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("TimeButton").performClick()
+    Thread.sleep(2000)
+    // composeTestRule.onNodeWithText("OK").performClick()
     onView(withText("OK")).perform(click())
 
     // Set Subject and Language
