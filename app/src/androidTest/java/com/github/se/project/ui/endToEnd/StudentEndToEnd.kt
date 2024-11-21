@@ -201,7 +201,7 @@ class EndToEndTest {
     }
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-      testMapReady = false
+    testMapReady = false
 
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()

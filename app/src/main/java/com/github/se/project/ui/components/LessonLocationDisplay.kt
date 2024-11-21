@@ -64,8 +64,7 @@ fun LessonLocationDisplay(
   LocationPermissionHandler { location ->
     userLocation = location
     isLocationChecked = true
-      onLocationChecked()
-
+    onLocationChecked()
 
     // Update the camera position based on user location availability
     cameraPositionState.position =
