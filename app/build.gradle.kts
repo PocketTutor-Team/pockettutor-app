@@ -132,7 +132,7 @@ android {
 
 dependencies {
 
-
+    implementation("com.google.firebase:firebase-messaging")
     // Core
     implementation(libs.core.ktx)
     implementation(libs.androidx.core.ktx)
