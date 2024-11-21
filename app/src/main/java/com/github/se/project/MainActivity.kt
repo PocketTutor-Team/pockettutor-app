@@ -9,14 +9,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
-import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
@@ -26,8 +24,6 @@ import com.github.se.project.ui.lesson.EditRequestedLessonScreen
 import com.github.se.project.ui.lesson.RequestedLessonsScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.lesson.TutorMatchingScreen
-import com.github.se.project.ui.message.ChannelScreen
-import com.github.se.project.ui.message.ChatScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -39,13 +35,6 @@ import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
-import io.getstream.chat.android.client.ChatClient
-import io.getstream.chat.android.client.logger.ChatLogLevel
-import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory
-import io.getstream.chat.android.state.plugin.config.StatePluginConfig
-import io.getstream.chat.android.state.plugin.factory.StreamStatePluginFactory
-
-const val CHAT_API_KEY ="fw3tsu2v5sug"
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,35 +46,10 @@ class MainActivity : ComponentActivity() {
           PocketTutorApp(
               authenticationViewModel = viewModel(),
               listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-              lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-              chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
+              lessonViewModel = viewModel(factory = LessonViewModel.Factory))
         }
       }
     }
-  }
-
-  private fun buildChatClient(): ChatClient {
-    val offlinePluginFactory =
-        StreamOfflinePluginFactory(
-            appContext = applicationContext,
-        )
-    val statePluginFactory =
-        StreamStatePluginFactory(
-            config =
-                StatePluginConfig(
-                    backgroundSyncEnabled = true,
-                    userPresence = true,
-                ),
-            appContext = this,
-        )
-
-    val client =
-        ChatClient.Builder(CHAT_API_KEY, applicationContext)
-            .withPlugins(offlinePluginFactory, statePluginFactory)
-            .logLevel(ChatLogLevel.ALL) // Set to NOTHING in prod
-            .build()
-
-    return client
   }
 }
 
@@ -95,7 +59,6 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
-    chatViewModel: ChatViewModel,
 ) {
   // Navigation
   val navController = rememberNavController()
@@ -160,12 +123,6 @@ fun PocketTutorApp(
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(navigationActions, listProfilesViewModel, lessonViewModel)
       }
-        composable(Screen.CHANNEL) {
-            ChannelScreen(navigationActions, chatViewModel)
-        }
-        composable(Screen.CHAT) {
-            ChatScreen(navigationActions, chatViewModel)
-        }
     }
 
     navigation(
