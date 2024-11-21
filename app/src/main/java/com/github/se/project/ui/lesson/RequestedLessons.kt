@@ -147,7 +147,7 @@ fun RequestedLessonsScreen(
         }
   } else {
     filteredLessonsWithScores =
-        filteredLessonsWithScores.sortedBy { parseLessonDate(it.first.timeSlot) }
+        filteredLessonsWithScores.sortedBy { it.second }.reversed()
   }
 
     var refreshing by remember { mutableStateOf(false) }
