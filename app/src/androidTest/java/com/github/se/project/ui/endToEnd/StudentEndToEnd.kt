@@ -216,7 +216,8 @@ class EndToEndTest {
 
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    composeTestRule.onNodeWithText("Confirm").performClick()
+      composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
     assert(currentLesson!!.description == "Teach me how to write tests pls")
@@ -308,7 +309,8 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    composeTestRule.onNodeWithText("Confirm").performClick()
+      composeTestRule.onNodeWithTag("confirmButton").performClick()
+      composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
 
     // Check if the lesson is updated and displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
