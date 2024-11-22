@@ -47,8 +47,10 @@ fun MapPickerBox(
               GoogleMap(
                   modifier = Modifier.fillMaxSize().testTag("googleMap"),
                   cameraPositionState = cameraPositionState,
-                  onMapLoaded = { onMapReady(true)
-                                Log.e("MapPickerBox", "Map loaded") },
+                  onMapLoaded = {
+                    onMapReady(true)
+                    Log.e("MapPickerBox", "Map loaded")
+                  },
                   onMapClick = { latLng ->
                     selectedPosition = latLng
                     markerState.position = selectedPosition

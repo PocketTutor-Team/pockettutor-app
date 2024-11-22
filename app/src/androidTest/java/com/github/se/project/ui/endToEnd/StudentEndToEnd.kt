@@ -76,9 +76,9 @@ class EndToEndTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule
-    val permissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @Before
   fun setUp() {
@@ -207,7 +207,6 @@ class EndToEndTest {
       testMapReady
     }
 
-
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
     testMapReady = false
 
@@ -216,7 +215,7 @@ class EndToEndTest {
 
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-      composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
     composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
@@ -251,7 +250,7 @@ class EndToEndTest {
       testMapReady
     }
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-      testMapReady = false
+    testMapReady = false
 
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
@@ -309,8 +308,8 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-      composeTestRule.onNodeWithTag("confirmButton").performClick()
-      composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
 
     // Check if the lesson is updated and displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
