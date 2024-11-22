@@ -94,6 +94,7 @@ fun ConfirmedLessonScreen(
 
               Spacer(modifier = Modifier.weight(1f))
 
+              // This button require a context when testing
               // Contact Button
               Button(
                   shape = MaterialTheme.shapes.medium,

@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -15,7 +16,8 @@ import com.google.maps.android.compose.*
 @Composable
 fun MapPickerBox(
     initialLocation: Pair<Double, Double>,
-    onLocationSelected: (Pair<Double, Double>) -> Unit
+    onLocationSelected: (Pair<Double, Double>) -> Unit,
+    onMapReady: (Boolean) -> Unit
 ) {
   val EPFLCoordinates = LatLng(46.520374, 6.568339)
 
@@ -45,6 +47,10 @@ fun MapPickerBox(
               GoogleMap(
                   modifier = Modifier.fillMaxSize().testTag("googleMap"),
                   cameraPositionState = cameraPositionState,
+                  onMapLoaded = {
+                    onMapReady(true)
+                    Log.e("MapPickerBox", "Map loaded")
+                  },
                   onMapClick = { latLng ->
                     selectedPosition = latLng
                     markerState.position = selectedPosition

@@ -1,6 +1,46 @@
 package com.github.se.project.ui.endToEnd
 
-/*@RunWith(AndroidJUnit4::class)
+import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.PocketTutorApp
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.navigation.NavigationActions
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
+
+@RunWith(AndroidJUnit4::class)
 class EndToEndTest {
 
   @Mock lateinit var navigationActions: NavigationActions
@@ -35,6 +75,10 @@ class EndToEndTest {
   private var currentLesson: Lesson? = null
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @Before
   fun setUp() {
@@ -81,12 +125,18 @@ class EndToEndTest {
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
   fun endToEndStudentTest() {
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    var testMapReady = false
 
     // Start the app in test mode
     composeTestRule.setContent {
-      PocketTutorApp(true, viewModel(), mockProfileViewModel, mockLessonViewModel)
+      PocketTutorApp(
+          true,
+          viewModel(),
+          mockProfileViewModel,
+          mockLessonViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
+    composeTestRule.waitForIdle()
 
     // Sign in
     composeTestRule.onNodeWithTag("loginButton").performClick()
@@ -140,24 +190,33 @@ class EndToEndTest {
         .onNodeWithTag("DescriptionField")
         .performTextInput("Teach me how to write tests pls")
     composeTestRule.onNodeWithTag("DateButton").performClick()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("TimeButton").performClick()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 4 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      testMapReady
+    }
+
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+    testMapReady = false
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-    Thread.sleep(5000) // Wait for the tutor matching screen to load
     // Select a tutor
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    Thread.sleep(500) // Wait for the dialog to be shown
-    composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
     // composeTestRule.onNodeWithTag("confirmButton").performClick()
     assert(currentLesson!!.title == "End-to-end testing")
     assert(currentLesson!!.description == "Teach me how to write tests pls")
@@ -174,16 +233,25 @@ class EndToEndTest {
         .onNodeWithTag("DescriptionField")
         .performTextInput("Teach me how to write tests pls")
     composeTestRule.onNodeWithTag("DateButton").performClick()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("TimeButton").performClick()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 4 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      testMapReady
+    }
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+    testMapReady = false
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
@@ -239,10 +307,9 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
-    Thread.sleep(5000) // Wait for the tutor matching screen to load
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    Thread.sleep(500) // Wait for the dialog to be shown
-    composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
 
     // Check if the lesson is updated and displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
@@ -270,4 +337,4 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
   }
-}*/
+}
