@@ -1,11 +1,32 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.components.PriceRangeSlider
+import com.github.se.project.ui.components.validateLessonInput
+import com.github.se.project.ui.navigation.NavigationActions
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
-
-/*@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class EditRequestedLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -85,7 +106,8 @@ class EditRequestedLessonTest {
   @Test
   fun EditRequestedLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(
+          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
     }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
@@ -126,7 +148,8 @@ class EditRequestedLessonTest {
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(
+          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
@@ -134,8 +157,13 @@ class EditRequestedLessonTest {
 
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
+    var testMapReady by mutableStateOf(false)
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(
+          navigationActions,
+          mockProfiles,
+          mockLessonViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
 
     // Fill in the required fields
@@ -148,12 +176,14 @@ class EditRequestedLessonTest {
     // possible)
 
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
 
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     // Assuming TimePickerDialog is shown, set selectedTime manually for test (mock behavior if
     // possible)
     composeTestRule.onNodeWithText("10:00").assertExists()
+    Thread.sleep(2000)
     onView(withText("OK")).perform(click())
 
     // Set Subject and Language
@@ -164,9 +194,18 @@ class EditRequestedLessonTest {
     // Select location
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
+
+    // replace the following code with the composeTestRule equivalent as
+    // the Thread.sleep() method is not recommended and
+    // device.click() is not well supported in compose
+    composeTestRule.waitUntil(15000) {
+      // wait max 4 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      testMapReady
+    }
+
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
@@ -177,9 +216,10 @@ class EditRequestedLessonTest {
   @Test
   fun testInitialState() {
     composeTestRule.setContent {
-      EditRequestedLessonScreen(navigationActions, mockProfiles, mockLessonViewModel)
+      EditRequestedLessonScreen(
+          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
     }
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
   }
-}*/
+}

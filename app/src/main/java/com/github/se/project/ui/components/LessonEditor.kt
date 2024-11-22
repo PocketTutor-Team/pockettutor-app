@@ -68,7 +68,8 @@ fun LessonEditor(
     lesson: Lesson?,
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
-    onDelete: ((Lesson) -> Unit)? = null
+    onDelete: ((Lesson) -> Unit)? = null,
+    onMapReady: (Boolean) -> Unit
 ) {
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
@@ -97,10 +98,6 @@ fun LessonEditor(
   val cameraPositionState = rememberCameraPositionState {}
 
   var showMapDialog by remember { mutableStateOf(false) }
-
-  val onLocationSelected: (Pair<Double, Double>) -> Unit = { newLocation ->
-    selectedLocation = newLocation
-  }
 
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
@@ -276,7 +273,8 @@ fun LessonEditor(
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
                           showMapDialog = false
-                        })
+                        },
+                        onMapReady = onMapReady)
                   }
                 }
               }
