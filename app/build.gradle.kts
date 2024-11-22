@@ -183,6 +183,12 @@ dependencies {
     // Networking with OkHttp
     implementation(libs.okhttp)
 
+    // Stream Chat
+    implementation(libs.stream.chat.compose)
+    implementation(libs.stream.chat.offline)
+
+    implementation(libs.stream.chat.android.ui.components)
+
     // Testing Unit
     testImplementation(libs.junit)
     androidTestImplementation(libs.mockk)
