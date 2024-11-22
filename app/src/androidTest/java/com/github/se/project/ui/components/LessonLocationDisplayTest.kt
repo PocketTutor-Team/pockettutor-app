@@ -31,11 +31,12 @@ class LessonLocationDisplayTest {
       isLocationChecked
     }
     isLocationChecked = false
-
+    //Thread.sleep(3000)
     composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonLocationTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonLocationTitle").assertTextEquals("Lesson Location")
     composeTestRule.onNodeWithTag("lessonLocationCard").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonLocationMap").assertIsDisplayed()
+      //Thread.sleep(3000)
   }
 }

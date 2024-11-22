@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -46,7 +47,8 @@ fun MapPickerBox(
               GoogleMap(
                   modifier = Modifier.fillMaxSize().testTag("googleMap"),
                   cameraPositionState = cameraPositionState,
-                  onMapLoaded = { onMapReady(true) },
+                  onMapLoaded = { onMapReady(true)
+                                Log.e("MapPickerBox", "Map loaded") },
                   onMapClick = { latLng ->
                     selectedPosition = latLng
                     markerState.position = selectedPosition
