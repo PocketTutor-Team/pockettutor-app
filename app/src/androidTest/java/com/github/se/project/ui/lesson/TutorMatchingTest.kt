@@ -1,6 +1,6 @@
 package com.github.se.project.ui.lesson
 
-/*import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -33,11 +33,9 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 class TutorMatchingScreenTest {
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
@@ -221,4 +219,4 @@ class TutorMatchingScreenTest {
 
     composeTestRule.onNodeWithTag("confirmButton").assertIsNotDisplayed()
   }
-}*/
+}
