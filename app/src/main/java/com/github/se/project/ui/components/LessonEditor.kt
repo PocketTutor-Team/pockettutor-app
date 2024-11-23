@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -47,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -290,27 +288,20 @@ fun LessonEditor(
                 Modifier.testTag("topRow")
                     .fillMaxWidth()
                     .background(color = MaterialTheme.colorScheme.background)
-                    .padding(vertical = 32.dp, horizontal = 16.dp),
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Text(
                   text = mainTitle,
                   modifier = Modifier.testTag("Title"),
-                  style = MaterialTheme.typography.headlineMedium,
-                  textAlign = TextAlign.Center)
+                  style = MaterialTheme.typography.titleLarge)
 
               if (canBeInstant.value) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier =
-                        Modifier.testTag("instantColumn")
-                            .padding(vertical = 0.dp, horizontal = 0.dp)) {
-                      Text("Now", style = MaterialTheme.typography.labelSmall)
-                      Switch(
-                          checked = instant.value,
-                          onCheckedChange = { instant.value = !instant.value },
-                          modifier = Modifier.testTag("instantSwitch"))
-                    }
+                InstantButton(
+                    isSelected = instant.value,
+                    onToggle = { instant.value = it },
+                    modifier = Modifier.testTag("instantButton"),
+                    enabled = canBeInstant.value)
               }
 
               IconButton(onClick = onBack, modifier = Modifier.testTag("backButton")) {
