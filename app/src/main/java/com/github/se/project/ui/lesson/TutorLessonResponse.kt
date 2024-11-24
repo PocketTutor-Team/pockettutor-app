@@ -1,12 +1,11 @@
 package com.github.se.project.ui.lesson
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -45,7 +43,9 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.DisplayLessonDetails
+import com.github.se.project.ui.components.ErrorState
 import com.github.se.project.ui.components.LessonLocationDisplay
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
@@ -70,6 +70,7 @@ fun TutorLessonResponseScreen(
   val context = LocalContext.current
 
   var showDeclineDialog by remember { mutableStateOf(false) }
+  Log.e("InstantTesting", "Response Setup")
 
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
@@ -105,8 +106,7 @@ fun TutorLessonResponseScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
-                    .testTag("tutorLessonResponseScreen"),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    .testTag("tutorLessonResponseScreen")) {
               val studentProfile = listProfilesViewModel.getProfileById(lesson.studentUid)
               if (studentProfile == null) {
                 ErrorState(message = "Cannot retrieve student profile")
@@ -122,7 +122,8 @@ fun TutorLessonResponseScreen(
                       LessonLocationDisplay(
                           latitude = lesson.latitude,
                           longitude = lesson.longitude,
-                          lessonTitle = lesson.title)
+                          lessonTitle = lesson.title,
+                      )
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -178,22 +179,38 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
-                      lessonViewModel.updateLesson(
-                          lesson.copy(
-                              tutorUid = lesson.tutorUid + currentProfile.uid,
-                              price = currentProfile.price.toDouble(),
-                              status =
-                                  if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
-                                      LessonStatus.CONFIRMED
-                                  else LessonStatus.STUDENT_REQUESTED,
-                          ),
-                          onComplete = {
-                            lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                            lessonViewModel.getAllRequestedLessons()
-                            Toast.makeText(context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                .show()
-                            navigationActions.navigateTo(Screen.HOME)
-                          })
+                      if (isInstant(lesson) &&
+                          lessonViewModel.currentUserLessons.value.any {
+                            it.status == LessonStatus.INSTANT_CONFIRMED
+                          }) {
+                        Toast.makeText(
+                                context,
+                                "You already have an instant lesson scheduled!",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      } else
+                          lessonViewModel.updateLesson(
+                              lesson.copy(
+                                  tutorUid = lesson.tutorUid + currentProfile.uid,
+                                  price = currentProfile.price.toDouble(),
+                                  status =
+                                      if (lesson.status ==
+                                          LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+                                        LessonStatus.CONFIRMED
+                                      } else if (isInstant(lesson)) {
+                                        LessonStatus.INSTANT_CONFIRMED
+                                      } else {
+                                        LessonStatus.STUDENT_REQUESTED
+                                      },
+                              ),
+                              onComplete = {
+                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                                lessonViewModel.getAllRequestedLessons()
+                                Toast.makeText(
+                                        context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                    .show()
+                                navigationActions.navigateTo(Screen.HOME)
+                              })
                     }) {
                       Text("Confirm")
                     }
@@ -248,25 +265,5 @@ fun TutorLessonResponseScreen(
                     }
               })
         }
-      }
-}
-
-@Composable
-private fun ErrorState(message: String) {
-  Column(
-      modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("errorStateColumn"),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center) {
-        Icon(
-            Icons.Default.Close,
-            contentDescription = null,
-            modifier = Modifier.size(48.dp).testTag("errorIcon"),
-            tint = MaterialTheme.colorScheme.error)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.testTag("errorMessage"))
       }
 }

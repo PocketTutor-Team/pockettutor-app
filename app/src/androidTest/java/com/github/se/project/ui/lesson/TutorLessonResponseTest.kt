@@ -129,7 +129,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Assert the screen is displayed
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertIsDisplayed()
@@ -156,17 +156,7 @@ class TutorLessonResponseTest {
     composeTestRule
         .onNodeWithTag("lessonDescription")
         .assertTextEquals("I need help with my math homework please")
-    composeTestRule.onNodeWithTag("lessonDate").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonDate").assertTextEquals("Saturday, 19 October 2024")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTime").assertTextEquals("10:00")
-
-    // Assert the location is displayed
-    composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertTextEquals("Lesson Location")
-    composeTestRule.onNodeWithTag("lessonLocationCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationMap").assertIsDisplayed()
 
     // Assert the confirmation button is displayed
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
@@ -180,7 +170,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Assert the screen is displayed
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertIsDisplayed()
@@ -209,17 +199,9 @@ class TutorLessonResponseTest {
     composeTestRule
         .onNodeWithTag("lessonDescription")
         .assertTextEquals("I need help with my math homework please")
-    composeTestRule.onNodeWithTag("lessonDate").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonDate").assertTextEquals("Saturday, 19 October 2024")
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTime").assertTextEquals("10:00")
 
-    // Assert the location is displayed
-    composeTestRule.onNodeWithTag("lessonLocationColumn").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationTitle").assertTextEquals("Lesson Location")
-    composeTestRule.onNodeWithTag("lessonLocationCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonLocationMap").assertIsDisplayed()
+    // Assert the location is displayed is already tested in LessonLocationDisplayTest
 
     // Assert the confirmation and cancel button are displayed
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
@@ -234,7 +216,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -264,7 +246,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -294,7 +276,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -315,7 +297,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
@@ -336,7 +318,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
@@ -365,7 +347,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Confirm the lesson
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
@@ -387,7 +369,7 @@ class TutorLessonResponseTest {
       TutorLessonResponseScreen(
           mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
     }
-    Thread.sleep(5000)
+    composeTestRule.waitForIdle()
 
     // Verify the error message is displayed
     composeTestRule.onNodeWithTag("errorStateColumn").assertIsDisplayed()

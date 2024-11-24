@@ -48,7 +48,8 @@ fun LessonLocationDisplay(
     latitude: Double,
     longitude: Double,
     lessonTitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLocationChecked: () -> Unit = {},
 ) {
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
   var isLocationChecked by remember { mutableStateOf(false) }
@@ -63,6 +64,7 @@ fun LessonLocationDisplay(
   LocationPermissionHandler { location ->
     userLocation = location
     isLocationChecked = true
+    onLocationChecked()
 
     // Update the camera position based on user location availability
     cameraPositionState.position =
@@ -76,7 +78,11 @@ fun LessonLocationDisplay(
 
   if (isLocationChecked) {
     Column(
-        modifier = modifier.padding(16.dp).testTag("lessonLocationColumn"),
+        modifier =
+            modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+                .testTag("lessonLocationColumn"),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
               text = "Lesson Location",

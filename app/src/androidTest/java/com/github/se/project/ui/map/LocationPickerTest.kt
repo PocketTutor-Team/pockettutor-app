@@ -22,7 +22,8 @@ class MapPickerBoxTest {
     composeTestRule.setContent {
       MapPickerBox(
           initialLocation = initialLatitude to initialLongitude,
-          onLocationSelected = { location -> selectedLocation = location })
+          onLocationSelected = { location -> selectedLocation = location },
+          onMapReady = { _ -> })
     }
 
     // Check if the map itself is displayed

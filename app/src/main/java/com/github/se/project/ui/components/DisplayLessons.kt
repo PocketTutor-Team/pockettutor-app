@@ -29,14 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.ui.components.LessonColors.getLessonColor
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.github.se.project.utils.SuitabilityScoreCalculator
+import com.github.se.project.utils.formatDate
 
 object LessonColors {
   private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
@@ -44,12 +46,16 @@ object LessonColors {
   private val LightPending = Color(0xFFFFF3E0) // Orange pastel clair
   private val LightUrgent = Color(0xFFF3E5F5) // Violet pastel clair
   private val LightCancelled = Color(0xFFFFEBEE) // Rouge pastel clair
+  private val LightInstantConfirmed = Color(0xFFBBDEFB) // Bleu ciel pastel
+  private val LightInstantRequested = Color(0xFFC8E6C9) // Vert menthe pastel
 
   private val DarkCompleted = Color(0xFF2E7D32) // Vert foncé
   private val DarkConfirmed = Color(0xFF1565C0) // Bleu foncé
   private val DarkPending = Color(0xFFD87F00) // Orange foncé
   private val DarkUrgent = Color(0xFF571E98) // Violet foncé
   private val DarkCancelled = Color(0xFF8E0000) // Rouge foncé
+  private val DarkInstantConfirmed = Color(0xFF2196F3) // Bleu électrique
+  private val DarkInstantRequested = Color(0xFF4CAF50) // Vert dynamique
 
   @Composable
   fun getLessonColor(
@@ -82,6 +88,14 @@ object LessonColors {
           } else {
             if (!isTutor) LightPending else LightUrgent
           }
+      status == LessonStatus.INSTANT_REQUESTED ->
+          if (isDarkTheme) {
+            if (!isTutor) DarkInstantRequested else DarkPending
+          } else {
+            if (!isTutor) LightInstantConfirmed else LightPending
+          }
+      status == LessonStatus.INSTANT_CONFIRMED ->
+          if (isDarkTheme) DarkInstantConfirmed else LightInstantConfirmed
       status == LessonStatus.CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
       else -> MaterialTheme.colorScheme.surface
     }
@@ -97,7 +111,9 @@ fun DisplayLessons(
     tutorEmpty: Boolean = false,
     onCardClick: (Lesson) -> Unit = {},
     listProfilesViewModel: ListProfilesViewModel,
-    requestedScreen: Boolean = false
+    requestedScreen: Boolean = false,
+    suitabilityScore: Int? = null,
+    distance: Int? = null
 ) {
   val filteredLessons =
       statusFilter?.let {
@@ -108,7 +124,8 @@ fun DisplayLessons(
     filteredLessons.forEachIndexed { index, lesson ->
       var otherUserProfile by remember { mutableStateOf<Profile?>(null) }
 
-      if (lesson.status == LessonStatus.CONFIRMED) {
+      if (lesson.status == LessonStatus.CONFIRMED ||
+          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
         LaunchedEffect(lesson) {
           otherUserProfile =
               if (isTutor) {
@@ -144,17 +161,42 @@ fun DisplayLessons(
                       verticalAlignment = Alignment.Top) {
                         Column(
                             modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                              Text(
-                                  text = lesson.title,
-                                  style = MaterialTheme.typography.titleMedium,
-                                  modifier = Modifier.testTag("lessonTitle_$index"))
+                            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                              Row {
+                                Text(
+                                    text = lesson.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.testTag("lessonTitle_$index"))
+                              }
 
                               Text(
-                                  text = formatDateTime(lesson.timeSlot),
+                                  text = formatDate(lesson.timeSlot),
                                   style = MaterialTheme.typography.bodyMedium,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                                   modifier = Modifier.testTag("lessonDate_$index"))
+
+                              if (!isInstant(lesson)) {
+                                suitabilityScore?.let {
+                                  Text(
+                                      text = "Recommended at $it%",
+                                      style =
+                                          MaterialTheme.typography.bodyMedium.copy(
+                                              fontWeight = FontWeight.Bold, // Make the text bold
+                                              color =
+                                                  SuitabilityScoreCalculator.getColorForScore(
+                                                      it, isSystemInDarkTheme())))
+                                }
+                              } else {
+                                distance?.let {
+                                  Text(
+                                      text = "Distance : $it m",
+                                      style =
+                                          MaterialTheme.typography.bodyMedium.copy(
+                                              fontWeight = FontWeight.Bold,
+                                              color =
+                                                  getColorForDistance(it, isSystemInDarkTheme())))
+                                }
+                              }
                             }
 
                         Surface(
@@ -173,7 +215,8 @@ fun DisplayLessons(
                       }
 
                   if (lesson.status == LessonStatus.COMPLETED ||
-                      lesson.status == LessonStatus.CONFIRMED) {
+                      lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     Divider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
@@ -205,12 +248,30 @@ fun DisplayLessons(
   }
 }
 
-private fun formatDateTime(timeSlot: String): String {
-  return try {
-    val dateTime =
-        LocalDateTime.parse(timeSlot, DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"))
-    dateTime.format(DateTimeFormatter.ofPattern("EEEE, d MMMM • HH:mm"))
-  } catch (e: Exception) {
-    timeSlot
+fun getColorForDistance(distanceInMeters: Int, isDarkTheme: Boolean): Color {
+  val green = if (isDarkTheme) Color(0xFF00E676) else Color(0xFF2E7D32)
+  val yellow = if (isDarkTheme) Color(0xFFFFD740) else Color(0xFFFBC02D)
+  val red = if (isDarkTheme) Color(0xFFFF5252) else Color(0xFFD32F2F)
+
+  return when {
+    distanceInMeters <= 500 -> green
+    distanceInMeters <= 3000 -> {
+      // Interpolate between green and yellow for distances between 500m and 5km
+      val progress = (distanceInMeters - 500f) / 2500f
+      Color(
+          red = lerp(green.red, yellow.red, progress),
+          green = lerp(green.green, yellow.green, progress),
+          blue = lerp(green.blue, yellow.blue, progress),
+          alpha = 1f)
+    }
+    else -> {
+      // Interpolate between yellow and red for distances beyond 5km
+      val progress = ((distanceInMeters - 3000f) / 3000f).coerceAtMost(1f)
+      Color(
+          red = lerp(yellow.red, red.red, progress),
+          green = lerp(yellow.green, red.green, progress),
+          blue = lerp(yellow.blue, red.blue, progress),
+          alpha = 1f)
+    }
   }
 }
