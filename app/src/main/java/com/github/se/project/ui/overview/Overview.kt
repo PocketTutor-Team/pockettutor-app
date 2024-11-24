@@ -25,6 +25,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.*
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     listProfileViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    chatViewModel: ChatViewModel,
     navigationActions: NavigationActions,
 ) {
   val context = LocalContext.current
@@ -49,6 +51,12 @@ fun HomeScreen(
     Role.STUDENT -> lessonViewModel.getLessonsForStudent(currentProfile.uid)
     Role.UNKNOWN -> Toast.makeText(context, "Unknown Profile Role", Toast.LENGTH_SHORT).show()
     null -> Toast.makeText(context, "No Profile Found", Toast.LENGTH_SHORT).show()
+  }
+
+  LaunchedEffect(currentProfile) {
+    if (currentProfile != null) {
+      chatViewModel.connect(currentProfile)
+    }
   }
 
   val navigationItems =

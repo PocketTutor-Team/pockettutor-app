@@ -1,5 +1,7 @@
 package com.github.se.project.ui.message
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
@@ -17,8 +19,11 @@ fun ChatScreen(
 ) {
   val channelID = chatViewModel.currentChannelID.collectAsState()
 
+    Log.e("HELLO", "channel: id: " + channelID.value)
+
   if (channelID.value == null) {
     navigationActions.navigateTo(Screen.CHANNEL)
+      return
   }
 
   val context = LocalContext.current
@@ -28,6 +33,7 @@ fun ChatScreen(
         viewModelFactory =
             MessagesViewModelFactory(
                 context = context, channelId = channelID.value!!, messageLimit = 3000),
+        onChannelAvatarClick = { Toast.makeText(context, "This is not supported at the moment.", Toast.LENGTH_LONG).show()},
         onBackPressed = {
           chatViewModel.setChannelID(null)
           navigationActions.goBack()
