@@ -15,13 +15,14 @@ class SignInTest : TestCase() {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-    @Before
-    fun grantNotificationPermission() {
-        val context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
-        val packageName = context.packageName
+  @Before
+  fun grantNotificationPermission() {
+    val context =
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
+    val packageName = context.packageName
 
-        Runtime.getRuntime().exec("pm grant $packageName android.permission.POST_NOTIFICATIONS")
-    }
+    Runtime.getRuntime().exec("pm grant $packageName android.permission.POST_NOTIFICATIONS")
+  }
 
   @Test
   fun logoAndButtonAndImageScrollAreCorrectlyDisplayed() {
