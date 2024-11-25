@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.MainActivity
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,6 +14,14 @@ import org.junit.runner.RunWith
 class SignInTest : TestCase() {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
+
+    @Before
+    fun grantNotificationPermission() {
+        val context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
+        val packageName = context.packageName
+
+        Runtime.getRuntime().exec("pm grant $packageName android.permission.POST_NOTIFICATIONS")
+    }
 
   @Test
   fun logoAndButtonAndImageScrollAreCorrectlyDisplayed() {
