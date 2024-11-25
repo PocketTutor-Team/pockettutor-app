@@ -125,7 +125,7 @@ fun PocketTutorApp(
                 authenticationViewModel.handleGoogleSignIn(
                     context,
                     onSuccess = { uid ->
-                      googleUid = uid
+                      googleUid = "LPCFWv7wHfbGxam45ornkHfqoit2"
                       val profile = profiles.value.find { it.googleUid == googleUid }
 
                       if (profile != null) {
