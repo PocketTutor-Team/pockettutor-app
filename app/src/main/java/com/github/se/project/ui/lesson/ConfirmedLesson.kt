@@ -112,7 +112,7 @@ fun ConfirmedLessonScreen(
 
               // This button require a context when testing
               // Contact Button
-              if (lesson.status == LessonStatus.CONFIRMED) {
+              if (lesson.status == LessonStatus.CONFIRMED || lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                 Button(
                     shape = MaterialTheme.shapes.medium,
                     onClick = {
