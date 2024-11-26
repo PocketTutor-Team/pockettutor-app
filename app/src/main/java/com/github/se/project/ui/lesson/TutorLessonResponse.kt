@@ -206,7 +206,7 @@ fun TutorLessonResponseScreen(
                                     } else {
                                       LessonStatus.STUDENT_REQUESTED
                                     },
-                                timeSlot = formattedTimestamp),
+                                timeSlot = if(isInstant(lesson)) formattedTimestamp else lesson.timeSlot),
                             onComplete = {
                               lessonViewModel.getLessonsForTutor(currentProfile.uid)
                               lessonViewModel.getAllRequestedLessons()
