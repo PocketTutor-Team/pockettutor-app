@@ -169,7 +169,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val latitude = document.getDouble("latitude") ?: return null
       val longitude = document.getDouble("longitude") ?: return null
 
-      val ratingMap = document.get("rating") as? Map<String, Any?>
+      val ratingMap = document.get("rating") as? Map<*, *>
 
       val rating =
           ratingMap?.let { map ->

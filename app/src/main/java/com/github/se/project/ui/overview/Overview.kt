@@ -281,7 +281,7 @@ private fun StudentSections(
           lessonViewModel.updateLesson(updatedLesson) {
             lessonViewModel.getLessonsForStudent(lesson.studentUid)
           }
-          lessonToReview = null
+          lessonToReview = null // Important: reset after submission
         },
         tutor = lesson.tutorUid.getOrNull(0)?.let { listProfilesViewModel.getProfileById(it) })
   }

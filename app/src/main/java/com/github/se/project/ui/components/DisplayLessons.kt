@@ -214,6 +214,7 @@ fun DisplayLessons(
 
                   if (lesson.status == LessonStatus.COMPLETED ||
                       lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
                       lesson.status == LessonStatus.PENDING_REVIEW ||
                       lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     Divider(

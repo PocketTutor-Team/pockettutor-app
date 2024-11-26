@@ -11,17 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
-import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.Subject
-import com.github.se.project.ui.theme.SampleAppTheme
 
 @Composable
 fun LessonReviewDialog(
@@ -33,7 +27,7 @@ fun LessonReviewDialog(
 ) {
   var rating by remember { mutableIntStateOf(initialRating?.grade ?: 0) }
   var comment by remember { mutableStateOf(initialRating?.comment ?: "") }
-  val starColor = Color(0xFFFFC107) // Couleur jaune pour les étoiles
+  val starColor = Color(0xFFFFC107)
 
   Dialog(onDismissRequest = onDismiss) {
     Card(
@@ -109,10 +103,7 @@ fun LessonReviewDialog(
                             Text("Dismiss")
                           }
                       Button(
-                          onClick = {
-                            onSubmitReview(rating, comment)
-                            onDismiss()
-                          },
+                          onClick = { onSubmitReview(rating, comment) },
                           modifier = Modifier.weight(1f),
                           enabled = rating > 0,
                           shape = RoundedCornerShape(24.dp)) {
@@ -121,37 +112,5 @@ fun LessonReviewDialog(
                     }
               }
         }
-  }
-}
-
-@Preview
-@Composable
-fun LessonReviewDialogPreview() {
-  SampleAppTheme {
-    LessonReviewDialog(
-        lesson =
-            Lesson(
-                id = "1",
-                title = "Mathematics Tutoring",
-                description = "Advanced calculus lesson",
-                subject = Subject.ANALYSIS,
-                latitude = 46.520374,
-                longitude = 6.568339),
-        initialRating = null,
-        onDismiss = {},
-        onSubmitReview = { _, _ -> },
-        tutor =
-            Profile(
-                uid = "1",
-                firstName = "John",
-                lastName = "Doe",
-                googleUid = "123",
-                role = Role.TUTOR,
-                academicLevel = AcademicLevel.BA5,
-                section = Section.IN,
-                languages = emptyList(),
-                subjects = emptyList(),
-                price = 16,
-                phoneNumber = "1234567890"))
   }
 }
