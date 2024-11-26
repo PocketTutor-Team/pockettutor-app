@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -116,6 +117,22 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     _selectedLesson.value = null
   }
 
+  private fun checkAndUpdateCompletedLessons(lessons: List<Lesson>) {
+    val currentDateTime = LocalDateTime.now()
+
+    lessons
+        .filter { lesson ->
+          (lesson.status == LessonStatus.CONFIRMED ||
+              lesson.status == LessonStatus.INSTANT_CONFIRMED) &&
+              lesson.parseLessonDate()?.plusHours(1)?.isBefore(currentDateTime) == true
+        }
+        .forEach { lesson ->
+          updateLesson(
+              lesson.copy(status = LessonStatus.COMPLETED),
+              onComplete = { Log.d("LessonViewModel", "Lesson ${lesson.id} marked as completed") })
+        }
+  }
+
   /**
    * Fetches all lessons for a specific tutor.
    *
@@ -126,10 +143,11 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.getLessonsForTutor(
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
+          checkAndUpdateCompletedLessons(fetchedLessons)
           _currentUserLessons.value =
-              fetchedLessons.filter { lesson ->
-                when (lesson.status) {
-                  LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
+              fetchedLessons.filter {
+                when (it.status) {
+                  LessonStatus.STUDENT_REQUESTED -> it.tutorUid.contains(tutorUid)
                   LessonStatus.PENDING_TUTOR_CONFIRMATION,
                   LessonStatus.CONFIRMED,
                   LessonStatus.INSTANT_CONFIRMED,
@@ -155,12 +173,13 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.getLessonsForStudent(
         studentUid = studentUid,
         onSuccess = { fetchedLessons ->
+          checkAndUpdateCompletedLessons(fetchedLessons)
           _currentUserLessons.value = fetchedLessons
-          onComplete() // Call the provided callback on success
+          onComplete()
         },
         onFailure = {
           Log.e("LessonViewModel", "Error fetching student's lessons", it)
-          onComplete() // Call the callback even if there's a failure
+          onComplete()
         })
   }
 
