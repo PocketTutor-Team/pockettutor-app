@@ -72,7 +72,7 @@ class AddLessonTest {
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -111,14 +111,14 @@ class AddLessonTest {
 
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
 
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
 
     // Fill in the required fields
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
@@ -150,21 +150,75 @@ class AddLessonTest {
 
   @Test
   fun goBack() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testInitialState() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
   }
 
     @Test
+    fun testInstantLessonDisplaying() {
+        composeTestRule.setContent {
+            AddLessonScreen(
+                navigationActions,
+                mockProfiles,
+                mockLessons,
+                {})
+        }
+
+        // Set Instant Lesson
+        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.onNodeWithTag("instantButton").performClick()
+
+        // Check that the map, Date, and Time buttons are not displayed
+        composeTestRule.onNodeWithTag("mapButton").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("DateButton").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("TimeButton").assertIsNotDisplayed()
+
+        // Ch
+        composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("DescriptionField").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("subjectButton").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("checkbox_ENGLISH").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("priceRangeSlider").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+    }
+
+    @Test
     fun testInstantLesson() {
-        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
-        composeTestRule.onNodeWithTag("instantSwitch").performClick()
+        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+
+        // Set Instant Lesson
+        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.onNodeWithTag("instantButton").performClick()
+        // Set Title and Description
+        composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
+        composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+
+        // Set Subject and Language
+        composeTestRule.onNodeWithTag("subjectButton").performClick()
+        composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
+        composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+        verify(navigationActions).navigateTo(anyString())
+    }
+
+    @Test
+    fun testInstantInvalid() {
+        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+
+        // Set Instant Lesson
+        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.onNodeWithTag("instantButton").performClick()
+
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+        verify(navigationActions, never()).navigateTo(anyString())
     }
 }
