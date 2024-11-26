@@ -48,7 +48,10 @@ fun ProfileInfoScreen(
   val lessons = lessonViewModel.currentUserLessons.collectAsState()
 
   // Filter only lessons that are marked as COMPLETED
-  val completedLessons = lessons.value.filter { it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW }
+  val completedLessons =
+      lessons.value.filter {
+        it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
+      }
 
   Scaffold(
       topBar = {
