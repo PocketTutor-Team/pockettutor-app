@@ -1,6 +1,7 @@
 package com.github.se.project.ui.overview
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -33,8 +34,12 @@ import com.github.se.project.R
 import com.github.se.project.model.lesson.*
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.ui.components.LessonReviewDialog
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.*
+import com.google.firebase.Timestamp
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -79,6 +84,9 @@ fun HomeScreen(
       } else if (lesson.status == LessonStatus.INSTANT_REQUESTED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+      } else if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     } else {
       if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
@@ -88,6 +96,9 @@ fun HomeScreen(
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       } else if (lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
         lessonViewModel.selectLesson(lesson)
         navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
@@ -180,7 +191,7 @@ private fun LessonsContent(
           if (profile.role == Role.TUTOR) {
             TutorSections(lessons, onClick, listProfilesViewModel)
           } else {
-            StudentSections(lessons, onClick, listProfilesViewModel)
+            StudentSections(lessons, onClick, listProfilesViewModel, lessonViewModel)
           }
         }
 
@@ -236,9 +247,47 @@ private fun TutorSections(
 private fun StudentSections(
     lessons: List<Lesson>,
     onClick: (Lesson) -> Unit,
-    listProfilesViewModel: ListProfilesViewModel
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
 ) {
+
+  var lessonToReview by remember { mutableStateOf<Lesson?>(null) }
   val sections = mutableListOf<SectionInfo>()
+
+  // Check for lessons that need review
+  LaunchedEffect(lessons) {
+    if (lessonToReview == null) { // Add this condition to prevent continuous updates
+      val pendingReview =
+          lessons.find { lesson ->
+            (lesson.status == LessonStatus.CONFIRMED ||
+                lesson.status == LessonStatus.INSTANT_CONFIRMED) &&
+                lesson.shouldRequestReview() &&
+                lesson.rating == null // Ensure we don't prompt for already rated lessons
+          }
+      lessonToReview = pendingReview
+    }
+  }
+
+  // Show review dialog if needed
+  lessonToReview?.let { lesson ->
+    LessonReviewDialog(
+        lesson = lesson,
+        initialRating = null,
+        onDismiss = {
+          lessonToReview = null // Important: reset the lessonToReview
+        },
+        onSubmitReview = { rating, comment ->
+          val updatedLesson =
+              lesson.copy(
+                  status = LessonStatus.COMPLETED,
+                  rating = LessonRating(grade = rating, comment = comment, date = Timestamp.now()))
+          lessonViewModel.updateLesson(updatedLesson) {
+            lessonViewModel.getLessonsForStudent(lesson.studentUid)
+          }
+          lessonToReview = null // Important: reset after submission
+        })
+  }
+
   if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {
     sections.add(
         SectionInfo(
@@ -285,7 +334,10 @@ private fun LessonSections(
     listProfilesViewModel: ListProfilesViewModel
 ) {
   sections.forEach { section ->
-    val sectionLessons = lessons.filter { it.status == section.status }
+    val sectionLessons =
+        lessons.filter {
+          it.status == section.status && it.tutorUid.isEmpty() == section.tutorEmpty
+        }
 
     ExpandableLessonSection(
         section = section,
@@ -307,6 +359,8 @@ private fun ExpandableLessonSection(
 ) {
   val isInstant = lessons.any { isInstant(it) }
   var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
+
+  LaunchedEffect(lessons.isNotEmpty()) { expanded = lessons.isNotEmpty() }
 
   val infiniteTransition = rememberInfiniteTransition(label = "iconBlink")
   val alpha by
@@ -394,6 +448,13 @@ private fun EmptyLessonsState(
         refreshing = false
       }
 
+  LaunchedEffect(Unit) {
+    while (true) {
+      refresh()
+      delay(30000) // Refresh every 30 seconds
+    }
+  }
+
   val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
   Box(
@@ -446,6 +507,24 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
               Text(text = "Go back to HOME screen")
             }
       }
+}
+
+fun Lesson.shouldRequestReview(): Boolean {
+  if (this.status != LessonStatus.CONFIRMED && this.status != LessonStatus.INSTANT_CONFIRMED)
+      return false
+  if (this.rating != null) return false
+
+  try {
+    val now = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
+    val lessonDateTime = LocalDateTime.parse(this.timeSlot, formatter)
+    val oneHourAfterLesson = lessonDateTime.plusHours(1)
+
+    return now.isAfter(oneHourAfterLesson)
+  } catch (e: Exception) {
+    Log.e("Lesson", "Error parsing date or calculating time", e)
+    return false
+  }
 }
 
 private data class SectionInfo(
