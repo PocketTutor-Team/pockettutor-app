@@ -317,9 +317,11 @@ private fun DistanceDialog(currentDistance: MutableState<Int>, onDismiss: () -> 
               onValueChange = { currentDistance.value = it.toInt() },
               valueRange = 100f..5100f,
               steps = 49,
-              modifier = Modifier.padding(horizontal = 16.dp))
+              modifier = Modifier.testTag("distanceSlider").padding(horizontal = 16.dp))
           if (currentDistance.value == 5100) {
             Text("No limit")
+          } else if (currentDistance.value == 299) {
+              Text("Maximum distance: 300m") //Fix annoying floating point issue
           } else {
             Text("Maximum distance: ${currentDistance.value}m")
           }
@@ -346,8 +348,8 @@ private fun EmptyState(showInstant: MutableState<Boolean>) {
               text = "No instant lessons currently pending",
               style = MaterialTheme.typography.titleLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.testTag("noLessonsMessage"))
-          Button({ showInstant.value = false }) { Text("Show all lessons") }
+              modifier = Modifier.testTag("noInstantsMessage"))
+          Button({ showInstant.value = false }, Modifier.testTag("showAllButton")) { Text("Show all lessons") }
         } else {
           Text(
               text = "No lessons available",

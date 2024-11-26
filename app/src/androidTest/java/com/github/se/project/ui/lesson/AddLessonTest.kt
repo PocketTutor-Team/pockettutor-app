@@ -1,12 +1,36 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.UiDevice
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.components.PriceRangeSlider
+import com.github.se.project.ui.components.validateLessonInput
+import com.github.se.project.ui.navigation.NavigationActions
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito.*
+import org.mockito.kotlin.whenever
 
 
-/*@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class AddLessonTest {
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -137,4 +161,10 @@ class AddLessonTest {
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
   }
-}*/
+
+    @Test
+    fun testInstantLesson() {
+        composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
+        composeTestRule.onNodeWithTag("instantSwitch").performClick()
+    }
+}

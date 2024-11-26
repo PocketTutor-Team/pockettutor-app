@@ -1,12 +1,37 @@
 package com.github.se.project.ui.lesson
 
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Route
+import com.github.se.project.ui.navigation.TopLevelDestinations
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
 
-/*class LessonsRequestedScreenTest {
+class LessonsRequestedScreenTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule
+  val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
@@ -42,10 +67,24 @@ import com.github.se.project.model.profile.*
               studentUid = "student123",
               minPrice = 20.0,
               maxPrice = 40.0,
-              timeSlot = "2024-10-10T11:00:00",
+              timeSlot = "2024-10-20T11:00:00",
               status = LessonStatus.MATCHING,
               latitude = 0.0,
-              longitude = 0.0))
+              longitude = 0.0),
+          Lesson(
+                id = "3",
+                title = "Programming Instant",
+                description = "Object Oriented Programming",
+                subject = Subject.ICC,
+                languages = listOf(Language.ENGLISH),
+                tutorUid = listOf("tutor123"),
+                studentUid = "student123",
+                minPrice = 20.0,
+                maxPrice = 40.0,
+                timeSlot = "2024-10-30Tinstant",
+                status = LessonStatus.INSTANT_REQUESTED,
+                latitude = 3.0,
+                longitude = 4.0))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
   @Before
@@ -63,14 +102,14 @@ import com.github.se.project.model.profile.*
     lessonViewModel = spy(lessonViewModel)
 
     navigationActions =
-        Mockito.mock(NavigationActions::class.java).apply {
+        mock(NavigationActions::class.java).apply {
           `when`(currentRoute()).thenReturn(Route.FIND_STUDENT)
         }
 
     doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
-    doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
+    //doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
 
-    doNothing().`when`(profilesRepository).getProfiles(any(), any())
+    //doNothing().`when`(profilesRepository).getProfiles(any(), any())
   }
 
   @Test
@@ -84,11 +123,38 @@ import com.github.se.project.model.profile.*
     composeTestRule.onNodeWithTag("bottomNavigationMenu").assertIsDisplayed()
   }
 
+    @Test
+    fun testNoInstantDisplayed() {
+        requestedLessonsFlow.value = emptyList() // Set no lessons
+
+        composeTestRule.setContent {
+            RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+        Thread.sleep(5000)
+        composeTestRule.onNodeWithTag("noInstantsMessage").assertIsDisplayed()
+    }
+
+    @Test
+    fun testSliderAndInstantLessonDisplay() {
+        composeTestRule.setContent {
+            RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+        Thread.sleep(5000)
+        composeTestRule.onNodeWithTag("distanceButton").performClick()
+        //Thread.sleep(5000)
+        composeTestRule.onNodeWithTag("distanceSlider").performGesture { swipeRight() }
+        composeTestRule.onNodeWithText("Programming Instant").assertIsDisplayed()
+    }
+
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+
+      // Go to non-instant lessons
+      Thread.sleep(5000)
+      composeTestRule.onNodeWithTag("instantSwitch").performClick()
 
     // Verify the lesson items are displayed
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
@@ -100,6 +166,9 @@ import com.github.se.project.model.profile.*
     composeTestRule.setContent {
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+
+      Thread.sleep(5000)
+      composeTestRule.onNodeWithTag("instantSwitch").performClick()
 
     // Click on the DatePicker to ensure it can be interacted with
     composeTestRule.onNodeWithTag("datePicker").performClick()
@@ -117,9 +186,12 @@ import com.github.se.project.model.profile.*
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
+      Thread.sleep(5000)
+      composeTestRule.onNodeWithTag("instantSwitch").performClick()
+
     // Verify that only the filtered lesson items are displayed
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
   }
 
   @Test
@@ -143,7 +215,10 @@ import com.github.se.project.model.profile.*
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
+      Thread.sleep(5000)
+      composeTestRule.onNodeWithTag("instantSwitch").performClick()
+
     // Verify "No lessons available" message or any placeholder is displayed
     composeTestRule.onNodeWithTag("noLessonsMessage").assertIsDisplayed()
   }
-}*/
+}
