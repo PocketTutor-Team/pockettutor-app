@@ -250,20 +250,13 @@ private fun StudentSections(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-
   var lessonToReview by remember { mutableStateOf<Lesson?>(null) }
   val sections = mutableListOf<SectionInfo>()
 
   // Check for lessons that need review
   LaunchedEffect(lessons) {
-    if (lessonToReview == null) { // Add this condition to prevent continuous updates
-      val pendingReview =
-          lessons.find { lesson ->
-            (lesson.status == LessonStatus.CONFIRMED ||
-                lesson.status == LessonStatus.INSTANT_CONFIRMED) &&
-                lesson.shouldRequestReview() &&
-                lesson.rating == null // Ensure we don't prompt for already rated lessons
-          }
+    if (lessonToReview == null) {
+      val pendingReview = lessons.find { lesson -> lesson.status == LessonStatus.PENDING_REVIEW }
       lessonToReview = pendingReview
     }
   }
@@ -274,7 +267,11 @@ private fun StudentSections(
         lesson = lesson,
         initialRating = null,
         onDismiss = {
-          lessonToReview = null // Important: reset the lessonToReview
+          val updatedLesson = lesson.copy(status = LessonStatus.COMPLETED)
+          lessonViewModel.updateLesson(updatedLesson) {
+            lessonViewModel.getLessonsForStudent(lesson.studentUid)
+          }
+          lessonToReview = null
         },
         onSubmitReview = { rating, comment ->
           val updatedLesson =
@@ -284,8 +281,9 @@ private fun StudentSections(
           lessonViewModel.updateLesson(updatedLesson) {
             lessonViewModel.getLessonsForStudent(lesson.studentUid)
           }
-          lessonToReview = null // Important: reset after submission
-        })
+          lessonToReview = null
+        },
+        tutor = lesson.tutorUid.getOrNull(0)?.let { listProfilesViewModel.getProfileById(it) })
   }
 
   if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {

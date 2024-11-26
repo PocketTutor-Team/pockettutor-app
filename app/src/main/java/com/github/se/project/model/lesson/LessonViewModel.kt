@@ -133,6 +133,7 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
                   LessonStatus.PENDING_TUTOR_CONFIRMATION,
                   LessonStatus.CONFIRMED,
                   LessonStatus.INSTANT_CONFIRMED,
+                  LessonStatus.PENDING_REVIEW,
                   LessonStatus.COMPLETED -> true
                   else -> false
                 }

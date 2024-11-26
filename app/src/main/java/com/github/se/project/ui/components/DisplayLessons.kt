@@ -65,7 +65,8 @@ object LessonColors {
 
     return when {
       tutorProposed -> if (isDarkTheme) DarkUrgent else LightUrgent
-      status == LessonStatus.COMPLETED -> if (isDarkTheme) DarkCompleted else LightCompleted
+      status == LessonStatus.COMPLETED || status == LessonStatus.PENDING_REVIEW ->
+          if (isDarkTheme) DarkCompleted else LightCompleted
       status == LessonStatus.CONFIRMED -> if (isDarkTheme) DarkConfirmed else LightConfirmed
       status == LessonStatus.PENDING_TUTOR_CONFIRMATION ->
           if (isDarkTheme) {
@@ -123,6 +124,7 @@ fun DisplayLessons(
     filteredLessons.forEachIndexed { index, lesson ->
       val otherUserProfile =
           if (lesson.status == LessonStatus.COMPLETED ||
+              lesson.status == LessonStatus.PENDING_REVIEW ||
               lesson.status == LessonStatus.CONFIRMED ||
               lesson.status == LessonStatus.INSTANT_CONFIRMED) {
             if (isTutor) {
@@ -212,6 +214,7 @@ fun DisplayLessons(
 
                   if (lesson.status == LessonStatus.COMPLETED ||
                       lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.PENDING_REVIEW ||
                       lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     Divider(
                         modifier = Modifier.padding(vertical = 4.dp),
