@@ -2,6 +2,8 @@ package com.github.se.project.model.lesson
 
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 data class Lesson(
     var id: String = "", // Unique identifier for the lesson
@@ -18,4 +20,18 @@ data class Lesson(
     var status: LessonStatus = LessonStatus.MATCHING, // Status of the lesson
     val latitude: Double, // Latitude for lesson location
     val longitude: Double // Longitude for lesson location
-)
+) {
+  /**
+   * Parses the lesson's timeSlot into a LocalDateTime object.
+   *
+   * @return The LocalDateTime representation of the timeSlot, or null if parsing fails.
+   */
+  fun parseLessonDate(): LocalDateTime? {
+    return try {
+      val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
+      LocalDateTime.parse(timeSlot, formatter)
+    } catch (e: Exception) {
+      null
+    }
+  }
+}
