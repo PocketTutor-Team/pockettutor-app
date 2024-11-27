@@ -1,15 +1,15 @@
 package com.github.se.project.ui.lesson
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import androidx.test.uiautomator.UiDevice
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -116,39 +116,59 @@ class AddLessonTest {
     verify(navigationActions, never()).navigateTo(anyString())
   }
 
-  @Test
-  fun confirmWithValidFieldsNavigatesToHome() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    @Test
+    fun confirmWithValidFieldsNavigatesToHome() {
+        var testMapReady by mutableStateOf(false)
 
-    // Fill in the required fields
-    composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
-    composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+        composeTestRule.setContent {
+            AddLessonScreen(
+                navigationActions, mockProfiles, mockLessons, onMapReadyChange = { testMapReady = it })
+        }
 
-    // Select Date and Time
-    composeTestRule.onNodeWithTag("DateButton").performClick()
-    onView(withText("OK")).perform(click())
-    composeTestRule.onNodeWithTag("TimeButton").performClick()
-    onView(withText("OK")).perform(click())
+        // Fill in the required fields
+        composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
+        composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
 
-    // Set Subject and Language
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+        // Select Date and Time
+        composeTestRule.onNodeWithTag("DateButton").performClick()
+        Thread.sleep(2000)
+        // composeTestRule.onNodeWithText("OK").performClick()
+        onView(withText("OK")).perform(click())
+        composeTestRule.onNodeWithTag("TimeButton").performClick()
+        Thread.sleep(2000)
+        // composeTestRule.onNodeWithText("OK").performClick()
+        onView(withText("OK")).perform(click())
 
-    // Select location
-    composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-    Thread.sleep(2000) // Wait for the map to load
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.click(device.displayWidth / 2, device.displayHeight / 2)
-    composeTestRule.onNodeWithTag("confirmLocation").performClick()
+        // Set Subject and Language
+        composeTestRule.onNodeWithTag("subjectButton").performClick()
+        composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
+        composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
-    // Confirm
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions).navigateTo(anyString())
-  }
+        // Select location
+        composeTestRule.onNodeWithTag("mapButton").performClick()
+        composeTestRule.onNodeWithTag("mapContainer").performClick()
 
-  @Test
+        // replace the following code with the composeTestRule equivalent as
+        // the Thread.sleep() method is not recommended and
+        // device.click() is not well supported in compose
+        composeTestRule.waitUntil(15000) {
+            // wait max 15 seconds for the map to load,
+            // as soon as the map is ready, the next line will be executed
+            testMapReady
+        }
+
+        // click in the middle of GoogleMap
+        composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+
+        composeTestRule.onNodeWithTag("confirmLocation").performClick()
+
+        // Confirm
+        composeTestRule.onNodeWithTag("confirmButton").performClick()
+        verify(navigationActions).navigateTo(anyString())
+    }
+
+
+    @Test
   fun goBack() {
     composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("backButton").performClick()
@@ -173,7 +193,7 @@ class AddLessonTest {
         }
 
         // Set Instant Lesson
-        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.waitUntil (15000) { composeTestRule.onNodeWithTag("instantButton").isDisplayed() }
         composeTestRule.onNodeWithTag("instantButton").performClick()
 
         // Check that the map, Date, and Time buttons are not displayed
@@ -195,7 +215,7 @@ class AddLessonTest {
         composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
 
         // Set Instant Lesson
-        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.waitUntil (15000) { composeTestRule.onNodeWithTag("instantButton").isDisplayed() }
         composeTestRule.onNodeWithTag("instantButton").performClick()
         // Set Title and Description
         composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
@@ -215,7 +235,7 @@ class AddLessonTest {
         composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
 
         // Set Instant Lesson
-        Thread.sleep(2000) // Wait for the location to load
+        composeTestRule.waitUntil (15000) { composeTestRule.onNodeWithTag("instantButton").isDisplayed() }
         composeTestRule.onNodeWithTag("instantButton").performClick()
 
         composeTestRule.onNodeWithTag("confirmButton").performClick()

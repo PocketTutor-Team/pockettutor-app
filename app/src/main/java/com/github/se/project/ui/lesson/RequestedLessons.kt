@@ -209,7 +209,7 @@ fun RequestedLessonsScreen(
             }
 
             if (filteredLessonsWithScores.isEmpty()) {
-              EmptyState(showInstants)
+              EmptyState(showInstants, canSeeInstants)
             } else {
               LazyColumn(
                   modifier = Modifier.fillMaxSize().testTag("lessonsList"),
@@ -412,14 +412,14 @@ private fun DistanceDialog(
               onValueChange = { tempDistance = it.toInt() },
               valueRange = 100f..5100f,
               steps = 49,
-              modifier = Modifier.padding(horizontal = 16.dp),
+              modifier = Modifier.testTag("distanceSlider").padding(horizontal = 16.dp),
               colors =
                   SliderDefaults.colors(
                       activeTrackColor = getColorForDistance(tempDistance, isSystemInDark),
                       thumbColor = getColorForDistance(tempDistance, isSystemInDark)))
 
           Text(
-              text = if (tempDistance == 5100) "No limit" else "Maximum distance: ${tempDistance}m",
+              text = if (tempDistance == 5100) "No limit" else if (tempDistance == 299) "Maximum distance: 300" else "Maximum distance: ${tempDistance}m",
               color = getColorForDistance(tempDistance, isSystemInDark))
         }
       },
@@ -428,7 +428,7 @@ private fun DistanceDialog(
             onClick = {
               onApply(tempDistance)
               onDismiss()
-            }) {
+            }, modifier = Modifier.testTag("applyButton")) {
               Text("Apply filter")
             }
       },
@@ -436,7 +436,7 @@ private fun DistanceDialog(
 }
 
 @Composable
-private fun EmptyState(showInstant: MutableState<Boolean>) {
+private fun EmptyState(showInstant: MutableState<Boolean>, canSeeInstants: MutableState<Boolean>) {
   Column(
       modifier = Modifier.fillMaxSize().padding(32.dp),
       verticalArrangement = Arrangement.Center,
@@ -452,7 +452,7 @@ private fun EmptyState(showInstant: MutableState<Boolean>) {
               text = "No instant lessons currently pending",
               style = MaterialTheme.typography.titleLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.testTag("noLessonsMessage"))
+              modifier = Modifier.testTag("noInstantLessonsMessage"))
           Button({ showInstant.value = false }) { Text("Show all lessons") }
         } else {
           Text(
@@ -465,6 +465,9 @@ private fun EmptyState(showInstant: MutableState<Boolean>) {
               style = MaterialTheme.typography.bodyMedium,
               textAlign = TextAlign.Center,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if(canSeeInstants.value){
+                Button({ showInstant.value = true }) { Text("Show instant lessons") }
+            }
         }
       }
 }
