@@ -2,16 +2,12 @@ package com.github.se.project.model.lesson
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.profile.*
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class SuitabilityScoreCalculatorTest {
-/*
 
   // Base Profiles and Lessons
   private val baseTutorProfile =
@@ -186,5 +182,4 @@ class SuitabilityScoreCalculatorTest {
     assertEquals(expected.blue, actual.blue, tolerance)
     assertEquals(expected.alpha, actual.alpha, tolerance)
   }
- */
 }
