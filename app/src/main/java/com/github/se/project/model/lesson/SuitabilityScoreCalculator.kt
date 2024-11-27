@@ -1,10 +1,11 @@
-package com.github.se.project.utils
+package com.github.se.project.model.lesson
 
+import android.location.Location
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Profile
+import com.google.android.gms.maps.model.LatLng
 
 object SuitabilityScoreCalculator {
 
@@ -18,6 +19,7 @@ object SuitabilityScoreCalculator {
    */
   fun calculateSuitabilityScore(
       lesson: Lesson,
+      tutorLocation: LatLng?,
       tutorProfile: Profile,
       studentProfile: Profile?
   ): Int {
@@ -31,7 +33,7 @@ object SuitabilityScoreCalculator {
     val X1 = computeScheduleMatch(lesson, tutorProfile)
     val X2 = computeAcademicLevelCompatibility(tutorProfile, studentProfile)
     val X3 = computePriceCompatibility(lesson, tutorProfile)
-    val X4 = computeDistanceProximity(lesson, tutorProfile)
+    val X4 = computeDistanceProximity(lesson, tutorLocation)
 
     // Compute the total score
     val score = (W1 * X1 + W2 * X2 + W3 * X3 + W4 * X4) * 100
@@ -53,8 +55,6 @@ object SuitabilityScoreCalculator {
     return if (tutorIsAvailable) 1.0 else 0.0
   }
 
-  // TODO: this function might be computationally costly to retrieve every student profile.
-  // I would like to ask the coaches
   private fun computeAcademicLevelCompatibility(
       tutorProfile: Profile,
       studentProfile: Profile?
@@ -65,7 +65,7 @@ object SuitabilityScoreCalculator {
 
     val tutorLevelIndex = tutorProfile.academicLevel.ordinal
     val studentLevelIndex = studentProfile.academicLevel.ordinal
-    val levelDifference = tutorLevelIndex - studentLevelIndex
+    val levelDifference = tutorLevelIndex - studentLevelIndex + 1
 
     if (levelDifference < 0) return 0.0
 
@@ -97,9 +97,22 @@ object SuitabilityScoreCalculator {
     return score
   }
 
-  private fun computeDistanceProximity(lesson: Lesson, tutorProfile: Profile): Double {
-    // TODO: implement this compatibility function using tutor location
-    return 1.0
+  private fun computeDistanceProximity(lesson: Lesson, tutorLocation: LatLng?): Double {
+    if (tutorLocation == null) return 0.0
+
+    // compute distance in meters
+    val distanceInMeters = FloatArray(1)
+    Location.distanceBetween(
+        tutorLocation.latitude,
+        tutorLocation.longitude,
+        lesson.latitude,
+        lesson.longitude,
+        distanceInMeters)
+
+    val distanceInKm = distanceInMeters[0] / 1000.0
+    val distanceThreshold = 5.0 // threshold distance in km for scoring
+
+    return (1.0 - (distanceInKm / distanceThreshold)).coerceIn(0.0, 1.0)
   }
 
   fun computeSubjectMatch(lesson: Lesson, tutorProfile: Profile): Boolean {
