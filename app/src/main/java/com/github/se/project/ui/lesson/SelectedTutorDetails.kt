@@ -319,9 +319,7 @@ private fun DisplayReview(lesson: Lesson, student: Profile) {
                         verticalAlignment = Alignment.CenterVertically) {
                           repeat(5) { index ->
                             Icon(
-                                imageVector =
-                                    if (index < lesson.rating.grade) Icons.Filled.Star
-                                    else Icons.Filled.Star,
+                                imageVector = Icons.Filled.Star,
                                 contentDescription = null,
                                 tint =
                                     if (index < lesson.rating.grade)
