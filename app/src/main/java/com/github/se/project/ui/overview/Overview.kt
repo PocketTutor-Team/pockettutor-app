@@ -1,26 +1,44 @@
 package com.github.se.project.ui.overview
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,15 +49,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
-import com.github.se.project.model.lesson.*
-import com.github.se.project.model.profile.*
-import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRating
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.ui.components.ExpandableLessonSection
 import com.github.se.project.ui.components.LessonReviewDialog
-import com.github.se.project.ui.components.isInstant
-import com.github.se.project.ui.navigation.*
+import com.github.se.project.ui.components.SectionInfo
+import com.github.se.project.ui.navigation.BottomNavigationMenu
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.ui.navigation.TopLevelDestinations
 import com.google.firebase.Timestamp
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -347,82 +373,6 @@ private fun LessonSections(
   }
 }
 
-@Composable
-private fun ExpandableLessonSection(
-    section: SectionInfo,
-    lessons: List<Lesson>,
-    isTutor: Boolean,
-    onClick: (Lesson) -> Unit,
-    listProfilesViewModel: ListProfilesViewModel
-) {
-  val isInstant = lessons.any { isInstant(it) }
-  var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
-
-  LaunchedEffect(lessons.isNotEmpty()) { expanded = lessons.isNotEmpty() }
-
-  val infiniteTransition = rememberInfiniteTransition(label = "iconBlink")
-  val alpha by
-      infiniteTransition.animateFloat(
-          initialValue = 1f,
-          targetValue = 0.3f,
-          animationSpec =
-              infiniteRepeatable(animation = tween(500), repeatMode = RepeatMode.Reverse),
-          label = "blinkAlpha")
-
-  Card(
-      modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),
-      colors =
-          CardDefaults.cardColors(
-              containerColor =
-                  if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
-                  else MaterialTheme.colorScheme.surfaceContainerLowest)) {
-        Column {
-          ListItem(
-              headlineContent = {
-                Text(section.title, style = MaterialTheme.typography.titleMedium)
-              },
-              colors =
-                  ListItemDefaults.colors(
-                      containerColor =
-                          if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.4f)
-                          else MaterialTheme.colorScheme.surfaceContainerLowest),
-              leadingContent = {
-                Icon(
-                    imageVector = section.icon,
-                    contentDescription = null,
-                    tint =
-                        MaterialTheme.colorScheme.primary.copy(
-                            alpha = if (isInstant) alpha else 1f))
-              },
-              trailingContent =
-                  if (!isInstant) {
-                    {
-                      IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            if (expanded) Icons.Default.KeyboardArrowDown
-                            else Icons.Default.KeyboardArrowLeft,
-                            contentDescription = if (expanded) "Collapse" else "Expand")
-                      }
-                    }
-                  } else null,
-              modifier =
-                  if (!isInstant) {
-                    Modifier.clickable { expanded = !expanded }
-                  } else Modifier)
-
-          if (expanded) {
-            DisplayLessons(
-                lessons = lessons,
-                statusFilter = section.status,
-                isTutor = isTutor,
-                tutorEmpty = section.tutorEmpty,
-                onCardClick = onClick,
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
-                listProfilesViewModel = listProfilesViewModel)
-          }
-        }
-      }
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -507,27 +457,3 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-fun Lesson.shouldRequestReview(): Boolean {
-  if (this.status != LessonStatus.CONFIRMED && this.status != LessonStatus.INSTANT_CONFIRMED)
-      return false
-  if (this.rating != null) return false
-
-  try {
-    val now = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-    val lessonDateTime = LocalDateTime.parse(this.timeSlot, formatter)
-    val oneHourAfterLesson = lessonDateTime.plusHours(1)
-
-    return now.isAfter(oneHourAfterLesson)
-  } catch (e: Exception) {
-    Log.e("Lesson", "Error parsing date or calculating time", e)
-    return false
-  }
-}
-
-private data class SectionInfo(
-    val title: String,
-    val status: LessonStatus,
-    val icon: ImageVector,
-    val tutorEmpty: Boolean = false
-)

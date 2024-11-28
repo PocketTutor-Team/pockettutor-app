@@ -38,7 +38,7 @@ import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
-  private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
+  private val LightCompleted = Color(0xFFF3E5F5) // Violet pastel clair
   private val LightConfirmed = Color(0xFFE3F2FD) // Bleu pastel clair
   private val LightPending = Color(0xFFFFF3E0) // Orange pastel clair
   private val LightUrgent = Color(0xFFF3E5F5) // Violet pastel clair
@@ -46,7 +46,7 @@ object LessonColors {
   private val LightInstantConfirmed = Color(0xFFBBDEFB) // Bleu ciel pastel
   private val LightInstantRequested = Color(0xFFC8E6C9) // Vert menthe pastel
 
-  private val DarkCompleted = Color(0xFF2E7D32) // Vert foncé
+  private val DarkCompleted = Color(0xFF571E98) // Violet foncé
   private val DarkConfirmed = Color(0xFF1565C0) // Bleu foncé
   private val DarkPending = Color(0xFFD87F00) // Orange foncé
   private val DarkUrgent = Color(0xFF571E98) // Violet foncé

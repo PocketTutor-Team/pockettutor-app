@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import com.github.se.project.ui.components.PriceSlider
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 
 @Composable
 fun EditProfile(
@@ -119,8 +121,25 @@ fun EditProfile(
                     modifier = Modifier.testTag("editTutorProfilePriceText"))
                 PriceSlider(priceSliderValue)
 
-                Spacer(modifier = Modifier.height(5.dp))
+                //Spacer(modifier = Modifier.height(5.dp))
               }
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("updateAvailabilityButton"),
+                shape = MaterialTheme.shapes.medium,
+                onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
+                colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Calendar",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+                Text("Schedule")
+            }
+
 
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
               SectionSelector(section)
@@ -162,7 +181,7 @@ fun EditProfile(
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
               }
             }) {
-              Text("Continue")
+              Text("Update Profile")
             }
       })
 }
