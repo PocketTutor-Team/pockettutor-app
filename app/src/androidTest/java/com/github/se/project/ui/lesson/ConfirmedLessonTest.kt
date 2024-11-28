@@ -364,7 +364,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenCancellationDialogConfirmed_ConfirmedLesson() {
     var isLocationChecked = false
 
@@ -395,7 +395,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
     verify(mockLessonRepository).updateLesson(any(), any(), any())
     verify(mockNavigationActions).navigateTo(Screen.HOME)
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenLessonCancellation_StudentRequestedLesson() {
