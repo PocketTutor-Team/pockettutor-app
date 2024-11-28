@@ -21,6 +21,9 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   private val _currentUserLessons = MutableStateFlow<List<Lesson>>(emptyList())
   open val currentUserLessons: StateFlow<List<Lesson>> = _currentUserLessons.asStateFlow()
 
+  private val _cancelledLessons = MutableStateFlow<List<Lesson>>(emptyList())
+  open val cancelledLessons: StateFlow<List<Lesson>> = _cancelledLessons.asStateFlow()
+
   private val _selectedLesson = MutableStateFlow<Lesson?>(null)
   open val selectedLesson: StateFlow<Lesson?> = _selectedLesson.asStateFlow()
 
@@ -137,6 +140,14 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
                   else -> false
                 }
               }
+          _cancelledLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_CANCELLED -> true
+                  LessonStatus.TUTOR_CANCELLED -> false
+                  else -> false
+                }
+              }
           onComplete()
         },
         onFailure = {
@@ -156,6 +167,14 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         studentUid = studentUid,
         onSuccess = { fetchedLessons ->
           _currentUserLessons.value = fetchedLessons
+          _cancelledLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_CANCELLED -> false
+                  LessonStatus.TUTOR_CANCELLED -> true
+                  else -> false
+                }
+              }
           onComplete() // Call the provided callback on success
         },
         onFailure = {

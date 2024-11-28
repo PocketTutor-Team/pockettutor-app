@@ -1,4 +1,5 @@
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -23,6 +24,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
@@ -43,7 +46,7 @@ public class ConfirmedLessonTest {
 
   private val tutorProfile =
       Profile(
-          uid = "12345",
+          uid = "tutor1",
           googleUid = "67890",
           firstName = "John",
           lastName = "Doe",
@@ -56,7 +59,7 @@ public class ConfirmedLessonTest {
 
   private val studentProfile =
       Profile(
-          uid = "1",
+          uid = "student1",
           googleUid = "67890",
           firstName = "James",
           lastName = "Donovan",
@@ -67,62 +70,117 @@ public class ConfirmedLessonTest {
           schedule = List(7) { List(12) { 0 } },
           price = 50)
 
-  private val lesson =
+  private val confirmedLesson =
       Lesson(
           id = "lesson1",
           title = "Math Lesson",
-          timeSlot = "30/12/2024T14:00:00",
+          timeSlot = "30/12/2025T14:00:00",
           tutorUid = listOf("tutor1"),
-          studentUid = "1",
+          studentUid = "student1",
           latitude = 37.7749,
           longitude = -122.4194,
           status = LessonStatus.CONFIRMED)
 
+  private val studentRequestedLesson =
+      Lesson(
+          id = "lesson2",
+          title = "Math Lesson",
+          timeSlot = "30/12/2025T14:00:00",
+          tutorUid = listOf("tutor1"),
+          studentUid = "student1",
+          latitude = 37.7749,
+          longitude = -122.4194,
+          status = LessonStatus.STUDENT_REQUESTED)
+
+  private val pendingTutorConfirmationLesson =
+      Lesson(
+          id = "lesson3",
+          title = "Math Lesson",
+          timeSlot = "30/12/2025T14:00:00",
+          tutorUid = listOf("tutor1"),
+          studentUid = "student1",
+          latitude = 37.7749,
+          longitude = -122.4194,
+          status = LessonStatus.PENDING_TUTOR_CONFIRMATION)
+
   @Before
   fun setUp() {
-    whenever(mockProfilesRepository.getProfiles(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
-        .thenAnswer { invocation ->
-          val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
-          onSuccess(
-              listOf(
-                  tutorProfile,
-                  studentProfile)) // Simulate a list of profiles with our beloved Ozymandias
-        }
+    whenever(mockProfilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(
+          listOf(
+              tutorProfile,
+              studentProfile)) // Simulate a list of profiles with our beloved Ozymandias
+    }
 
-    whenever(
-            mockLessonRepository.getLessonsForTutor(
-                org.mockito.kotlin.eq(tutorProfile.uid),
-                org.mockito.kotlin.any(),
-                org.mockito.kotlin.any()))
+    whenever(mockLessonRepository.getLessonsForTutor(eq(tutorProfile.uid), any(), any()))
         .thenAnswer { invocation ->
           val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
-          onSuccess(listOf(lesson))
+          onSuccess(listOf(confirmedLesson, studentRequestedLesson, pendingTutorConfirmationLesson))
         }
 
     listProfilesViewModel.getProfiles()
     lessonViewModel.getLessonsForTutor(tutorProfile.uid, {})
 
-    lessonViewModel.selectLesson(lesson)
+    lessonViewModel.selectLesson(confirmedLesson)
     listProfilesViewModel.setCurrentProfile(tutorProfile)
   }
 
-  /*@Test
-  fun confirmedLessonScreenEverythingDisplayedCorrectly() {
+  @Test
+  fun confirmedLessonScreenEverythingDisplayedCorrectly_ConfirmedLesson() {
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
-    // This workaround fail the CI
-    // Thread.sleep(5000)
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
-  }*/
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun confirmedLessonScreenEverythingDisplayedCorrectly_StudentRequestedLesson() {
+    lessonViewModel.selectLesson(studentRequestedLesson)
+
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun confirmedLessonScreenEverythingDisplayedCorrectly_PendingLesson() {
+    lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
+    listProfilesViewModel.setCurrentProfile(studentProfile)
+
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+  }
 
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
@@ -132,7 +190,6 @@ public class ConfirmedLessonTest {
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions)
     }
-
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("backButton").performClick()
@@ -140,7 +197,7 @@ public class ConfirmedLessonTest {
   }
 
   @Test
-  fun confirmedLessonScreenOpensSmsApp() {
+  fun confirmedLessonScreenOpensSmsApp_ConfirmedLesson() {
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
@@ -180,5 +237,122 @@ public class ConfirmedLessonTest {
     }
 
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
+  }
+
+  @Test
+  fun confirmedLessonScreenCancellationButtonClicked() {
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Click on the "Cancel Lesson" button
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    Thread.sleep(300) // Wait for the dialog to show up
+
+    // Check that the cancellation dialog is well displayed
+    composeTestRule.onNodeWithTag("cancelDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDialogTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDialogText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun confirmedLessonScreenCancellationDialogDismissed() {
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Click on the "Cancel Lesson" button
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    Thread.sleep(300) // Wait for the dialog to show up
+
+    // Dismiss the dialog
+    composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed().performClick()
+
+    // Check that the dialog is dismissed
+    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
+  }
+
+  @Test
+  fun confirmedLessonScreenCancellationDialogConfirmed_ConfirmedLesson() {
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Click on the "Cancel Lesson" button
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    Thread.sleep(300) // Wait for the dialog to show up
+
+    // Confirm the dialog
+    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+
+    // Check that the cancellation has been confirmed
+    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
+    verify(mockLessonRepository).updateLesson(any(), any(), any())
+    verify(mockNavigationActions).goBack()
+  }
+
+  @Test
+  fun confirmedLessonScreenCancellationDialogConfirmed_StudentRequestedLesson() {
+    lessonViewModel.selectLesson(studentRequestedLesson)
+
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Click on the "Cancel Lesson" button
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    Thread.sleep(300) // Wait for the dialog to show up
+
+    // Confirm the dialog
+    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+
+    // Check that the cancellation has been confirmed
+    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
+    verify(mockLessonRepository).updateLesson(any(), any(), any())
+    verify(mockNavigationActions).goBack()
+  }
+
+  @Test
+  fun confirmedLessonScreenCancellationDialogConfirmed_PendingLesson() {
+    lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
+    listProfilesViewModel.setCurrentProfile(studentProfile)
+
+    composeTestRule.setContent {
+      ConfirmedLessonScreen(
+          listProfilesViewModel = listProfilesViewModel,
+          lessonViewModel = lessonViewModel,
+          navigationActions = mockNavigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Click on the "Cancel Lesson" button
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    Thread.sleep(300) // Wait for the dialog to show up
+
+    // Confirm the dialog
+    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+
+    // Check that the cancellation has been confirmed
+    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
+    verify(mockLessonRepository).deleteLesson(any(), any(), any())
+    verify(mockNavigationActions).goBack()
   }
 }
