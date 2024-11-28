@@ -33,10 +33,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -101,7 +104,9 @@ fun LessonEditor(
   }
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
   var isLocationChecked by remember { mutableStateOf(false) }
+
     var showDatePicker by remember { mutableStateOf(false) }
+    var showTimeDialog by remember { mutableStateOf(false) }
 
   val cameraPositionState = rememberCameraPositionState {}
 
@@ -129,10 +134,43 @@ fun LessonEditor(
     }
   }
 
-    val datePickerState = rememberDatePickerState(calendar.getTimeInMillis())
+    val datePickerState = rememberDatePickerState(calendar.getTimeInMillis(),
+        selectableDates = object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            val date = Date().apply {
+                time = utcTimeMillis
+            }
+            val currentDate = Date()
+
+            // Reset the time of both dates to compare only the date (not the time)
+            val calendarDate = Calendar.getInstance().apply { time = date }
+            val calendarCurrentDate = Calendar.getInstance().apply { time = currentDate }
+
+            // Set the time to midnight for both dates to ignore time component
+            calendarDate.set(Calendar.HOUR_OF_DAY, 0)
+            calendarDate.set(Calendar.MINUTE, 0)
+            calendarDate.set(Calendar.SECOND, 0)
+            calendarDate.set(Calendar.MILLISECOND, 0)
+
+            calendarCurrentDate.set(Calendar.HOUR_OF_DAY, 0)
+            calendarCurrentDate.set(Calendar.MINUTE, 0)
+            calendarCurrentDate.set(Calendar.SECOND, 0)
+            calendarCurrentDate.set(Calendar.MILLISECOND, 0)
+
+            // Check if the date is today or in the future
+            return calendarDate.time.after(calendarCurrentDate.time) || calendarDate.time == calendarCurrentDate.time
+        }
+    })
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+        initialMinute = calendar.get(Calendar.MINUTE),
+        is24Hour = true,
+    )
 
 
-  // Time Picker
+
+    // Time Picker
   val timePickerDialog =
       TimePickerDialog(
           context,
@@ -262,6 +300,42 @@ fun LessonEditor(
             },
             properties = DialogProperties(usePlatformDefaultWidth = false)) {
             DatePicker(datePickerState, showModeToggle = false)
+        }
+    }
+
+    if(showTimeDialog) {
+        Dialog(
+            onDismissRequest = { showMapDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Column {
+                TimePicker(
+                    state = timePickerState,
+                )
+                Button(onClick = { showTimeDialog = false }) {
+                    Text("Dismiss picker")
+                }
+                Button(onClick = {
+                    val selectedCalendar =
+                        Calendar.getInstance().apply {
+                            timeInMillis = currentDateTime.timeInMillis
+                            set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                            set(Calendar.MINUTE, timePickerState.minute)
+                        }
+
+                    val isSelectedDateToday =
+                        selectedDate ==
+                                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+
+                    if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
+                        Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
+                    } else {
+                        selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
+                    }
+                }) {
+                    Text("Confirm selection")
+                }
+            }
         }
     }
   // Map Dialog
