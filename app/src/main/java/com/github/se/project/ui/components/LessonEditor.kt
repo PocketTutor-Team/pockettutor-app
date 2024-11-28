@@ -2,8 +2,8 @@ package com.github.se.project.ui.components
 
 import MapPickerBox
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -57,7 +60,11 @@ import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("NewApi")
@@ -94,6 +101,7 @@ fun LessonEditor(
   }
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
   var isLocationChecked by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
   val cameraPositionState = rememberCameraPositionState {}
 
@@ -121,19 +129,8 @@ fun LessonEditor(
     }
   }
 
-  // Date Picker
-  val datePickerDialog =
-      DatePickerDialog(
-          context,
-          { _, year, month, dayOfMonth ->
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
-          },
-          calendar.get(Calendar.YEAR),
-          calendar.get(Calendar.MONTH),
-          calendar.get(Calendar.DAY_OF_MONTH))
-  datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
+    val datePickerState = rememberDatePickerState(calendar.getTimeInMillis())
+
 
   // Time Picker
   val timePickerDialog =
@@ -248,6 +245,25 @@ fun LessonEditor(
         "Select location"
       }
 
+    if(showDatePicker){
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                Button({
+                    val temp = Instant.ofEpochSecond((datePickerState.selectedDateMillis)?.div(
+                        1000
+                    ) ?: 0)
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    val zonedDateTime = temp.atZone(ZoneId.systemDefault())
+                    selectedDate = formatter.format(zonedDateTime)
+                    showDatePicker = false}) {
+                    Text("Ok")
+                }
+            },
+            properties = DialogProperties(usePlatformDefaultWidth = false)) {
+            DatePicker(datePickerState, showModeToggle = false)
+        }
+    }
   // Map Dialog
   if (showMapDialog) {
     Dialog(
@@ -347,7 +363,7 @@ fun LessonEditor(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                   Button(
-                      onClick = { datePickerDialog.show() },
+                      onClick = { showDatePicker = true },
                       modifier = Modifier.weight(1f).testTag("DateButton"),
                       colors =
                           ButtonDefaults.buttonColors(
