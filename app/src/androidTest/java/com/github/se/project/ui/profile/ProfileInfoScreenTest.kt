@@ -4,22 +4,18 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
-import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.AcademicLevel
-import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.utils.capitalizeFirstLetter
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,7 +88,7 @@ class ProfileInfoScreenTest {
     }
   }
 
-    //PASS
+  // PASS
   @Test
   fun profileInfoScreen_everythingDisplayedCorrectly() {
     composeTestRule.setContent {
@@ -107,7 +103,7 @@ class ProfileInfoScreenTest {
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed()
   }
 
-    //PASS
+  // PASS
   @Test
   fun tutorProfileInfoScreenDisplaysProfileDetails_whenProfileIsNotNull() {
     // Mock the currentProfile StateFlow to return the mockProfile
@@ -141,9 +137,9 @@ class ProfileInfoScreenTest {
         .assertIsDisplayed()
         .assertTextEquals("Price: ${mockTutorProfile.price}")
     composeTestRule
-            .onNodeWithTag("phoneNumberRow")
-            .assertIsDisplayed()
-            .assertTextEquals(mockTutorProfile.phoneNumber ?: "N/A")
+        .onNodeWithTag("phoneNumberRow")
+        .assertIsDisplayed()
+        .assertTextEquals(mockTutorProfile.phoneNumber ?: "N/A")
   }
 
   @Test
@@ -161,23 +157,23 @@ class ProfileInfoScreenTest {
           lessonViewModel = mockLessonViewModel)
     }
 
-
-      // Check if profile details are displayed
-      composeTestRule
-          .onNodeWithTag("profileName")
-          .assertIsDisplayed()
-          .assertTextEquals("${mockStudentProfile.firstName.capitalizeFirstLetter()} ${mockStudentProfile.lastName.capitalizeFirstLetter()}")
-      composeTestRule
-          .onNodeWithTag("profileAcademicInfo")
-          .assertIsDisplayed()
-          .assertTextEquals("${mockStudentProfile.section} - ${mockStudentProfile.academicLevel}")
-      composeTestRule
-          .onNodeWithTag("lessonsCount")
-          .assertIsDisplayed()
-          .assertTextEquals("0 lessons taken since you joined PocketTutor")
+    // Check if profile details are displayed
+    composeTestRule
+        .onNodeWithTag("profileName")
+        .assertIsDisplayed()
+        .assertTextEquals(
+            "${mockStudentProfile.firstName.capitalizeFirstLetter()} ${mockStudentProfile.lastName.capitalizeFirstLetter()}")
+    composeTestRule
+        .onNodeWithTag("profileAcademicInfo")
+        .assertIsDisplayed()
+        .assertTextEquals("${mockStudentProfile.section} - ${mockStudentProfile.academicLevel}")
+    composeTestRule
+        .onNodeWithTag("lessonsCount")
+        .assertIsDisplayed()
+        .assertTextEquals("0 lessons taken since you joined PocketTutor")
   }
 
-    //PASS
+  // PASS
   @Test
   fun profileInfoScreenDisplaysErrorMessage_whenProfileIsNull() {
     // Provide a ViewModel with null profile data
@@ -199,7 +195,7 @@ class ProfileInfoScreenTest {
         .assertTextEquals("Error loading profile...")
   }
 
-    //Pass
+  // Pass
   @Test
   fun profileInfoScreenNavigatesBack_whenCloseButtonClicked() {
     `when`(mockNavigationActions.goBack()).thenAnswer {}
@@ -212,6 +208,4 @@ class ProfileInfoScreenTest {
     // Verify that the goBack action was called
     verify(mockNavigationActions).goBack()
   }
-
-
 }

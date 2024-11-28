@@ -214,8 +214,7 @@ fun ProfileInfoScreen(
                                       Text(
                                           text = language.name,
                                           color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.testTag(language.name)
-                                      )
+                                          modifier = Modifier.testTag(language.name))
                                     }
                                   }
                                 }
@@ -240,8 +239,7 @@ fun ProfileInfoScreen(
                                               ?: "N/A", // Handle if phone number is null
                                       style = MaterialTheme.typography.bodyMedium,
                                       color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.testTag("phoneNumberRow")
-                                  )
+                                      modifier = Modifier.testTag("phoneNumberRow"))
                                 }
 
                             // Price Row (for Tutor)
@@ -266,8 +264,7 @@ fun ProfileInfoScreen(
                                             "${stringResource(id = R.string.price_per_lesson)} ${userProfile.price ?: stringResource(id = R.string.price_not_set)}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.testTag("priceText")
-                                    )
+                                        modifier = Modifier.testTag("priceText"))
                                   }
                             }
 
@@ -298,8 +295,7 @@ fun ProfileInfoScreen(
               Text(
                   text = stringResource(id = R.string.error_loading_profile),
                   color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.testTag("errorLoadingProfile")
-                )
+                  modifier = Modifier.testTag("errorLoadingProfile"))
             }
       }
 }
