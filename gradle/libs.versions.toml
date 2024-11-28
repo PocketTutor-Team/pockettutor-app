@@ -75,6 +75,7 @@ androidxCoreKtx = "1.6.1"
 # stream chat
 streamChatCompose = "6.4.4"
 streamChatOffline = "6.4.4"
+lifecycleLivedataKtx = "2.8.7"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
@@ -138,6 +139,7 @@ stream-chat-compose = { module="io.getstream:stream-chat-android-compose", versi
 stream-chat-offline = { module="io.getstream:stream-chat-android-offline", version.ref = "streamChatOffline"}
 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

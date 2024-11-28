@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 open class ChatViewModel(val chatClient: ChatClient) : ViewModel() {
   // Mutable state for the current channel ID, used to track which chat channel is active
-  private val currentChannelID_ = MutableStateFlow<String?>(null)
+  private val currentChannelID_: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
   val currentChannelID = currentChannelID_.asStateFlow() // Exposes an immutable flow for observers
 
   // Tracks whether the user is already connected to avoid duplicate connections
