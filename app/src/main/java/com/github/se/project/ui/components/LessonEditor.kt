@@ -168,37 +168,6 @@ fun LessonEditor(
         is24Hour = true,
     )
 
-
-
-    // Time Picker
-  val timePickerDialog =
-      TimePickerDialog(
-          context,
-          { _, hourOfDay, minute ->
-            val formattedHour = hourOfDay.toString().padStart(2, '0')
-            val formattedMinute = minute.toString().padStart(2, '0')
-
-            val selectedCalendar =
-                Calendar.getInstance().apply {
-                  timeInMillis = currentDateTime.timeInMillis
-                  set(Calendar.HOUR_OF_DAY, hourOfDay)
-                  set(Calendar.MINUTE, minute)
-                }
-
-            val isSelectedDateToday =
-                selectedDate ==
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
-
-            if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-              Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
-            } else {
-              selectedTime = "$formattedHour:$formattedMinute"
-            }
-          },
-          calendar.get(Calendar.HOUR_OF_DAY),
-          calendar.get(Calendar.MINUTE),
-          true)
-
   val onConfirmClick = {
     if (instant.value) {
       val lat: Double
@@ -313,7 +282,7 @@ fun LessonEditor(
                     state = timePickerState,
                 )
                 Button(onClick = { showTimeDialog = false }) {
-                    Text("Dismiss picker")
+                    Text("Back")
                 }
                 Button(onClick = {
                     val selectedCalendar =
@@ -331,9 +300,10 @@ fun LessonEditor(
                         Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
                     } else {
                         selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
+                        showTimeDialog = false
                     }
                 }) {
-                    Text("Confirm selection")
+                    Text("Ok")
                 }
             }
         }
@@ -451,7 +421,7 @@ fun LessonEditor(
                   Spacer(modifier = Modifier.width(8.dp))
 
                   Button(
-                      onClick = { timePickerDialog.show() },
+                      onClick = { showTimeDialog = true },
                       modifier = Modifier.weight(1f).testTag("TimeButton"),
                       colors =
                           ButtonDefaults.buttonColors(
