@@ -61,7 +61,7 @@ class HomeScreenTest {
           0)
 
   private val mockLessons =
-      listOf(
+      mutableListOf(
           Lesson(
               id = "1",
               title = "Physics Tutoring",
@@ -90,6 +90,22 @@ class HomeScreenTest {
               status = LessonStatus.STUDENT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0))
+
+    private val instantLesson =
+        Lesson(
+            id = "3",
+            title = "Instant ICC Tutoring",
+            description = "Algebra and Calculus",
+            subject = Subject.ICC,
+            languages = listOf(Language.ENGLISH),
+            tutorUid = listOf("tutor123"),
+            studentUid = "student123",
+            minPrice = 20.0,
+            maxPrice = 40.0,
+            timeSlot = "2024-10-10Tinstant",
+            status = LessonStatus.INSTANT_CONFIRMED,
+            latitude = 0.0,
+            longitude = 0.0)
 
   private val mockProfileFlow = MutableStateFlow<Profile?>(profile)
 
@@ -151,6 +167,17 @@ class HomeScreenTest {
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
   }
 
+    @Test
+    fun testSectionDisplays() {
+        composeTestRule.setContent {
+            HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+        composeTestRule.onNodeWithText("Waiting for your Confirmation").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Waiting for the Student Confirmation").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsNotDisplayed()
+    }
+
   @Test
   fun testNoProfileFoundScreenDisplayed() {
     // Set a null profile in the ViewModel
@@ -190,4 +217,17 @@ class HomeScreenTest {
     // Verify the message indicating no lessons scheduled is displayed
     composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
   }
+
+    @Test
+    fun testInstantDisplay() {
+        mockLessons.add(instantLesson)
+        currentUserLessonsFlow.value = mockLessons
+
+        composeTestRule.setContent {
+            HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+
+        composeTestRule.onNodeWithText("Instant ICC Tutoring").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsDisplayed()
+    }
 }
