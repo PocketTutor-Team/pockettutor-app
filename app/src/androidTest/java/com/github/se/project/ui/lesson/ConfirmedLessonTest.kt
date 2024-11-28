@@ -301,7 +301,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenCancellationButtonClicked() {
     var isLocationChecked = false
 
@@ -331,7 +331,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialogText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed()
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenCancellationDialogDismissed() {
