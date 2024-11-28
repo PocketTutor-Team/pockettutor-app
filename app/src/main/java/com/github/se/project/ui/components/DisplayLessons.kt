@@ -32,9 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonColors.getLessonColor
 import com.github.se.project.utils.SuitabilityScoreCalculator
+import com.github.se.project.model.profile.Profile
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
