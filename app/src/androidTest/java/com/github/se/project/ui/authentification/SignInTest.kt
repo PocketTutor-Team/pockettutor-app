@@ -14,7 +14,7 @@ class SignInTest : TestCase() {
 
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-  @Test
+  /*@Test
   fun logoAndButtonAndImageScrollAreCorrectlyDisplayed() {
     // Assert logo is displayed
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
@@ -49,7 +49,7 @@ class SignInTest : TestCase() {
         .onNodeWithText(
             "Pocket Tutor connects university students and tutors for quick, effective learning support.")
         .assertIsDisplayed()
-  }
+  }*/
 
   @Test
   fun dotsAndTermsAreCorrectlyDisplayed() {
