@@ -419,7 +419,10 @@ private fun DistanceDialog(
                       thumbColor = getColorForDistance(tempDistance, isSystemInDark)))
 
           Text(
-              text = if (tempDistance == 5100) "No limit" else if (tempDistance == 299) "Maximum distance: 300" else "Maximum distance: ${tempDistance}m",
+              text =
+                  if (tempDistance == 5100) "No limit"
+                  else if (tempDistance == 299) "Maximum distance: 300" // floating point bug
+                  else "Maximum distance: ${tempDistance}m",
               color = getColorForDistance(tempDistance, isSystemInDark))
         }
       },
@@ -428,7 +431,8 @@ private fun DistanceDialog(
             onClick = {
               onApply(tempDistance)
               onDismiss()
-            }, modifier = Modifier.testTag("applyButton")) {
+            },
+            modifier = Modifier.testTag("applyButton")) {
               Text("Apply filter")
             }
       },
@@ -465,9 +469,9 @@ private fun EmptyState(showInstant: MutableState<Boolean>, canSeeInstants: Mutab
               style = MaterialTheme.typography.bodyMedium,
               textAlign = TextAlign.Center,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if(canSeeInstants.value){
-                Button({ showInstant.value = true }) { Text("Show instant lessons") }
-            }
+          if (canSeeInstants.value) {
+            Button({ showInstant.value = true }) { Text("Show instant lessons") }
+          }
         }
       }
 }

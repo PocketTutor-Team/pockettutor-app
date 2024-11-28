@@ -25,15 +25,13 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 
-
 class LessonsRequestedScreenTest {
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule
-    val permissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+  @get:Rule
+  val permissionRule: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
@@ -152,17 +150,17 @@ class LessonsRequestedScreenTest {
     // Verify the lesson items are displayed
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
-      composeTestRule.onNodeWithText("Instant Tutoring").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Instant Tutoring").assertIsNotDisplayed()
   }
 
-    @Test
-    fun testNavigation(){
-        composeTestRule.setContent {
-            RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
-        composeTestRule.onNodeWithText("Physics Tutoring").performClick()
-        verify(navigationActions).navigateTo(anyString())
+  @Test
+  fun testNavigation() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
+    composeTestRule.onNodeWithText("Physics Tutoring").performClick()
+    verify(navigationActions).navigateTo(anyString())
+  }
 
   @Test
   fun testDatePickerButtonFunctionality() {
@@ -196,7 +194,6 @@ class LessonsRequestedScreenTest {
       RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-
     // Interact with Bottom Navigation and verify navigation action
     composeTestRule.onNodeWithTag("Find a Student").performClick()
 
@@ -216,51 +213,55 @@ class LessonsRequestedScreenTest {
     composeTestRule.onNodeWithTag("noLessonsMessage").assertIsDisplayed()
   }
 
-    @Test
-    fun testNoInstantLessonsMessageDisplayedWhenEmpty() {
-        requestedLessonsFlow.value = emptyList() // Set no lessons
+  @Test
+  fun testNoInstantLessonsMessageDisplayedWhenEmpty() {
+    requestedLessonsFlow.value = emptyList() // Set no lessons
 
-        composeTestRule.setContent {
-            RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
-
-        // Wait for location to load, then set Instant Filter
-        composeTestRule.waitUntil (15000) { composeTestRule.onNodeWithTag("instantToggleButton").isDisplayed() }
-        composeTestRule.onNodeWithTag("instantToggleButton").performClick()
-
-        // Verify "No lessons available" message or any placeholder is displayed
-        composeTestRule.onNodeWithTag("noInstantLessonsMessage").assertIsDisplayed()
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    @Test
-    fun testInstantLesson() {
-        composeTestRule.setContent {
-            RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-        }
-
-        // Wait for location to load, then set Instant Filter
-        composeTestRule.waitUntil (15000) { composeTestRule.onNodeWithTag("instantToggleButton").isDisplayed() }
-        composeTestRule.onNodeWithTag("instantToggleButton").performClick()
-
-        // Verify the Instant Lesson is displayed
-        composeTestRule.onNodeWithText("Instant Tutoring").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Physics Tutoring").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
-
-        // Open Distance Filter
-        composeTestRule.onNodeWithTag("distanceButton").performClick()
-
-        // Perform the sliding action on the slider
-        composeTestRule.onNodeWithTag("distanceSlider").performGesture { swipeRight() }
-
-        composeTestRule.onNodeWithTag("applyButton").performClick()
-
-        // Verify the Instant Lesson is displayed
-        composeTestRule.onNodeWithText("Instant Tutoring").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Physics Tutoring").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
-
-        composeTestRule.onNodeWithText("Instant Tutoring").performClick()
-        verify(navigationActions).navigateTo(anyString())
+    // Wait for location to load, then set Instant Filter
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("instantToggleButton").isDisplayed()
     }
+    composeTestRule.onNodeWithTag("instantToggleButton").performClick()
+
+    // Verify "No lessons available" message or any placeholder is displayed
+    composeTestRule.onNodeWithTag("noInstantLessonsMessage").assertIsDisplayed()
+  }
+
+  @Test
+  fun testInstantLesson() {
+    composeTestRule.setContent {
+      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Wait for location to load, then set Instant Filter
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("instantToggleButton").isDisplayed()
+    }
+    composeTestRule.onNodeWithTag("instantToggleButton").performClick()
+
+    // Verify the Instant Lesson is displayed
+    composeTestRule.onNodeWithText("Instant Tutoring").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Physics Tutoring").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
+
+    // Open Distance Filter
+    composeTestRule.onNodeWithTag("distanceButton").performClick()
+
+    // Perform the sliding action on the slider
+    composeTestRule.onNodeWithTag("distanceSlider").performGesture { swipeRight() }
+
+    composeTestRule.onNodeWithTag("applyButton").performClick()
+
+    // Verify the Instant Lesson is displayed
+    composeTestRule.onNodeWithText("Instant Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Physics Tutoring").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
+
+    composeTestRule.onNodeWithText("Instant Tutoring").performClick()
+    verify(navigationActions).navigateTo(anyString())
+  }
 }

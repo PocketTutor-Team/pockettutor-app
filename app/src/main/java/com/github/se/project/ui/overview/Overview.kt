@@ -201,23 +201,25 @@ private fun TutorSections(
 ) {
   val sections = mutableListOf<SectionInfo>()
 
-      if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
-        sections.add(
-            SectionInfo(
-                "Upcoming Instant Lesson",
-                LessonStatus.INSTANT_CONFIRMED,
-                ImageVector.vectorResource(
-                    id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))}
-    sections.add(SectionInfo(
-                "Waiting for your Confirmation",
-                LessonStatus.PENDING_TUTOR_CONFIRMATION,
-                Icons.Default.Notifications))
+  if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
     sections.add(
-            SectionInfo(
-                "Waiting for the Student Confirmation",
-                LessonStatus.STUDENT_REQUESTED,
-                ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
-    sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+        SectionInfo(
+            "Upcoming Instant Lesson",
+            LessonStatus.INSTANT_CONFIRMED,
+            ImageVector.vectorResource(
+                id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
+  }
+  sections.add(
+      SectionInfo(
+          "Waiting for your Confirmation",
+          LessonStatus.PENDING_TUTOR_CONFIRMATION,
+          Icons.Default.Notifications))
+  sections.add(
+      SectionInfo(
+          "Waiting for the Student Confirmation",
+          LessonStatus.STUDENT_REQUESTED,
+          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
+  sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
   LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
