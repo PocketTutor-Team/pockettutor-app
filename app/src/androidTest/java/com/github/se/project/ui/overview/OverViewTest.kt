@@ -52,7 +52,6 @@ class HomeScreenTest {
   private val profile =
       Profile(
           "uid",
-          "",
           "googleUid",
           "firstName",
           "lastName",
