@@ -56,6 +56,7 @@ class HomeScreenTest {
   private val tutorProfile =
       Profile(
           uid = "tutor",
+          token = "",
           googleUid = "googleUid",
           firstName = "firstName",
           lastName = "lastName",
@@ -72,6 +73,7 @@ class HomeScreenTest {
   private val studentProfile =
       Profile(
           uid = "student",
+          token = "",
           googleUid = "googleUid",
           firstName = "firstName",
           lastName = "lastName",
