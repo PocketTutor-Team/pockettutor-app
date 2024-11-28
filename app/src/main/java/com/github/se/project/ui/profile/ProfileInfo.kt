@@ -235,7 +235,7 @@ fun ProfileInfoScreen(
                                   // Phone Number Text
                                   Text(
                                       text =
-                                      userProfile.phoneNumber, // Handle if phone number is null
+                                          userProfile.phoneNumber, // Handle if phone number is null
                                       style = MaterialTheme.typography.bodyMedium,
                                       color = MaterialTheme.colorScheme.onBackground,
                                       modifier = Modifier.testTag("phoneNumberRow"))

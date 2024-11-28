@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.ui.components.SectionInfo
 
 @Composable
 fun ExpandableLessonSection(

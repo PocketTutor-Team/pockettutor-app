@@ -60,6 +60,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.ExpandableLessonSection
 import com.github.se.project.ui.components.LessonReviewDialog
+import com.github.se.project.ui.components.SectionInfo
 import com.github.se.project.ui.navigation.BottomNavigationMenu
 import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
 import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
@@ -72,7 +73,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.github.se.project.ui.components.SectionInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -501,8 +501,6 @@ fun Lesson.shouldRequestReview(): Boolean {
     return false
   }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
