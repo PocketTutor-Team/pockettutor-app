@@ -36,5 +36,14 @@ keystore.properties
 upload-keystore.jks
 /scraping/firebase_credentials.json
 
-# MacOS
-**/.DS_Store
+# Node.js dependencies
+node_modules/
+
+# Firebase cache and logs
+.firebase/
+functions/node_modules/
+functions/lib/
+
+# Environment variables
+functions/.env
+functions/.env.local

@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -40,20 +42,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.Comment
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.ErrorState
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
-import java.text.SimpleDateFormat
+import com.github.se.project.utils.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +80,14 @@ fun SelectedTutorDetailsScreen(
 
   val context = LocalContext.current
   var showConfirmDialog by remember { mutableStateOf(false) }
+
+  val completedLessons by lessonViewModel.currentUserLessons.collectAsState()
+  val ratedLessons =
+      completedLessons.filter {
+        it.tutorUid.contains(tutorProfile.uid) &&
+            it.status == LessonStatus.COMPLETED &&
+            it.rating != null
+      }
 
   Scaffold(
       containerColor = MaterialTheme.colorScheme.background,
@@ -118,7 +129,10 @@ fun SelectedTutorDetailsScreen(
                     colors =
                         CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-                      DisplayTutorDetails(tutorProfile, listProfilesViewModel)
+                      DisplayTutorDetails(
+                          tutorProfile = tutorProfile,
+                          completedLessons = ratedLessons,
+                          listProfilesViewModel = listProfilesViewModel)
                     }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -192,39 +206,31 @@ fun SelectedTutorDetailsScreen(
 @Composable
 private fun DisplayTutorDetails(
     tutorProfile: Profile,
+    completedLessons: List<Lesson>,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  Card(
-      modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("tutorDetailsCard"),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-        Column(
-            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-              // Tutor information section
-              TutorInfoSection(tutorProfile)
+  Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    TutorInfoSection(tutorProfile, completedLessons)
 
-              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-              // Lesson information section
-              TutorDescriptionSection(tutorProfile.description)
+    TutorDescriptionSection(tutorProfile.description)
 
-              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-              // Tutor comments section
-              TutorCommentsSection(tutorProfile.rating.comments, listProfilesViewModel)
-            }
-      }
+    if (completedLessons.isNotEmpty()) {
+      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+      TutorReviewsSection(completedLessons, listProfilesViewModel)
+    }
+  }
 }
 
 @Composable
-private fun TutorInfoSection(profile: Profile) {
+private fun TutorInfoSection(profile: Profile, completedLessons: List<Lesson>) {
   Row(
       modifier = Modifier.fillMaxWidth().testTag("tutorInfoRow"),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
-        // Profile picture placeholder
         DisplayProfilePicture("tutorProfilePicture")
 
-        // Tutor details
         Column(modifier = Modifier.weight(1f)) {
           Text(
               text = "${profile.firstName} ${profile.lastName}",
@@ -237,9 +243,15 @@ private fun TutorInfoSection(profile: Profile) {
               modifier = Modifier.testTag("tutorAcademicInfo"))
         }
 
-        // Price and rating
         Column(horizontalAlignment = Alignment.End) {
-          DisplayRatingGrade(profile.rating.averageRating, "tutorRating")
+          val averageRating =
+              if (completedLessons.isNotEmpty()) {
+                completedLessons.mapNotNull { it.rating?.grade }.average()
+              } else null
+
+          if (averageRating != null) {
+            DisplayRatingGrade(averageRating, "tutorRating")
+          }
 
           Text(
               text = "${profile.price}.-/h",
@@ -247,6 +259,84 @@ private fun TutorInfoSection(profile: Profile) {
               color = MaterialTheme.colorScheme.primary,
               modifier = Modifier.testTag("tutorPrice"))
         }
+      }
+}
+
+@Composable
+private fun TutorReviewsSection(
+    completedLessons: List<Lesson>,
+    listProfilesViewModel: ListProfilesViewModel
+) {
+  Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.fillMaxWidth().testTag("tutorReviewsSection")) {
+        Text(
+            text = "Recent Reviews",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("tutorReviewsTitle"))
+
+        completedLessons
+            .sortedByDescending { it.rating?.date }
+            .take(3)
+            .forEach { lesson ->
+              val student = listProfilesViewModel.getProfileById(lesson.studentUid)
+              if (student != null && lesson.rating != null) {
+                DisplayReview(lesson, student)
+              }
+            }
+      }
+}
+
+@Composable
+private fun DisplayReview(lesson: Lesson, student: Profile) {
+  val rating = lesson.rating ?: return
+
+  Card(
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(vertical = 8.dp)
+              .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
+              .testTag("reviewCard"),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)) {
+        Column(
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.Top) {
+                    Column(modifier = Modifier.weight(1f)) {
+                      Text(
+                          text = "${student.firstName} ${student.lastName}",
+                          style = MaterialTheme.typography.titleMedium)
+                      Text(
+                          text = "${lesson.subject.name} - ${formatDate(lesson.timeSlot)}",
+                          style = MaterialTheme.typography.bodySmall,
+                          color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                          repeat(5) { index ->
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                tint =
+                                    if (index < lesson.rating.grade)
+                                        MaterialTheme.colorScheme.primary
+                                    else Color.Transparent,
+                                modifier = Modifier.size(16.dp))
+                          }
+                        }
+                  }
+
+              if (rating.comment.isNotEmpty()) {
+                Text(
+                    text = rating.comment,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.testTag("reviewComment"))
+              }
+            }
       }
 }
 
@@ -269,90 +359,12 @@ private fun TutorDescriptionSection(description: String) {
       }
 }
 
-@Composable
-private fun TutorCommentsSection(
-    comments: MutableList<Comment>,
-    listProfilesViewModel: ListProfilesViewModel
-) {
-  Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier.fillMaxWidth().testTag("tutorCommentsSection")) {
-        Text(
-            text = "Best reviews on this tutor",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.testTag("tutorCommentsTitle"))
-
-        if (comments.isEmpty()) {
-          Text(
-              text = "No reviews available.",
-              style = MaterialTheme.typography.bodyMedium,
-              modifier = Modifier.testTag("tutorCommentsEmpty"))
-        } else {
-          comments.sortByDescending { it.grade }
-          comments.take(3).forEach {
-            val student = listProfilesViewModel.getProfileById(it.raterUid)
-            if (student != null) {
-              DisplayComments(it, student)
-            }
-          }
-        }
-      }
-}
-
-@Composable
-private fun DisplayComments(comment: Comment, student: Profile) {
-  Card(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(vertical = 8.dp)
-              .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
-              .testTag("commentCard"),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-        Column(
-            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  verticalAlignment = Alignment.CenterVertically) {
-                    // Profile picture placeholder
-                    DisplayProfilePicture("studentProfilePicture")
-
-                    // Student details
-                    Column(modifier = Modifier.weight(1f)) {
-                      Text(
-                          text = "${student.firstName} ${student.lastName}",
-                          style = MaterialTheme.typography.titleMedium,
-                          modifier = Modifier.testTag("studentName"))
-
-                      Text(
-                          text =
-                              "Lesson booked on ${SimpleDateFormat("dd/MM/yyyy").format(comment.date.toDate())}",
-                          style = MaterialTheme.typography.bodyMedium,
-                          color = MaterialTheme.colorScheme.onSurfaceVariant,
-                          modifier = Modifier.testTag("studentCommentDate"))
-                    }
-
-                    // Grade
-                    Column(horizontalAlignment = Alignment.End) {
-                      DisplayRatingGrade(comment.grade.toDouble(), "studentRating")
-                    }
-                  }
-
-              HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-              Text(
-                  text = comment.comment,
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.testTag("studentComment"))
-            }
-      }
-}
-
+@SuppressLint("DefaultLocale")
 @Composable
 private fun DisplayRatingGrade(grade: Double, testTag: String) {
   Row {
     Text(
-        text = "$grade",
+        text = String.format("%.2f", grade),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.testTag(testTag + "Label"))
