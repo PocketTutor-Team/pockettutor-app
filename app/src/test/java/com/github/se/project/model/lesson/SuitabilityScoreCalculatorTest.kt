@@ -13,6 +13,7 @@ class SuitabilityScoreCalculatorTest {
   private val baseTutorProfile =
       Profile(
           uid = "tutor123",
+          token = "",
           googleUid = "googleUid123",
           firstName = "Tutor",
           lastName = "Example",
@@ -29,6 +30,7 @@ class SuitabilityScoreCalculatorTest {
   private val baseStudentProfile =
       Profile(
           uid = "student456",
+          token = "",
           googleUid = "googleUid456",
           firstName = "Student",
           lastName = "Example",
