@@ -8,8 +8,14 @@ import androidx.core.app.NotificationCompat
 import com.github.se.project.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import org.json.JSONObject
 
 class PushNotificationsService : FirebaseMessagingService() {
+
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     super.onMessageReceived(remoteMessage)
     // Log.d("FCM", "Message received: ${remoteMessage.data}")
@@ -39,5 +45,42 @@ class PushNotificationsService : FirebaseMessagingService() {
             .build()
 
     notificationManager.notify(0, notification)
+  }
+
+  fun sendNotificationToUser(token: String, title: String, body: String) {
+    // Example FCM endpoint
+    val url = "https://fcm.googleapis.com/fcm/send"
+
+    // Replace with your Firebase Server Key
+    val serverKey = "YOUR_SERVER_KEY"
+
+    // Build JSON payload
+    val json = JSONObject()
+    json.put("to", token)
+    json.put(
+        "notification",
+        JSONObject().apply {
+          put("title", title)
+          put("body", body)
+        })
+
+    // Make HTTP request
+    val client = OkHttpClient()
+    val requestBody = RequestBody.create("application/json".toMediaType(), json.toString())
+    val request =
+        Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .addHeader("Authorization", "key=$serverKey")
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+    client.newCall(request).execute().use { response ->
+      if (response.isSuccessful) {
+        println("Notification sent successfully: ${response.body?.string()}")
+      } else {
+        println("Failed to send notification: ${response.body?.string()}")
+      }
+    }
   }
 }

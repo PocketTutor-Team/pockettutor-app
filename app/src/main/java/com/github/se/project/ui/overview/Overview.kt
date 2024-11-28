@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
 import com.github.se.project.model.lesson.*
+import com.github.se.project.model.notification.PushNotificationPermissionHandler
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.components.isInstant
@@ -93,6 +94,8 @@ fun HomeScreen(
       }
     }
   }
+  var notificationchecked by remember { mutableStateOf(false) }
+  PushNotificationPermissionHandler { isGranted -> notificationchecked = true }
 
   Scaffold(
       topBar = {

@@ -3,6 +3,7 @@ package com.github.se.project.ui.overview
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.NavHostController
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -35,6 +36,10 @@ class HomeScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  @get:Rule
+  val grantNotificationPermission: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
+
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
 
@@ -47,6 +52,7 @@ class HomeScreenTest {
   private val profile =
       Profile(
           "uid",
+          "",
           "googleUid",
           "firstName",
           "lastName",
@@ -70,6 +76,7 @@ class HomeScreenTest {
               languages = listOf(Language.ENGLISH),
               tutorUid = listOf("tutor123"),
               studentUid = "student123",
+              StudentToken = "",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
