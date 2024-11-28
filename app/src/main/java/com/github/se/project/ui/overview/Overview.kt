@@ -63,11 +63,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
-import com.github.se.project.model.notification.PushNotificationPermissionHandler
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.notification.PushNotificationPermissionHandler
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
