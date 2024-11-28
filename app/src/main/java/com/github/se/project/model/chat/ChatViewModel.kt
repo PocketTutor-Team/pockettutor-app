@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @param chatClient The ChatClient instance used for interacting with the chat backend.
  */
-class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
+open class ChatViewModel(val chatClient: ChatClient) : ViewModel() {
   // Mutable state for the current channel ID, used to track which chat channel is active
   private val currentChannelID_ = MutableStateFlow<String?>(null)
   val currentChannelID = currentChannelID_.asStateFlow() // Exposes an immutable flow for observers
@@ -47,7 +47,7 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
    *
    * @param profile The user's profile containing their unique ID, first name, and last name.
    */
-  fun connect(profile: Profile) {
+  open fun connect(profile: Profile) {
     if (connected) return // Prevents duplicate connections
     connected = true
     val user =
@@ -64,7 +64,7 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
    *
    * @param channelMembersUid The list of user IDs that will be members of the channel.
    */
-  fun ensureChannelExists(channelMembersUid: List<String>) {
+  open fun ensureChannelExists(channelMembersUid: List<String>) {
     chatClient
         .createChannel(
             channelType = "messaging", // Specifies the type of the channel
@@ -88,7 +88,7 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
    * @param channelID The ID of the channel to set as active. Pass `null` to clear the current
    *   channel.
    */
-  fun setChannelID(channelID: String?) {
+  open fun setChannelID(channelID: String?) {
     currentChannelID_.value = channelID
   }
 }

@@ -3,6 +3,7 @@ package com.github.se.project.ui.overview
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.NavHostController
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -17,6 +18,7 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
@@ -40,6 +42,9 @@ class HomeScreenTest {
 
   private lateinit var lessonRepository: LessonRepository
   private lateinit var lessonViewModel: LessonViewModel
+
+  private lateinit var chatViewModel: ChatViewModel
+  private lateinit var chatClient: ChatClient
 
   private lateinit var navController: NavHostController
   private lateinit var navigationActions: NavigationActions
@@ -109,6 +114,10 @@ class HomeScreenTest {
     lessonViewModel = LessonViewModel(lessonRepository)
     lessonViewModel = spy(lessonViewModel)
 
+    // Mock ChatViewModel
+    chatViewModel = mock(ChatViewModel::class.java)
+    doNothing().`when`(chatViewModel).connect(any())
+
     navigationActions = NavigationActions(navController)
     navigationActions = spy(navigationActions)
 
@@ -128,7 +137,7 @@ class HomeScreenTest {
   @Test
   fun testIsDiplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertIsDisplayed()
@@ -137,7 +146,7 @@ class HomeScreenTest {
   @Test
   fun testProfileIconClickable() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
     verify(navigationActions).navigateTo(Mockito.anyString())
@@ -146,7 +155,7 @@ class HomeScreenTest {
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
   }
@@ -160,7 +169,7 @@ class HomeScreenTest {
         }
     // Recompose
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
 
     // Verify that the "No profile is currently assigned" text is displayed
@@ -184,7 +193,7 @@ class HomeScreenTest {
           `when`(this.currentUserLessons).thenReturn(currentUserLessonsFlow)
         }
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
 
     // Verify the message indicating no lessons scheduled is displayed

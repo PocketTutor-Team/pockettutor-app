@@ -186,7 +186,6 @@ dependencies {
     // Stream Chat
     implementation(libs.stream.chat.compose)
     implementation(libs.stream.chat.offline)
-
     implementation(libs.stream.chat.android.ui.components)
 
     // Testing Unit
@@ -216,7 +215,6 @@ dependencies {
     testImplementation(libs.kaspresso)
     testImplementation(libs.kaspresso.allure.support)
     testImplementation(libs.kaspresso.compose.support)
-
     testImplementation(libs.kotlinx.coroutines.test)
 
 }
