@@ -2,6 +2,11 @@ package com.github.se.project.ui.overview
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,6 +34,7 @@ import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.*
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.DisplayLessons
+import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -89,12 +95,15 @@ fun HomeScreen(
         lessonViewModel.selectLesson(lesson) // Select the lesson if requested by student
         navigationActions.navigateTo(Screen.TUTOR_MATCH) // Navigate to tutor match screen
       } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
-        lessonViewModel.selectLesson(lesson) // Select the lesson if student requested
-        navigationActions.navigateTo(
-            Screen.EDIT_REQUESTED_LESSON) // Navigate to edit requested lesson screen
-      } else if (lesson.status == LessonStatus.CONFIRMED) {
-        lessonViewModel.selectLesson(lesson) // Select confirmed lesson
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON) // Navigate to confirmed lesson screen
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+      } else if (lesson.status == LessonStatus.CONFIRMED ||
+          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+      } else if (lesson.status == LessonStatus.INSTANT_REQUESTED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
       }
     } else {
       if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
@@ -102,8 +111,11 @@ fun HomeScreen(
         navigationActions.navigateTo(
             Screen.TUTOR_LESSON_RESPONSE) // Navigate to tutor lesson response screen
       } else if (lesson.status == LessonStatus.CONFIRMED) {
-        lessonViewModel.selectLesson(lesson) // Select confirmed lesson
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON) // Navigate to confirmed lesson screen
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+      } else if (lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+        lessonViewModel.selectLesson(lesson)
+        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
       }
     }
   }
@@ -192,44 +204,41 @@ private fun LessonsContent(
   fun refresh() =
       refreshScope.launch {
         refreshing = true
-        when (profile.role) {
-          Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid) // Refresh tutor lessons
-          Role.STUDENT ->
-              lessonViewModel.getLessonsForStudent(profile.uid) // Refresh student lessons
-          else -> {}
+        try {
+          when (profile.role) {
+            Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+            Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+            else -> {}
+          }
+        } finally {
+          delay(1000)
+          refreshing = false
         }
-        delay(1000) // Simulate loading delay
-        refreshing = false
       }
 
-  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+  val pullRefreshState =
+      rememberPullRefreshState(refreshing = refreshing, onRefresh = { refresh() })
 
-  Column(
+  Box(
       modifier =
           Modifier.fillMaxSize()
               .padding(paddingValues)
               .padding(horizontal = 16.dp)
-              .testTag("lessonsColumn")) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-          Column(
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .verticalScroll(rememberScrollState())
-                      .pullRefresh(pullRefreshState)) {
-                if (profile.role == Role.TUTOR) {
-                  TutorSections(lessons, onClick, listProfilesViewModel) // Show tutor sections
-                } else {
-                  StudentSections(lessons, onClick, listProfilesViewModel) // Show student sections
-                }
-              }
-
-          PullRefreshIndicator(
-              refreshing = refreshing,
-              state = pullRefreshState,
-              modifier = Modifier.align(Alignment.TopCenter),
-              backgroundColor = MaterialTheme.colorScheme.surface,
-              contentColor = MaterialTheme.colorScheme.primary) // Display pull refresh indicator
+              .pullRefresh(pullRefreshState)) {
+        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+          if (profile.role == Role.TUTOR) {
+            TutorSections(lessons, onClick, listProfilesViewModel)
+          } else {
+            StudentSections(lessons, onClick, listProfilesViewModel)
+          }
         }
+
+        PullRefreshIndicator(
+            refreshing = refreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary)
       }
 }
 
@@ -243,6 +252,11 @@ private fun TutorSections(
       if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
         listOf(
             SectionInfo(
+                "Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                ImageVector.vectorResource(
+                    id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)),
+            SectionInfo(
                 "Waiting for your Confirmation",
                 LessonStatus.PENDING_TUTOR_CONFIRMATION,
                 Icons.Default.Notifications),
@@ -250,8 +264,6 @@ private fun TutorSections(
                 "Waiting for the Student Confirmation",
                 LessonStatus.STUDENT_REQUESTED,
                 ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)),
-            SectionInfo(
-                "Instant Lesson", LessonStatus.INSTANT_CONFIRMED, Icons.Default.Notifications),
             SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
       } else {
         listOf(
@@ -281,12 +293,16 @@ private fun StudentSections(
         SectionInfo(
             "Pending instant Lesson",
             LessonStatus.INSTANT_REQUESTED,
-            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
+            ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24),
             true))
   }
   if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
     sections.add(
-        SectionInfo("Instant Lesson", LessonStatus.INSTANT_CONFIRMED, Icons.Default.Notifications))
+        SectionInfo(
+            "Instant Lesson",
+            LessonStatus.INSTANT_CONFIRMED,
+            ImageVector.vectorResource(
+                id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
   }
   sections.add(
       SectionInfo(
@@ -338,13 +354,25 @@ private fun ExpandableLessonSection(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  var expanded by remember { mutableStateOf(lessons.isNotEmpty()) }
+  val isInstant = lessons.any { isInstant(it) }
+  var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
+
+  val infiniteTransition = rememberInfiniteTransition(label = "iconBlink")
+  val alpha by
+      infiniteTransition.animateFloat(
+          initialValue = 1f,
+          targetValue = 0.3f,
+          animationSpec =
+              infiniteRepeatable(animation = tween(500), repeatMode = RepeatMode.Reverse),
+          label = "blinkAlpha")
 
   Card(
       modifier = Modifier.fillMaxWidth().testTag("section_${section.title}"),
       colors =
           CardDefaults.cardColors(
-              containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)) {
+              containerColor =
+                  if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.7f)
+                  else MaterialTheme.colorScheme.surfaceContainerLowest)) {
         Column {
           ListItem(
               headlineContent = {
@@ -352,19 +380,32 @@ private fun ExpandableLessonSection(
               },
               colors =
                   ListItemDefaults.colors(
-                      containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+                      containerColor =
+                          if (isInstant) MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.4f)
+                          else MaterialTheme.colorScheme.surfaceContainerLowest),
               leadingContent = {
-                Icon(section.icon, null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = section.icon,
+                    contentDescription = null,
+                    tint =
+                        MaterialTheme.colorScheme.primary.copy(
+                            alpha = if (isInstant) alpha else 1f))
               },
-              trailingContent = {
-                IconButton(onClick = { expanded = !expanded }) {
-                  Icon(
-                      if (expanded) Icons.Default.KeyboardArrowDown
-                      else Icons.Default.KeyboardArrowLeft,
-                      contentDescription = if (expanded) "Collapse" else "Expand")
-                }
-              },
-              modifier = Modifier.clickable { expanded = !expanded })
+              trailingContent =
+                  if (!isInstant) {
+                    {
+                      IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            if (expanded) Icons.Default.KeyboardArrowDown
+                            else Icons.Default.KeyboardArrowLeft,
+                            contentDescription = if (expanded) "Collapse" else "Expand")
+                      }
+                    }
+                  } else null,
+              modifier =
+                  if (!isInstant) {
+                    Modifier.clickable { expanded = !expanded }
+                  } else Modifier)
 
           if (expanded) {
             DisplayLessons(
@@ -373,7 +414,7 @@ private fun ExpandableLessonSection(
                 isTutor = isTutor,
                 tutorEmpty = section.tutorEmpty,
                 onCardClick = onClick,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
                 listProfilesViewModel = listProfilesViewModel)
           }
         }
