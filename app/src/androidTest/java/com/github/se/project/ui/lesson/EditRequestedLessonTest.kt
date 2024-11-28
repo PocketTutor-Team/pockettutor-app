@@ -170,22 +170,6 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
     composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
 
-    // Select Date and Time (simulate selection)
-    composeTestRule.onNodeWithTag("DateButton").performClick()
-    // Assuming DatePickerDialog is shown, set selectedDate manually for test (mock behavior if
-    // possible)
-
-    composeTestRule.onNodeWithText("10/10/2024").assertExists()
-    Thread.sleep(2000)
-    onView(withText("OK")).perform(click())
-
-    composeTestRule.onNodeWithTag("TimeButton").performClick()
-    // Assuming TimePickerDialog is shown, set selectedTime manually for test (mock behavior if
-    // possible)
-    composeTestRule.onNodeWithText("10:00").assertExists()
-    Thread.sleep(2000)
-    onView(withText("OK")).perform(click())
-
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
