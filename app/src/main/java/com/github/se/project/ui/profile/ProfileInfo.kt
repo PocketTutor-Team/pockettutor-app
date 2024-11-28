@@ -122,7 +122,7 @@ fun ProfileInfoScreen(
                             listProfilesViewModel = listProfilesViewModel,
                             onCardClick = { lesson ->
                               lessonViewModel.selectLesson(lesson)
-                              navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                              navigationActions.navigateTo(Screen.COMPLETED_LESSON)
                             })
                       }
                 }
