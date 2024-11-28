@@ -373,7 +373,6 @@ private fun LessonSections(
   }
 }
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun EmptyLessonsState(
@@ -456,4 +455,3 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
             }
       }
 }
-

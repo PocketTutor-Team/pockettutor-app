@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.LanguageSelector
@@ -121,25 +123,24 @@ fun EditProfile(
                     modifier = Modifier.testTag("editTutorProfilePriceText"))
                 PriceSlider(priceSliderValue)
 
-                //Spacer(modifier = Modifier.height(5.dp))
+                // Spacer(modifier = Modifier.height(5.dp))
               }
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("updateAvailabilityButton"),
-                shape = MaterialTheme.shapes.medium,
-                onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
-                colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Calendar",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-                Text("Schedule")
-            }
-
+              Button(
+                  modifier =
+                      Modifier.fillMaxWidth().padding(16.dp).testTag("updateAvailabilityButton"),
+                  shape = MaterialTheme.shapes.medium,
+                  onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                          contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Calendar",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(end = 16.dp))
+                    Text(stringResource(id = R.string.schedule))
+                  }
 
               Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
               SectionSelector(section)
@@ -181,7 +182,7 @@ fun EditProfile(
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
               }
             }) {
-              Text("Update Profile")
+              Text(stringResource(id = R.string.update_profil))
             }
       })
 }
