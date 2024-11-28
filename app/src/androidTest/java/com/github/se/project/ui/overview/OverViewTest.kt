@@ -52,7 +52,6 @@ class HomeScreenTest {
   private val profile =
       Profile(
           "uid",
-          //"",
           "googleUid",
           "firstName",
           "lastName",
@@ -76,7 +75,6 @@ class HomeScreenTest {
               languages = listOf(Language.ENGLISH),
               tutorUid = listOf("tutor123"),
               studentUid = "student123",
-              //StudentToken = "",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
