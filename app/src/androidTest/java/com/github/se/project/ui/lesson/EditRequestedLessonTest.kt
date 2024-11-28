@@ -9,6 +9,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -30,6 +31,10 @@ import org.mockito.kotlin.whenever
 class EditRequestedLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -169,6 +174,18 @@ class EditRequestedLessonTest {
     // Fill in the required fields
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
     composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+
+      // Select Date and Time
+      composeTestRule.onNodeWithTag("DateButton").performClick()
+      composeTestRule.waitUntil(15000) {
+          composeTestRule.onNodeWithText("OK").isDisplayed()
+      }
+      composeTestRule.onNodeWithText("OK").performClick()
+      composeTestRule.onNodeWithTag("TimeButton").performClick()
+      composeTestRule.waitUntil(15000) {
+          composeTestRule.onNodeWithText("OK").isDisplayed()
+      }
+      composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()

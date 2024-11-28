@@ -264,7 +264,7 @@ fun LessonEditor(
                     val zonedDateTime = temp.atZone(ZoneId.systemDefault())
                     selectedDate = formatter.format(zonedDateTime)
                     showDatePicker = false}) {
-                    Text("Ok")
+                    Text("OK")
                 }
             },
             properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -303,7 +303,7 @@ fun LessonEditor(
                         showTimeDialog = false
                     }
                 }) {
-                    Text("Ok")
+                    Text("OK")
                 }
             }
         }

@@ -130,13 +130,15 @@ class AddLessonTest {
 
     // Select Date and Time
     composeTestRule.onNodeWithTag("DateButton").performClick()
-    Thread.sleep(2000)
-    // composeTestRule.onNodeWithText("OK").performClick()
-    onView(withText("OK")).perform(click())
+      composeTestRule.waitUntil(15000) {
+          composeTestRule.onNodeWithText("OK").isDisplayed()
+      }
+    composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("TimeButton").performClick()
-    Thread.sleep(2000)
-    // composeTestRule.onNodeWithText("OK").performClick()
-    onView(withText("OK")).perform(click())
+      composeTestRule.waitUntil(15000) {
+          composeTestRule.onNodeWithText("OK").isDisplayed()
+      }
+    composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
