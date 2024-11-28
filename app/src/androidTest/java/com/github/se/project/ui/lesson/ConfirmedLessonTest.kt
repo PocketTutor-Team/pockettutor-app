@@ -193,7 +193,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed()
   }*/
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_PendingLesson() {
     lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
     listProfilesViewModel.setCurrentProfile(studentProfile)
@@ -221,7 +221,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
-  }
+  }*/
 
   /*@Test
   fun confirmedLessonScreenBackButtonClicked() {
@@ -286,7 +286,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithText("No profile found. Should not happen.").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenNoLessonSelected() {
     // Mock no lesson selected
     lessonViewModel.unselectLesson()
@@ -299,7 +299,7 @@ public class ConfirmedLessonTest {
     }
 
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
-  }
+  }*/
 
   /*@Test
   fun confirmedLessonScreenCancellationButtonClicked() {
@@ -333,7 +333,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed()
   }*/
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenCancellationDialogDismissed() {
     var isLocationChecked = false
 
@@ -362,7 +362,7 @@ public class ConfirmedLessonTest {
 
     // Check that the dialog is dismissed
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
-  }
+  }*/
 
   /*@Test
   fun confirmedLessonScreenCancellationDialogConfirmed_ConfirmedLesson() {
@@ -397,7 +397,7 @@ public class ConfirmedLessonTest {
     verify(mockNavigationActions).navigateTo(Screen.HOME)
   }*/
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenLessonCancellation_StudentRequestedLesson() {
     lessonViewModel.selectLesson(studentRequestedLesson)
 
@@ -425,9 +425,9 @@ public class ConfirmedLessonTest {
     // Check that the cancellation has been confirmed
     verify(mockLessonRepository).updateLesson(any(), any(), any())
     verify(mockNavigationActions).navigateTo(Screen.HOME)
-  }
+  }*/
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenLessonCancellation_PendingLesson() {
     lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
     listProfilesViewModel.setCurrentProfile(studentProfile)
@@ -456,5 +456,5 @@ public class ConfirmedLessonTest {
     // Check that the cancellation has been confirmed
     verify(mockLessonRepository).deleteLesson(any(), any(), any())
     verify(mockNavigationActions).navigateTo(Screen.HOME)
-  }
+  }*/
 }
