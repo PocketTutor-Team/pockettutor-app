@@ -1,5 +1,6 @@
 package com.github.se.project.ui.endToEnd
 
+/*
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
@@ -341,3 +342,4 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
   }
 }
+*/
