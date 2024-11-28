@@ -12,9 +12,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
@@ -190,16 +188,12 @@ class EndToEndTest {
     composeTestRule
         .onNodeWithTag("DescriptionField")
         .performTextInput("Teach me how to write tests pls")
-      composeTestRule.onNodeWithTag("DateButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
-      composeTestRule.onNodeWithText("OK").performClick()
-      composeTestRule.onNodeWithTag("TimeButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
-      composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
@@ -237,16 +231,12 @@ class EndToEndTest {
     composeTestRule
         .onNodeWithTag("DescriptionField")
         .performTextInput("Teach me how to write tests pls")
-      composeTestRule.onNodeWithTag("DateButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
-      composeTestRule.onNodeWithText("OK").performClick()
-      composeTestRule.onNodeWithTag("TimeButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
-      composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()

@@ -5,9 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.LessonRepository
@@ -130,14 +128,10 @@ class AddLessonTest {
 
     // Select Date and Time
     composeTestRule.onNodeWithTag("DateButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
     composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("TimeButton").performClick()
-      composeTestRule.waitUntil(15000) {
-          composeTestRule.onNodeWithText("OK").isDisplayed()
-      }
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
     composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
