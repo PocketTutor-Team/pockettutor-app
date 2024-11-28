@@ -2,13 +2,19 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +25,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -77,6 +85,8 @@ fun TutorMatchingScreen(
 
   val context = LocalContext.current
 
+  var showCancelDialog by remember { mutableStateOf(false) }
+
   Scaffold(
       topBar = {
         TopAppBar(
@@ -119,8 +129,21 @@ fun TutorMatchingScreen(
                 navigationActions.navigateTo(Screen.HOME)
               }) {
                 Text(
-                    "Ask other tutor for your lesson",
+                    "Ask other tutors for your lesson",
                     modifier = Modifier.testTag("noTutorButtonText"))
+              }
+        } else if (currentLesson.status == LessonStatus.STUDENT_REQUESTED) {
+          // Cancellation Button
+          Button(
+              shape = MaterialTheme.shapes.medium,
+              onClick = { showCancelDialog = true },
+              modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("cancellationButton"),
+              colors =
+                  ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
+                Icon(
+                    Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Cancel the Lesson")
               }
         }
       }) { innerPadding ->
@@ -146,6 +169,44 @@ fun TutorMatchingScreen(
                   navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
                 })
           }
+        }
+
+        // Cancellation Dialog
+        if (showCancelDialog) {
+          AlertDialog(
+              modifier = Modifier.testTag("cancellationDialog"),
+              onDismissRequest = { showCancelDialog = false },
+              title = {
+                Text(
+                    text = "Lesson Cancellation",
+                    modifier = Modifier.testTag("cancellationDialogTitle"))
+              },
+              text = {
+                Text(
+                    text =
+                        "Are you sure you want to cancel the lesson? This action can not be undone.",
+                    modifier = Modifier.testTag("cancellationDialogText"))
+              },
+              confirmButton = {
+                Button(
+                    modifier = Modifier.testTag("cancellationDialogConfirmButton"),
+                    onClick = {
+                      lessonViewModel.deleteLesson(
+                          currentLesson.id,
+                          onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                      showCancelDialog = false
+                      navigationActions.goBack()
+                    }) {
+                      Text("Yes, cancel it")
+                    }
+              },
+              dismissButton = {
+                Button(
+                    modifier = Modifier.testTag("cancellationDialogDismissButton"),
+                    onClick = { showCancelDialog = false }) {
+                      Text("No")
+                    }
+              })
         }
       }
 }
