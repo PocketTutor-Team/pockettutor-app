@@ -569,7 +569,6 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
       }
 }
 
-
 fun Lesson.shouldRequestReview(): Boolean {
   if (this.status != LessonStatus.CONFIRMED && this.status != LessonStatus.INSTANT_CONFIRMED)
       return false

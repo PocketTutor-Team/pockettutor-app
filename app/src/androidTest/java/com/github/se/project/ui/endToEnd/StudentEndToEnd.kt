@@ -78,7 +78,8 @@ class EndToEndTest {
   private var currentLesson: Lesson? = null
 
   // Mock ChatViewModel
-  // val mockChatClient = mock(ChatClient::class.java) // not used for now, will be used in a following PR
+  // val mockChatClient = mock(ChatClient::class.java) // not used for now, will be used in a
+  // following PR
   val mockChatViewModel = mock(ChatViewModel::class.java)
 
   @get:Rule val composeTestRule = createComposeRule()
