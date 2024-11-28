@@ -38,6 +38,7 @@ class ProfileRepositoryTest {
   private val tutorProfile =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "1",
           firstName = "Tutor",
           lastName = "Tutor",
@@ -53,6 +54,7 @@ class ProfileRepositoryTest {
   private val studentProfile =
       Profile(
           uid = "2",
+          token = "",
           googleUid = "2",
           firstName = "Student",
           lastName = "Student",
