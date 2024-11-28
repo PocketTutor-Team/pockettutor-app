@@ -160,6 +160,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
 
       val studentUid = document.getString("studentUid") ?: return null
+      val studentToken = document.getString("studentToken") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null
       val price = document.getDouble("price") ?: return null
@@ -200,6 +201,7 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
           language,
           tutorUid,
           studentUid,
+          studentToken,
           minPrice,
           maxPrice,
           price,

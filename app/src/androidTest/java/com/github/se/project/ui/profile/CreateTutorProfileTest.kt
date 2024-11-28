@@ -44,6 +44,7 @@ class CreateTutorProfileTest {
   private fun getMockProfile() =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "googleUid",
           firstName = "First",
           lastName = "Last",

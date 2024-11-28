@@ -50,6 +50,7 @@ class TutorLessonResponseTest {
   private val mockTutorProfile =
       Profile(
           uid = "100",
+          token = "",
           googleUid = "150",
           firstName = "Romeo",
           lastName = "Tutor",
@@ -65,6 +66,7 @@ class TutorLessonResponseTest {
   private val mockStudentProfile =
       Profile(
           uid = "200",
+          token = "",
           googleUid = "250",
           firstName = "Juliet",
           lastName = "Student",
@@ -82,6 +84,7 @@ class TutorLessonResponseTest {
           languages = listOf(Language.ENGLISH),
           tutorUid = mutableListOf(),
           studentUid = "200",
+          StudentToken = "",
           minPrice = 10.0,
           maxPrice = 50.0,
           timeSlot = "19/10/2024T10:00:00",
@@ -98,6 +101,7 @@ class TutorLessonResponseTest {
           languages = listOf(Language.ENGLISH),
           tutorUid = listOf("100"),
           studentUid = "200",
+          StudentToken = "",
           minPrice = 10.0,
           maxPrice = 50.0,
           timeSlot = "19/10/2024T10:00:00",

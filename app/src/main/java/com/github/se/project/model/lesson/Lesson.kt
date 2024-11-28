@@ -13,6 +13,7 @@ data class Lesson(
     val languages: List<Language> = listOf(), // Languages spoken in the lesson
     val tutorUid: List<String> = listOf(), // User ID of the tutor
     val studentUid: String = "", // User ID of the student (if booked)
+    val StudentToken: String = "", // User ID for notifications
     val minPrice: Double = 0.0, // Price for the lesson
     val maxPrice: Double = 0.0, // Price for the lesson
     val price: Double = 0.0, // Price for the lesson

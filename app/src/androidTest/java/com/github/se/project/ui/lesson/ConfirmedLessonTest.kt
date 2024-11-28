@@ -44,6 +44,7 @@ public class ConfirmedLessonTest {
   private val tutorProfile =
       Profile(
           uid = "12345",
+          token = "",
           googleUid = "67890",
           firstName = "John",
           lastName = "Doe",
@@ -57,6 +58,7 @@ public class ConfirmedLessonTest {
   private val studentProfile =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "67890",
           firstName = "James",
           lastName = "Donovan",

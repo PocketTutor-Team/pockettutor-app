@@ -50,6 +50,7 @@ class TutorMatchingScreenTest {
       MutableStateFlow(
           Profile(
               uid = "uid",
+              token = "",
               googleUid = "googleUid",
               firstName = "First",
               lastName = "Last",
@@ -71,6 +72,7 @@ class TutorMatchingScreenTest {
               languages = listOf(Language.ENGLISH),
               tutorUid = listOf("tutor123"),
               studentUid = "student123",
+              StudentToken = "",
               minPrice = 10.0,
               maxPrice = 50.0,
               timeSlot = "12/12/2024T12:00:00",
@@ -83,6 +85,7 @@ class TutorMatchingScreenTest {
           listOf(
               Profile(
                   uid = "tutor123",
+                  token = "",
                   googleUid = "googleUid",
                   firstName = "Tutor",
                   lastName = "One",

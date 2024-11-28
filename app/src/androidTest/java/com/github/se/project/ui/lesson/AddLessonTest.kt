@@ -39,6 +39,7 @@ class AddLessonTest {
   private val profile =
       Profile(
           "uid",
+          "",
           "googleUid",
           "firstName",
           "lastName",

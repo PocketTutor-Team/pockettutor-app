@@ -59,6 +59,7 @@ class EndToEndTest {
   private val mockTutor =
       Profile(
           "mockTutor",
+          "",
           "mockTutor",
           "Ozymandias",
           "Halifax",
@@ -295,6 +296,7 @@ class EndToEndTest {
             listOf(Language.ENGLISH),
             listOf("mockTutor"),
             "",
+            "",
             0.0,
             0.0,
             30.0,
@@ -325,6 +327,7 @@ class EndToEndTest {
             listOf(Language.ENGLISH),
             listOf("mockTutor"),
             "mockUid",
+            "",
             0.0,
             0.0,
             5.0,
