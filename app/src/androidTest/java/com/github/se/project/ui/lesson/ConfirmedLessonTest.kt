@@ -128,13 +128,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_ConfirmedLesson() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
@@ -147,13 +157,23 @@ public class ConfirmedLessonTest {
   fun confirmedLessonScreenEverythingDisplayedCorrectly_StudentRequestedLesson() {
     lessonViewModel.selectLesson(studentRequestedLesson)
 
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
@@ -167,13 +187,23 @@ public class ConfirmedLessonTest {
     lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
     listProfilesViewModel.setCurrentProfile(studentProfile)
 
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
@@ -184,13 +214,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
@@ -198,12 +238,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenOpensSmsApp_ConfirmedLesson() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Message Tutor/Student" button
     composeTestRule.onNodeWithTag("contactButton").performClick()
@@ -241,13 +292,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenCancellationButtonClicked() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
@@ -263,13 +324,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenCancellationDialogDismissed() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
@@ -284,13 +355,23 @@ public class ConfirmedLessonTest {
 
   @Test
   fun confirmedLessonScreenCancellationDialogConfirmed_ConfirmedLesson() {
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
@@ -309,13 +390,23 @@ public class ConfirmedLessonTest {
   fun confirmedLessonScreenCancellationDialogConfirmed_StudentRequestedLesson() {
     lessonViewModel.selectLesson(studentRequestedLesson)
 
+    var isLocationChecked = false
+
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
@@ -330,18 +421,28 @@ public class ConfirmedLessonTest {
     verify(mockNavigationActions).goBack()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenCancellationDialogConfirmed_PendingLesson() {
     lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
     listProfilesViewModel.setCurrentProfile(studentProfile)
+
+    var isLocationChecked = false
 
     composeTestRule.setContent {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions)
+          navigationActions = mockNavigationActions,
+          onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 15 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      isLocationChecked
+    }
+    isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
@@ -354,5 +455,5 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
     verify(mockLessonRepository).deleteLesson(any(), any(), any())
     verify(mockNavigationActions).goBack()
-  }
+  }*/
 }

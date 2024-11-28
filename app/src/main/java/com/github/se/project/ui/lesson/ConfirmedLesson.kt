@@ -58,7 +58,8 @@ fun ConfirmedLessonScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
-    navigationActions: NavigationActions
+    navigationActions: NavigationActions,
+    onLocationChecked: () -> Unit = {}
 ) {
   val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
@@ -126,7 +127,8 @@ fun ConfirmedLessonScreen(
                           LessonLocationDisplay(
                               latitude = lesson.latitude,
                               longitude = lesson.longitude,
-                              lessonTitle = lesson.title)
+                              lessonTitle = lesson.title,
+                              onLocationChecked = onLocationChecked)
                         }
                   }
 
