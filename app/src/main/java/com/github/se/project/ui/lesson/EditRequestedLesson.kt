@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonEditor
@@ -50,7 +51,10 @@ fun EditRequestedLessonScreen(
   }
 
   LessonEditor(
-      mainTitle = "Edit requested lesson",
+      mainTitle =
+          if (currentLesson.status == LessonStatus.INSTANT_REQUESTED)
+              "Edit requested instant lesson"
+          else "Edit requested lesson",
       profile = profile.value!!,
       lesson = currentLesson,
       onBack = { navigationActions.navigateTo(Screen.HOME) },

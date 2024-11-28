@@ -127,12 +127,13 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
           _currentUserLessons.value =
-              fetchedLessons.filter { lesson ->
-                when (lesson.status) {
-                  LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
+              fetchedLessons.filter {
+                when (it.status) {
+                  LessonStatus.STUDENT_REQUESTED -> it.tutorUid.contains(tutorUid)
                   LessonStatus.PENDING_TUTOR_CONFIRMATION,
                   LessonStatus.CONFIRMED,
                   LessonStatus.INSTANT_CONFIRMED,
+                  LessonStatus.PENDING_REVIEW,
                   LessonStatus.COMPLETED -> true
                   else -> false
                 }
@@ -156,11 +157,11 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         studentUid = studentUid,
         onSuccess = { fetchedLessons ->
           _currentUserLessons.value = fetchedLessons
-          onComplete() // Call the provided callback on success
+          onComplete()
         },
         onFailure = {
           Log.e("LessonViewModel", "Error fetching student's lessons", it)
-          onComplete() // Call the callback even if there's a failure
+          onComplete()
         })
   }
 
