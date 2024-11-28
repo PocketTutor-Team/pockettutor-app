@@ -135,9 +135,6 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
               ?: List(7) { List(12) { 0 } }
       val price = document.getLong("price")?.toInt() ?: 0
 
-      val ratingMap = document.get("rating") as? Map<String, Any?>
-      val rating = Rating.mapToRating(ratingMap)
-
       Profile(
           uid,
           token,
@@ -152,8 +149,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
           languages,
           subjects,
           schedule,
-          price,
-          rating)
+          price)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null
@@ -176,7 +172,6 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
         "languages" to profile.languages.map { it.toString() },
         "subjects" to profile.subjects.map { it.toString() },
         "schedule" to profile.schedule.flatten(),
-        "price" to profile.price,
-        "rating" to profile.rating.toMap())
+        "price" to profile.price)
   }
 }

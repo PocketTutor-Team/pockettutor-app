@@ -20,7 +20,8 @@ data class Lesson(
     val timeSlot: String = "", // Time slot for the lesson (e.g., "30/10/2024T10:00:00")
     var status: LessonStatus = LessonStatus.MATCHING, // Status of the lesson
     val latitude: Double, // Latitude for lesson location
-    val longitude: Double // Longitude for lesson location
+    val longitude: Double, // Longitude for lesson location
+    val rating: LessonRating? = null // Rating for the lesson
 ) {
   /**
    * Parses the lesson's timeSlot into a LocalDateTime object.

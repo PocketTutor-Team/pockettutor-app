@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,15 +33,19 @@ import com.github.se.project.utils.formatDate
 
 /** Displays detailed information about a lesson and the associated student. */
 @Composable
-fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modifier = Modifier) {
+fun DisplayLessonDetails(
+    lesson: Lesson,
+    profile: Profile,
+    modifier: Modifier = Modifier,
+) {
   Card(
       modifier = modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("lessonDetailsCard"),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(
             modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-              // Student information section
-              StudentInfoSection(studentProfile)
+              // Profile information section
+              ProfileInfoSection(profile)
 
               Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
@@ -65,19 +71,16 @@ fun DisplayLessonDetails(lesson: Lesson, studentProfile: Profile, modifier: Modi
 
               // Lesson information section
               LessonInfoSection(lesson)
-
-              Divider(color = MaterialTheme.colorScheme.outlineVariant)
             }
       }
 }
 
 @Composable
-private fun StudentInfoSection(profile: Profile) {
+private fun ProfileInfoSection(profile: Profile) {
   Row(
-      modifier = Modifier.fillMaxWidth().testTag("studentInfoRow"),
+      modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
-        // Profile picture placeholder
         Surface(
             modifier = Modifier.size(48.dp),
             shape = MaterialTheme.shapes.medium,
@@ -89,20 +92,18 @@ private fun StudentInfoSection(profile: Profile) {
                   tint = MaterialTheme.colorScheme.primary)
             }
 
-        // Student details
         Column(modifier = Modifier.weight(1f)) {
           Text(
               text = "${profile.firstName} ${profile.lastName}",
               style = MaterialTheme.typography.titleMedium,
-              modifier = Modifier.testTag("studentName"))
+              modifier = Modifier.testTag("profileName"))
           Text(
               text = "${profile.section} - ${profile.academicLevel}",
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.testTag("studentAcademicInfo"))
+              modifier = Modifier.testTag("profileAcademicInfo"))
         }
 
-        // Languages
         Column(horizontalAlignment = Alignment.End) {
           profile.languages.forEach { language ->
             Text(
@@ -144,7 +145,7 @@ private fun LessonInfoSection(lesson: Lesson) {
         // Description
         Text(
             text = lesson.description,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.testTag("lessonDescription"),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             overflow = TextOverflow.Ellipsis,
