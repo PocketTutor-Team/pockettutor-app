@@ -222,16 +222,4 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
   }
-
-    @Test
-    fun editInstantLessonEditsLocation() {
-        mockLessonViewModel.selectLesson(lessons[0])
-
-        composeTestRule.setContent {
-            EditRequestedLessonScreen(
-                navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
-        }
-
-        mockLessonViewModel.selectLesson(lessons[0])
-    }
 }
