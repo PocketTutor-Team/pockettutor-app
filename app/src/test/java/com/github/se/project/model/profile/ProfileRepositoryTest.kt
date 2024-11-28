@@ -319,6 +319,7 @@ class ProfileRepositoryTest {
   @Test
   fun documentToProfile_returnCorrectTutorProfile() {
     `when`(mockDocumentSnapshot.id).thenReturn(tutorProfile.uid)
+    `when`(mockDocumentSnapshot.getString("token")).thenReturn(tutorProfile.token)
     `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(tutorProfile.googleUid)
     `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(tutorProfile.firstName)
     `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(tutorProfile.lastName)
@@ -345,6 +346,7 @@ class ProfileRepositoryTest {
     val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
 
     assert(profile.uid == tutorProfile.uid)
+    assert(profile.token == tutorProfile.token)
     assert(profile.googleUid == tutorProfile.googleUid)
     assert(profile.firstName == tutorProfile.firstName)
     assert(profile.lastName == tutorProfile.lastName)
@@ -361,6 +363,7 @@ class ProfileRepositoryTest {
   @Test
   fun documentToProfile_returnCorrectStudentProfile() {
     `when`(mockDocumentSnapshot.id).thenReturn(studentProfile.uid)
+    `when`(mockDocumentSnapshot.getString("token")).thenReturn(tutorProfile.token)
     `when`(mockDocumentSnapshot.getString("googleUid")).thenReturn(studentProfile.googleUid)
     `when`(mockDocumentSnapshot.getString("firstName")).thenReturn(studentProfile.firstName)
     `when`(mockDocumentSnapshot.getString("lastName")).thenReturn(studentProfile.lastName)
@@ -385,6 +388,7 @@ class ProfileRepositoryTest {
     val profile = method.invoke(profileRepositoryFirestore, mockDocumentSnapshot) as Profile
 
     assert(profile.uid == studentProfile.uid)
+    assert(profile.token == tutorProfile.token)
     assert(profile.googleUid == studentProfile.googleUid)
     assert(profile.firstName == studentProfile.firstName)
     assert(profile.lastName == studentProfile.lastName)
