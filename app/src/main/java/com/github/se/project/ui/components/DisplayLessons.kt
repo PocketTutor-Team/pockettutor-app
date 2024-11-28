@@ -21,10 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +32,6 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
@@ -67,7 +62,8 @@ object LessonColors {
 
     return when {
       tutorProposed -> if (isDarkTheme) DarkUrgent else LightUrgent
-      status == LessonStatus.COMPLETED -> if (isDarkTheme) DarkCompleted else LightCompleted
+      status == LessonStatus.COMPLETED || status == LessonStatus.PENDING_REVIEW ->
+          if (isDarkTheme) DarkCompleted else LightCompleted
       status == LessonStatus.CONFIRMED -> if (isDarkTheme) DarkConfirmed else LightConfirmed
       status == LessonStatus.PENDING_TUTOR_CONFIRMATION ->
           if (isDarkTheme) {
@@ -120,21 +116,21 @@ fun DisplayLessons(
         lessons.filter { lesson -> lesson.status == it && lesson.tutorUid.isEmpty() == tutorEmpty }
       } ?: lessons
 
+  LaunchedEffect(Unit) { listProfilesViewModel.getProfiles() }
+
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     filteredLessons.forEachIndexed { index, lesson ->
-      var otherUserProfile by remember { mutableStateOf<Profile?>(null) }
-
-      if (lesson.status == LessonStatus.CONFIRMED ||
-          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-        LaunchedEffect(lesson) {
-          otherUserProfile =
-              if (isTutor) {
-                listProfilesViewModel.getProfileById(lesson.studentUid)
-              } else {
-                listProfilesViewModel.getProfileById(lesson.tutorUid.first())
-              }
-        }
-      }
+      val otherUserProfile =
+          if (lesson.status == LessonStatus.COMPLETED ||
+              lesson.status == LessonStatus.PENDING_REVIEW ||
+              lesson.status == LessonStatus.CONFIRMED ||
+              lesson.status == LessonStatus.INSTANT_CONFIRMED) {
+            if (isTutor) {
+              listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid }
+            } else {
+              listProfilesViewModel.profiles.value.find { it.uid == lesson.tutorUid.firstOrNull() }
+            }
+          } else null
 
       Card(
           modifier =
@@ -147,8 +143,8 @@ fun DisplayLessons(
                       LessonColors.getLessonColor(
                           status = lesson.status,
                           hasTutor = lesson.tutorUid.isNotEmpty(),
-                          isTutor,
-                          requestedScreen),
+                          isTutor = isTutor,
+                          tutorProposed = requestedScreen),
                   contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black),
           elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
           shape = MaterialTheme.shapes.medium) {
@@ -216,6 +212,8 @@ fun DisplayLessons(
 
                   if (lesson.status == LessonStatus.COMPLETED ||
                       lesson.status == LessonStatus.CONFIRMED ||
+                      lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
+                      lesson.status == LessonStatus.PENDING_REVIEW ||
                       lesson.status == LessonStatus.INSTANT_CONFIRMED) {
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 4.dp),

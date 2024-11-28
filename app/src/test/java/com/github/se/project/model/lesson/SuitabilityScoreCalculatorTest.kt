@@ -24,8 +24,7 @@ class SuitabilityScoreCalculatorTest {
           languages = listOf(Language.ENGLISH),
           subjects = listOf(Subject.ANALYSIS),
           schedule = createAvailableSchedule(),
-          price = 30,
-          rating = Rating())
+          price = 30)
 
   private val baseStudentProfile =
       Profile(
@@ -39,8 +38,7 @@ class SuitabilityScoreCalculatorTest {
           academicLevel = AcademicLevel.BA3,
           description = "",
           languages = listOf(Language.ENGLISH),
-          subjects = listOf(Subject.ANALYSIS),
-          rating = Rating())
+          subjects = listOf(Subject.ANALYSIS))
 
   private val baseLesson =
       Lesson(

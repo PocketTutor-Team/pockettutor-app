@@ -14,6 +14,5 @@ data class Profile(
     var languages: List<Language> = listOf(),
     var subjects: List<Subject> = listOf(),
     var schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
-    var price: Int = 0,
-    var rating: Rating = Rating()
+    var price: Int = 0
 )

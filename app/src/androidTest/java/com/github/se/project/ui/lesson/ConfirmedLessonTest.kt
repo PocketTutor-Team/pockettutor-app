@@ -18,6 +18,7 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -119,6 +120,16 @@ public class ConfirmedLessonTest {
           onSuccess(listOf(confirmedLesson, studentRequestedLesson, pendingTutorConfirmationLesson))
         }
 
+    whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful deletion
+    }
+
+    whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful update
+    }
+
     listProfilesViewModel.getProfiles()
     lessonViewModel.getLessonsForTutor(tutorProfile.uid, {})
 
@@ -150,7 +161,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed()
   }
 
   @Test
@@ -179,7 +190,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed()
   }
 
   @Test
@@ -209,7 +220,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
   }
 
   @Test
@@ -311,7 +322,7 @@ public class ConfirmedLessonTest {
     isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
     Thread.sleep(300) // Wait for the dialog to show up
 
     // Check that the cancellation dialog is well displayed
@@ -343,7 +354,7 @@ public class ConfirmedLessonTest {
     isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
     Thread.sleep(300) // Wait for the dialog to show up
 
     // Dismiss the dialog
@@ -374,7 +385,7 @@ public class ConfirmedLessonTest {
     isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
     Thread.sleep(300) // Wait for the dialog to show up
 
     // Confirm the dialog
@@ -383,11 +394,11 @@ public class ConfirmedLessonTest {
     // Check that the cancellation has been confirmed
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
     verify(mockLessonRepository).updateLesson(any(), any(), any())
-    verify(mockNavigationActions).goBack()
+    verify(mockNavigationActions).navigateTo(Screen.HOME)
   }
 
   @Test
-  fun confirmedLessonScreenCancellationDialogConfirmed_StudentRequestedLesson() {
+  fun confirmedLessonScreenLessonCancellation_StudentRequestedLesson() {
     lessonViewModel.selectLesson(studentRequestedLesson)
 
     var isLocationChecked = false
@@ -409,20 +420,15 @@ public class ConfirmedLessonTest {
     isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
-    Thread.sleep(300) // Wait for the dialog to show up
-
-    // Confirm the dialog
-    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed().performClick()
 
     // Check that the cancellation has been confirmed
-    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
     verify(mockLessonRepository).updateLesson(any(), any(), any())
-    verify(mockNavigationActions).goBack()
+    verify(mockNavigationActions).navigateTo(Screen.HOME)
   }
 
-  /*@Test
-  fun confirmedLessonScreenCancellationDialogConfirmed_PendingLesson() {
+  @Test
+  fun confirmedLessonScreenLessonCancellation_PendingLesson() {
     lessonViewModel.selectLesson(pendingTutorConfirmationLesson)
     listProfilesViewModel.setCurrentProfile(studentProfile)
 
@@ -445,15 +451,10 @@ public class ConfirmedLessonTest {
     isLocationChecked = false
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
-    Thread.sleep(300) // Wait for the dialog to show up
-
-    // Confirm the dialog
-    composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed().performClick()
 
     // Check that the cancellation has been confirmed
-    composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
     verify(mockLessonRepository).deleteLesson(any(), any(), any())
-    verify(mockNavigationActions).goBack()
-  }*/
+    verify(mockNavigationActions).navigateTo(Screen.HOME)
+  }
 }
