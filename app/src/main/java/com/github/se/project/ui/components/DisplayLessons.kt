@@ -21,8 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +32,6 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.ui.components.LessonColors.getLessonColor
-import com.github.se.project.utils.SuitabilityScoreCalculator
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
