@@ -65,7 +65,8 @@ class LessonTest {
     assertNotNull(LessonStatus.valueOf("STUDENT_REQUESTED"))
     assertNotNull(LessonStatus.valueOf("PENDING_TUTOR_CONFIRMATION"))
     assertNotNull(LessonStatus.valueOf("COMPLETED"))
-    assertNotNull(LessonStatus.valueOf("CANCELLED"))
+    assertNotNull(LessonStatus.valueOf("STUDENT_CANCELLED"))
+    assertNotNull(LessonStatus.valueOf("TUTOR_CANCELLED"))
     assertNotNull(LessonStatus.valueOf("MATCHING"))
     assertNotNull(LessonStatus.valueOf("CONFIRMED"))
   }

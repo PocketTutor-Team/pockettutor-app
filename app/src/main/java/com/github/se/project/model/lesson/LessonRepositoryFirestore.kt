@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.Subject
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Filter
@@ -168,6 +169,17 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val latitude = document.getDouble("latitude") ?: return null
       val longitude = document.getDouble("longitude") ?: return null
 
+      val ratingMap = document.get("rating") as? Map<*, *>
+
+      val rating =
+          ratingMap?.let { map ->
+            LessonRating(
+                grade = (map["grade"] as? Long)?.toInt() ?: 0,
+                comment = map["comment"] as? String ?: "",
+                date = map["date"] as? Timestamp ?: Timestamp.now(),
+                canEdit = map["canEdit"] as? Boolean ?: true)
+          }
+
       val tutorUid =
           document.get("tutorUid")?.let { tutorUid ->
             (tutorUid as List<*>).mapNotNull {
@@ -206,7 +218,8 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
           timeSlot,
           status,
           latitude,
-          longitude)
+          longitude,
+          rating)
     } catch (e: Exception) {
       Log.e("LessonRepositoryFirestore", "Error converting document to Lesson", e)
       null

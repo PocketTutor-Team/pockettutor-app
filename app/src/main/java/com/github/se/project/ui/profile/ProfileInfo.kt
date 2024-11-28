@@ -1,5 +1,6 @@
 package com.github.se.project.ui.profile
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun ProfileInfoScreen(
     navigationActions: NavigationActions,
@@ -46,7 +48,10 @@ fun ProfileInfoScreen(
   val lessons = lessonViewModel.currentUserLessons.collectAsState()
 
   // Filter only lessons that are marked as COMPLETED
-  val completedLessons = lessons.value.filter { it.status == LessonStatus.COMPLETED }
+  val completedLessons =
+      lessons.value.filter {
+        it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
+      }
 
   Scaffold(
       topBar = {
@@ -106,12 +111,20 @@ fun ProfileInfoScreen(
                     modifier = Modifier.testTag("lessonsCount"))
 
                 Box(modifier = Modifier.fillMaxSize().weight(1f).padding(top = 16.dp)) {
-                  Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                    DisplayLessons(
-                        lessons = completedLessons,
-                        isTutor = isTutor,
-                        listProfilesViewModel = listProfilesViewModel)
-                  }
+                  Column(
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .verticalScroll(rememberScrollState())
+                              .padding(4.dp)) {
+                        DisplayLessons(
+                            lessons = completedLessons,
+                            isTutor = isTutor,
+                            listProfilesViewModel = listProfilesViewModel,
+                            onCardClick = { lesson ->
+                              lessonViewModel.selectLesson(lesson)
+                              navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                            })
+                      }
                 }
               }
         }

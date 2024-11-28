@@ -113,6 +113,7 @@ class TutorMatchingScreenTest {
 
     // Stub navigation actions
     doNothing().`when`(navigationActions).navigateTo(anyString())
+    doNothing().`when`(navigationActions).goBack()
 
     // Mock flow properties on ViewModels
     whenever(listProfilesViewModel.currentProfile).thenReturn(profileFlow)
@@ -210,13 +211,69 @@ class TutorMatchingScreenTest {
   }
 
   @Test
-  fun confirmButtonNotDisplayed_whenStatusIsNotMatching() {
+  fun correctButtonAreDisplayed_whenStatusIsStudentRequested() {
     lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
 
     composeTestRule.setContent {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    composeTestRule.onNodeWithTag("confirmButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("noTutorButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun lessonCancellationDialogIsDisplayed_whenCancellationButtonClicked() {
+    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("cancellationDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancellationDialogTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancellationDialogText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancellationDialogConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancellationDialogDismissButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun lessonDeleted_whenCancellationDialogConfirmed() {
+    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the cancellation button and confirm the dialog
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancellationDialogConfirmButton")
+        .assertIsDisplayed()
+        .performClick()
+
+    // Verify the dialog is dismissed and the navigation is done
+    composeTestRule.onNodeWithTag("cancellationDialog").assertIsNotDisplayed()
+    verify(navigationActions).goBack()
+  }
+
+  @Test
+  fun dialogDismissed_whenCancellationDialogDismissed() {
+    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the cancellation button and dismiss the dialog
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancellationDialogDismissButton")
+        .assertIsDisplayed()
+        .performClick()
+
+    // Verify the dialog was dismissed
+    composeTestRule.onNodeWithTag("cancellationDialog").assertIsNotDisplayed()
   }
 }
