@@ -72,6 +72,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.github.se.project.ui.components.SectionInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -501,12 +502,7 @@ fun Lesson.shouldRequestReview(): Boolean {
   }
 }
 
-private data class SectionInfo(
-    val title: String,
-    val status: LessonStatus,
-    val icon: ImageVector,
-    val tutorEmpty: Boolean = false
-)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

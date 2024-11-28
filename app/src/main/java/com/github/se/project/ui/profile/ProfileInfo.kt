@@ -235,8 +235,7 @@ fun ProfileInfoScreen(
                                   // Phone Number Text
                                   Text(
                                       text =
-                                          userProfile.phoneNumber
-                                              ?: "N/A", // Handle if phone number is null
+                                      userProfile.phoneNumber, // Handle if phone number is null
                                       style = MaterialTheme.typography.bodyMedium,
                                       color = MaterialTheme.colorScheme.onBackground,
                                       modifier = Modifier.testTag("phoneNumberRow"))
@@ -261,7 +260,7 @@ fun ProfileInfoScreen(
                                     // Price Text
                                     Text(
                                         text =
-                                            "${stringResource(id = R.string.price_per_lesson)} ${userProfile.price ?: stringResource(id = R.string.price_not_set)}",
+                                            "${stringResource(id = R.string.price_per_lesson)} ${userProfile.price}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onBackground,
                                         modifier = Modifier.testTag("priceText"))
