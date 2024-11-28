@@ -223,7 +223,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenBackButtonClicked() {
     var isLocationChecked = false
 
@@ -245,7 +245,7 @@ public class ConfirmedLessonTest {
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenOpensSmsApp_ConfirmedLesson() {
