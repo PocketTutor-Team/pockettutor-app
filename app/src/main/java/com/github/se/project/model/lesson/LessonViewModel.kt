@@ -21,6 +21,9 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
   private val _currentUserLessons = MutableStateFlow<List<Lesson>>(emptyList())
   open val currentUserLessons: StateFlow<List<Lesson>> = _currentUserLessons.asStateFlow()
 
+  private val _cancelledLessons = MutableStateFlow<List<Lesson>>(emptyList())
+  open val cancelledLessons: StateFlow<List<Lesson>> = _cancelledLessons.asStateFlow()
+
   private val _selectedLesson = MutableStateFlow<Lesson?>(null)
   open val selectedLesson: StateFlow<Lesson?> = _selectedLesson.asStateFlow()
 
@@ -127,13 +130,22 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         tutorUid = tutorUid,
         onSuccess = { fetchedLessons ->
           _currentUserLessons.value =
-              fetchedLessons.filter { lesson ->
-                when (lesson.status) {
-                  LessonStatus.STUDENT_REQUESTED -> lesson.tutorUid.contains(tutorUid)
+              fetchedLessons.filter {
+                when (it.status) {
+                  LessonStatus.STUDENT_REQUESTED -> it.tutorUid.contains(tutorUid)
                   LessonStatus.PENDING_TUTOR_CONFIRMATION,
                   LessonStatus.CONFIRMED,
                   LessonStatus.INSTANT_CONFIRMED,
+                  LessonStatus.PENDING_REVIEW,
                   LessonStatus.COMPLETED -> true
+                  else -> false
+                }
+              }
+          _cancelledLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_CANCELLED -> true
+                  LessonStatus.TUTOR_CANCELLED -> false
                   else -> false
                 }
               }
@@ -156,6 +168,14 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
         studentUid = studentUid,
         onSuccess = { fetchedLessons ->
           _currentUserLessons.value = fetchedLessons
+          _cancelledLessons.value =
+              fetchedLessons.filter { lesson ->
+                when (lesson.status) {
+                  LessonStatus.STUDENT_CANCELLED -> false
+                  LessonStatus.TUTOR_CANCELLED -> true
+                  else -> false
+                }
+              }
           onComplete() // Call the provided callback on success
         },
         onFailure = {

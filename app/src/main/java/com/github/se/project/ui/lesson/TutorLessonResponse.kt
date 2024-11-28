@@ -13,8 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,6 +48,8 @@ import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /** Screen where tutors can respond to lesson requests by setting their price. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,7 +137,7 @@ fun TutorLessonResponseScreen(
                     modifier =
                         Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
                       Icon(
-                          Icons.Default.Send,
+                          Icons.AutoMirrored.Filled.Send,
                           contentDescription = null,
                           modifier = Modifier.size(20.dp))
                       Spacer(modifier = Modifier.width(8.dp))
@@ -188,29 +190,33 @@ fun TutorLessonResponseScreen(
                                 "You already have an instant lesson scheduled!",
                                 Toast.LENGTH_SHORT)
                             .show()
-                      } else
-                          lessonViewModel.updateLesson(
-                              lesson.copy(
-                                  tutorUid = lesson.tutorUid + currentProfile.uid,
-                                  price = currentProfile.price.toDouble(),
-                                  status =
-                                      if (lesson.status ==
-                                          LessonStatus.PENDING_TUTOR_CONFIRMATION) {
-                                        LessonStatus.CONFIRMED
-                                      } else if (isInstant(lesson)) {
-                                        LessonStatus.INSTANT_CONFIRMED
-                                      } else {
-                                        LessonStatus.STUDENT_REQUESTED
-                                      },
-                              ),
-                              onComplete = {
-                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                                lessonViewModel.getAllRequestedLessons()
-                                Toast.makeText(
-                                        context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                    .show()
-                                navigationActions.navigateTo(Screen.HOME)
-                              })
+                      } else {
+                        val formattedTimestamp =
+                            SimpleDateFormat("dd/MM/yyyy'T'HH:mm:ss", Locale.getDefault())
+                                .format(java.util.Date())
+                        lessonViewModel.updateLesson(
+                            lesson.copy(
+                                tutorUid = lesson.tutorUid + currentProfile.uid,
+                                price = currentProfile.price.toDouble(),
+                                status =
+                                    if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+                                      LessonStatus.CONFIRMED
+                                    } else if (isInstant(lesson)) {
+                                      LessonStatus.INSTANT_CONFIRMED
+                                    } else {
+                                      LessonStatus.STUDENT_REQUESTED
+                                    },
+                                timeSlot =
+                                    if (isInstant(lesson)) formattedTimestamp else lesson.timeSlot),
+                            onComplete = {
+                              lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                              lessonViewModel.getAllRequestedLessons()
+                              Toast.makeText(
+                                      context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                  .show()
+                              navigationActions.navigateTo(Screen.HOME)
+                            })
+                      }
                     }) {
                       Text("Confirm")
                     }

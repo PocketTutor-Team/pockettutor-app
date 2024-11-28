@@ -142,11 +142,11 @@ class TutorLessonResponseTest {
 
     // Assert the lesson and student details are displayed
     composeTestRule.onNodeWithTag("lessonDetailsCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentInfoRow").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentName").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentName").assertTextEquals("Juliet Student")
-    composeTestRule.onNodeWithTag("studentAcademicInfo").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentAcademicInfo").assertTextEquals("SC - MA2")
+    composeTestRule.onNodeWithTag("profileInfoRow").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileName").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileName").assertTextEquals("Juliet Student")
+    composeTestRule.onNodeWithTag("profileAcademicInfo").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileAcademicInfo").assertTextEquals("SC - MA2")
     composeTestRule.onNodeWithTag("lessonDetailsColumn").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonSubject").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonSubject").assertTextEquals("ALGEBRA")
@@ -185,11 +185,11 @@ class TutorLessonResponseTest {
 
     // Assert the lesson and student details are displayed
     composeTestRule.onNodeWithTag("lessonDetailsCard").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentInfoRow").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentName").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentName").assertTextEquals("Juliet Student")
-    composeTestRule.onNodeWithTag("studentAcademicInfo").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("studentAcademicInfo").assertTextEquals("SC - MA2")
+    composeTestRule.onNodeWithTag("profileInfoRow").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileName").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileName").assertTextEquals("Juliet Student")
+    composeTestRule.onNodeWithTag("profileAcademicInfo").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profileAcademicInfo").assertTextEquals("SC - MA2")
     composeTestRule.onNodeWithTag("lessonDetailsColumn").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonSubject").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonSubject").assertTextEquals("ALGEBRA")
