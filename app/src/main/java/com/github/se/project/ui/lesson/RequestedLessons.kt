@@ -27,6 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.SuitabilityScoreCalculator
+import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeLanguageMatch
+import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeSubjectMatch
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
@@ -37,9 +40,6 @@ import com.github.se.project.ui.components.getColorForDistance
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.github.se.project.ui.navigation.*
-import com.github.se.project.utils.SuitabilityScoreCalculator
-import com.github.se.project.utils.SuitabilityScoreCalculator.computeLanguageMatch
-import com.github.se.project.utils.SuitabilityScoreCalculator.computeSubjectMatch
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -134,7 +134,7 @@ fun RequestedLessonsScreen(
 
             val score =
                 SuitabilityScoreCalculator.calculateSuitabilityScore(
-                    lesson, tutorProfile, studentProfile)
+                    lesson, userLocation, tutorProfile, studentProfile)
             lesson to score
           }
           .sortedByDescending { it.second }
