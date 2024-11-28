@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.LessonRepository
@@ -112,7 +111,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
-    /*
+  /*
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
