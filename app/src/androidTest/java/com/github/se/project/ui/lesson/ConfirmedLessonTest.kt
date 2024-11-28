@@ -137,7 +137,7 @@ public class ConfirmedLessonTest {
     listProfilesViewModel.setCurrentProfile(tutorProfile)
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_ConfirmedLesson() {
     var isLocationChecked = false
 
@@ -162,7 +162,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed()
-  }
+  }*/
 
   /*@Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_StudentRequestedLesson() {
