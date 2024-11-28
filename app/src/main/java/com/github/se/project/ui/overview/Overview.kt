@@ -10,17 +10,49 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,12 +63,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
-import com.github.se.project.model.lesson.*
-import com.github.se.project.model.profile.*
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRating
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.components.LessonReviewDialog
 import com.github.se.project.ui.components.isInstant
-import com.github.se.project.ui.navigation.*
+import com.github.se.project.ui.navigation.BottomNavigationMenu
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_TUTOR
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.ui.navigation.TopLevelDestinations
+import com.github.se.project.utils.formatDate
 import com.google.firebase.Timestamp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -53,6 +96,7 @@ fun HomeScreen(
   val context = LocalContext.current
   val currentProfile = listProfileViewModel.currentProfile.collectAsState().value
   val lessons = lessonViewModel.currentUserLessons.collectAsState().value
+  val cancelledLessons = lessonViewModel.cancelledLessons.collectAsState().value
 
   // Fetch lessons based on the role
   when (currentProfile?.role) {
@@ -71,36 +115,50 @@ fun HomeScreen(
 
   val onLessonClick = { lesson: Lesson ->
     if (currentProfile?.role == Role.STUDENT) {
-      if (lesson.status == LessonStatus.STUDENT_REQUESTED && lesson.tutorUid.isNotEmpty()) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.TUTOR_MATCH)
-      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-      } else if (lesson.status == LessonStatus.CONFIRMED ||
-          lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-      } else if (lesson.status == LessonStatus.INSTANT_REQUESTED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-      } else if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+      when (lesson.status) {
+        LessonStatus.STUDENT_REQUESTED -> {
+          if (lesson.tutorUid.isNotEmpty()) { // "Waiting for your confirmation" section
+            lessonViewModel.selectLesson(lesson)
+            navigationActions.navigateTo(Screen.TUTOR_MATCH)
+          } else { // "Waiting for a Tutor proposal" section
+            lessonViewModel.selectLesson(lesson)
+            navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+          }
+        }
+        LessonStatus.CONFIRMED,
+        LessonStatus.INSTANT_CONFIRMED -> { // "Upcoming Lessons" section
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+        }
+        LessonStatus.INSTANT_REQUESTED -> { // "Pending instant Lesson" section
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+        }
+        LessonStatus.PENDING_TUTOR_CONFIRMATION -> { // "Waiting for the Tutor Confirmation" section
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+        }
+        else -> {}
       }
     } else {
-      if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-      } else if (lesson.status == LessonStatus.CONFIRMED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-      } else if (lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-      } else if (lesson.status == LessonStatus.STUDENT_REQUESTED) {
-        lessonViewModel.selectLesson(lesson)
-        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+      when (lesson.status) {
+        LessonStatus.PENDING_TUTOR_CONFIRMATION -> {
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+        }
+        LessonStatus.STUDENT_REQUESTED -> {
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+        }
+        LessonStatus.CONFIRMED -> {
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+        }
+        LessonStatus.INSTANT_CONFIRMED -> {
+          lessonViewModel.selectLesson(lesson)
+          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+        }
+        else -> {}
       }
     }
   }
@@ -135,16 +193,24 @@ fun HomeScreen(
             selectedItem = navigationActions.currentRoute())
       }) { paddingValues ->
         currentProfile?.let { profile ->
-          if (lessons.any { it.status != LessonStatus.COMPLETED }) {
-            LessonsContent(
+          if (cancelledLessons.isNotEmpty()) {
+            CancellationAlerts(
                 profile = profile,
-                lessons = lessons,
-                onClick = onLessonClick,
-                paddingValues = paddingValues,
+                lessons = cancelledLessons,
                 listProfilesViewModel = listProfileViewModel,
                 lessonViewModel = lessonViewModel)
           } else {
-            EmptyLessonsState(paddingValues, lessonViewModel, profile)
+            if (lessons.any { it.status != LessonStatus.COMPLETED }) {
+              LessonsContent(
+                  profile = profile,
+                  lessons = lessons,
+                  onClick = onLessonClick,
+                  paddingValues = paddingValues,
+                  listProfilesViewModel = listProfileViewModel,
+                  lessonViewModel = lessonViewModel)
+            } else {
+              EmptyLessonsState(paddingValues, lessonViewModel, profile)
+            }
           }
         } ?: NoProfileFoundScreen(context, navigationActions)
       }
@@ -400,7 +466,7 @@ private fun ExpandableLessonSection(
                       IconButton(onClick = { expanded = !expanded }) {
                         Icon(
                             if (expanded) Icons.Default.KeyboardArrowDown
-                            else Icons.Default.KeyboardArrowLeft,
+                            else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = if (expanded) "Collapse" else "Expand")
                       }
                     }
@@ -531,3 +597,69 @@ private data class SectionInfo(
     val icon: ImageVector,
     val tutorEmpty: Boolean = false
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CancellationAlerts(
+    profile: Profile,
+    lessons: List<Lesson>,
+    listProfilesViewModel: ListProfilesViewModel,
+    lessonViewModel: LessonViewModel
+) {
+  lessons.forEach { lesson ->
+    val isTutor = profile.role == Role.TUTOR
+
+    val tutor =
+        if (isTutor) profile
+        else
+            listProfilesViewModel.getProfileById(lesson.tutorUid.first())
+                ?: return Text("Tutor not found")
+
+    val student =
+        if (isTutor)
+            listProfilesViewModel.getProfileById(lesson.studentUid)
+                ?: return Text("Student not found")
+        else profile
+
+    var showCancelDialog = true // Show the alert dialog
+
+    if (showCancelDialog) {
+      AlertDialog(
+          modifier = Modifier.testTag("cancelledLessonDialog"),
+          onDismissRequest = { showCancelDialog = false },
+          title = {
+            Text(
+                text = "Lesson Cancelled by the ${if (isTutor) "Student" else "Tutor"}",
+                modifier = Modifier.testTag("cancelledLessonDialogTitle"))
+          },
+          text = {
+            Text(
+                text =
+                    if (isTutor)
+                        "Be careful! Your lesson with ${student.firstName} ${student.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}."
+                    else
+                        "Be careful! Your lesson with ${tutor.firstName} ${tutor.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}.",
+                modifier = Modifier.testTag("cancelledLessonDialogText"))
+          },
+          confirmButton = {
+            Button(
+                modifier = Modifier.testTag("cancelledLessonDialogConfirmButton"),
+                onClick = {
+                  lessonViewModel.deleteLesson(
+                      lessonId = lesson.id,
+                      onComplete = {
+                        if (isTutor)
+                            lessonViewModel.getLessonsForTutor(
+                                tutor.uid, { showCancelDialog = false })
+                        else
+                            lessonViewModel.getLessonsForStudent(
+                                student.uid, { showCancelDialog = false })
+                      })
+                }) {
+                  Text("OK")
+                }
+          },
+      )
+    }
+  }
+}

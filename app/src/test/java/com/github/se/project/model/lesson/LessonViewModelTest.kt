@@ -34,6 +34,38 @@ class LessonViewModelTest {
           latitude = 0.0,
           longitude = 0.0)
 
+  private val tutorCancelledLesson =
+      Lesson(
+          id = "2",
+          title = "Physics Tutoring",
+          description = "Mechanics and Thermodynamics",
+          subject = Subject.PHYSICS,
+          languages = listOf(Language.ENGLISH),
+          tutorUid = listOf("tutor123"),
+          studentUid = "student123",
+          minPrice = 20.0,
+          maxPrice = 40.0,
+          timeSlot = "2024-10-10T10:00:00",
+          status = LessonStatus.TUTOR_CANCELLED,
+          latitude = 0.0,
+          longitude = 0.0)
+
+  private val studentCancelledLesson =
+      Lesson(
+          id = "2",
+          title = "Physics Tutoring",
+          description = "Mechanics and Thermodynamics",
+          subject = Subject.PHYSICS,
+          languages = listOf(Language.ENGLISH),
+          tutorUid = listOf("tutor123"),
+          studentUid = "student123",
+          minPrice = 20.0,
+          maxPrice = 40.0,
+          timeSlot = "2024-10-10T10:00:00",
+          status = LessonStatus.STUDENT_CANCELLED,
+          latitude = 0.0,
+          longitude = 0.0)
+
   @Before
   fun setUp() {
     lessonRepository = mock(LessonRepository::class.java)
@@ -90,6 +122,19 @@ class LessonViewModelTest {
   }
 
   @Test
+  fun getLessonsForTutorUpdatesCancelledLessonStateFlow() = runBlocking {
+    val lessons = listOf(studentCancelledLesson, tutorCancelledLesson)
+    val onSuccessCaptor = argumentCaptor<(List<Lesson>) -> Unit>()
+
+    lessonViewModel.getLessonsForTutor("tutor123") {}
+    verify(lessonRepository).getLessonsForTutor(eq("tutor123"), onSuccessCaptor.capture(), any())
+    onSuccessCaptor.firstValue.invoke(lessons)
+
+    val collectedLessons = lessonViewModel.cancelledLessons.value
+    assertThat(collectedLessons, `is`(listOf(studentCancelledLesson)))
+  }
+
+  @Test
   fun getLessonsForStudentUpdatesStateFlow() = runBlocking {
     val lessons = listOf(lesson)
     val onSuccessCaptor = argumentCaptor<(List<Lesson>) -> Unit>()
@@ -101,5 +146,19 @@ class LessonViewModelTest {
 
     val collectedLessons = lessonViewModel.currentUserLessons.value
     assertThat(collectedLessons, `is`(lessons))
+  }
+
+  @Test
+  fun getLessonsForStudentUpdatesCancelledLessonsStateFlow() = runBlocking {
+    val lessons = listOf(studentCancelledLesson, tutorCancelledLesson)
+    val onSuccessCaptor = argumentCaptor<(List<Lesson>) -> Unit>()
+
+    lessonViewModel.getLessonsForStudent("student123") {}
+    verify(lessonRepository)
+        .getLessonsForStudent(eq("student123"), onSuccessCaptor.capture(), any())
+    onSuccessCaptor.firstValue.invoke(lessons)
+
+    val collectedLessons = lessonViewModel.cancelledLessons.value
+    assertThat(collectedLessons, `is`(listOf(tutorCancelledLesson)))
   }
 }

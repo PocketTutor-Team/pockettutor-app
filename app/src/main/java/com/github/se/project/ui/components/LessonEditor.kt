@@ -56,7 +56,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,8 +94,6 @@ fun LessonEditor(
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
   var isLocationChecked by remember { mutableStateOf(false) }
 
-  val cameraPositionState = rememberCameraPositionState {}
-
   var showMapDialog by remember { mutableStateOf(false) }
 
   if (currentLessonId.value != lesson?.id) {
@@ -128,7 +125,9 @@ fun LessonEditor(
           { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
+            val stringDay = dayOfMonth.toString().padStart(2, '0')
+            val stringMonth = (month + 1).toString().padStart(2, '0')
+            selectedDate = "$stringDay/$stringMonth/$year"
           },
           calendar.get(Calendar.YEAR),
           calendar.get(Calendar.MONTH),
@@ -488,8 +487,8 @@ fun validateLessonInput(
 }
 
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false ||
-      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ||
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED)
 }
 
 fun isInstant(timeSlot: String): Boolean {

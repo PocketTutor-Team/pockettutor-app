@@ -14,7 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -91,7 +91,8 @@ object LessonColors {
           }
       status == LessonStatus.INSTANT_CONFIRMED ->
           if (isDarkTheme) DarkInstantConfirmed else LightInstantConfirmed
-      status == LessonStatus.CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
+      status == LessonStatus.STUDENT_CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
+      status == LessonStatus.TUTOR_CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
       else -> MaterialTheme.colorScheme.surface
     }
   }
@@ -214,7 +215,7 @@ fun DisplayLessons(
                       lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
                       lesson.status == LessonStatus.PENDING_REVIEW ||
                       lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
 
