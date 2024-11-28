@@ -152,7 +152,7 @@ class AddLessonTest {
       testMapReady
     }
 
-      Thread.sleep(5000)
+    Thread.sleep(5000)
 
     // click in the middle of GoogleMap
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
@@ -210,7 +210,7 @@ class AddLessonTest {
     composeTestRule.waitUntil(15000) {
       composeTestRule.onNodeWithTag("instantButton").isDisplayed()
     }
-      Thread.sleep(2000)
+    Thread.sleep(2000)
 
     composeTestRule.onNodeWithTag("instantButton").performClick()
     // Set Title and Description

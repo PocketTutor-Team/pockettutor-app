@@ -205,7 +205,7 @@ class EndToEndTest {
       // as soon as the map is ready, the next line will be executed
       testMapReady
     }
-      Thread.sleep(5000)
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
     testMapReady = false
@@ -250,7 +250,7 @@ class EndToEndTest {
       testMapReady
     }
 
-      Thread.sleep(5000)
+    Thread.sleep(5000)
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
     testMapReady = false
