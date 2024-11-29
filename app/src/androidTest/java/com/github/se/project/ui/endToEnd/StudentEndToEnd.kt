@@ -17,6 +17,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -30,6 +31,8 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,6 +77,11 @@ class EndToEndTest {
           5)
 
   private var currentLesson: Lesson? = null
+
+  // Mock ChatViewModel
+  // val mockChatClient = mock(ChatClient::class.java) // not used for now, will be used in a
+  // following PR
+  val mockChatViewModel = mock(ChatViewModel::class.java)
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -122,6 +130,10 @@ class EndToEndTest {
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
+
+    // Stub any methods or flows needed in ChatViewModel
+    whenever(mockChatViewModel.currentChannelID)
+        .thenReturn(MutableStateFlow<String?>(null).asStateFlow())
   }
 
   // The test interacts with the UI components to simulate the entire user journey, from logging in
@@ -139,7 +151,8 @@ class EndToEndTest {
           viewModel(),
           mockProfileViewModel,
           mockLessonViewModel,
-          onMapReadyChange = { testMapReady = it })
+          onMapReadyChange = { testMapReady = it },
+          chatViewModel = mockChatViewModel)
     }
     composeTestRule.waitForIdle()
 

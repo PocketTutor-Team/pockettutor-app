@@ -51,6 +51,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonStatus
@@ -75,11 +76,21 @@ import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * The HomeScreen composable displays the main interface for the application. It fetches lessons,
+ * manages navigation, and shows lessons based on the user's profile and role.
+ *
+ * @param listProfileViewModel ViewModel to manage user profiles.
+ * @param lessonViewModel ViewModel to manage lessons.
+ * @param chatViewModel ViewModel for chat functionality.
+ * @param navigationActions Handles navigation actions between screens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     listProfileViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    chatViewModel: ChatViewModel,
     navigationActions: NavigationActions,
 ) {
   val context = LocalContext.current
@@ -89,19 +100,33 @@ fun HomeScreen(
 
   // Fetch lessons based on the role
   when (currentProfile?.role) {
-    Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid)
-    Role.STUDENT -> lessonViewModel.getLessonsForStudent(currentProfile.uid)
-    Role.UNKNOWN -> Toast.makeText(context, "Unknown Profile Role", Toast.LENGTH_SHORT).show()
-    null -> Toast.makeText(context, "No Profile Found", Toast.LENGTH_SHORT).show()
+    Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid) // Fetch lessons for tutor
+    Role.STUDENT ->
+        lessonViewModel.getLessonsForStudent(currentProfile.uid) // Fetch lessons for student
+    Role.UNKNOWN ->
+        Toast.makeText(context, "Unknown Profile Role", Toast.LENGTH_SHORT)
+            .show() // Show error if the role is unknown
+    null ->
+        Toast.makeText(context, "No Profile Found", Toast.LENGTH_SHORT)
+            .show() // Show error if no profile is found
   }
 
+  // Connect chat for the current profile
+  LaunchedEffect(currentProfile) {
+    if (currentProfile != null) {
+      chatViewModel.connect(currentProfile) // Establish a chat connection for the user
+    }
+  }
+
+  // Define navigation items based on user role
   val navigationItems =
       when (currentProfile?.role) {
-        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
-        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR // Navigation options for tutors
+        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Navigation options for students
+        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Default to student navigation options
       }
 
+  // Define behavior for lesson item clicks based on role and lesson status
   val onLessonClick = { lesson: Lesson ->
     if (currentProfile?.role == Role.STUDENT) {
       when (lesson.status) {
@@ -154,6 +179,7 @@ fun HomeScreen(
   var notificationchecked by remember { mutableStateOf(false) }
   PushNotificationPermissionHandler { isGranted -> notificationchecked = true }
 
+  // Define the screen layout using a Scaffold
   Scaffold(
       topBar = {
         TopAppBar(
@@ -161,14 +187,17 @@ fun HomeScreen(
             title = {
               Text(
                   text = "Welcome, ${currentProfile?.firstName}",
-                  style = MaterialTheme.typography.titleLarge)
+                  style =
+                      MaterialTheme.typography
+                          .titleLarge) // Display the user's first name in the top bar
             },
             actions = {
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = "Profile Icon",
-                    Modifier.testTag("Profile Icon").size(32.dp))
+                    Modifier.testTag("Profile Icon")
+                        .size(32.dp)) // Icon to navigate to the profile screen
               }
             })
       },
@@ -176,13 +205,16 @@ fun HomeScreen(
         BottomNavigationMenu(
             onTabSelect = { route ->
               if (route == TopLevelDestinations.STUDENT) {
-                lessonViewModel.unselectLesson()
+                lessonViewModel
+                    .unselectLesson() // Unselect the lesson when navigating to student tab
               }
-              navigationActions.navigateTo(route)
+              navigationActions.navigateTo(route) // Navigate to selected route
             },
-            tabList = navigationItems,
-            selectedItem = navigationActions.currentRoute())
+            tabList = navigationItems, // List of navigation items based on role
+            selectedItem = navigationActions.currentRoute()) // Currently selected navigation item
       }) { paddingValues ->
+
+        // Display the content or appropriate fallback based on the current profile
         currentProfile?.let { profile ->
           if (cancelledLessons.isNotEmpty()) {
             CancellationAlerts(
@@ -203,10 +235,22 @@ fun HomeScreen(
               EmptyLessonsState(paddingValues, lessonViewModel, profile)
             }
           }
-        } ?: NoProfileFoundScreen(context, navigationActions)
-      }
+        }
+            ?: NoProfileFoundScreen(
+                context, navigationActions) // Show error screen if no profile is assigned
+  }
 }
 
+/**
+ * Displays lessons and their states, organized by sections.
+ *
+ * @param profile The current user's profile.
+ * @param lessons List of lessons to display.
+ * @param onClick Callback for when a lesson is clicked.
+ * @param paddingValues Padding for the content.
+ * @param listProfilesViewModel ViewModel for managing profiles.
+ * @param lessonViewModel ViewModel for managing lessons.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun LessonsContent(
@@ -220,6 +264,7 @@ private fun LessonsContent(
   var refreshing by remember { mutableStateOf(false) }
   val refreshScope = rememberCoroutineScope()
 
+  // Refresh function to reload lessons based on profile role
   fun refresh() =
       refreshScope.launch {
         refreshing = true
@@ -459,23 +504,36 @@ private fun EmptyLessonsState(
             contentColor = MaterialTheme.colorScheme.primary)
       }
 }
-
+/**
+ * Displays an error screen when no profile is found for the current user.
+ *
+ * @param context The context to display the error message.
+ * @param navigationActions Navigation actions to allow users to go back to the home screen.
+ */
 @Composable
 fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions) {
-  // Display an error message when no profile is assigned
+  // Center the contents within the screen
   Column(
-      modifier = Modifier.fillMaxSize().testTag("noProfileScreen"),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
+      modifier = Modifier.fillMaxSize().testTag("noProfileScreen"), // Take up full screen space
+      verticalArrangement = Arrangement.Center, // Center vertically
+      horizontalAlignment = Alignment.CenterHorizontally) { // Center horizontally
+
+        // Display an error message notifying the user that no profile is assigned
         Text(
             text = "No profile is currently assigned to the current user.",
-            modifier = Modifier.testTag("noProfileText"))
-        Spacer(modifier = Modifier.height(8.dp))
+            modifier = Modifier.testTag("noProfileText")) // Add a test tag for testing purposes
+
+        Spacer(modifier = Modifier.height(8.dp)) // Add a space between the text and the button
+
+        // Provide a button to navigate back to the home screen
         Button(
-            onClick = { navigationActions.navigateTo(Screen.HOME) },
-            modifier = Modifier.testTag("goBackHomeButton")) {
-              Text(text = "Go back to HOME screen")
-            }
+            onClick = {
+              navigationActions.navigateTo(
+                  Screen.HOME) // Navigate back to the home screen when clicked
+            },
+            modifier = Modifier.testTag("goBackHomeButton")) { // Add a test tag for the button
+              Text(text = "Go back to HOME screen") // Button text
+        }
       }
 }
 
