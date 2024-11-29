@@ -14,7 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,7 +35,7 @@ import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
-  private val LightCompleted = Color(0xFFE8F5E9) // Vert pastel clair
+  private val LightCompleted = Color(0xFFF3E5F5) // Violet pastel clair
   private val LightConfirmed = Color(0xFFE3F2FD) // Bleu pastel clair
   private val LightPending = Color(0xFFFFF3E0) // Orange pastel clair
   private val LightUrgent = Color(0xFFF3E5F5) // Violet pastel clair
@@ -43,7 +43,7 @@ object LessonColors {
   private val LightInstantConfirmed = Color(0xFFBBDEFB) // Bleu ciel pastel
   private val LightInstantRequested = Color(0xFFC8E6C9) // Vert menthe pastel
 
-  private val DarkCompleted = Color(0xFF2E7D32) // Vert foncé
+  private val DarkCompleted = Color(0xFF571E98) // Violet foncé
   private val DarkConfirmed = Color(0xFF1565C0) // Bleu foncé
   private val DarkPending = Color(0xFFD87F00) // Orange foncé
   private val DarkUrgent = Color(0xFF571E98) // Violet foncé
@@ -91,7 +91,8 @@ object LessonColors {
           }
       status == LessonStatus.INSTANT_CONFIRMED ->
           if (isDarkTheme) DarkInstantConfirmed else LightInstantConfirmed
-      status == LessonStatus.CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
+      status == LessonStatus.STUDENT_CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
+      status == LessonStatus.TUTOR_CANCELLED -> if (isDarkTheme) DarkCancelled else LightCancelled
       else -> MaterialTheme.colorScheme.surface
     }
   }
@@ -214,7 +215,7 @@ fun DisplayLessons(
                       lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION ||
                       lesson.status == LessonStatus.PENDING_REVIEW ||
                       lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.padding(vertical = 4.dp),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
 

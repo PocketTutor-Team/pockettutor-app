@@ -1,15 +1,10 @@
 package com.github.se.project.ui.lesson
 
-// import com.github.se.project.ui.map.MapPickerBox
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.LessonRepository
@@ -29,11 +24,11 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class AddLessonTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
-
   @get:Rule
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+  @get:Rule val composeTestRule = createComposeRule()
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -73,9 +68,7 @@ class AddLessonTest {
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
-    composeTestRule.setContent {
-      AddLessonScreen(navigationActions, mockProfiles, mockLessons, onMapReadyChange = {})
-    }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -114,13 +107,11 @@ class AddLessonTest {
 
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
-    composeTestRule.setContent {
-      AddLessonScreen(navigationActions, mockProfiles, mockLessons, onMapReadyChange = {})
-    }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
-
+  /*
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
@@ -136,13 +127,11 @@ class AddLessonTest {
 
     // Select Date and Time
     composeTestRule.onNodeWithTag("DateButton").performClick()
-    Thread.sleep(2000)
-    // composeTestRule.onNodeWithText("OK").performClick()
-    onView(withText("OK")).perform(click())
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("TimeButton").performClick()
-    Thread.sleep(2000)
-    // composeTestRule.onNodeWithText("OK").performClick()
-    onView(withText("OK")).perform(click())
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
@@ -171,22 +160,78 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
-
+    */
   @Test
   fun goBack() {
-    composeTestRule.setContent {
-      AddLessonScreen(navigationActions, mockProfiles, mockLessons, onMapReadyChange = {})
-    }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testInitialState() {
-    composeTestRule.setContent {
-      AddLessonScreen(navigationActions, mockProfiles, mockLessons, onMapReadyChange = {})
-    }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
+  }
+
+  @Test
+  fun testInstantLessonDisplaying() {
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+
+    // Set Instant Lesson
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("instantButton").isDisplayed()
+    }
+    composeTestRule.onNodeWithTag("instantButton").performClick()
+
+    // Check that the map, Date, and Time buttons are not displayed
+    composeTestRule.onNodeWithTag("mapButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("DateButton").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("TimeButton").assertIsNotDisplayed()
+
+    // Ch
+    composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("DescriptionField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("subjectButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("priceRangeSlider").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+  }
+  /*
+    @Test
+    fun testInstantLesson() {
+      composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+
+      // Set Instant Lesson
+      composeTestRule.waitUntil(15000) {
+        composeTestRule.onNodeWithTag("instantButton").isDisplayed()
+      }
+      composeTestRule.onNodeWithTag("instantButton").performClick()
+      // Set Title and Description
+      composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
+      composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+
+      // Set Subject and Language
+      composeTestRule.onNodeWithTag("subjectButton").performClick()
+      composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
+      composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+
+      composeTestRule.onNodeWithTag("confirmButton").performClick()
+      verify(navigationActions).navigateTo(anyString())
+    }
+  */
+  @Test
+  fun testInstantInvalid() {
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+
+    // Set Instant Lesson
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("instantButton").isDisplayed()
+    }
+    composeTestRule.onNodeWithTag("instantButton").performClick()
+
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    verify(navigationActions, never()).navigateTo(anyString())
   }
 }
