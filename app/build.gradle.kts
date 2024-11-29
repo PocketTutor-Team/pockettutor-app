@@ -216,7 +216,8 @@ dependencies {
     testImplementation(libs.kaspresso.allure.support)
     testImplementation(libs.kaspresso.compose.support)
     testImplementation(libs.kotlinx.coroutines.test)
-
+    //androidTestImplementation("io.mockk:mockk-android:1.13.3")
+    //testImplementation("io.mockk:mockk:1.13.3")
 }
 
 

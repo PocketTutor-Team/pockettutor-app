@@ -249,7 +249,7 @@ class HomeScreenTest {
     cancelledLessonsFlow.value = cancelledLesson
 
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
 
     // Verify the dialog indicating that the lesson has been cancelled is displayed
