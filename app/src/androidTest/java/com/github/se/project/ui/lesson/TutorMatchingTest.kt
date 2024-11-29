@@ -50,6 +50,7 @@ class TutorMatchingScreenTest {
       MutableStateFlow(
           Profile(
               uid = "uid",
+              token = "",
               googleUid = "googleUid",
               firstName = "First",
               lastName = "Last",
@@ -83,6 +84,7 @@ class TutorMatchingScreenTest {
           listOf(
               Profile(
                   uid = "tutor123",
+                  token = "",
                   googleUid = "googleUid",
                   firstName = "Tutor",
                   lastName = "One",

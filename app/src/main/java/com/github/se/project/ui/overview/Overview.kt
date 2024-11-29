@@ -55,6 +55,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.notification.PushNotificationPermissionHandler
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -150,6 +151,8 @@ fun HomeScreen(
       }
     }
   }
+  var notificationchecked by remember { mutableStateOf(false) }
+  PushNotificationPermissionHandler { isGranted -> notificationchecked = true }
 
   Scaffold(
       topBar = {

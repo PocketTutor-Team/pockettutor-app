@@ -19,6 +19,7 @@ class ListToDosViewModelTest {
   val profile =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "1",
           firstName = "Pocket",
           lastName = "Tutor",

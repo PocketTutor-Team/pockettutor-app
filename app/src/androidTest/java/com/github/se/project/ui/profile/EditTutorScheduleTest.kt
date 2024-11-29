@@ -47,6 +47,7 @@ class EditTutorScheduleTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "12345",
+            token = "",
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
@@ -85,6 +86,7 @@ class EditTutorScheduleTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "12345",
+            token = "",
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",

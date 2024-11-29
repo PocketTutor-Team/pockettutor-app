@@ -38,7 +38,9 @@ import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 
 class MainActivity : ComponentActivity() {
+
   override fun onCreate(savedInstanceState: Bundle?) {
+
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {

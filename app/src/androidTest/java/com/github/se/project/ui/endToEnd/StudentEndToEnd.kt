@@ -59,6 +59,7 @@ class EndToEndTest {
   private val mockTutor =
       Profile(
           "mockTutor",
+          "",
           "mockTutor",
           "Ozymandias",
           "Halifax",
@@ -75,6 +76,10 @@ class EndToEndTest {
   private var currentLesson: Lesson? = null
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @get:Rule
+  val grantNotificationPermission: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @get:Rule
   val permissionRule: GrantPermissionRule =

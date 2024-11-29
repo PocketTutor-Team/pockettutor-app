@@ -42,6 +42,7 @@ class EditProfileTest {
   private var profile =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "googleUid",
           firstName = "First",
           lastName = "Last",
@@ -70,6 +71,7 @@ class EditProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "1",
+            token = "",
             googleUid = "googleUid",
             firstName = "First",
             lastName = "Last",
@@ -101,6 +103,7 @@ class EditProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "1",
+            token = "",
             googleUid = "googleUid",
             firstName = "First",
             lastName = "Last",
@@ -128,6 +131,7 @@ class EditProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "12345",
+            token = "",
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
@@ -161,6 +165,7 @@ class EditProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "12345",
+            token = "",
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
@@ -183,6 +188,7 @@ class EditProfileTest {
     (mockViewModel.currentProfile as MutableStateFlow).value =
         Profile(
             uid = "12345",
+            token = "",
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
