@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -53,10 +52,6 @@ fun ChannelScreen(
       confirmedLessons
           .filter { it.status == LessonStatus.CONFIRMED }
           .map { lesson -> lesson.tutorUid + lesson.studentUid }
-
-  // Retrieves the current context for displaying Toasts or performing other context-specific
-  // actions
-  val context = LocalContext.current
 
   // Ensures chat channels exist for each group of chat members
   LaunchedEffect(chatGroupsMembers) {

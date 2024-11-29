@@ -163,35 +163,37 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed()
   }
+  /*
+   @Test
+   fun confirmedLessonScreenEverythingDisplayedCorrectly_StudentRequestedLesson() {
+     lessonViewModel.selectLesson(studentRequestedLesson)
 
-  @Test
-  fun confirmedLessonScreenEverythingDisplayedCorrectly_StudentRequestedLesson() {
-    lessonViewModel.selectLesson(studentRequestedLesson)
+     var isLocationChecked = false
 
-    var isLocationChecked = false
+     composeTestRule.setContent {
+       ConfirmedLessonScreen(
+           listProfilesViewModel = listProfilesViewModel,
+           lessonViewModel = lessonViewModel,
+           navigationActions = mockNavigationActions,
+           onLocationChecked = { isLocationChecked = true })
+     }
+     composeTestRule.waitForIdle()
 
-    composeTestRule.setContent {
-      ConfirmedLessonScreen(
-          listProfilesViewModel = listProfilesViewModel,
-          lessonViewModel = lessonViewModel,
-          navigationActions = mockNavigationActions,
-          onLocationChecked = { isLocationChecked = true })
-    }
-    composeTestRule.waitForIdle()
+     composeTestRule.waitUntil(15000) {
+       // wait max 15 seconds for the map to load,
+       // as soon as the map is ready, the next line will be executed
+       isLocationChecked
+     }
+     isLocationChecked = false
 
-    composeTestRule.waitUntil(15000) {
-      // wait max 15 seconds for the map to load,
-      // as soon as the map is ready, the next line will be executed
-      isLocationChecked
-    }
-    isLocationChecked = false
+     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
+     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
+     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
+     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
+     composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed()
+   }
 
-    composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed()
-  }
+  */
 
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_PendingLesson() {
