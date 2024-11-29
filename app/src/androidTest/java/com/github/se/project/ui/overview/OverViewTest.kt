@@ -1,11 +1,7 @@
 package com.github.se.project.ui.overview
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -81,7 +77,7 @@ class HomeScreenTest {
           price = 0)
 
   private val mockLessons =
-      listOf(
+      mutableListOf(
           Lesson(
               id = "1",
               title = "Physics Tutoring",
@@ -110,6 +106,24 @@ class HomeScreenTest {
               status = LessonStatus.STUDENT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0))
+
+  private val instantLesson =
+      Lesson(
+          id = "3",
+          title = "Instant ICC Tutoring",
+          description = "Algebra and Calculus",
+          subject = Subject.ICC,
+          languages = listOf(Language.ENGLISH),
+          tutorUid = listOf("tutor123"),
+          studentUid = "student123",
+          minPrice = 20.0,
+          maxPrice = 40.0,
+          timeSlot = "2024-10-10Tinstant",
+          status = LessonStatus.INSTANT_CONFIRMED,
+          latitude = 0.0,
+          longitude = 0.0)
+
+  private val mockstudentProfileFlow = MutableStateFlow<Profile?>(tutorProfile)
 
   private val cancelledLesson =
       listOf(
@@ -196,6 +210,17 @@ class HomeScreenTest {
   }
 
   @Test
+  fun testSectionDisplays() {
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+    composeTestRule.onNodeWithText("Waiting for your Confirmation").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Waiting for the Student Confirmation").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsNotDisplayed()
+  }
+
+  @Test
   fun testNoProfileFoundScreenDisplayed() {
     // Set a null profile in the ViewModel
     listProfilesViewModel =
@@ -220,7 +245,7 @@ class HomeScreenTest {
   fun testLessonsEmptyMessageDisplayed() {
     // Set up empty lessons scenario
     val mockRepository = mock<LessonRepository>()
-    currentUserLessonsFlow.value = emptyList() // Simulate no lessons
+    currentUserLessonsFlow.value = mutableListOf() // Simulate no lessons
     lessonViewModel =
         spy(LessonViewModel(mockRepository)).apply {
           // Assuming currentUserLessons is initialized in the constructor or some method,
@@ -233,6 +258,19 @@ class HomeScreenTest {
 
     // Verify the message indicating no lessons scheduled is displayed
     composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
+  }
+
+  @Test
+  fun testInstantDisplay() {
+    mockLessons.add(instantLesson)
+    currentUserLessonsFlow.value = mockLessons
+
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    composeTestRule.onNodeWithText("Instant ICC Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsDisplayed()
   }
 
   @Test
