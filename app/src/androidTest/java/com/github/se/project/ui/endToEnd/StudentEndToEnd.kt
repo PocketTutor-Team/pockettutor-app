@@ -62,6 +62,7 @@ class EndToEndTest {
   private val mockTutor =
       Profile(
           "mockTutor",
+          "",
           "mockTutor",
           "Ozymandias",
           "Halifax",
@@ -83,6 +84,10 @@ class EndToEndTest {
   val mockChatViewModel = mock(ChatViewModel::class.java)
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @get:Rule
+  val grantNotificationPermission: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @get:Rule
   val permissionRule: GrantPermissionRule =

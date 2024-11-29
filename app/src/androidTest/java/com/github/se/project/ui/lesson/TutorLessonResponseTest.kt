@@ -50,6 +50,7 @@ class TutorLessonResponseTest {
   private val mockTutorProfile =
       Profile(
           uid = "100",
+          token = "",
           googleUid = "150",
           firstName = "Romeo",
           lastName = "Tutor",
@@ -65,6 +66,7 @@ class TutorLessonResponseTest {
   private val mockStudentProfile =
       Profile(
           uid = "200",
+          token = "",
           googleUid = "250",
           firstName = "Juliet",
           lastName = "Student",

@@ -46,7 +46,9 @@ import io.getstream.chat.android.state.plugin.config.StatePluginConfig
 import io.getstream.chat.android.state.plugin.factory.StreamStatePluginFactory
 
 class MainActivity : ComponentActivity() {
+
   override fun onCreate(savedInstanceState: Bundle?) {
+
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {

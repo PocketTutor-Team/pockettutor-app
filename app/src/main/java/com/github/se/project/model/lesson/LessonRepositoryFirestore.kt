@@ -159,7 +159,6 @@ class LessonRepositoryFirestore(private val db: FirebaseFirestore) : LessonRepos
       val title = document.getString("title") ?: return null
       val description = document.getString("description") ?: return null
       val subject = document.getString("subject")?.let { Subject.valueOf(it) } ?: return null
-
       val studentUid = document.getString("studentUid") ?: return null
       val minPrice = document.getDouble("minPrice") ?: return null
       val maxPrice = document.getDouble("maxPrice") ?: return null

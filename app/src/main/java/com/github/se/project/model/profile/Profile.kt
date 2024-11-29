@@ -3,6 +3,7 @@ package com.github.se.project.model.profile
 /** Data class representing a user profile. */
 data class Profile(
     val uid: String, // Unique string id for the profile
+    var token: String, // Token for notifications
     val googleUid: String, // Google unique user id
     var firstName: String, // First name of the user
     var lastName: String, // Last name of the user

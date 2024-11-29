@@ -17,6 +17,8 @@ import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,7 @@ fun CreateProfileScreen(
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
   val context = LocalContext.current
+  var token = ""
 
   Scaffold(
       topBar = {
@@ -128,6 +131,26 @@ fun CreateProfileScreen(
 
               Spacer(modifier = Modifier.weight(1f))
 
+              FirebaseMessaging.getInstance()
+                  .token
+                  .addOnCompleteListener(
+                      OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                          // Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                          return@OnCompleteListener
+                        }
+
+                        // Get new FCM registration token
+                        token = task.result
+
+                        // Log and toast
+                        val msg = "FCM Token: $token"
+                        // Log.d(TAG, msg)
+
+                        // Implement this method to send token to your app server.
+                        // Log.d("MainActivity" ,"sendRegistrationTokenToServer($token)")
+                      })
+
               Button(
                   onClick = {
                     if (firstName.isNotEmpty() &&
@@ -141,6 +164,7 @@ fun CreateProfileScreen(
                         val newProfile =
                             Profile(
                                 listProfilesViewModel.getNewUid(),
+                                token,
                                 googleUid,
                                 firstName,
                                 lastName,
