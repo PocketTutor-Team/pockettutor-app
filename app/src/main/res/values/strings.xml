@@ -27,4 +27,7 @@
     <!-- stringResource(id = R.string.example) -->
     <string name="update">Update</string>
 
+    <!-- TutorMatching -->
+    <string name="request_another_tutor">Request Another Tutor for This Lesson</string>
+
 </resources>

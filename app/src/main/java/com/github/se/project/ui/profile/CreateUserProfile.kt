@@ -17,6 +17,7 @@ import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.capitalizeFirstLetter
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -166,8 +167,8 @@ fun CreateProfileScreen(
                                 listProfilesViewModel.getNewUid(),
                                 token,
                                 googleUid,
-                                firstName,
-                                lastName,
+                                firstName.capitalizeFirstLetter(),
+                                lastName.capitalizeFirstLetter(),
                                 phoneNumber,
                                 role,
                                 section.value!!,
