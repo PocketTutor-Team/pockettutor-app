@@ -5,21 +5,25 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.se.project.model.profile.Subject
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class SubjectsSelectorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+  private val selectedSubjects = mutableStateListOf<Subject>()
 
-  @Test
-  fun testSubjectsSelector_onClickDisplaysDropdownAndSelectsItem() {
-    val selectedSubjects = mutableStateListOf<Subject>()
-
+  @Before
+  fun setUp() {
     // Set the content for the test
     composeTestRule.setContent {
       SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
     }
+  }
+
+  @Test
+  fun testSubjectsSelector_onClickDisplaysDropdownAndSelectsItem() {
 
     // Step 1: Check that the dropdown is not displayed initially
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").assertDoesNotExist()
