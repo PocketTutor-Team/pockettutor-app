@@ -7,8 +7,11 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -26,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,7 @@ fun ExpandableLessonSection(
 ) {
   val isInstant = lessons.any { isInstant(it) }
   var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
+  val lessonCountText = lessons.size.toString()
 
   LaunchedEffect(lessons.isNotEmpty()) { expanded = lessons.isNotEmpty() }
 
@@ -82,11 +87,18 @@ fun ExpandableLessonSection(
               trailingContent =
                   if (!isInstant) {
                     {
-                      IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            if (expanded) Icons.Default.KeyboardArrowDown
-                            else Icons.Default.KeyboardArrowLeft,
-                            contentDescription = if (expanded) "Collapse" else "Expand")
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (lessonCountText.isNotEmpty()) {
+                          Text(text = lessonCountText, style = MaterialTheme.typography.bodyMedium)
+                          Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        IconButton(onClick = { expanded = !expanded }) {
+                          Icon(
+                              imageVector =
+                                  if (expanded) Icons.Default.KeyboardArrowDown
+                                  else Icons.Default.KeyboardArrowLeft,
+                              contentDescription = if (expanded) "Collapse" else "Expand")
+                        }
                       }
                     }
                   } else null,
