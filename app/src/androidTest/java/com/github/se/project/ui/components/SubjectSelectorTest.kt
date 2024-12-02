@@ -47,6 +47,10 @@ class SubjectSelectorTest {
       SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
     }
 
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("subjectButton").isDisplayed()
+    }
+
     // Step 1: Check that the dropdown is not displayed initially
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").assertDoesNotExist()
 
