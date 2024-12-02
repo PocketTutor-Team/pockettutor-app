@@ -94,7 +94,7 @@ fun ChannelScreen(
                     navigationActions.navigateTo(Screen.CHAT)
                   },
                   isShowingHeader = true,
-                  )
+              )
             }
       }
       InitializationState.INITIALIZING -> {

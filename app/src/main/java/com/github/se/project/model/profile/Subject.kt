@@ -4,7 +4,7 @@ package com.github.se.project.model.profile
 enum class Subject {
   ADVANCED_ALGEBRA,
   ALGEBRA,
-  ALGORITHM,
+  /*ALGORITHM,
   ADVANCED_ANALYSIS,
   ANALYSIS,
   BIOLOGY,
@@ -16,6 +16,6 @@ enum class Subject {
   PHYSICS,
   SIGNAL_PROCESSING,
   SOFTWARE_CONSTRUCTION,
+   */
   NONE
 }
-
