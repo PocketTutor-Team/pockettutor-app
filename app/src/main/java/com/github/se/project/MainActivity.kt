@@ -1,5 +1,6 @@
 package com.github.se.project
 
+import CompletedLessonScreen
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -245,6 +246,9 @@ fun PocketTutorApp(
         composable(Screen.SELECTED_TUTOR_DETAILS) {
           SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
+      }
+      composable(Screen.COMPLETED_LESSON) {
+        CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 
