@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 
 class AuthenticationViewModel : ViewModel() {
 
-  val userId = MutableLiveData<String>(null)
+  val userId = MutableLiveData<String?>(null)
 
   // Function to handle Google Sign-In
   fun handleGoogleSignIn(context: Context, onSuccess: (uid: String) -> Unit) {

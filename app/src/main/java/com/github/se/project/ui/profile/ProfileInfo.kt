@@ -296,5 +296,31 @@ fun ProfileInfoScreen(
                   color = MaterialTheme.colorScheme.error,
                   modifier = Modifier.testTag("errorLoadingProfile"))
             }
+        // Divider to separate the Sign-Out Button
+        Divider(color = MaterialTheme.colorScheme.outlineVariant)
+
+        // Add Sign-Out Button
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+          IconButton(
+              onClick = {
+                // Reset user ID to null and navigate to the sign-in screen
+                listProfilesViewModel.clearCurrentProfile()
+                navigationActions.navigateTo(Screen.AUTH)
+              },
+              modifier = Modifier.padding(8.dp).testTag("signOutButton")) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                      Icon(
+                          imageVector = Icons.Default.Close,
+                          contentDescription = stringResource(id = R.string.sign_out),
+                          tint = MaterialTheme.colorScheme.error)
+                      Text(
+                          text = stringResource(id = R.string.sign_out),
+                          color = MaterialTheme.colorScheme.error,
+                          style = MaterialTheme.typography.bodyMedium)
+                    }
+              }
+        }
       }
 }
