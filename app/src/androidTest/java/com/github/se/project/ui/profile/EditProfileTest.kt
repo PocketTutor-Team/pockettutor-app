@@ -256,27 +256,26 @@ class EditProfileTest {
       EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
 
-        // Select country code
-        composeTestRule.onNodeWithTag("countryCodeField").performClick()
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("country_plus41").performClick()
+    // Select country code
+    composeTestRule.onNodeWithTag("countryCodeField").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("country_plus41").performClick()
 
-        // Enter phone number without country code (and clean before)
-      composeTestRule.onNodeWithTag("phoneNumberField").performTextClearance()
-      composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123456780")
+    // Enter phone number without country code (and clean before)
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextClearance()
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123456780")
 
-        // Click the confirm button
-        composeTestRule.onNodeWithTag("confirmButton").performClick()
+    // Click the confirm button
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-        // Assert that the profile's phone number is correctly updated
-        assertEquals("+41123456780", mockViewModel.currentProfile.value?.phoneNumber)
+    // Assert that the profile's phone number is correctly updated
+    assertEquals("+41123456780", mockViewModel.currentProfile.value?.phoneNumber)
 
-        // Verify that navigation occurred
-        verify(mockNavigationActions).goBack()
-    }
+    // Verify that navigation occurred
+    verify(mockNavigationActions).goBack()
+  }
 
-
-    @Test
+  @Test
   fun noEditProfileTest() {
     (mockViewModel.currentProfile as MutableStateFlow).value = null
     // Set the screen in the test environment
