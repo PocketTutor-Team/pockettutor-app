@@ -2,21 +2,13 @@ package com.github.se.project.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -32,9 +24,51 @@ fun AvailabilityGrid(
   val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
   val hours = (8..19).map { "$it h" }
 
-  var selectedSlots by remember { mutableStateOf(schedule) }
-
   Column(modifier = modifier.testTag("availabilityGrid")) {
+    // Buttons Row
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          // Select All Button
+          Button(
+              onClick = {
+                // Select All: Fill the schedule with '1's
+                val updatedSchedule = List(7) { List(24) { 1 } }
+                onScheduleChange(updatedSchedule)
+              },
+              colors =
+                  ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+              shape = RoundedCornerShape(12.dp),
+              modifier = Modifier.weight(1f).padding(end = 4.dp)) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Select All",
+                    modifier = Modifier.padding(end = 8.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "Select All", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyMedium)
+              }
+
+          // Unselect All Button
+          Button(
+              onClick = {
+                // Unselect All: Fill the schedule with '0's
+                val updatedSchedule = List(7) { List(24) { 0 } }
+                onScheduleChange(updatedSchedule)
+              },
+              colors =
+                  ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+              shape = RoundedCornerShape(12.dp),
+              modifier = Modifier.weight(1f).padding(start = 4.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Unselect All",
+                    modifier = Modifier.padding(end = 8.dp),
+                    tint = MaterialTheme.colorScheme.onSecondary)
+                Text(text = "Unselect All", color = MaterialTheme.colorScheme.onSecondary, style = MaterialTheme.typography.bodyMedium)
+              }
+        }
+
+    // Days Header Row
     Row(modifier = Modifier.testTag("daysRow")) {
       Spacer(modifier = Modifier.width(44.dp).testTag("daySpacer"))
       days.forEachIndexed { dayIndex, day ->
@@ -55,6 +89,7 @@ fun AvailabilityGrid(
       }
     }
 
+    // Hours and Slots
     hours.forEachIndexed { hourIndex, hour ->
       Row(
           verticalAlignment = Alignment.CenterVertically,
@@ -77,7 +112,7 @@ fun AvailabilityGrid(
                 }
 
             days.forEachIndexed { dayIndex, _ ->
-              val isSelected = selectedSlots[dayIndex][hourIndex] == 1
+              val isSelected = schedule[dayIndex][hourIndex] == 1
 
               Box(
                   modifier =
@@ -90,9 +125,8 @@ fun AvailabilityGrid(
                               shape = RoundedCornerShape(8.dp))
                           .clickable {
                             val updatedSchedule =
-                                selectedSlots.toMutableList().map { it.toMutableList() }
+                                schedule.map { it.toMutableList() }.toMutableList()
                             updatedSchedule[dayIndex][hourIndex] = if (isSelected) 0 else 1
-                            selectedSlots = updatedSchedule
                             onScheduleChange(updatedSchedule)
                           }
                           .testTag("Slot_${dayIndex}_${hourIndex}"))
