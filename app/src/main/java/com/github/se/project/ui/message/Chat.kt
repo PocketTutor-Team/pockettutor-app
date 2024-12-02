@@ -31,6 +31,7 @@ fun ChatScreen(
   // Redirects to the ChannelScreen if no channel is currently selected
   if (channelID.value == null) {
     navigationActions.navigateTo(Screen.CHANNEL)
+    return
   }
 
   // Retrieves the current context, used for displaying messages or initializing components

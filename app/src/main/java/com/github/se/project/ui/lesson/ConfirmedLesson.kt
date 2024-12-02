@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -224,6 +225,26 @@ private fun MessageButton(otherProfile: Profile, lesson: Lesson, isStudent: Bool
             modifier = Modifier.size(20.dp))
       })
 }
+
+/*
+// trying to replace @AlexisA's messaging version with the intra messaging feature
+@Composable
+private fun MessagingButton(navigationActions: NavigationActions, chatViewModel: ChatViewModel, otherProfile: Profile, isStudent: Boolean) {
+    LessonActionButton(
+        text = "Message ${if (isStudent) "Tutor" else "Student"}",
+        onClick = {
+            chatViewModel.setChannelID(channel.cid)
+            navigationActions.navigateTo(Screen.CHAT)
+        },
+        testTag = "chatButton",
+        icon = {
+            Icon(
+                Icons.AutoMirrored.Filled.Send,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp))
+        })
+}
+*/
 
 @Composable
 private fun DeleteLessonButton(

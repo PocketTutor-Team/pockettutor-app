@@ -37,6 +37,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
+import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -60,7 +61,8 @@ fun ProfileInfoScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
+    authenticationViewModel: AuthenticationViewModel
 ) {
   // Observes the current user's profile state.
   val profileState = listProfilesViewModel.currentProfile.collectAsState()
@@ -283,41 +285,43 @@ fun ProfileInfoScreen(
                                         modifier = Modifier.testTag("priceText"))
                                   }
                             }
-
-                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
-                            // Lessons Count
-                            Text(
-                                text =
-                                    "${completedLessons.size} ${if (isTutor) stringResource(id = R.string.lessons_given) else stringResource(id = R.string.lessons_taken)}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.testTag("lessonsCount"),
-                                color = MaterialTheme.colorScheme.onBackground)
-
-                            // Display Completed Lessons Section
-                            ExpandableLessonSection(
-                                section = completedLessonsSection,
-                                lessons = completedLessons,
-                                isTutor = isTutor,
-                                onClick = { lesson ->
-                                  lessonViewModel.selectLesson(lesson)
-                                  navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                            // Log Out Button at the bottom
+                            Button(
+                                onClick = {
+                                  // Call the sign-out function in the AuthenticationViewModel
+                                  authenticationViewModel.signOut() {
+                                    // After sign-out is complete, navigate to the SignIn screen
+                                    listProfilesViewModel.setCurrentProfile(null)
+                                    navigationActions.navigateTo(Screen.AUTH)
+                                  }
                                 },
-                                listProfilesViewModel = listProfilesViewModel)
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(vertical = 16.dp)
+                                        .testTag("signOutButton")) {
+                                  Text(text = "Log Out")
+                                }
                           }
-                      // Log Out Button at the bottom
-                      Button(
-                          onClick = {
-                            // Set the current profile to null
-                            listProfilesViewModel.setCurrentProfile(null)
-                            // Navigate to SignIn screen
-                            navigationActions.navigateTo(Screen.AUTH)
+
+                      Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                      // Lessons Count
+                      Text(
+                          text =
+                              "${completedLessons.size} ${if (isTutor) stringResource(id = R.string.lessons_given) else stringResource(id = R.string.lessons_taken)}",
+                          style = MaterialTheme.typography.bodyMedium,
+                          modifier = Modifier.testTag("lessonsCount"),
+                          color = MaterialTheme.colorScheme.onBackground)
+
+                      // Display Completed Lessons Section
+                      ExpandableLessonSection(
+                          section = completedLessonsSection,
+                          lessons = completedLessons,
+                          isTutor = isTutor,
+                          onClick = { lesson ->
+                            lessonViewModel.selectLesson(lesson)
+                            navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
                           },
-                          modifier =
-                              Modifier.fillMaxWidth()
-                                  .padding(vertical = 16.dp)
-                                  .testTag("signOutButton")) {
-                            Text(text = "Log Out")
-                          }
+                          listProfilesViewModel = listProfilesViewModel)
                     }
               }
         }

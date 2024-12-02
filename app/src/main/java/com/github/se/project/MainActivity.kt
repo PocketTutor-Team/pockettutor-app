@@ -157,7 +157,8 @@ fun PocketTutorApp(
         CreateTutorSchedule(navigationActions, listProfilesViewModel)
       }
       composable(Screen.PROFILE) {
-        ProfileInfoScreen(navigationActions, listProfilesViewModel, lessonViewModel)
+        ProfileInfoScreen(
+            navigationActions, listProfilesViewModel, lessonViewModel, authenticationViewModel)
       }
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(
@@ -186,7 +187,8 @@ fun PocketTutorApp(
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CONFIRMED_LESSON) {
-        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        ConfirmedLessonScreen(
+            listProfilesViewModel, lessonViewModel, navigationActions)
       }
     }
 

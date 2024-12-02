@@ -140,4 +140,23 @@ class AuthenticationViewModel : ViewModel() {
       awaitClose {}
     }
   }
+  // Function to handle Firebase sign-out
+  fun signOut(onSignOutComplete: () -> Unit) {
+    // Initialize Firebase Auth instance
+    val firebaseAuth = FirebaseAuth.getInstance()
+
+    try {
+      // Sign out the user
+      firebaseAuth.signOut()
+
+      // Clear the LiveData userId since the user has signed out
+      userId.value = null
+
+      // Invoke callback to notify completion
+      onSignOutComplete()
+    } catch (e: Exception) {
+      // Handle any potential errors during sign-out
+      Log.e("AuthenticationViewModel", "Error during sign-out", e)
+    }
+  }
 }
