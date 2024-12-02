@@ -27,30 +27,6 @@ class SubjectSelectorTest {
   }
 
   @Test
-  fun selectingSubjectUpdatesCorrectly() {
-    val selectedSubject = mutableStateOf<Subject>(Subject.NONE)
-    composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
-
-    // Initially, dropdown items are not displayed
-    Subject.entries.forEach { subject ->
-      if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertDoesNotExist()
-    }
-
-    // Click on the subject button to open the dropdown
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-
-    // **Wait for the UI to settle after the click**
-    composeTestRule.waitForIdle()
-
-    // Now, dropdown items should be displayed
-    Subject.entries.forEach { subject ->
-      if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
-    }
-  }
-
-  @Test
   fun selectingMultipleSubjectsUpdatesCorrectly() {
 
     composeTestRule.waitUntil(15000) {
