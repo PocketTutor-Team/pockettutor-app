@@ -263,6 +263,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
 
+    Thread.sleep(15000)
     composeTestRule.waitUntil(15000) {
       // wait max 4 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed

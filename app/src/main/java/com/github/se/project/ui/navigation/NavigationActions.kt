@@ -33,6 +33,7 @@ object Screen {
   const val SELECTED_TUTOR_DETAILS = "Selected Tutor Details Screen"
   const val EDIT_REQUESTED_LESSON = "Edit Requested Lesson"
   const val CONFIRMED_LESSON = "Confirmed Lesson Screen"
+  const val COMPLETED_LESSON = "Completed Lesson Screen"
   const val CREATE_TUTOR_SCHEDULE = "Create tutor calendar Screen"
   const val LESSONS_REQUESTED = "Lessons Requested Screen"
   const val TUTOR_LESSON_RESPONSE = "Tutor Lesson Response Screen"
@@ -48,15 +49,15 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 // Top-level destinations with icons
 object TopLevelDestinations {
   val HOME_TUTOR =
-      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Work Space")
+      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "Home")
   val HOME_STUDENT =
       TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
   val STUDENT =
       TopLevelDestination(
-          route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find a Tutor")
+          route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find Tutor")
   val TUTOR =
       TopLevelDestination(
-          route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find a Student")
+          route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find Student")
   val CHANNEL =
       TopLevelDestination(route = Screen.CHANNEL, icon = Icons.Outlined.Email, textId = "Chat")
 }

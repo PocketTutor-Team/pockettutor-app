@@ -21,11 +21,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeLanguageMatch
@@ -33,6 +37,7 @@ import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeSubj
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.components.CustomIcon
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.components.InstantButton
 import com.github.se.project.ui.components.calculateDistance
@@ -160,7 +165,6 @@ fun RequestedLessonsScreen(
         refreshing = false
       }
 
-  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
   Scaffold(
       topBar = {
@@ -343,7 +347,9 @@ fun LessonsRequestedTopBar(
 
         // Filter button
         IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
-          Icon(Icons.Outlined.Menu, "Filter")
+            CustomIcon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_list_alt_24),
+                contentDescription = "School Icon")
         }
       })
 }
@@ -460,12 +466,12 @@ private fun EmptyState(showInstant: MutableState<Boolean>, canSeeInstants: Mutab
           Button({ showInstant.value = false }) { Text("Show all lessons") }
         } else {
           Text(
-              text = "No lessons available",
+              text = stringResource(id = R.string.check_back),
               style = MaterialTheme.typography.titleLarge,
               textAlign = TextAlign.Center,
               modifier = Modifier.testTag("noLessonsMessage"))
           Text(
-              text = "Try adjusting your filters or check back later",
+              text = stringResource(id = R.string.comment_check_back),
               style = MaterialTheme.typography.bodyMedium,
               textAlign = TextAlign.Center,
               color = MaterialTheme.colorScheme.onSurfaceVariant)

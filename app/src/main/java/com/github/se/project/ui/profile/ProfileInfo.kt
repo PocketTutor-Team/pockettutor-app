@@ -283,7 +283,7 @@ fun ProfileInfoScreen(
                                 isTutor = isTutor,
                                 onClick = { lesson ->
                                   lessonViewModel.selectLesson(lesson)
-                                  navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                                  navigationActions.navigateTo(Screen.COMPLETED_LESSON)
                                 },
                                 listProfilesViewModel = listProfilesViewModel)
                           }
