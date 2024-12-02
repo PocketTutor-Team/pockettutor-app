@@ -210,7 +210,7 @@ class AddLessonTest {
     }
     composeTestRule.onNodeWithTag("instantButton").performClick()
 
-      composeTestRule.waitForIdle()
+    composeTestRule.waitForIdle()
 
     // Set Title and Description
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
