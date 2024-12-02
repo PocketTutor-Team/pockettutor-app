@@ -199,7 +199,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("priceRangeSlider").assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
-  /*
+
     @Test
     fun testInstantLesson() {
       composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
@@ -221,7 +221,7 @@ class AddLessonTest {
       composeTestRule.onNodeWithTag("confirmButton").performClick()
       verify(navigationActions).navigateTo(anyString())
     }
-  */
+
   @Test
   fun testInstantInvalid() {
     composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
