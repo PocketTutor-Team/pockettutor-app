@@ -40,6 +40,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -50,9 +51,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
@@ -79,14 +82,30 @@ fun LessonEditor(
     onDelete: ((Lesson) -> Unit)? = null,
     onMapReady: (Boolean) -> Unit
 ) {
+    // Context for the Toast messages
+    val context = LocalContext.current
+
+    val canBeInstant = remember { mutableStateOf(lesson == null) }
+    val instant = remember { mutableStateOf(isInstant(lesson)) }
+
+    //store the initial value of the lesson
+    // Track initial values for changes
+    val initialTitle = lesson?.title ?: ""
+    val initialDescription = lesson?.description ?: ""
+    val initialDate = lesson?.timeSlot?.split("T")?.get(0) ?: ""
+    val initialTime = lesson?.timeSlot?.split("T")?.get(1)?.substring(0, 5) ?: ""
+    val initialMinPrice = lesson?.minPrice ?: 5.0
+    val initialMaxPrice = lesson?.maxPrice ?: 50.0
+    val initialSubject = lesson?.subject ?: Subject.NONE
+    val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
+
+    // Initialize the lesson fields
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
-  val canBeInstant = remember { mutableStateOf(lesson == null) }
-  val instant = remember { mutableStateOf(isInstant(lesson)) }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -101,12 +120,24 @@ fun LessonEditor(
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    // State to check if any changes have been made
+    val hasChanges by remember { derivedStateOf {
+        title != initialTitle ||
+                description != initialDescription ||
+                selectedDate != initialDate ||
+                selectedTime != initialTime ||
+                minPrice != initialMinPrice ||
+                maxPrice != initialMaxPrice ||
+                selectedSubject.value != initialSubject ||
+                selectedLocation != initialLocation
+    }}
+
   var isLocationChecked by remember { mutableStateOf(false) }
 
   var showDatePicker by remember { mutableStateOf(false) }
   var showTimeDialog by remember { mutableStateOf(false) }
 
-  val cameraPositionState = rememberCameraPositionState {}
 
   var showMapDialog by remember { mutableStateOf(false) }
 
@@ -120,8 +151,7 @@ fun LessonEditor(
     }
   }
 
-  // Context for the Toast messages
-  val context = LocalContext.current
+
 
   LocationPermissionHandler { location ->
     userLocation = location
@@ -492,8 +522,9 @@ fun LessonEditor(
               Button(
                   modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
+                  enabled = hasChanges,
                   onClick = onConfirmClick) {
-                    Text("Confirm")
+                    Text(stringResource(id = R.string.update))
                   }
 
               if (onDelete != null) {
