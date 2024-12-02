@@ -3,4 +3,20 @@
     <string name="title_activity_main">PocketTutor</string>
     <string name="title_activity_second">SecondActivity</string>
     <string name="web_client_id">475882605501-gv47hlfhkd5j459vjv0kc1cj97ensm15.apps.googleusercontent.com</string>
+    <string name="chat_api_key">fw3tsu2v5sug</string>
+"
+    <string name="your_account">Your Account</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="close">Close</string>
+    <string name="role">Role</string>
+    <string name="languages">Languages</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="price_per_lesson">Price:</string>
+    <string name="lessons_count">lessons count</string>
+    <string name="error_loading_profile">Error loading profile...</string>
+    <string name="lessons_given">lessons given since you joined PocketTutor</string>
+    <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
+    <string name="price_not_set">Not Set</string>
+    <string name="update_profil">Update Profil</string>
+    <string name="schedule">Schedule</string>
 </resources>

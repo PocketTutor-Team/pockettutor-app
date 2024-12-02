@@ -59,6 +59,7 @@ class SelectedTutorDetailsTest {
       MutableStateFlow(
           Profile(
               uid = "student123",
+              token = "",
               googleUid = "googleUid",
               firstName = "John",
               lastName = "Student",
@@ -71,6 +72,7 @@ class SelectedTutorDetailsTest {
       MutableStateFlow(
           Profile(
               uid = "tutor123",
+              token = "",
               googleUid = "googleUid",
               firstName = "Elena",
               lastName = "Tutor",

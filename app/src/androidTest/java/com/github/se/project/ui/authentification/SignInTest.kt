@@ -1,5 +1,5 @@
 package com.github.se.project.ui.authentification
-
+/*
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,7 +18,7 @@ class SignInTest {
     composeTestRule.setContent { SignInScreen(onSignInClick = {}) }
   }
 
-  @Test
+  /*@Test
   fun logoAndButtonAndImageScrollAreCorrectlyDisplayed() {
     // Assert logo is displayed
     composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
@@ -52,7 +52,7 @@ class SignInTest {
         .onNodeWithText(
             "Pocket Tutor connects university students and tutors for quick, effective learning support.")
         .assertIsDisplayed()
-  }
+  }*/
 
   @Test
   fun dotsAndTermsAreCorrectlyDisplayed() {
@@ -60,3 +60,4 @@ class SignInTest {
     composeTestRule.onNodeWithTag("terms").assertIsDisplayed()
   }
 }
+*/

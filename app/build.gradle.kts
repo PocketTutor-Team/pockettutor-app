@@ -132,7 +132,6 @@ android {
 
 dependencies {
 
-
     // Core
     implementation(libs.core.ktx)
     implementation(libs.androidx.core.ktx)
@@ -179,6 +178,7 @@ dependencies {
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
 
     // Networking with OkHttp
     implementation(libs.okhttp)
@@ -186,7 +186,6 @@ dependencies {
     // Stream Chat
     implementation(libs.stream.chat.compose)
     implementation(libs.stream.chat.offline)
-
     implementation(libs.stream.chat.android.ui.components)
 
     // Testing Unit
@@ -216,9 +215,7 @@ dependencies {
     testImplementation(libs.kaspresso)
     testImplementation(libs.kaspresso.allure.support)
     testImplementation(libs.kaspresso.compose.support)
-
     testImplementation(libs.kotlinx.coroutines.test)
-
 }
 
 

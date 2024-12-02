@@ -4,16 +4,38 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -30,6 +52,9 @@ import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.formatDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
 private fun LessonActionButton(
@@ -87,7 +112,8 @@ fun ConfirmedLessonScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
-    navigationActions: NavigationActions
+    navigationActions: NavigationActions,
+    onLocationChecked: () -> Unit = {}
 ) {
   val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
@@ -130,16 +156,21 @@ fun ConfirmedLessonScreen(
                     .verticalScroll(rememberScrollState())
                     .testTag("confirmedLessonScreen"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              LessonDetailsCard(lesson, otherProfile)
+              LessonDetailsCard(lesson, otherProfile, onLocationChecked)
 
               Spacer(modifier = Modifier.weight(1f))
 
               when {
-                lesson.status in listOf(LessonStatus.CONFIRMED, LessonStatus.INSTANT_CONFIRMED) -> {
+                lesson.status == LessonStatus.CONFIRMED -> {
+                  MessageButton(otherProfile, lesson, isStudent)
+                  CancelLessonButton(
+                      lesson, currentProfile, lessonViewModel, navigationActions, context)
+                }
+                lesson.status == LessonStatus.INSTANT_CONFIRMED -> {
                   MessageButton(otherProfile, lesson, isStudent)
                 }
                 lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION && isStudent -> {
-                  CancelLessonButton(
+                  DeleteLessonButton(
                       lesson, currentProfile, lessonViewModel, navigationActions, context)
                 }
                 lesson.status == LessonStatus.STUDENT_REQUESTED && !isStudent -> {
@@ -152,7 +183,11 @@ fun ConfirmedLessonScreen(
 }
 
 @Composable
-private fun LessonDetailsCard(lesson: Lesson, otherProfile: Profile) {
+private fun LessonDetailsCard(
+    lesson: Lesson,
+    otherProfile: Profile,
+    onLocationChecked: () -> Unit
+) {
   Card(
       modifier = Modifier.fillMaxWidth(),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
@@ -162,7 +197,8 @@ private fun LessonDetailsCard(lesson: Lesson, otherProfile: Profile) {
               LessonLocationDisplay(
                   latitude = lesson.latitude,
                   longitude = lesson.longitude,
-                  lessonTitle = lesson.title)
+                  lessonTitle = lesson.title,
+                  onLocationChecked = onLocationChecked)
             }
       }
 }
@@ -182,12 +218,15 @@ private fun MessageButton(otherProfile: Profile, lesson: Lesson, isStudent: Bool
       },
       testTag = "contactButton",
       icon = {
-        Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(20.dp))
+        Icon(
+            Icons.AutoMirrored.Filled.Send,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp))
       })
 }
 
 @Composable
-private fun CancelLessonButton(
+private fun DeleteLessonButton(
     lesson: Lesson,
     currentProfile: Profile,
     lessonViewModel: LessonViewModel,
@@ -204,7 +243,7 @@ private fun CancelLessonButton(
               navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
             })
       },
-      testTag = "cancelButton",
+      testTag = "deleteButton",
       icon = {
         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
       },
@@ -229,9 +268,92 @@ private fun CancelRequestButton(
               navigateWithToast(navigationActions, context, "Request cancelled successfully")
             })
       },
+      testTag = "cancelRequestButton",
+      icon = {
+        Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
+      },
+      isError = true)
+}
+
+@Composable
+private fun CancelLessonButton(
+    lesson: Lesson,
+    currentProfile: Profile,
+    lessonViewModel: LessonViewModel,
+    navigationActions: NavigationActions,
+    context: Context
+) {
+  var showCancelDialog by remember { mutableStateOf(false) }
+
+  LessonActionButton(
+      text = "Cancel Lesson",
+      onClick = { showCancelDialog = true },
       testTag = "cancelButton",
       icon = {
         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
       },
       isError = true)
+
+  if (showCancelDialog) {
+    AlertDialog(
+        modifier = Modifier.testTag("cancelDialog"),
+        onDismissRequest = { showCancelDialog = false },
+        title = {
+          Text(text = "Lesson Cancellation", modifier = Modifier.testTag("cancelDialogTitle"))
+        },
+        text = {
+          Text(
+              text = "Are you sure you want to cancel the lesson? This action can not be undone.",
+              modifier = Modifier.testTag("cancelDialogText"))
+        },
+        confirmButton = {
+          Button(
+              modifier = Modifier.testTag("cancelDialogConfirmButton"),
+              onClick = {
+                // If the lesson is within 24 hours, do not allow cancellation
+                // Otherwise, update the lesson status and refresh the list of lessons
+                if (isCancellationValid(lesson.timeSlot)) {
+                  if (currentProfile.role == Role.STUDENT) {
+                    lessonViewModel.updateLesson(
+                        lesson = lesson.copy(status = LessonStatus.STUDENT_CANCELLED),
+                        onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                  } else {
+                    lessonViewModel.updateLesson(
+                        lesson = lesson.copy(status = LessonStatus.TUTOR_CANCELLED),
+                        onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
+                  }
+                  showCancelDialog = false
+                  navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+                } else {
+                  context.showToast("You can only cancel a lesson 24 hours before it starts")
+                  showCancelDialog = false
+                }
+              }) {
+                Text("Yes, cancel it")
+              }
+        },
+        dismissButton = {
+          Button(
+              modifier = Modifier.testTag("cancelDialogDismissButton"),
+              onClick = { showCancelDialog = false }) {
+                Text("No")
+              }
+        })
+  }
+}
+
+/**
+ * Checks if the time slot of the lesson is valid for cancellation. The lesson can be cancelled if
+ * it is more than 24 hours away.
+ *
+ * @param timeSlot The time slot of the lesson.
+ * @return True if the lesson can be cancelled, false otherwise.
+ */
+private fun isCancellationValid(timeSlot: String): Boolean {
+  val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
+  val lessonDateTime = LocalDateTime.parse(timeSlot, formatter)
+  val currentDateTime = LocalDateTime.now()
+  val currentDateTimePlus24Hours = currentDateTime.plus(24, ChronoUnit.HOURS)
+
+  return lessonDateTime.isAfter(currentDateTimePlus24Hours)
 }

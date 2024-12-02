@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
@@ -26,6 +27,8 @@ import com.github.se.project.ui.lesson.RequestedLessonsScreen
 import com.github.se.project.ui.lesson.SelectedTutorDetailsScreen
 import com.github.se.project.ui.lesson.TutorLessonResponseScreen
 import com.github.se.project.ui.lesson.TutorMatchingScreen
+import com.github.se.project.ui.message.ChannelScreen
+import com.github.se.project.ui.message.ChatScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
 import com.github.se.project.ui.navigation.Screen
@@ -37,9 +40,16 @@ import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
+import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.client.logger.ChatLogLevel
+import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory
+import io.getstream.chat.android.state.plugin.config.StatePluginConfig
+import io.getstream.chat.android.state.plugin.factory.StreamStatePluginFactory
 
 class MainActivity : ComponentActivity() {
+
   override fun onCreate(savedInstanceState: Bundle?) {
+
     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     super.onCreate(savedInstanceState)
     setContent {
@@ -49,10 +59,35 @@ class MainActivity : ComponentActivity() {
               authenticationViewModel = viewModel(),
               listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
               lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-              onMapReadyChange = {})
+              onMapReadyChange = {},
+              chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
         }
       }
     }
+  }
+
+  private fun buildChatClient(): ChatClient {
+    val offlinePluginFactory =
+        StreamOfflinePluginFactory(
+            appContext = applicationContext,
+        )
+    val statePluginFactory =
+        StreamStatePluginFactory(
+            config =
+                StatePluginConfig(
+                    backgroundSyncEnabled = true,
+                    userPresence = true,
+                ),
+            appContext = this,
+        )
+
+    val client =
+        ChatClient.Builder(getString(R.string.chat_api_key), applicationContext)
+            .withPlugins(offlinePluginFactory, statePluginFactory)
+            .logLevel(ChatLogLevel.ALL) // Set to NOTHING in prod
+            .build()
+
+    return client
   }
 }
 
@@ -62,7 +97,8 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
-    onMapReadyChange: (Boolean) -> Unit
+    onMapReadyChange: (Boolean) -> Unit,
+    chatViewModel: ChatViewModel,
 ) {
   // Navigation
   val navController = rememberNavController()
@@ -110,7 +146,7 @@ fun PocketTutorApp(
       }
 
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
@@ -131,6 +167,10 @@ fun PocketTutorApp(
             lessonViewModel,
             onMapReadyChange = onMapReadyChange)
       }
+      composable(Screen.CHANNEL) {
+        ChannelScreen(navigationActions, listProfilesViewModel, chatViewModel, lessonViewModel)
+      }
+      composable(Screen.CHAT) { ChatScreen(navigationActions, chatViewModel) }
     }
 
     navigation(
@@ -138,7 +178,7 @@ fun PocketTutorApp(
         route = Route.FIND_STUDENT,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.LESSONS_REQUESTED) {
         RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -159,7 +199,7 @@ fun PocketTutorApp(
         route = Route.HOME,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
       composable(Screen.EDIT_SCHEDULE) {
@@ -182,7 +222,7 @@ fun PocketTutorApp(
         route = Route.FIND_TUTOR,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(

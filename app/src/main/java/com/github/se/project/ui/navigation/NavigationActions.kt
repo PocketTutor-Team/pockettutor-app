@@ -1,6 +1,7 @@
 package com.github.se.project.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,13 +58,19 @@ object TopLevelDestinations {
   val TUTOR =
       TopLevelDestination(
           route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find a Student")
+  val CHANNEL =
+      TopLevelDestination(route = Screen.CHANNEL, icon = Icons.Outlined.Email, textId = "Chat")
 }
 
 // List of top-level destinations
 val LIST_TOP_LEVEL_DESTINATIONS_TUTOR =
-    listOf(TopLevelDestinations.HOME_TUTOR, TopLevelDestinations.TUTOR)
+    listOf(
+        TopLevelDestinations.HOME_TUTOR, TopLevelDestinations.TUTOR, TopLevelDestinations.CHANNEL)
 val LIST_TOP_LEVEL_DESTINATIONS_STUDENT =
-    listOf(TopLevelDestinations.HOME_STUDENT, TopLevelDestinations.STUDENT)
+    listOf(
+        TopLevelDestinations.HOME_STUDENT,
+        TopLevelDestinations.STUDENT,
+        TopLevelDestinations.CHANNEL)
 
 open class NavigationActions(
     private val navController: NavHostController,

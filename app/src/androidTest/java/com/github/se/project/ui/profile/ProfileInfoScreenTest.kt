@@ -17,6 +17,7 @@ import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.utils.capitalizeFirstLetter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
@@ -42,6 +43,7 @@ class ProfileInfoScreenTest {
   private val mockTutorProfile =
       Profile(
           uid = "12345",
+          token = "",
           googleUid = "67890",
           firstName = "John",
           lastName = "Doe",
@@ -55,6 +57,7 @@ class ProfileInfoScreenTest {
   private val mockStudentProfile =
       Profile(
           uid = "1",
+          token = "",
           googleUid = "1",
           firstName = "Student",
           lastName = "Test",
@@ -87,6 +90,7 @@ class ProfileInfoScreenTest {
     }
   }
 
+  // PASS
   @Test
   fun profileInfoScreen_everythingDisplayedCorrectly() {
     composeTestRule.setContent {
@@ -101,6 +105,7 @@ class ProfileInfoScreenTest {
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed()
   }
 
+  // PASS
   @Test
   fun tutorProfileInfoScreenDisplaysProfileDetails_whenProfileIsNotNull() {
     // Mock the currentProfile StateFlow to return the mockProfile
@@ -122,21 +127,21 @@ class ProfileInfoScreenTest {
         .assertIsDisplayed()
         .assertTextEquals("${mockTutorProfile.firstName} ${mockTutorProfile.lastName}")
     composeTestRule
-        .onNodeWithTag("profileStatus")
+        .onNodeWithTag("profileAcademicInfo")
         .assertIsDisplayed()
-        .assertTextEquals("Status: ${mockTutorProfile.academicLevel} Tutor")
-    composeTestRule
-        .onNodeWithTag("profileSection")
-        .assertIsDisplayed()
-        .assertTextEquals("Section: ${mockTutorProfile.section}")
+        .assertTextEquals("${mockTutorProfile.section} - ${mockTutorProfile.academicLevel}")
     composeTestRule
         .onNodeWithTag("lessonsCount")
         .assertIsDisplayed()
         .assertTextEquals("0 lessons given since you joined PocketTutor")
     composeTestRule
-        .onNodeWithTag("profilePrice")
+        .onNodeWithTag("priceText")
         .assertIsDisplayed()
-        .assertTextEquals("Price: ${mockTutorProfile.price}.- per hour")
+        .assertTextEquals("Price: ${mockTutorProfile.price}")
+    composeTestRule
+        .onNodeWithTag("phoneNumberRow")
+        .assertIsDisplayed()
+        .assertTextEquals(mockTutorProfile.phoneNumber ?: "N/A")
   }
 
   @Test
@@ -158,21 +163,19 @@ class ProfileInfoScreenTest {
     composeTestRule
         .onNodeWithTag("profileName")
         .assertIsDisplayed()
-        .assertTextEquals("${mockStudentProfile.firstName} ${mockStudentProfile.lastName}")
+        .assertTextEquals(
+            "${mockStudentProfile.firstName.capitalizeFirstLetter()} ${mockStudentProfile.lastName.capitalizeFirstLetter()}")
     composeTestRule
-        .onNodeWithTag("profileStatus")
+        .onNodeWithTag("profileAcademicInfo")
         .assertIsDisplayed()
-        .assertTextEquals("Status: ${mockStudentProfile.academicLevel} Student")
-    composeTestRule
-        .onNodeWithTag("profileSection")
-        .assertIsDisplayed()
-        .assertTextEquals("Section: ${mockStudentProfile.section}")
+        .assertTextEquals("${mockStudentProfile.section} - ${mockStudentProfile.academicLevel}")
     composeTestRule
         .onNodeWithTag("lessonsCount")
         .assertIsDisplayed()
         .assertTextEquals("0 lessons taken since you joined PocketTutor")
   }
 
+  // PASS
   @Test
   fun profileInfoScreenDisplaysErrorMessage_whenProfileIsNull() {
     // Provide a ViewModel with null profile data
@@ -194,6 +197,7 @@ class ProfileInfoScreenTest {
         .assertTextEquals("Error loading profile...")
   }
 
+  // Pass
   @Test
   fun profileInfoScreenNavigatesBack_whenCloseButtonClicked() {
     `when`(mockNavigationActions.goBack()).thenAnswer {}

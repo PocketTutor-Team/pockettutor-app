@@ -96,6 +96,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
   private fun documentToProfile(document: DocumentSnapshot): Profile? {
     return try {
       val uid = document.id
+      val token = document.getString("token") ?: return null
       val googleUid = document.getString("googleUid") ?: return null
       val firstName = document.getString("firstName") ?: return null
       val lastName = document.getString("lastName") ?: return null
@@ -136,6 +137,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
 
       Profile(
           uid,
+          token,
           googleUid,
           firstName,
           lastName,
@@ -158,6 +160,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
   private fun profileToMap(profile: Profile): Map<String, Any> {
     return mapOf(
         "uid" to profile.uid,
+        "token" to profile.token,
         "googleUid" to profile.googleUid,
         "firstName" to profile.firstName,
         "lastName" to profile.lastName,

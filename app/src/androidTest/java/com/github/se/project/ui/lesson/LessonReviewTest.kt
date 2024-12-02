@@ -37,6 +37,7 @@ class LessonReviewDialogTest {
   private val mockTutor =
       Profile(
           uid = "tutor-id",
+          token = "",
           googleUid = "google-tutor-id",
           firstName = "John",
           lastName = "Doe",

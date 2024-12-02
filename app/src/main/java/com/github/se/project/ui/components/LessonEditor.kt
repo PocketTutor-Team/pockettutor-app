@@ -2,8 +2,6 @@ package com.github.se.project.ui.components
 
 import MapPickerBox
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,15 +23,21 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -57,7 +61,11 @@ import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("NewApi")
@@ -95,6 +103,9 @@ fun LessonEditor(
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
   var isLocationChecked by remember { mutableStateOf(false) }
 
+  var showDatePicker by remember { mutableStateOf(false) }
+  var showTimeDialog by remember { mutableStateOf(false) }
+
   val cameraPositionState = rememberCameraPositionState {}
 
   var showMapDialog by remember { mutableStateOf(false) }
@@ -121,48 +132,42 @@ fun LessonEditor(
     }
   }
 
-  // Date Picker
-  val datePickerDialog =
-      DatePickerDialog(
-          context,
-          { _, year, month, dayOfMonth ->
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
-          },
-          calendar.get(Calendar.YEAR),
-          calendar.get(Calendar.MONTH),
-          calendar.get(Calendar.DAY_OF_MONTH))
-  datePickerDialog.datePicker.minDate = currentDateTime.timeInMillis
+  val datePickerState =
+      rememberDatePickerState(
+          calendar.getTimeInMillis(),
+          selectableDates =
+              object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                  val date = Date().apply { time = utcTimeMillis }
+                  val currentDate = Date()
 
-  // Time Picker
-  val timePickerDialog =
-      TimePickerDialog(
-          context,
-          { _, hourOfDay, minute ->
-            val formattedHour = hourOfDay.toString().padStart(2, '0')
-            val formattedMinute = minute.toString().padStart(2, '0')
+                  // Reset the time of both dates to compare only the date (not the time)
+                  val calendarDate = Calendar.getInstance().apply { time = date }
+                  val calendarCurrentDate = Calendar.getInstance().apply { time = currentDate }
 
-            val selectedCalendar =
-                Calendar.getInstance().apply {
-                  timeInMillis = currentDateTime.timeInMillis
-                  set(Calendar.HOUR_OF_DAY, hourOfDay)
-                  set(Calendar.MINUTE, minute)
+                  // Set the time to midnight for both dates to ignore time component
+                  calendarDate.set(Calendar.HOUR_OF_DAY, 0)
+                  calendarDate.set(Calendar.MINUTE, 0)
+                  calendarDate.set(Calendar.SECOND, 0)
+                  calendarDate.set(Calendar.MILLISECOND, 0)
+
+                  calendarCurrentDate.set(Calendar.HOUR_OF_DAY, 0)
+                  calendarCurrentDate.set(Calendar.MINUTE, 0)
+                  calendarCurrentDate.set(Calendar.SECOND, 0)
+                  calendarCurrentDate.set(Calendar.MILLISECOND, 0)
+
+                  // Check if the date is today or in the future
+                  return calendarDate.time.after(calendarCurrentDate.time) ||
+                      calendarDate.time == calendarCurrentDate.time
                 }
+              })
 
-            val isSelectedDateToday =
-                selectedDate ==
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
-
-            if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-              Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT).show()
-            } else {
-              selectedTime = "$formattedHour:$formattedMinute"
-            }
-          },
-          calendar.get(Calendar.HOUR_OF_DAY),
-          calendar.get(Calendar.MINUTE),
-          true)
+  val timePickerState =
+      rememberTimePickerState(
+          initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+          initialMinute = calendar.get(Calendar.MINUTE),
+          is24Hour = true,
+      )
 
   val onConfirmClick = {
     if (instant.value) {
@@ -248,6 +253,60 @@ fun LessonEditor(
         "Select location"
       }
 
+  if (showDatePicker) {
+    DatePickerDialog(
+        onDismissRequest = { showDatePicker = false },
+        confirmButton = {
+          Button({
+            val temp = Instant.ofEpochSecond((datePickerState.selectedDateMillis)?.div(1000) ?: 0)
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            val zonedDateTime = temp.atZone(ZoneId.systemDefault())
+            selectedDate = formatter.format(zonedDateTime)
+            showDatePicker = false
+          }) {
+            Text("OK")
+          }
+        },
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
+          DatePicker(datePickerState, showModeToggle = false)
+        }
+  }
+
+  if (showTimeDialog) {
+    Dialog(
+        onDismissRequest = { showMapDialog = false },
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
+          Column {
+            TimePicker(
+                state = timePickerState,
+            )
+            Button(onClick = { showTimeDialog = false }) { Text("Back") }
+            Button(
+                onClick = {
+                  val selectedCalendar =
+                      Calendar.getInstance().apply {
+                        timeInMillis = currentDateTime.timeInMillis
+                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                        set(Calendar.MINUTE, timePickerState.minute)
+                      }
+
+                  val isSelectedDateToday =
+                      selectedDate ==
+                          "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+
+                  if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
+                    Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT)
+                        .show()
+                  } else {
+                    selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
+                    showTimeDialog = false
+                  }
+                }) {
+                  Text("OK")
+                }
+          }
+        }
+  }
   // Map Dialog
   if (showMapDialog) {
     Dialog(
@@ -347,7 +406,7 @@ fun LessonEditor(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                   Button(
-                      onClick = { datePickerDialog.show() },
+                      onClick = { showDatePicker = true },
                       modifier = Modifier.weight(1f).testTag("DateButton"),
                       colors =
                           ButtonDefaults.buttonColors(
@@ -361,7 +420,7 @@ fun LessonEditor(
                   Spacer(modifier = Modifier.width(8.dp))
 
                   Button(
-                      onClick = { timePickerDialog.show() },
+                      onClick = { showTimeDialog = true },
                       modifier = Modifier.weight(1f).testTag("TimeButton"),
                       colors =
                           ButtonDefaults.buttonColors(

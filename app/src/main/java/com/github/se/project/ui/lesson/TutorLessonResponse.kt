@@ -13,8 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -137,7 +137,7 @@ fun TutorLessonResponseScreen(
                     modifier =
                         Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("confirmButton")) {
                       Icon(
-                          Icons.Default.Send,
+                          Icons.AutoMirrored.Filled.Send,
                           contentDescription = null,
                           modifier = Modifier.size(20.dp))
                       Spacer(modifier = Modifier.width(8.dp))

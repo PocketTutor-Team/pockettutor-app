@@ -3,6 +3,8 @@ package com.github.se.project.ui.overview
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.NavHostController
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -17,11 +19,11 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Route
+import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.doReturn
@@ -30,10 +32,15 @@ import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 class HomeScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  @get:Rule
+  val grantNotificationPermission: GrantPermissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
@@ -41,35 +48,56 @@ class HomeScreenTest {
   private lateinit var lessonRepository: LessonRepository
   private lateinit var lessonViewModel: LessonViewModel
 
+  private lateinit var chatViewModel: ChatViewModel
+  private lateinit var chatClient: ChatClient
+
   private lateinit var navController: NavHostController
   private lateinit var navigationActions: NavigationActions
 
-  private val profile =
+  private val tutorProfile =
       Profile(
-          "uid",
-          "googleUid",
-          "firstName",
-          "lastName",
-          "phoneNumber",
-          Role.TUTOR,
-          Section.AR,
-          AcademicLevel.BA1,
-          "",
-          listOf(Language.ENGLISH),
-          listOf(Subject.ANALYSIS),
-          List(7) { List(12) { 0 } },
-          0)
+          uid = "tutor",
+          token = "",
+          googleUid = "googleUid",
+          firstName = "firstName",
+          lastName = "lastName",
+          phoneNumber = "phoneNumber",
+          role = Role.TUTOR,
+          section = Section.AR,
+          academicLevel = AcademicLevel.BA1,
+          description = "",
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 0)
+
+  private val studentProfile =
+      Profile(
+          uid = "student",
+          token = "",
+          googleUid = "googleUid",
+          firstName = "firstName",
+          lastName = "lastName",
+          phoneNumber = "phoneNumber",
+          role = Role.STUDENT,
+          section = Section.AR,
+          academicLevel = AcademicLevel.BA1,
+          description = "",
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 0)
 
   private val mockLessons =
-      listOf(
+      mutableListOf(
           Lesson(
               id = "1",
               title = "Physics Tutoring",
               description = "Mechanics and Thermodynamics",
               subject = Subject.PHYSICS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = listOf("tutor123"),
-              studentUid = "student123",
+              tutorUid = listOf("tutor"),
+              studentUid = "student",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T10:00:00",
@@ -82,8 +110,8 @@ class HomeScreenTest {
               description = "Algebra and Calculus",
               subject = Subject.ANALYSIS,
               languages = listOf(Language.ENGLISH),
-              tutorUid = listOf("tutor123"),
-              studentUid = "student123",
+              tutorUid = listOf("tutor"),
+              studentUid = "student",
               minPrice = 20.0,
               maxPrice = 40.0,
               timeSlot = "2024-10-10T11:00:00",
@@ -91,9 +119,47 @@ class HomeScreenTest {
               latitude = 0.0,
               longitude = 0.0))
 
-  private val mockProfileFlow = MutableStateFlow<Profile?>(profile)
+  private val instantLesson =
+      Lesson(
+          id = "3",
+          title = "Instant ICC Tutoring",
+          description = "Algebra and Calculus",
+          subject = Subject.ICC,
+          languages = listOf(Language.ENGLISH),
+          tutorUid = listOf("tutor123"),
+          studentUid = "student123",
+          minPrice = 20.0,
+          maxPrice = 40.0,
+          timeSlot = "2024-10-10Tinstant",
+          status = LessonStatus.INSTANT_CONFIRMED,
+          latitude = 0.0,
+          longitude = 0.0)
 
-  private val currentUserLessonsFlow = MutableStateFlow<List<Lesson>>(mockLessons)
+  private val mockstudentProfileFlow = MutableStateFlow<Profile?>(tutorProfile)
+
+  private val cancelledLesson =
+      listOf(
+          Lesson(
+              id = "3",
+              title = "Math Tutoring",
+              description = "Algebra and Calculus",
+              subject = Subject.ANALYSIS,
+              languages = listOf(Language.ENGLISH),
+              tutorUid = listOf("tutor"),
+              studentUid = "student",
+              minPrice = 20.0,
+              maxPrice = 40.0,
+              price = 25.0,
+              timeSlot = "2024-10-10T11:00:00",
+              status = LessonStatus.STUDENT_CANCELLED,
+              latitude = 0.0,
+              longitude = 0.0))
+
+  private val mockProfileFlow = MutableStateFlow<Profile?>(tutorProfile)
+
+  private val currentUserLessonsFlow = MutableStateFlow(mockLessons)
+
+  private val cancelledLessonsFlow = MutableStateFlow<List<Lesson>>(listOf())
 
   @Before
   fun setup() {
@@ -109,6 +175,10 @@ class HomeScreenTest {
     lessonViewModel = LessonViewModel(lessonRepository)
     lessonViewModel = spy(lessonViewModel)
 
+    // Mock ChatViewModel
+    chatViewModel = mock(ChatViewModel::class.java)
+    doNothing().`when`(chatViewModel).connect(any())
+
     navigationActions = NavigationActions(navController)
     navigationActions = spy(navigationActions)
 
@@ -119,16 +189,20 @@ class HomeScreenTest {
     // Set up the StateFlows
     doReturn(mockProfileFlow).`when`(listProfilesViewModel).currentProfile
     doReturn(currentUserLessonsFlow).`when`(lessonViewModel).currentUserLessons
+    doReturn(cancelledLessonsFlow).`when`(lessonViewModel).cancelledLessons
 
     // Stub the init and getProfiles method in the repository to simulate success
     doNothing().`when`(profilesRepository).init(any())
-    doNothing().`when`(profilesRepository).getProfiles(any(), any())
+    whenever(profilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf(tutorProfile, studentProfile)) // Simulate a list of profiles
+    }
   }
 
   @Test
-  fun testIsDiplayed() {
+  fun testIsDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertIsDisplayed()
@@ -137,30 +211,41 @@ class HomeScreenTest {
   @Test
   fun testProfileIconClickable() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
-    verify(navigationActions).navigateTo(Mockito.anyString())
+    verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
+  }
+
+  @Test
+  fun testSectionDisplays() {
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+    }
+    composeTestRule.onNodeWithText("Waiting for your Confirmation").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Waiting for the Student Confirmation").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsNotDisplayed()
   }
 
   @Test
   fun testNoProfileFoundScreenDisplayed() {
     // Set a null profile in the ViewModel
     listProfilesViewModel =
-        Mockito.mock(ListProfilesViewModel::class.java).apply {
-          Mockito.`when`(currentProfile).thenReturn(MutableStateFlow(null))
+        mock(ListProfilesViewModel::class.java).apply {
+          `when`(currentProfile).thenReturn(MutableStateFlow(null))
         }
     // Recompose
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
 
     // Verify that the "No profile is currently assigned" text is displayed
@@ -176,18 +261,46 @@ class HomeScreenTest {
   fun testLessonsEmptyMessageDisplayed() {
     // Set up empty lessons scenario
     val mockRepository = mock<LessonRepository>()
-    currentUserLessonsFlow.value = emptyList() // Simulate no lessons
+    currentUserLessonsFlow.value = mutableListOf() // Simulate no lessons
     lessonViewModel =
-        Mockito.spy(LessonViewModel(mockRepository)).apply {
+        spy(LessonViewModel(mockRepository)).apply {
           // Assuming currentUserLessons is initialized in the constructor or some method,
           // you'll have to use reflection to set it if it's private or internal.
           `when`(this.currentUserLessons).thenReturn(currentUserLessonsFlow)
         }
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
     }
 
     // Verify the message indicating no lessons scheduled is displayed
     composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
+  }
+
+  @Test
+  fun testInstantDisplay() {
+    mockLessons.add(instantLesson)
+    currentUserLessonsFlow.value = mockLessons
+
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+    }
+
+    composeTestRule.onNodeWithText("Instant ICC Tutoring").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Upcoming Instant Lesson").assertIsDisplayed()
+  }
+
+  @Test
+  fun testCancelledLessonsDisplayed() {
+    cancelledLessonsFlow.value = cancelledLesson
+
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+    }
+
+    // Verify the dialog indicating that the lesson has been cancelled is displayed
+    composeTestRule.onNodeWithTag("cancelledLessonDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelledLessonDialogTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelledLessonDialogText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelledLessonDialogConfirmButton").assertIsDisplayed()
   }
 }
