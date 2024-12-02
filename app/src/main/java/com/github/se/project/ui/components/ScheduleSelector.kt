@@ -45,7 +45,10 @@ fun AvailabilityGrid(
                     contentDescription = "Select All",
                     modifier = Modifier.padding(end = 8.dp),
                     tint = MaterialTheme.colorScheme.onPrimary)
-                Text(text = "Select All", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Select All",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyMedium)
               }
 
           // Unselect All Button
@@ -64,7 +67,10 @@ fun AvailabilityGrid(
                     contentDescription = "Unselect All",
                     modifier = Modifier.padding(end = 8.dp),
                     tint = MaterialTheme.colorScheme.onSecondary)
-                Text(text = "Unselect All", color = MaterialTheme.colorScheme.onSecondary, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Unselect All",
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    style = MaterialTheme.typography.bodyMedium)
               }
         }
 
