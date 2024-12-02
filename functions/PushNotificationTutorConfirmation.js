@@ -28,15 +28,23 @@ exports.pushNotificationTutorLessonConfirmation = onDocumentUpdated(
         if (before.status === "PENDING_TUTOR_CONFIRMATION" && after.status ===
            "CONFIRMED") {
           try {
-            const tutorUid = after.tutorUid;
+            const tutorUid = String(after.tutorUid).split(",")[0];
             const studentUid = after.studentUid;
-            console.log(`idcollected`);
-            const tutorDoc = await db.collection("profiles")
-                .where("uid", "==", tutorUid).get();
+            console.log(`idcollected, ${tutorUid} && ${studentUid}`);
+            const tutorQuery = await db.collection("profiles")
+                .where("uid", "==", tutorUid).limit(1).get();
             console.log(`tutorDoc`);
-            const studentDoc = await db.collection("profiles")
-                .where("uid", "==", studentUid).get();
+            const studentQuery = await db.collection("profiles")
+                .where("uid", "==", studentUid).limit(1).get();
             console.log(`studentDoc`);
+
+            if (tutorQuery.empty || studentQuery.empty) {
+              console.error("Tutor or Student profile not found.");
+              return;
+            }
+
+            const tutorDoc = tutorQuery.docs[0];
+            const studentDoc = studentQuery.docs[0];
 
             if (!tutorDoc.exists || !studentDoc.exists) {
               console.error("Tutor or Student profile not found.");
@@ -47,6 +55,9 @@ exports.pushNotificationTutorLessonConfirmation = onDocumentUpdated(
             const studentToken = studentDoc.data().token;
             const tutorName = tutorDoc.data().firstName;
             const studentName = studentDoc.data().firstName;
+
+            console.log(`Tutor Token: ${tutorToken}`);
+            console.log(`Student Token: ${studentToken}`);
 
             if (tutorToken === "" || studentToken === "" ||
                 tutorName === "" || studentName === "") {
@@ -73,8 +84,17 @@ exports.pushNotificationTutorLessonConfirmation = onDocumentUpdated(
               token: tutorToken,
             };
 
-            await admin.messaging().send(payloadStudent);
-            await admin.messaging().send(payloadTutor);
+            try {
+              await admin.messaging().send(payloadStudent);
+            } catch (error) {
+              console.error(`Error sending notification to student:`, error);
+            }
+
+            try {
+              await admin.messaging().send(payloadTutor);
+            } catch (error) {
+              console.error(`Error sending notification to tutor:`, error);
+            }
 
             console.log(`Notifications sent for lesson ${lessonId}`);
           } catch (error) {
