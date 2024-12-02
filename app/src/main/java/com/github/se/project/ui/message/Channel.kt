@@ -93,8 +93,8 @@ fun ChannelScreen(
                     chatViewModel.setChannelID(channel.cid)
                     navigationActions.navigateTo(Screen.CHAT)
                   },
-                  isShowingHeader = false,
-                  onBackPressed = { navigationActions.navigateTo(Screen.HOME) })
+                  isShowingHeader = true,
+                  )
             }
       }
       InitializationState.INITIALIZING -> {

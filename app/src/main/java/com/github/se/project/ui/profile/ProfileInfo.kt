@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -34,7 +36,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -47,280 +48,200 @@ import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.capitalizeFirstLetter
 
 @SuppressLint("SuspiciousIndentation")
+/**
+ * A composable function that represents the profile information screen.
+ *
+ * @param navigationActions Handles navigation between different screens.
+ * @param listProfilesViewModel ViewModel to fetch and observe user profiles.
+ * @param lessonViewModel ViewModel to fetch and manage lesson-related data for the user.
+ */
 @Composable
 fun ProfileInfoScreen(
-    navigationActions: NavigationActions,
-    listProfilesViewModel: ListProfilesViewModel =
-        viewModel(factory = ListProfilesViewModel.Factory),
-    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
+    navigationActions: NavigationActions, // Navigation actions for transitioning between screens
+    listProfilesViewModel: ListProfilesViewModel, // ViewModel for managing profile data
+    lessonViewModel: LessonViewModel // ViewModel for managing lessons
 ) {
-  val profileState = listProfilesViewModel.currentProfile.collectAsState()
-  val lessons = lessonViewModel.currentUserLessons.collectAsState()
+    // Observes the current user's profile data
+    val profileState = listProfilesViewModel.currentProfile.collectAsState()
 
-  // SectionInfo for Completed Lessons
-  val completedLessonsSection =
-      SectionInfo(
-          title = "Completed Lessons",
-          status = LessonStatus.COMPLETED,
-          icon = Icons.Default.CheckCircle)
+    // Observes the current user's lessons data
+    val lessons = lessonViewModel.currentUserLessons.collectAsState()
 
-  // Filter completed lessons
-  val completedLessons =
-      lessons.value.filter {
-        it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
-      }
-  Scaffold(
-      topBar = {
-        Row(
-            modifier =
+    // Section information for completed lessons, defines the title, status, and icon
+    val completedLessonsSection =
+        SectionInfo(
+            title = "Completed Lessons", // Title for completed lessons section
+            status = LessonStatus.COMPLETED, // Status filter to display completed lessons
+            icon = Icons.Default.CheckCircle) // Icon to represent completed lessons section
+
+    // Filters completed lessons or lessons that are pending review
+    val completedLessons =
+        lessons.value.filter {
+            it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
+        }
+
+    Scaffold(
+        topBar = {
+            // Top bar layout for profile screen with title and icons
+            Row(
+                modifier =
                 Modifier.fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(MaterialTheme.colorScheme.background) // Background color of top bar
                     .padding(vertical = 16.dp, horizontal = 16.dp)
-                    .testTag("profileTopBar"),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-              Row(verticalAlignment = Alignment.CenterVertically) {
-                if (profileState.value?.role == Role.TUTOR) {
-                  // Title
-                  Text(
-                      text = stringResource(id = R.string.your_account),
-                      style = MaterialTheme.typography.titleLarge, // Adjust the style as needed
-                      color = MaterialTheme.colorScheme.onBackground,
-                      modifier = Modifier.padding(end = 16.dp) // Spacing between title and icons
-                      )
-                }
-                IconButton(
-                    onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
-                    modifier = Modifier.testTag("editProfileButton")) {
-                      Icon(
-                          imageVector = Icons.Default.Edit,
-                          contentDescription = stringResource(id = R.string.edit_profile),
-                          tint = MaterialTheme.colorScheme.onBackground)
+                    .testTag("profileTopBar"), // Test tag for top bar
+                horizontalArrangement = Arrangement.SpaceBetween, // Horizontal arrangement of title and icons
+                verticalAlignment = Alignment.CenterVertically) {
+                // Profile title and edit button in a row
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Show the account title if the user is a tutor
+                    if (profileState.value?.role == Role.TUTOR) {
+                        Text(
+                            text = stringResource(id = R.string.your_account), // Text for the title
+                            style = MaterialTheme.typography.titleLarge, // Text style for large titles
+                            color = MaterialTheme.colorScheme.onBackground, // Text color
+                            modifier = Modifier.padding(end = 16.dp)) // Padding to the right of the title
                     }
-              }
+                    // Edit profile button
+                    IconButton(
+                        onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) }, // Navigate to edit profile screen
+                        modifier = Modifier.testTag("editProfileButton")) {
+                        Icon(
+                            imageVector = Icons.Default.Edit, // Edit icon
+                            contentDescription = stringResource(id = R.string.edit_profile), // Description for accessibility
+                            tint = MaterialTheme.colorScheme.onBackground) // Icon color
+                    }
+                }
 
-              IconButton(
-                  onClick = { navigationActions.goBack() },
-                  modifier = Modifier.testTag("closeButton")) {
+                // Close button to navigate back to the previous screen
+                IconButton(
+                    onClick = { navigationActions.goBack() }, // Go back to the previous screen
+                    modifier = Modifier.testTag("closeButton")) {
                     Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = R.string.close),
-                        tint = MaterialTheme.colorScheme.onBackground)
-                  }
+                        imageVector = Icons.Default.Close, // Close icon
+                        contentDescription = stringResource(id = R.string.close), // Close button description
+                        tint = MaterialTheme.colorScheme.onBackground) // Icon color
+                }
             }
-      }) { paddingValues ->
+        }) { paddingValues ->
+        // Once the profile data is loaded, display the profile information
         profileState.value?.let { userProfile ->
-          val isTutor = userProfile.role == Role.TUTOR
-          if (isTutor) {
-            lessonViewModel.getLessonsForTutor(userProfile.uid)
-          } else {
-            lessonViewModel.getLessonsForStudent(userProfile.uid)
-          }
+            // Fetch lessons for the tutor or student based on the role
+            if (userProfile.role == Role.TUTOR) {
+                lessonViewModel.getLessonsForTutor(userProfile.uid)
+            } else {
+                lessonViewModel.getLessonsForStudent(userProfile.uid)
+            }
 
-          Column(
-              modifier =
-                  Modifier.padding(paddingValues)
-                      .padding(horizontal = 16.dp, vertical = 8.dp)
-                      .verticalScroll(rememberScrollState())) {
-                // Entire profile content is wrapped in a single Card
+            Column(
+                modifier =
+                Modifier.padding(paddingValues) // Padding for the main content
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .verticalScroll(rememberScrollState())) { // Allow scrolling for long profile content
+                // Profile Card containing all profile information
                 Card(
                     modifier =
-                        Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("profileInfoCard"),
+                    Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("profileInfoCard"), // Card layout
                     colors =
-                        CardDefaults.cardColors(
-                            // containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            containerColor =
-                                MaterialTheme.colorScheme.surfaceContainerLowest.copy(
-                                    alpha = 0.5f))) {
-                      Column(
-                          modifier = Modifier.padding(16.dp),
-                          verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            // Profile Name
-                            Row(
-                                modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically) {
-                                  // Profile Icon Surface
-                                  Surface(
-                                      modifier = Modifier.size(48.dp),
-                                      shape = MaterialTheme.shapes.medium,
-                                      color =
-                                          MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Person,
-                                            contentDescription = null,
-                                            modifier = Modifier.padding(8.dp),
-                                            tint = MaterialTheme.colorScheme.primary)
-                                      }
-
-                                  // Profile Name and Academic Info in a Column
-                                  Column(modifier = Modifier.weight(1f)) {
-                                    // Profile Name
-                                    Text(
-                                        text =
-                                            "${userProfile.firstName.capitalizeFirstLetter()} ${userProfile.lastName.capitalizeFirstLetter()}",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        modifier = Modifier.testTag("profileName"),
-                                        color = MaterialTheme.colorScheme.onBackground)
-
-                                    // Section and Academic Level
-                                    Text(
-                                        text =
-                                            "${userProfile.section} - ${userProfile.academicLevel}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.testTag("profileAcademicInfo"))
-                                  }
-                                }
-
-                            // draw a line between the profile name and the rest of the profile info
-                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                            // Role Row
-                            Row(
-                                modifier = Modifier.fillMaxWidth().testTag("roleRow"),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically) {
-                                  // Role Icon
-                                  Icon(
-                                      imageVector = Icons.Default.Person,
-                                      contentDescription = "Role",
-                                      tint = MaterialTheme.colorScheme.primary,
-                                      modifier = Modifier.size(24.dp))
-
-                                  // Role Text
-                                  Text(
-                                      text = "Role: ${userProfile.role.name}",
-                                      style = MaterialTheme.typography.bodyMedium,
-                                      color = MaterialTheme.colorScheme.onBackground)
-                                }
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                  // Icon representing languages
-                                  Icon(
-                                      imageVector =
-                                          ImageVector.vectorResource(
-                                              id = R.drawable.baseline_language_24),
-                                      contentDescription = "Languages",
-                                      tint = MaterialTheme.colorScheme.primary,
-                                      modifier = Modifier.size(24.dp))
-
-                                  // Column for languages list displayed vertically
-                                  Column(horizontalAlignment = Alignment.Start) {
-                                    userProfile.languages.forEach { language ->
-                                      Text(
-                                          text = language.name,
-                                          color = MaterialTheme.colorScheme.onBackground,
-                                          modifier = Modifier.testTag(language.name))
-                                    }
-                                  }
-                                }
-
-                            // Phone Number Row
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically) {
-                                  // Phone Icon
-                                  Icon(
-                                      imageVector = Icons.Default.Call,
-                                      contentDescription =
-                                          stringResource(id = R.string.phone_number),
-                                      tint = MaterialTheme.colorScheme.primary,
-                                      modifier = Modifier.size(24.dp))
-
-                                  // Phone Number Text
-                                  Text(
-                                      text =
-                                          userProfile.phoneNumber, // Handle if phone number is null
-                                      style = MaterialTheme.typography.bodyMedium,
-                                      color = MaterialTheme.colorScheme.onBackground,
-                                      modifier = Modifier.testTag("phoneNumberRow"))
-                                }
-
-                            // Price Row (for Tutor)
-                            if (isTutor) {
-                              Row(
-                                  modifier = Modifier.fillMaxWidth().testTag("priceRow"),
-                                  horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                  verticalAlignment = Alignment.CenterVertically) {
-                                    // Price Icon
-                                    Icon(
-                                        imageVector =
-                                            ImageVector.vectorResource(
-                                                id = R.drawable.baseline_access_time_24),
-                                        contentDescription =
-                                            stringResource(id = R.string.price_per_lesson),
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp))
-
-                                    // Price Text
-                                    Text(
-                                        text =
-                                            "${stringResource(id = R.string.price_per_lesson)} ${userProfile.price}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.testTag("priceText"))
-                                  }
+                    CardDefaults.cardColors(
+                        containerColor =
+                        MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f))) { // Card color
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        // Profile Name and Section Info
+                        Row(
+                            modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp), // Space between name and icon
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                modifier = Modifier.size(48.dp), // Icon size
+                                shape = MaterialTheme.shapes.medium, // Rounded icon shape
+                                color =
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) { // Background color
+                                Icon(
+                                    imageVector = Icons.Default.Person, // Profile icon
+                                    contentDescription = null, // No content description
+                                    modifier = Modifier.padding(8.dp), // Padding around the icon
+                                    tint = MaterialTheme.colorScheme.primary) // Icon color
                             }
 
-                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
-                            // Lessons Count
+                            // Profile Name and Academic Information in a Column
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text =
+                                    "${userProfile.firstName.capitalizeFirstLetter()} ${userProfile.lastName.capitalizeFirstLetter()}", // Full name
+                                    style = MaterialTheme.typography.titleMedium, // Title style for name
+                                    modifier = Modifier.testTag("profileName"), // Test tag for name
+                                    color = MaterialTheme.colorScheme.onBackground) // Text color
+
+                                Text(
+                                    text =
+                                    "${userProfile.section} - ${userProfile.academicLevel}", // Academic details
+                                    style = MaterialTheme.typography.bodyMedium, // Body text style
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant, // Text color
+                                    modifier = Modifier.testTag("profileAcademicInfo")) // Test tag for academic info
+                            }
+                        }
+
+                        // Divider between profile name and other info
+                        Divider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                        // Role row, shows user role (Tutor/Student)
+                        Row(
+                            modifier = Modifier.fillMaxWidth().testTag("roleRow"),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp), // Space between icon and text
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Person, // Role icon
+                                contentDescription = "Role", // Accessibility description
+                                tint = MaterialTheme.colorScheme.primary, // Icon color
+                                modifier = Modifier.size(24.dp)) // Icon size
+
                             Text(
-                                text =
-                                    "${completedLessons.size} ${if (isTutor) stringResource(id = R.string.lessons_given) else stringResource(id = R.string.lessons_taken)}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.testTag("lessonsCount"),
-                                color = MaterialTheme.colorScheme.onBackground)
+                                text = "Role: ${userProfile.role.name}", // Displays user role
+                                style = MaterialTheme.typography.bodyMedium, // Text style
+                                color = MaterialTheme.colorScheme.onBackground) // Text color
+                        }
 
-                            // Display Completed Lessons Section
-                            ExpandableLessonSection(
-                                section = completedLessonsSection,
-                                lessons = completedLessons,
-                                isTutor = isTutor,
-                                onClick = { lesson ->
-                                  lessonViewModel.selectLesson(lesson)
-                                  navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-                                },
-                                listProfilesViewModel = listProfilesViewModel)
-                          }
+                        // Languages spoken by the user
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Icon(
+                                imageVector =
+                                ImageVector.vectorResource(
+                                    id = R.drawable.baseline_language_24), // Language icon
+                                contentDescription = "Languages", // Description
+                                tint = MaterialTheme.colorScheme.primary, // Icon color
+                                modifier = Modifier.size(24.dp)) // Icon size
+
+                            // List of languages spoken
+                            Column(horizontalAlignment = Alignment.Start) {
+                                userProfile.languages.forEach { language ->
+                                    Text(
+                                        text = language.name, // Language name
+                                        color = MaterialTheme.colorScheme.onBackground, // Text color
+                                        style = MaterialTheme.typography.bodySmall) // Text style
+                                }
+                            }
+                        }
+
+                        // Contact info section with button
+                        SectionInfo(
+                            title = "Contact Information",
+                            status = LessonStatus.PENDING_REVIEW,
+                            icon = Icons.Default.Call)
+
+                        // Button for contacting the user
+                        Button(
+                            onClick = { /* Handle call action */ },
+                            modifier = Modifier.fillMaxWidth().testTag("contactButton")) {
+                            Text(text = "Call User") // Button label
+                        }
                     }
-              }
-        }
-            ?: run {
-              Text(
-                  text = stringResource(id = R.string.error_loading_profile),
-                  color = MaterialTheme.colorScheme.error,
-                  modifier = Modifier.testTag("errorLoadingProfile"))
+                }
             }
-        // Divider to separate the Sign-Out Button
-        Divider(color = MaterialTheme.colorScheme.outlineVariant)
-
-        // Add Sign-Out Button
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-          IconButton(
-              onClick = {
-                // Reset user ID to null and navigate to the sign-in screen
-                listProfilesViewModel.clearCurrentProfile()
-                navigationActions.navigateTo(Screen.AUTH)
-              },
-              modifier = Modifier.padding(8.dp).testTag("signOutButton")) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                      Icon(
-                          imageVector = Icons.Default.Close,
-                          contentDescription = stringResource(id = R.string.sign_out),
-                          tint = MaterialTheme.colorScheme.error)
-                      Text(
-                          text = stringResource(id = R.string.sign_out),
-                          color = MaterialTheme.colorScheme.error,
-                          style = MaterialTheme.typography.bodyMedium)
-                    }
-              }
         }
-      }
+    }
 }

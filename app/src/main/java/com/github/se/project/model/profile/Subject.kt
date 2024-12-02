@@ -18,3 +18,4 @@ enum class Subject {
   SOFTWARE_CONSTRUCTION,
   NONE
 }
+
