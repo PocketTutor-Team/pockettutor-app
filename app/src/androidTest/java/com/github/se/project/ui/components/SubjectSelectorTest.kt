@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.Subject
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,6 +16,15 @@ import org.junit.runner.RunWith
 class SubjectSelectorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  private val selectedSubjects = mutableStateListOf<Subject>()
+
+  @Before
+  fun setUp() {
+    composeTestRule.setContent {
+      SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
+    }
+  }
 
   @Test
   fun selectingSubjectUpdatesCorrectly() {
@@ -42,10 +52,6 @@ class SubjectSelectorTest {
 
   @Test
   fun selectingMultipleSubjectsUpdatesCorrectly() {
-    val selectedSubjects = mutableStateListOf<Subject>()
-    composeTestRule.setContent {
-      SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
-    }
 
     composeTestRule.waitUntil(15000) {
       composeTestRule.onNodeWithTag("subjectButton").isDisplayed()
