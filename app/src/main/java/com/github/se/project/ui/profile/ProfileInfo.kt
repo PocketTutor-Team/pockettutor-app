@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +35,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -47,35 +47,42 @@ import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.capitalizeFirstLetter
 
+/**
+ * A composable function to display a user's profile information screen.
+ *
+ * @param navigationActions The actions to handle navigation between screens.
+ * @param listProfilesViewModel The ViewModel that manages user profile data.
+ * @param lessonViewModel The ViewModel that manages lesson data for the user.
+ */
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun ProfileInfoScreen(
     navigationActions: NavigationActions,
-    listProfilesViewModel: ListProfilesViewModel,
-    lessonViewModel: LessonViewModel
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory),
+    lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory)
 ) {
-  // State to collect current profile data
+  // Observes the current user's profile state.
   val profileState = listProfilesViewModel.currentProfile.collectAsState()
-  // State to collect current lessons data
+  // Observes the list of lessons for the current user.
   val lessons = lessonViewModel.currentUserLessons.collectAsState()
 
-  // SectionInfo for displaying completed lessons
+  // Defines the section for completed lessons with an icon and status.
   val completedLessonsSection =
       SectionInfo(
-          title = "Completed Lessons", // Section title
-          status = LessonStatus.COMPLETED, // Filter for completed lessons
-          icon = Icons.Default.CheckCircle // Icon for the section
-          )
+          title = "Completed Lessons",
+          status = LessonStatus.COMPLETED,
+          icon = Icons.Default.CheckCircle)
 
-  // Filtering the completed lessons
+  // Filters the list of lessons to get completed or pending review lessons.
   val completedLessons =
       lessons.value.filter {
         it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
       }
 
+  // Sets up the Scaffold layout for the screen with a top bar and content area.
   Scaffold(
       topBar = {
-        // Top bar layout with title and profile edit buttons
         Row(
             modifier =
                 Modifier.fillMaxWidth()
@@ -85,15 +92,16 @@ fun ProfileInfoScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Row(verticalAlignment = Alignment.CenterVertically) {
-                // Display profile title if user is a tutor
+                // Display title if the user is a tutor.
                 if (profileState.value?.role == Role.TUTOR) {
                   Text(
-                      text = stringResource(id = R.string.your_account), // Account label
+                      text = stringResource(id = R.string.your_account),
                       style = MaterialTheme.typography.titleLarge,
                       color = MaterialTheme.colorScheme.onBackground,
-                      modifier = Modifier.padding(end = 16.dp))
+                      modifier = Modifier.padding(end = 16.dp) // Adds space between title and icons
+                      )
                 }
-                // Edit profile button
+                // Edit profile button to navigate to the profile edit screen.
                 IconButton(
                     onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
                     modifier = Modifier.testTag("editProfileButton")) {
@@ -104,7 +112,7 @@ fun ProfileInfoScreen(
                     }
               }
 
-              // Close button in top bar
+              // Close button to navigate back to the previous screen.
               IconButton(
                   onClick = { navigationActions.goBack() },
                   modifier = Modifier.testTag("closeButton")) {
@@ -115,8 +123,12 @@ fun ProfileInfoScreen(
                   }
             }
       }) { paddingValues ->
+
+        // Ensures user profile data is loaded.
         profileState.value?.let { userProfile ->
-          // Get lessons for tutor or student based on role
+
+          // If the user is a tutor, fetch lessons for the tutor. Otherwise, fetch lessons for a
+          // student.
           val isTutor = userProfile.role == Role.TUTOR
           if (isTutor) {
             lessonViewModel.getLessonsForTutor(userProfile.uid)
@@ -124,13 +136,14 @@ fun ProfileInfoScreen(
             lessonViewModel.getLessonsForStudent(userProfile.uid)
           }
 
-          // Main profile layout wrapped in a scrollable column
+          // Profile content layout, with all information wrapped in a card.
           Column(
               modifier =
                   Modifier.padding(paddingValues)
                       .padding(horizontal = 16.dp, vertical = 8.dp)
                       .verticalScroll(rememberScrollState())) {
-                // Profile info card container
+
+                // Card displaying profile information.
                 Card(
                     modifier =
                         Modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("profileInfoCard"),
@@ -142,12 +155,14 @@ fun ProfileInfoScreen(
                       Column(
                           modifier = Modifier.padding(16.dp),
                           verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            // Profile Name and Academic Info Section
+
+                            // Row displaying the user's name and profile icon.
                             Row(
                                 modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically) {
-                                  // Profile Icon (Avatar)
+
+                                  // Icon representing the user's profile image.
                                   Surface(
                                       modifier = Modifier.size(48.dp),
                                       shape = MaterialTheme.shapes.medium,
@@ -160,9 +175,8 @@ fun ProfileInfoScreen(
                                             tint = MaterialTheme.colorScheme.primary)
                                       }
 
-                                  // Profile Name and Academic Info
+                                  // User name and academic information.
                                   Column(modifier = Modifier.weight(1f)) {
-                                    // Display profile name
                                     Text(
                                         text =
                                             "${userProfile.firstName.capitalizeFirstLetter()} ${userProfile.lastName.capitalizeFirstLetter()}",
@@ -170,7 +184,7 @@ fun ProfileInfoScreen(
                                         modifier = Modifier.testTag("profileName"),
                                         color = MaterialTheme.colorScheme.onBackground)
 
-                                    // Display academic level and section
+                                    // Display the user's section and academic level.
                                     Text(
                                         text =
                                             "${userProfile.section} - ${userProfile.academicLevel}",
@@ -180,34 +194,32 @@ fun ProfileInfoScreen(
                                   }
                                 }
 
-                            // Divider separating profile name and rest of the information
+                            // Divider separating profile name and other information.
                             Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
-                            // Role Display Row
+                            // Row displaying the user's role.
                             Row(
                                 modifier = Modifier.fillMaxWidth().testTag("roleRow"),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically) {
-                                  // Role Icon
                                   Icon(
                                       imageVector = Icons.Default.Person,
                                       contentDescription = "Role",
                                       tint = MaterialTheme.colorScheme.primary,
                                       modifier = Modifier.size(24.dp))
 
-                                  // Role Text
+                                  // Role text displaying the user's role.
                                   Text(
                                       text = "Role: ${userProfile.role.name}",
                                       style = MaterialTheme.typography.bodyMedium,
                                       color = MaterialTheme.colorScheme.onBackground)
                                 }
 
-                            // Language Display Section
+                            // Row displaying the languages known by the user.
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.Top,
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                  // Language Icon
                                   Icon(
                                       imageVector =
                                           ImageVector.vectorResource(
@@ -216,7 +228,7 @@ fun ProfileInfoScreen(
                                       tint = MaterialTheme.colorScheme.primary,
                                       modifier = Modifier.size(24.dp))
 
-                                  // Languages Column
+                                  // Column displaying the list of languages.
                                   Column(horizontalAlignment = Alignment.Start) {
                                     userProfile.languages.forEach { language ->
                                       Text(
@@ -227,12 +239,11 @@ fun ProfileInfoScreen(
                                   }
                                 }
 
-                            // Phone Number Section
+                            // Row displaying the user's phone number.
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically) {
-                                  // Phone Icon
                                   Icon(
                                       imageVector = Icons.Default.Call,
                                       contentDescription =
@@ -240,7 +251,6 @@ fun ProfileInfoScreen(
                                       tint = MaterialTheme.colorScheme.primary,
                                       modifier = Modifier.size(24.dp))
 
-                                  // Phone Number Text
                                   Text(
                                       text = userProfile.phoneNumber,
                                       style = MaterialTheme.typography.bodyMedium,
@@ -248,7 +258,7 @@ fun ProfileInfoScreen(
                                       modifier = Modifier.testTag("phoneNumberRow"))
                                 }
 
-                            // Price Section (only for Tutor)
+                            // If the user is a tutor, display the price per lesson.
                             if (isTutor) {
                               Row(
                                   modifier = Modifier.fillMaxWidth().testTag("priceRow"),
@@ -273,41 +283,45 @@ fun ProfileInfoScreen(
                                         modifier = Modifier.testTag("priceText"))
                                   }
                             }
+
+                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                            // Lessons Count
+                            Text(
+                                text =
+                                    "${completedLessons.size} ${if (isTutor) stringResource(id = R.string.lessons_given) else stringResource(id = R.string.lessons_taken)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.testTag("lessonsCount"),
+                                color = MaterialTheme.colorScheme.onBackground)
+
+                            // Display Completed Lessons Section
+                            ExpandableLessonSection(
+                                section = completedLessonsSection,
+                                lessons = completedLessons,
+                                isTutor = isTutor,
+                                onClick = { lesson ->
+                                  lessonViewModel.selectLesson(lesson)
+                                  navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                                },
+                                listProfilesViewModel = listProfilesViewModel)
                           }
-                    }
-
-                // Lessons Section (only if there are completed lessons)
-                if (completedLessons.isNotEmpty()) {
-                  ExpandableLessonSection(
-                      section = completedLessonsSection,
-                      lessons = completedLessons,
-                      isTutor = isTutor,
-                      onClick = { lesson ->
-                        lessonViewModel.selectLesson(lesson)
-                        navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-                      },
-                      listProfilesViewModel = listProfilesViewModel)
-                }
-
-                // Log Out Button at the bottom
-                Spacer(modifier = Modifier.weight(1f)) // Push the button to the bottom
-                Button(
-                    onClick = {
-                      // Set the current profile to null
-                      listProfilesViewModel.setCurrentProfile(null)
-                      // Navigate to SignIn screen
-                      navigationActions.navigateTo(Screen.AUTH)
-                    },
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                            .testTag("signOutButton")) {
-                      Text(text = "Log Out")
+                      // Log Out Button at the bottom
+                      Button(
+                          onClick = {
+                            // Set the current profile to null
+                            listProfilesViewModel.setCurrentProfile(null)
+                            // Navigate to SignIn screen
+                            navigationActions.navigateTo(Screen.AUTH)
+                          },
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .padding(vertical = 16.dp)
+                                  .testTag("signOutButton")) {
+                            Text(text = "Log Out")
+                          }
                     }
               }
         }
             ?: run {
-              // Error message if profile loading fails
               Text(
                   text = stringResource(id = R.string.error_loading_profile),
                   color = MaterialTheme.colorScheme.error,
