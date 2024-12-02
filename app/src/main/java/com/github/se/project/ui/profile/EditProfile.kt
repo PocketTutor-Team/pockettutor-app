@@ -19,11 +19,14 @@ import com.github.se.project.R
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.LanguageSelector
+import com.github.se.project.ui.components.PhoneNumberInput
 import com.github.se.project.ui.components.PriceSlider
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.SubjectSelector
+import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.countries
 
 @Composable
 fun EditProfile(
@@ -48,7 +51,10 @@ fun EditProfile(
     profileSubjects.addAll(profile.subjects)
   }
 
-  var phoneNumber by remember { mutableStateOf(profile.phoneNumber) }
+  var phoneNumber by remember { mutableStateOf(profile.phoneNumber.drop(3)) }
+  var selectedCountry by remember {
+    mutableStateOf(countries.find { it.code == profile.phoneNumber.take(3) } ?: countries[0])
+  }
 
   val priceSliderValue = remember { mutableFloatStateOf(profile.price.toFloat()) }
   val showError = remember { mutableStateOf(false) }
@@ -87,15 +93,13 @@ fun EditProfile(
 
               Spacer(modifier = Modifier.height(6.dp))
 
-              // Phone Number input
-              OutlinedTextField(
-                  value = phoneNumber,
-                  onValueChange = { phoneNumber = it },
-                  label = { Text("Phone Number") },
-                  placeholder = { Text("Enter your phone number") },
-                  modifier = Modifier.fillMaxWidth().testTag("phoneNumberField"),
-                  shape = MaterialTheme.shapes.small,
-                  singleLine = true)
+              // Phone Number Input
+              Text(text = "Phone Number", style = MaterialTheme.typography.titleSmall)
+              PhoneNumberInput(
+                  selectedCountry = selectedCountry,
+                  onCountryChange = { selectedCountry = it },
+                  phoneNumber = phoneNumber,
+                  onPhoneNumberChange = { phoneNumber = it })
 
               if (profile.role == Role.TUTOR) {
                 Text(
@@ -163,13 +167,13 @@ fun EditProfile(
                         "Please select at least one language and one subject",
                         Toast.LENGTH_SHORT)
                     .show()
-              } else if (!isPhoneNumberValid(phoneNumber)) {
+              } else if (!isPhoneNumberValid(selectedCountry.code, phoneNumber)) {
                 showError.value = true
                 Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
                     .show()
               } else {
                 showError.value = false
-                profile.phoneNumber = phoneNumber
+                profile.phoneNumber = selectedCountry.code + phoneNumber
                 profile.languages = profileLanguages
                 profile.subjects = profileSubjects
                 profile.price = priceSliderValue.floatValue.toInt()

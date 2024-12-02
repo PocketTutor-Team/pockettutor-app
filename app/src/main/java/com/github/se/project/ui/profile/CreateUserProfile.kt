@@ -14,9 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.AcademicSelector
+import com.github.se.project.ui.components.PhoneNumberInput
 import com.github.se.project.ui.components.SectionSelector
+import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.countries
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -28,15 +31,19 @@ fun CreateProfileScreen(
         viewModel(factory = ListProfilesViewModel.Factory),
     googleUid: String
 ) {
-
+  // Existing states
   var firstName by remember { mutableStateOf("") }
   var lastName by remember { mutableStateOf("") }
-  var phoneNumber by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
   val context = LocalContext.current
   var token = ""
+
+  // New states for country code and phone number
+  var selectedCountry by remember { mutableStateOf(countries[0]) }
+  var phoneNumber by remember { mutableStateOf("") }
+  var countryCodeExpanded by remember { mutableStateOf(false) }
 
   Scaffold(
       topBar = {
@@ -84,16 +91,17 @@ fun CreateProfileScreen(
                           .testTag("lastNameField"), // Test tag for last name input
                   singleLine = true)
 
-              OutlinedTextField(
-                  value = phoneNumber,
-                  onValueChange = { phoneNumber = it },
-                  label = { Text("Phone Number") },
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .testTag("phoneNumberField"), // Test tag for phone number input
-                  singleLine = true)
-
+              // Role Selection
               Column(modifier = Modifier.fillMaxWidth()) {
+
+                // Phone Number Input
+                Text(text = "Phone Number", style = MaterialTheme.typography.titleSmall)
+                PhoneNumberInput(
+                    selectedCountry = selectedCountry,
+                    onCountryChange = { selectedCountry = it },
+                    phoneNumber = phoneNumber,
+                    onPhoneNumberChange = { phoneNumber = it })
+
                 Text("You are a:", style = MaterialTheme.typography.titleSmall)
                 val roles = listOf(Role.STUDENT, Role.TUTOR)
                 SingleChoiceSegmentedButtonRow(
@@ -122,11 +130,9 @@ fun CreateProfileScreen(
               }
 
               Text(text = "Select your section", style = MaterialTheme.typography.titleSmall)
-              // Section dropdown menu with improved styling
               SectionSelector(section)
 
               Text(text = "Select your academic level", style = MaterialTheme.typography.titleSmall)
-              // Academic Level dropdown menu with improved styling
               AcademicSelector(academicLevel)
 
               Spacer(modifier = Modifier.weight(1f))
@@ -156,7 +162,7 @@ fun CreateProfileScreen(
                     if (firstName.isNotEmpty() &&
                         lastName.isNotEmpty() &&
                         phoneNumber.isNotEmpty() &&
-                        isPhoneNumberValid(phoneNumber) &&
+                        isPhoneNumberValid(selectedCountry.code, phoneNumber) &&
                         role != Role.UNKNOWN &&
                         section.value != null &&
                         academicLevel.value != null) {
@@ -168,7 +174,7 @@ fun CreateProfileScreen(
                                 googleUid,
                                 firstName,
                                 lastName,
-                                phoneNumber,
+                                selectedCountry.code + phoneNumber,
                                 role,
                                 section.value!!,
                                 academicLevel.value!!)
@@ -204,16 +210,4 @@ fun CreateProfileScreen(
                   }
             }
       }
-}
-
-/**
- * Checks if the phone number is valid. To be valid a phone number must be composed of 10 to 15
- * digits with an optional '+' at the beginning and no other characters.
- *
- * @param phoneNumber The phone number to check.
- * @return true if the phone number is valid, false otherwise.
- */
-internal fun isPhoneNumberValid(phoneNumber: String): Boolean {
-  val phoneNumberRegex = "^\\+?[0-9]{10,15}\$".toRegex()
-  return phoneNumber.matches(phoneNumberRegex)
 }
