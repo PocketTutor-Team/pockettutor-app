@@ -200,27 +200,27 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
-    @Test
-    fun testInstantLesson() {
-      composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+  @Test
+  fun testInstantLesson() {
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
 
-      // Set Instant Lesson
-      composeTestRule.waitUntil(15000) {
-        composeTestRule.onNodeWithTag("instantButton").isDisplayed()
-      }
-      composeTestRule.onNodeWithTag("instantButton").performClick()
-      // Set Title and Description
-      composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
-      composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
-
-      // Set Subject and Language
-      composeTestRule.onNodeWithTag("subjectButton").performClick()
-      composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-      composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-
-      composeTestRule.onNodeWithTag("confirmButton").performClick()
-      verify(navigationActions).navigateTo(anyString())
+    // Set Instant Lesson
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("instantButton").isDisplayed()
     }
+    composeTestRule.onNodeWithTag("instantButton").performClick()
+    // Set Title and Description
+    composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
+    composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+
+    // Set Subject and Language
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    verify(navigationActions).navigateTo(anyString())
+  }
 
   @Test
   fun testInstantInvalid() {
