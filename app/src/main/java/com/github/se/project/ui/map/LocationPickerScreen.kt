@@ -17,7 +17,7 @@ import com.google.maps.android.compose.*
 fun MapPickerBox(
     initialLocation: Pair<Double, Double>,
     onLocationSelected: (Pair<Double, Double>) -> Unit,
-    onMapReady: (Boolean) -> Unit
+    onMapReady: (Boolean) -> Unit = {}
 ) {
   val EPFLCoordinates = LatLng(46.520374, 6.568339)
 

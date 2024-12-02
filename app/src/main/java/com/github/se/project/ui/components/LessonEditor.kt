@@ -77,7 +77,7 @@ fun LessonEditor(
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
-    onMapReady: (Boolean) -> Unit
+    onMapReady: (Boolean) -> Unit = {}
 ) {
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }

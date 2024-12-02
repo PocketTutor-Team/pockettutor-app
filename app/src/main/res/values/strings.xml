@@ -17,6 +17,6 @@
     <string name="lessons_given">lessons given since you joined PocketTutor</string>
     <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
     <string name="price_not_set">Not Set</string>
-    <string name="update_profil">Update Profil</string>
+    <string name="update_profil">Update Profile</string>
     <string name="schedule">Schedule</string>
 </resources>

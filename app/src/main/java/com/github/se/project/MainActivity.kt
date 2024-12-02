@@ -58,7 +58,6 @@ class MainActivity : ComponentActivity() {
               authenticationViewModel = viewModel(),
               listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
               lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-              onMapReadyChange = {},
               chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
         }
       }
@@ -96,7 +95,7 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
-    onMapReadyChange: (Boolean) -> Unit,
+    onMapReadyChange: (Boolean) -> Unit = {},
     chatViewModel: ChatViewModel,
 ) {
   // Navigation
