@@ -39,7 +39,7 @@ fun PhoneNumberInput(
               modifier =
                   Modifier.menuAnchor()
                       .fillMaxWidth()
-                      .testTag("countryCodeField") // Added test tag here
+                      .testTag("countryCodeField") // Add test tag here
               )
           ExposedDropdownMenu(
               modifier = Modifier.fillMaxWidth(),
@@ -56,7 +56,7 @@ fun PhoneNumberInput(
                       },
                       modifier =
                           Modifier.testTag(
-                              "country_${country.code.replace("+", "plus")}") // Added test tag here
+                              "country_${country.code.replace("+", "plus")}") // Add test tag here
                       )
                 }
               }
@@ -69,7 +69,7 @@ fun PhoneNumberInput(
         value = phoneNumber,
         onValueChange = onPhoneNumberChange,
         label = { Text("Phone Number") },
-        modifier = Modifier.weight(2f).testTag("phoneNumberField"), // Ensuring test tag is set
+        modifier = Modifier.weight(2f).testTag("phoneNumberField"), // Ensure test tag is set
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
   }

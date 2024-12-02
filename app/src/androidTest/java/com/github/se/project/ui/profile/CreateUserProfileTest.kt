@@ -216,7 +216,18 @@ class CreateProfileScreenTest {
     // Enter valid data for all fields
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("+1234567890")
+
+    // Select country code
+    composeTestRule.onNodeWithTag("countryCodeField").performClick()
+    // Wait for the dropdown to appear
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("country_plus41").performClick()
+
+    // Enter phone number without country code
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("34567890")
+
+    // Select role as Tutor
     composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
 
     // Select section and academic level
@@ -228,7 +239,7 @@ class CreateProfileScreenTest {
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-    // Vérifier que la navigation a bien eu lieu
+    // Verify that navigation occurred
     verify(mockNavigationActions).navigateTo(Screen.CREATE_TUTOR_PROFILE)
   }
 
