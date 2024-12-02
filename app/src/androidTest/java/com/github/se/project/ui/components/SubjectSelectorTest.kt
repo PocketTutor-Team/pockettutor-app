@@ -30,6 +30,9 @@ class SubjectSelectorTest {
     // Click on the subject button to open the dropdown
     composeTestRule.onNodeWithTag("subjectButton").performClick()
 
+    // **Wait for the UI to settle after the click**
+    composeTestRule.waitForIdle()
+
     // Now, dropdown items should be displayed
     Subject.entries.forEach { subject ->
       if (subject == Subject.NONE) return@forEach
@@ -50,17 +53,26 @@ class SubjectSelectorTest {
     // Step 2: Click on the button to show the dropdown
     composeTestRule.onNodeWithTag("subjectButton").performClick()
 
+    // **Wait for the UI to settle after the click**
+    composeTestRule.waitForIdle()
+
     // Step 3: Check if the dropdown is displayed
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").assertIsDisplayed()
 
     // Step 4: Click on an item in the dropdown to select it
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").performClick()
 
+    // **Wait for the UI to settle after selection**
+    composeTestRule.waitForIdle()
+
     // Step 5: Verify that the subject was added to selectedSubjects
     assertTrue("AICC should be selected", selectedSubjects.contains(Subject.AICC))
 
     // Step 6: Click again to deselect the item
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC.name}").performClick()
+
+    // **Wait for the UI to settle after deselection**
+    composeTestRule.waitForIdle()
 
     // Step 7: Verify that the subject was removed from selectedSubjects
     assertFalse("AICC should be deselected", selectedSubjects.contains(Subject.AICC))
