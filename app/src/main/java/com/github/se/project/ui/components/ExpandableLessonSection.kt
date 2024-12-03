@@ -89,7 +89,9 @@ fun ExpandableLessonSection(
                     {
                       Row(verticalAlignment = Alignment.CenterVertically) {
                         if (lessonCountText.isNotEmpty() && lessons.isNotEmpty()) {
-                          Text(text = lessonCountText + " lessons", style = MaterialTheme.typography.bodyMedium)
+                          Text(
+                              text = lessonCountText + " lessons",
+                              style = MaterialTheme.typography.bodyMedium)
                           Spacer(modifier = Modifier.width(8.dp))
                         }
                         if (lessons.isNotEmpty()) {
