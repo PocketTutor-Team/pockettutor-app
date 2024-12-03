@@ -20,6 +20,7 @@ import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
+import com.github.se.project.ui.components.NetworkStatusListener
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
@@ -54,13 +55,16 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       SampleAppTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-          PocketTutorApp(
-              authenticationViewModel = viewModel(),
-              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-              lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-              chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
-        }
+          NetworkStatusListener {
+              Surface(modifier = Modifier.fillMaxSize()) {
+                  PocketTutorApp(
+                      authenticationViewModel = viewModel(),
+                      listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+                      lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+                      chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient()))
+                  )
+              }
+          }
       }
     }
   }
