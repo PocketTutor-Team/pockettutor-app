@@ -151,9 +151,7 @@ class AddLessonTest {
       // as soon as the map is ready, the next line will be executed
       testMapReady
     }
-      composeTestRule.waitUntil(20000) {
-          composeTestRule.onNodeWithTag("googleMap").isDisplayed()
-      }
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("googleMap").isDisplayed() }
 
     // click in the middle of GoogleMap
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
