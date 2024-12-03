@@ -88,16 +88,18 @@ fun ExpandableLessonSection(
                   if (!isInstant) {
                     {
                       Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (lessonCountText.isNotEmpty()) {
-                          Text(text = lessonCountText, style = MaterialTheme.typography.bodyMedium)
+                        if (lessonCountText.isNotEmpty() && lessons.isNotEmpty()) {
+                          Text(text = lessonCountText + " lessons", style = MaterialTheme.typography.bodyMedium)
                           Spacer(modifier = Modifier.width(8.dp))
                         }
-                        IconButton(onClick = { expanded = !expanded }) {
-                          Icon(
-                              imageVector =
-                                  if (expanded) Icons.Default.KeyboardArrowDown
-                                  else Icons.Default.KeyboardArrowLeft,
-                              contentDescription = if (expanded) "Collapse" else "Expand")
+                        if (lessons.isNotEmpty()) {
+                          IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector =
+                                    if (expanded) Icons.Default.KeyboardArrowDown
+                                    else Icons.Default.KeyboardArrowLeft,
+                                contentDescription = if (expanded) "Collapse" else "Expand")
+                          }
                         }
                       }
                     }
@@ -107,7 +109,7 @@ fun ExpandableLessonSection(
                     Modifier.clickable { expanded = !expanded }
                   } else Modifier)
 
-          if (expanded) {
+          if (expanded && lessons.isNotEmpty()) {
             DisplayLessons(
                 lessons = lessons,
                 statusFilter = section.status,
