@@ -208,18 +208,19 @@ class AddLessonTest {
     composeTestRule.waitUntil(15000) {
       composeTestRule.onNodeWithTag("instantButton").isDisplayed()
     }
-    composeTestRule.onNodeWithTag("instantButton").performClick()
-
-    composeTestRule.waitForIdle()
 
     // Set Title and Description
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
     composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
 
+    composeTestRule.onNodeWithTag("instantButton").performClick()
+
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+
+    composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
