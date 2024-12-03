@@ -21,10 +21,12 @@ class SingleSubjectSelectorTest {
   fun setUp() {
     val selectedSubject = mutableStateOf<Subject>(Subject.NONE)
     composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
+    Thread.sleep(10000)
   }
 
   @Test
   fun selectingSubjectUpdatesCorrectly() {
+    Thread.sleep(10000)
 
     // Initially, dropdown items are not displayed
     Subject.entries.forEach { subject ->
