@@ -112,7 +112,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
-  /*
+
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
@@ -146,11 +146,14 @@ class AddLessonTest {
     // replace the following code with the composeTestRule equivalent as
     // the Thread.sleep() method is not recommended and
     // device.click() is not well supported in compose
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       testMapReady
     }
+      composeTestRule.waitUntil(20000) {
+          composeTestRule.onNodeWithTag("googleMap").isDisplayed()
+      }
 
     // click in the middle of GoogleMap
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
@@ -161,7 +164,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
-    */
+
   @Test
   fun goBack() {
     composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
