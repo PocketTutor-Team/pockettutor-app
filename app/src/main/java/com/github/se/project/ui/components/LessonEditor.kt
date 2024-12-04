@@ -523,8 +523,12 @@ fun LessonEditor(
                   shape = MaterialTheme.shapes.medium,
                   enabled = hasChanges,
                   onClick = onConfirmClick) {
-                    Text(stringResource(id = R.string.update))
+                  if (lesson != null) {
+                      Text(stringResource(id = R.string.update))
+                  } else {
+                      Text(stringResource(id = R.string.create))
                   }
+              }
 
               if (onDelete != null) {
                 Button(

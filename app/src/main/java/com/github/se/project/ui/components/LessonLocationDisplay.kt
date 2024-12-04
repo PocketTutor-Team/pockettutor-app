@@ -52,7 +52,6 @@ fun LessonLocationDisplay(
     onLocationChecked: () -> Unit = {},
 ) {
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
-  var isLocationChecked by remember { mutableStateOf(false) }
 
   val lessonLocation = LatLng(latitude, longitude)
 
@@ -63,7 +62,6 @@ fun LessonLocationDisplay(
   // Request for location permission launcher
   LocationPermissionHandler { location ->
     userLocation = location
-    isLocationChecked = true
     onLocationChecked()
 
     // Update the camera position based on user location availability
@@ -76,7 +74,6 @@ fun LessonLocationDisplay(
         }
   }
 
-  if (isLocationChecked) {
     Column(
         modifier =
             modifier
@@ -99,9 +96,9 @@ fun LessonLocationDisplay(
                       properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
                       uiSettings =
                           MapUiSettings(
-                              zoomControlsEnabled = false,
-                              scrollGesturesEnabled = false,
-                              zoomGesturesEnabled = false,
+                              zoomControlsEnabled = true,
+                              scrollGesturesEnabled = true,
+                              zoomGesturesEnabled = true,
                               tiltGesturesEnabled = false,
                               rotationGesturesEnabled = false)) {
                         // Marker for the lesson location
@@ -110,7 +107,6 @@ fun LessonLocationDisplay(
                 }
               }
         }
-  }
 }
 
 /**
@@ -178,13 +174,13 @@ fun calculateDistance(userLocation: LatLng?, lessonLocation: LatLng): Float {
  */
 fun adjustZoomBasedOnDistance(distance: Float): Float {
   return when {
-    distance < 100 -> 15f // If the distance is less than 100 meters, zoom in more
-    distance < 500 -> 14f // If the distance is between 100-500 meters, zoom in a bit
+    distance < 100 -> 14f // If the distance is less than 100 meters, zoom in more
+    distance < 500 -> 13f // If the distance is between 100-500 meters, zoom in a bit
     distance < 2000 -> 12f // If the distance is between 500m-2km, zoom out a bit
-    distance < 10000 -> 10f // If the distance is between 2km-10km, zoom out even more
-    distance < 20000 -> 8f // If the distance is between 10km-20km, zoom out further
+    distance < 10000 -> 11f // If the distance is between 2km-10km, zoom out even more
+    distance < 20000 -> 10f // If the distance is between 10km-20km, zoom out further
     distance < 50000 -> 7f // If the distance is between 20km-50km, zoom out even further
     distance < 100000 -> 6f // If the distance is between 50km-100km, zoom out even further
-    else -> 0.1f // If the distance is more than 100km, zoom out the most possible
+    else -> 0.01f // If the distance is more than 100km, zoom out the most possible
   }
 }

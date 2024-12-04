@@ -26,6 +26,7 @@
     <!-- LessonEditor -->
     <!-- stringResource(id = R.string.example) -->
     <string name="update">Update</string>
+    <string name="create">Create</string>
 
     <!-- TutorMatching -->
     <string name="request_another_tutor">Ask for Another Tutor</string>
