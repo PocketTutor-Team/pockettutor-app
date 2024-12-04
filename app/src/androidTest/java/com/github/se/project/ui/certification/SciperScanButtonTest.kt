@@ -22,68 +22,70 @@ class SciperScanButtonTest {
     composeTestRule.onNodeWithText("Scan Camipro Card").assertExists()
   }
 
-//  @Test
-//  fun scanDialogOpensAndClosesProperly() {
-//    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
-//
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
-//
-//    // Close the dialog
-//    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
-//  }
+  //  @Test
+  //  fun scanDialogOpensAndClosesProperly() {
+  //    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+  //
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  //
+  //    // Close the dialog
+  //    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
+  //  }
 
-//  @Test
-//  fun scanButtonAllowsRetryAfterDismiss() {
-//    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
-//
-//    // Open the scan dialog
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
-//
-//    // Dismiss the dialog
-//    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
-//
-//    // Retry scanning
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
-//  }
+  //  @Test
+  //  fun scanButtonAllowsRetryAfterDismiss() {
+  //    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+  //
+  //    // Open the scan dialog
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  //
+  //    // Dismiss the dialog
+  //    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
+  //
+  //    // Retry scanning
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  //  }
 
-//  @Test
-//  fun scanButtonClickShowsDialog() {
-//    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
-//
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
-//    composeTestRule.onNodeWithText("Please place the Camipro card within the frame.").assertExists()
-//  }
+  //  @Test
+  //  fun scanButtonClickShowsDialog() {
+  //    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+  //
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  //    composeTestRule.onNodeWithText("Please place the Camipro card within the
+  // frame.").assertExists()
+  //  }
 
-//  @Test
-//  fun closeButtonDismissesDialog() {
-//    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
-//
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
-//
-//    // Verify dialog is dismissed
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
-//  }
+  //  @Test
+  //  fun closeButtonDismissesDialog() {
+  //    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+  //
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
+  //
+  //    // Verify dialog is dismissed
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
+  //  }
 
-//  @Test
-//  fun scanningStateUpdatesUI() {
-//    var scanState = ScanningState.Scanning
-//
-//    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
-//
-//    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
-//    composeTestRule.onNodeWithText("Please place the Camipro card within the frame.").assertExists()
-//
-//    // Note: We can't directly test the SCIPER detection since it requires actual camera input
-//    // But we can verify the UI elements are present
-//    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
-//  }
+  //  @Test
+  //  fun scanningStateUpdatesUI() {
+  //    var scanState = ScanningState.Scanning
+  //
+  //    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+  //
+  //    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+  //    composeTestRule.onNodeWithText("Please place the Camipro card within the
+  // frame.").assertExists()
+  //
+  //    // Note: We can't directly test the SCIPER detection since it requires actual camera input
+  //    // But we can verify the UI elements are present
+  //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  //  }
 
   @Test
   fun cameraPermissionDeniedShowsMessage() {
