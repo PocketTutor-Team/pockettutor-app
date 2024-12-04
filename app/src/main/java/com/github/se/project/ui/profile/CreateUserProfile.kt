@@ -21,6 +21,7 @@ import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.countries
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +30,7 @@ fun CreateProfileScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
-    googleUid: String
+    testMode: Boolean
 ) {
   // Existing states
   var firstName by remember { mutableStateOf("") }
@@ -43,7 +44,6 @@ fun CreateProfileScreen(
   // New states for country code and phone number
   var selectedCountry by remember { mutableStateOf(countries[0]) }
   var phoneNumber by remember { mutableStateOf("") }
-  var countryCodeExpanded by remember { mutableStateOf(false) }
 
   Scaffold(
       topBar = {
@@ -167,6 +167,13 @@ fun CreateProfileScreen(
                         section.value != null &&
                         academicLevel.value != null) {
                       try {
+                        val googleUid: String =
+                            if (testMode) {
+                              "testingUid"
+                            } else {
+                              FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                            }
+
                         val newProfile =
                             Profile(
                                 listProfilesViewModel.getNewUid(),
