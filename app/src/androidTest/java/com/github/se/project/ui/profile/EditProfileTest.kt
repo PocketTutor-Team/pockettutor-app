@@ -136,7 +136,7 @@ class EditProfileTest {
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
-            phoneNumber = "1234567890",
+            phoneNumber = "+4134567890",
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
