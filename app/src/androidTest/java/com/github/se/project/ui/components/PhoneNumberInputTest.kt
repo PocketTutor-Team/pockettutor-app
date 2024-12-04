@@ -58,6 +58,7 @@ class PhoneNumberInputTest {
           onPhoneNumberChange = {})
     }
 
+    composeTestRule.waitForIdle()
     // Open the country code dropdown
     composeTestRule.onNodeWithTag("countryCodeField").performClick()
 
