@@ -33,7 +33,7 @@ fun AvailabilityGrid(
           Button(
               onClick = {
                 // Select All: Fill the schedule with '1's
-                val updatedSchedule = List(7) { List(24) { 1 } }
+                val updatedSchedule = List(7) { List(12) { 1 } }
                 onScheduleChange(updatedSchedule)
               },
               colors =
@@ -55,7 +55,7 @@ fun AvailabilityGrid(
           Button(
               onClick = {
                 // Unselect All: Fill the schedule with '0's
-                val updatedSchedule = List(7) { List(24) { 0 } }
+                val updatedSchedule = List(7) { List(12) { 0 } }
                 onScheduleChange(updatedSchedule)
               },
               colors =
