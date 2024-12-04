@@ -76,6 +76,7 @@ fun LessonEditor(
     mainTitle: String,
     profile: Profile,
     lesson: Lesson?,
+    isConnected: Boolean,
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
@@ -149,7 +150,6 @@ fun LessonEditor(
       selectedDate = lesson.timeSlot.split("T")[0]
     }
   }
-
 
 
   LocationPermissionHandler { location ->
@@ -522,7 +522,13 @@ fun LessonEditor(
                   modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
                   enabled = hasChanges,
-                  onClick = onConfirmClick) {
+                  onClick = {
+                      if (isConnected) {
+                          onConfirmClick() // Perform the actual action
+                      } else {
+                          Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
+                      }
+                  }) {
                   if (lesson != null) {
                       Text(stringResource(id = R.string.update))
                   } else {
@@ -538,9 +544,16 @@ fun LessonEditor(
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    onClick = { onDelete(lesson!!) }) {
-                      Text("Delete")
+                    onClick = {
+                        if (isConnected) {
+                            onDelete(lesson!!) // Perform the delete action
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
+                        }
                     }
+                ) {
+                    Text("Delete")
+                }
               }
             }
       })
@@ -588,3 +601,7 @@ fun isInstant(lesson: Lesson?): Boolean {
 fun isInstant(timeSlot: String): Boolean {
   return timeSlot.last() == 't'
 }
+
+
+
+

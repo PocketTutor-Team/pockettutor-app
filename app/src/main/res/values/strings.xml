@@ -27,6 +27,7 @@
     <!-- stringResource(id = R.string.example) -->
     <string name="update">Update</string>
     <string name="create">Create</string>
+    <string name="inform_user_offline">You are offline. Please connect to the internet to proceed</string>
 
     <!-- TutorMatching -->
     <string name="request_another_tutor">Ask for Another Tutor</string>

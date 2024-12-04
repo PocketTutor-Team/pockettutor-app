@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
 import com.github.se.project.ui.components.NetworkStatusListener
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
                       authenticationViewModel = viewModel(),
                       listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
                       lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+                        networkStatusViewModel = viewModel(),
                       chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient()))
                   )
               }
@@ -100,6 +102,7 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel,
     onMapReadyChange: (Boolean) -> Unit = {},
     chatViewModel: ChatViewModel,
 ) {
@@ -168,6 +171,7 @@ fun PocketTutorApp(
             navigationActions,
             listProfilesViewModel,
             lessonViewModel,
+            networkStatusViewModel,
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.CHANNEL) {
@@ -190,7 +194,7 @@ fun PocketTutorApp(
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.CONFIRMED_LESSON) {
-        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
       }
       composable(Screen.COMPLETED_LESSON) {
         CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -213,6 +217,7 @@ fun PocketTutorApp(
             navigationActions,
             listProfilesViewModel,
             lessonViewModel,
+            networkStatusViewModel,
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
@@ -232,6 +237,7 @@ fun PocketTutorApp(
             navigationActions,
             listProfilesViewModel,
             lessonViewModel,
+            networkStatusViewModel,
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.TUTOR_MATCH) {

@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonEditor
 import com.github.se.project.ui.components.isInstant
@@ -18,10 +19,13 @@ fun AddLessonScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel,
     onMapReadyChange: (Boolean) -> Unit = {}
 ) {
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
+
+    val isConnected = networkStatusViewModel.isConnected.collectAsState().value
 
   val context = LocalContext.current
 
@@ -58,6 +62,7 @@ fun AddLessonScreen(
       mainTitle = "Schedule a lesson",
       profile = profile.value!!,
       lesson = currentLesson,
+      isConnected = isConnected,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
       onDelete = null,
