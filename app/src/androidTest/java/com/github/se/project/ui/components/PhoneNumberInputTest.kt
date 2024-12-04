@@ -1,14 +1,15 @@
 package com.github.se.project.ui.components
 
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.github.se.project.utils.countries
 import org.junit.Rule
 import org.junit.Test
 
 class PhoneNumberInputTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @Test
   fun testPhoneNumberInputRenders() {
