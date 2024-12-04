@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  * ViewModel responsible for managing the EPFL profile certification process. Handles the
  * verification workflow and updates the user's profile with verified information.
  */
-class CertificationViewModel(
+open class CertificationViewModel(
     private val repository: EpflVerificationRepository,
     private val profilesViewModel: ListProfilesViewModel
 ) : ViewModel() {

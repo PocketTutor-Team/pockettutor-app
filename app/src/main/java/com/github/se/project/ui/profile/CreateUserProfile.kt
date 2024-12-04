@@ -16,8 +16,8 @@ import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.certification.EpflCertification
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.AcademicSelector
-import com.github.se.project.ui.components.PhoneNumberInput
 import com.github.se.project.ui.components.EpflVerificationCard
+import com.github.se.project.ui.components.PhoneNumberInput
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
@@ -42,7 +42,7 @@ fun CreateProfileScreen(
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
-    var token = ""
+  var token = ""
 
   var sciper by remember { mutableStateOf("") } // Add SCIPER state
 
@@ -52,11 +52,11 @@ fun CreateProfileScreen(
   val verificationState by certificationViewModel.verificationState.collectAsState()
   val isVerified = verificationState is CertificationViewModel.VerificationState.Success
 
-    // New states for country code and phone number
-    var selectedCountry by remember { mutableStateOf(countries[0]) }
-    var phoneNumber by remember { mutableStateOf("") }
+  // New states for country code and phone number
+  var selectedCountry by remember { mutableStateOf(countries[0]) }
+  var phoneNumber by remember { mutableStateOf("") }
 
-    // Effect to handle verification result
+  // Effect to handle verification result
   LaunchedEffect(verificationState) {
     when (val state = verificationState) {
       is CertificationViewModel.VerificationState.Success -> {
@@ -125,20 +125,16 @@ fun CreateProfileScreen(
 
               AcademicSelector(academicLevel, !isVerified)
 
-            // Phone Number Input
-            Text(text = "Phone Number", style = MaterialTheme.typography.titleSmall)
-            PhoneNumberInput(
-                selectedCountry = selectedCountry,
-                onCountryChange = { selectedCountry = it },
-                phoneNumber = phoneNumber,
-                onPhoneNumberChange = { phoneNumber = it })
+              // Phone Number Input
+              Text(text = "Phone Number", style = MaterialTheme.typography.titleSmall)
+              PhoneNumberInput(
+                  selectedCountry = selectedCountry,
+                  onCountryChange = { selectedCountry = it },
+                  phoneNumber = phoneNumber,
+                  onPhoneNumberChange = { phoneNumber = it })
 
               // Role Selection
               Column(modifier = Modifier.fillMaxWidth()) {
-
-
-
-
                 Text("You are a:", style = MaterialTheme.typography.titleSmall)
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth().testTag("roleSelection"),
@@ -198,11 +194,11 @@ fun CreateProfileScreen(
                               FirebaseAuth.getInstance().currentUser?.uid ?: ""
                             }
 
-                          val certification =
-                              if (verificationState
-                                          is CertificationViewModel.VerificationState.Success) {
-                                  EpflCertification(sciper = sciper, verified = true)
-                              } else null
+                        val certification =
+                            if (verificationState
+                                is CertificationViewModel.VerificationState.Success) {
+                              EpflCertification(sciper = sciper, verified = true)
+                            } else null
 
                         val newProfile =
                             Profile(
@@ -215,7 +211,7 @@ fun CreateProfileScreen(
                                 role,
                                 section.value!!,
                                 academicLevel.value!!,
-                                certification)
+                                certification = certification)
                         listProfilesViewModel.addProfile(newProfile)
                         listProfilesViewModel.setCurrentProfile(newProfile)
 

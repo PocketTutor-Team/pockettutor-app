@@ -74,11 +74,11 @@ class CreateProfileScreenTest {
   @Test
   fun formValidation_displaysToastWhenFieldsAreEmpty() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Click on the Confirm button with empty fields
@@ -92,11 +92,11 @@ class CreateProfileScreenTest {
   fun phoneNumberValidation_showsErrorForInvalidPhone() {
     // Set the screen in the test environment
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Enter an invalid phone number
@@ -112,11 +112,11 @@ class CreateProfileScreenTest {
   @Test
   fun selectingRole_updatesRoleCorrectly() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Select "Student" role
@@ -135,11 +135,11 @@ class CreateProfileScreenTest {
   @Test
   fun roleSwitch_updatesSelectionCorrectly() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Click on the Tutor button
@@ -184,11 +184,11 @@ class CreateProfileScreenTest {
   @Test
   fun invalidPhoneNumber_preventsNavigation() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Enter invalid phone number
@@ -204,11 +204,11 @@ class CreateProfileScreenTest {
   @Test
   fun emptyFields_preventFormSubmission() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Leave fields empty and click the confirm button
@@ -221,11 +221,12 @@ class CreateProfileScreenTest {
   @Test
   fun validFormSubmission_navigatesToCorrectScreen() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)}
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
+    }
 
     // Enter valid data for all fields
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -261,11 +262,11 @@ class CreateProfileScreenTest {
   @Test
   fun phoneNumberValidation_showsErrorForPhoneWithSpecialCharacters() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Enter a phone number with special characters
@@ -281,11 +282,11 @@ class CreateProfileScreenTest {
   @Test
   fun formValidation_displaysErrorWhenSectionAndAcademicLevelNotSelected() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -301,11 +302,11 @@ class CreateProfileScreenTest {
   @Test
   fun selectingAndChangingSection_updatesSectionCorrectly() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Open section dropdown and select a section
@@ -322,11 +323,11 @@ class CreateProfileScreenTest {
   @Test
   fun selectingAndChangingRole_updatesRoleCorrectly() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Select the Student role
@@ -344,11 +345,11 @@ class CreateProfileScreenTest {
   @Test
   fun formValidation_displaysErrorWhenRoleNotSelected() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -363,11 +364,11 @@ class CreateProfileScreenTest {
   @Test
   fun emptyPhoneNumber_preventsFormSubmission() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -382,11 +383,11 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationIncompleteInput() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Input first name only, leave other fields empty
@@ -403,11 +404,11 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationInvalidPhoneNumber() {
     composeTestRule.setContent {
-        CreateProfileScreen(
-            navigationActions = mockNavigationActions,
-            listProfilesViewModel = mockViewModel,
-            certificationViewModel = certificationViewModel,
-            testMode = true)
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
+          testMode = true)
     }
 
     // Input valid first name, last name, and invalid phone number
