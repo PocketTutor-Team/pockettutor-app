@@ -21,13 +21,20 @@
 
     <!-- Requested Lessons screen -->
     <string name="check_back">Check back soon for available lessons</string>
-    <string name="comment_check_back">Try adjusting your filters or check the instant lesson here under</string>
+    <string name="comment_check_back">Try adjusting your filters or click here under to view any instant lesson</string>
 
     <!-- LessonEditor -->
     <!-- stringResource(id = R.string.example) -->
     <string name="update">Update</string>
 
     <!-- TutorMatching -->
-    <string name="request_another_tutor">Request Another Tutor for This Lesson</string>
+    <string name="request_another_tutor">Ask for Another Tutor</string>
+
+    <!-- NetworkListener -->
+    <string name="no_internet_connection">No internet connection</string>
+
+    <!-- LocationPickerBox -->
+    <string name="confirm_location">Confirm Location</string>
+
 
 </resources>

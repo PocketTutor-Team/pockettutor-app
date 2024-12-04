@@ -10,68 +10,66 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import android.net.ConnectivityManager
 import android.net.Network
-
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
+import com.github.se.project.model.network.NetworkStatusViewModel
 
+
+/**
+ * A composable that listens to the network status and displays a red banner to inform the user
+ * at the top of the screen when the device is offline.
+ *
+ * @param networkStatusViewModel The ViewModel that provides the network status.
+ * @param content The content to display when the device is online.
+ */
 @Composable
-fun NetworkStatusListener(content: @Composable () -> Unit) {
-    val context = LocalContext.current
-    val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+fun NetworkStatusListener(networkStatusViewModel: NetworkStatusViewModel = viewModel(),
+                          content: @Composable () -> Unit) {
 
-    val isConnected = remember { mutableStateOf(true) }
+    val isConnected by networkStatusViewModel.isConnected.collectAsState()
 
-    DisposableEffect(connectivityManager) {
-        val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                isConnected.value = true
+    // Display the UI
+    Column {
+        // Show the offline banner only when offline
+        if (!isConnected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .background(Color.Red),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_internet_connection),
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        modifier = Modifier.testTag("offline_text")
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_wifi_off_24),
+                        contentDescription = "Offline",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp).testTag("offline_icon")
+                    )
+                }
             }
-
-            override fun onLost(network: Network) {
-                isConnected.value = false
-            }
         }
-        connectivityManager.registerDefaultNetworkCallback(networkCallback)
 
-        onDispose {
-            connectivityManager.unregisterNetworkCallback(networkCallback)
-        }
+        // Display the rest of the app content below the banner
+        content()
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(30.dp)
-            .background(Color.Red)
-    ) {
-        Row(
-            modifier = Modifier.align(Alignment.Center),
-            verticalAlignment = Alignment.CenterVertically // Align text and icon vertically
-        ) {
-            // Offline text
-            Text(
-                text = "You are offline",
-                color = Color.White,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.width(8.dp)) // Add some space between text and icon
-
-            // Wi-Fi off icon
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_wifi_off_24), // Replace with your icon resource
-                contentDescription = "Offline",
-                tint = Color.Red,
-                modifier = Modifier.size(20.dp) // Adjust icon size if needed
-            )
-        }
-    }
-
 }
+

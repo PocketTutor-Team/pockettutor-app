@@ -1,6 +1,6 @@
 package com.github.se.project.ui.components
 
-import MapPickerBox
+import LocationPickerBox
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -63,7 +63,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -357,7 +356,7 @@ fun LessonEditor(
 
                   // Map content
                   Box() {
-                    MapPickerBox(
+                    LocationPickerBox(
                         initialLocation = selectedLocation,
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
