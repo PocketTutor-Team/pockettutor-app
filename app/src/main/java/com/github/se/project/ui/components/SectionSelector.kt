@@ -32,10 +32,14 @@ fun SectionSelector(section: MutableState<Section?>, enabled: Boolean = true) {
             Modifier.fillMaxWidth()
                 .clickable(enabled = enabled) { expandedDropdown.value = !expandedDropdown.value }
                 .background(Color.Transparent, shape = MaterialTheme.shapes.small)
-                .border(1.dp, if(enabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), MaterialTheme.shapes.small)
+                .border(
+                    1.dp,
+                    if (enabled) MaterialTheme.colorScheme.outline
+                    else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    MaterialTheme.shapes.small)
                 .padding(16.dp)
                 .testTag("sectionDropdown")
-                .alpha(if (enabled) 1f else 0.3f), // Visual feedback for disabled state
+                .alpha(if (enabled) 1f else 0.4f), // Visual feedback for disabled state
         style = MaterialTheme.typography.bodyLarge)
 
     DropdownMenu(

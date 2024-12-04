@@ -1,5 +1,6 @@
 package com.github.se.project.ui.components
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,11 +10,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.github.se.project.R
 import com.github.se.project.model.certification.CertificationViewModel.VerificationState
 import com.github.se.project.ui.certification.SciperScanButton
 
+@ExperimentalGetImage
 @Composable
 fun EpflVerificationCard(
     sciper: String,
@@ -45,7 +50,7 @@ fun EpflVerificationCard(
                             when (verificationState) {
                               is VerificationState.Success -> Icons.Default.CheckCircle
                               is VerificationState.Error -> Icons.Default.Close
-                              else -> Icons.Default.Info
+                              else -> ImageVector.vectorResource(id = R.drawable.certified)
                             },
                         contentDescription = null,
                         tint =

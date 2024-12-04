@@ -1,6 +1,7 @@
 package com.github.se.project.ui.profile
 
 import android.widget.Toast
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +21,7 @@ import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
+@androidx.annotation.OptIn(ExperimentalGetImage::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProfileScreen(
@@ -69,7 +71,8 @@ fun CreateProfileScreen(
             text = "Welcome to Pocket Tutor!",
             style = MaterialTheme.typography.headlineMedium,
             modifier =
-                Modifier.padding(vertical = 16.dp, horizontal = 16.dp)
+                Modifier.padding(horizontal = 16.dp)
+                    .padding(top = 32.dp)
                     .fillMaxWidth()
                     .testTag("welcomeText"))
       }) { paddingValues ->
