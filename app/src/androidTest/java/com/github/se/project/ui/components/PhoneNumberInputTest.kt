@@ -41,6 +41,8 @@ class PhoneNumberInputTest {
           onPhoneNumberChange = { currentPhoneNumber = it })
     }
 
+    composeTestRule.waitForIdle()
+
     // Enter a phone number
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
 
