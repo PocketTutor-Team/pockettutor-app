@@ -47,8 +47,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Assert all expected UI components are visible
@@ -68,8 +68,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Click on the Confirm button with empty fields
@@ -85,8 +85,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Enter an invalid phone number
@@ -104,8 +104,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Select "Student" role
@@ -126,8 +126,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Click on the Tutor button
@@ -174,8 +174,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Enter invalid phone number
@@ -193,8 +193,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Leave fields empty and click the confirm button
@@ -209,8 +209,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockGoogleUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Enter valid data for all fields
@@ -248,8 +248,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Enter a phone number with special characters
@@ -267,8 +267,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -286,8 +286,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Open section dropdown and select a section
@@ -306,8 +306,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Select the Student role
@@ -327,8 +327,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -345,8 +345,8 @@ class CreateProfileScreenTest {
     composeTestRule.setContent {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
-          googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -361,7 +361,10 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationIncompleteInput() {
     composeTestRule.setContent {
-      CreateProfileScreen(mockNavigationActions, mockViewModel, googleUid = "test_google_uid")
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Input first name only, leave other fields empty
@@ -378,7 +381,10 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationInvalidPhoneNumber() {
     composeTestRule.setContent {
-      CreateProfileScreen(mockNavigationActions, mockViewModel, googleUid = "test_google_uid")
+      CreateProfileScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockViewModel,
+          testMode = true)
     }
 
     // Input valid first name, last name, and invalid phone number
