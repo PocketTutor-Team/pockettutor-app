@@ -1,80 +1,111 @@
 package com.github.se.project.ui.components
 
+import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import com.github.se.project.utils.countries
 import org.junit.Rule
 import org.junit.Test
 
 class PhoneNumberInputTest {
 
-  @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+  @get:Rule val composeTestRule = createEmptyComposeRule()
 
   @Test
   fun testPhoneNumberInputRenders() {
-    val selectedCountry = countries[0]
-    val phoneNumber = ""
-    composeTestRule.setContent {
-      PhoneNumberInput(
-          selectedCountry = selectedCountry,
-          onCountryChange = {},
-          phoneNumber = phoneNumber,
-          onPhoneNumberChange = {})
-    }
+    // Mutable states to hold the values
+    val selectedCountry = mutableStateOf(countries[0])
+    val phoneNumber = mutableStateOf("")
 
-    // Check that the Country Code field is displayed
-    composeTestRule.onNodeWithTag("countryCodeField").assertIsDisplayed()
+    ActivityScenario.launch<ComponentActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), ComponentActivity::class.java))
+        .use { scenario ->
+          scenario.onActivity { activity ->
+            activity.setContent {
+              MaterialTheme {
+                PhoneNumberInput(
+                    selectedCountry = selectedCountry.value,
+                    onCountryChange = { selectedCountry.value = it },
+                    phoneNumber = phoneNumber.value,
+                    onPhoneNumberChange = { phoneNumber.value = it })
+              }
+            }
+          }
 
-    // Check that the Phone Number field is displayed
-    composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+          // Interact with the UI
+          composeTestRule.onNodeWithTag("countryCodeField").assertIsDisplayed()
+          composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+        }
   }
 
   @Test
   fun testPhoneNumberInputUpdatesValue() {
-    var currentPhoneNumber = ""
-    composeTestRule.setContent {
-      PhoneNumberInput(
-          selectedCountry = countries[0],
-          onCountryChange = {},
-          phoneNumber = currentPhoneNumber,
-          onPhoneNumberChange = { currentPhoneNumber = it })
-    }
+    val selectedCountry = mutableStateOf(countries[0])
+    val phoneNumber = mutableStateOf("")
 
-    composeTestRule.waitForIdle()
+    ActivityScenario.launch<ComponentActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), ComponentActivity::class.java))
+        .use { scenario ->
+          scenario.onActivity { activity ->
+            activity.setContent {
+              MaterialTheme {
+                PhoneNumberInput(
+                    selectedCountry = selectedCountry.value,
+                    onCountryChange = { selectedCountry.value = it },
+                    phoneNumber = phoneNumber.value,
+                    onPhoneNumberChange = { phoneNumber.value = it })
+              }
+            }
+          }
 
-    // Enter a phone number
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
+          composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
 
-    // Check that the phone number is updated
-    assert(currentPhoneNumber == "1234567890")
+          // Verify the updated phone number
+          scenario.onActivity { assert(phoneNumber.value == "1234567890") }
+        }
   }
 
   @Test
   fun testCountryCodeDropdown() {
-    var currentSelectedCountry = countries[0]
-    composeTestRule.setContent {
-      PhoneNumberInput(
-          selectedCountry = currentSelectedCountry,
-          onCountryChange = { currentSelectedCountry = it },
-          phoneNumber = "",
-          onPhoneNumberChange = {})
-    }
+    val selectedCountry = mutableStateOf(countries[0])
+    val phoneNumber = mutableStateOf("")
 
-    composeTestRule.waitForIdle()
-    // Open the country code dropdown
-    composeTestRule.onNodeWithTag("countryCodeField").performClick()
+    ActivityScenario.launch<ComponentActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), ComponentActivity::class.java))
+        .use { scenario ->
+          scenario.onActivity { activity ->
+            activity.setContent {
+              MaterialTheme {
+                PhoneNumberInput(
+                    selectedCountry = selectedCountry.value,
+                    onCountryChange = { selectedCountry.value = it },
+                    phoneNumber = phoneNumber.value,
+                    onPhoneNumberChange = { phoneNumber.value = it })
+              }
+            }
+          }
 
-    // Wait for the dropdown to appear
-    composeTestRule.waitForIdle()
+          composeTestRule.waitForIdle()
 
-    // Select the second country in the list
-    val secondCountry = countries[1]
-    val testTag = "country_${secondCountry.code.replace("+", "plus")}"
+          // Open the country code dropdown
+          composeTestRule.onNodeWithTag("countryCodeField").performClick()
 
-    composeTestRule.onNodeWithTag(testTag).performClick()
+          composeTestRule.waitForIdle()
 
-    // Check that the selected country has been updated
-    assert(currentSelectedCountry == secondCountry)
+          // Select the second country
+          val secondCountry = countries[1]
+          val testTag = "country_${secondCountry.code.replace("+", "plus")}"
+
+          composeTestRule.onNodeWithTag(testTag).performClick()
+
+          // Verify the selected country
+          scenario.onActivity { assert(selectedCountry.value == secondCountry) }
+        }
   }
 }
