@@ -57,7 +57,7 @@ fun SplashScreen(
   }
 
   // Animation for the logo
-  val infiniteTransition = rememberInfiniteTransition(label = "blink")
+  val infiniteTransition = rememberInfiniteTransition(label = "Logo Animation")
   val scale by
       infiniteTransition.animateFloat(
           initialValue = 0.8f,
@@ -66,7 +66,7 @@ fun SplashScreen(
               infiniteRepeatable(
                   animation = tween(1000, easing = FastOutSlowInEasing),
                   repeatMode = RepeatMode.Reverse),
-          label = "bliiink")
+          label = "Logo Scale Animation")
 
   // UI Content
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
