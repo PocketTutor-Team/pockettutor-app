@@ -151,6 +151,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.vision.common)
+    implementation(libs.play.services.mlkit.text.recognition.common)
+    implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
     testImplementation(libs.test.core.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -180,8 +185,13 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
 
-    // Networking with OkHttp
+    // Networking
     implementation(libs.okhttp)
+    implementation(libs.jsoup)
+
+    // Required for ListenableFuture
+    implementation(libs.guava.v3300android)
+
 
     // Stream Chat
     implementation(libs.stream.chat.compose)
@@ -216,6 +226,7 @@ dependencies {
     testImplementation(libs.kaspresso.allure.support)
     testImplementation(libs.kaspresso.compose.support)
     testImplementation(libs.kotlinx.coroutines.test)
+
 }
 
 

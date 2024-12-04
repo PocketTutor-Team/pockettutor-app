@@ -3,13 +3,17 @@
 accompanistCoil = "0.24.3-alpha"
 agp = "8.4.2"
 coilCompose = "2.1.0"
+guava = "34-android"
+guavaVersion = "33.0.0-android"
 json = "20240303"
+jsoup = "1.17.2"
 kotlin = "1.9.0"
 gms = "4.4.2"
 ktfmt = "0.17.0"
 
 # UI Compose
 mockitoAndroid = "5.13.0"
+mockitoInlineVersion = "5.5.0"
 streamChatAndroidUiComponents = "6.4.4"
 ui = "1.6.8"
 uiTestJunit4 = "1.6.8"
@@ -76,6 +80,11 @@ androidxCoreKtx = "1.6.1"
 # stream chat
 streamChatCompose = "6.4.4"
 streamChatOffline = "6.4.4"
+visionCommon = "17.3.0"
+playServicesMlkitTextRecognitionCommon = "19.1.0"
+playServicesMlkitTextRecognition = "19.0.1"
+cameraLifecycle = "1.4.0"
+cameraView = "1.4.0"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
@@ -109,7 +118,10 @@ firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", 
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+guava-v3300android = { module = "com.google.guava:guava", version.ref = "guavaVersion" }
 json = { module = "org.json:json", version.ref = "json" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
 kaspresso-allure-support = { module = "com.kaspersky.android-components:kaspresso-allure-support", version.ref = "kaspressoAllureSupport" }
@@ -122,6 +134,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockito-inline-v550 = { module = "org.mockito:mockito-inline", version.ref = "mockitoInlineVersion" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref="mockitoKotlin"}
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockkAgent" }
@@ -140,6 +153,11 @@ stream-chat-compose = { module="io.getstream:stream-chat-android-compose", versi
 stream-chat-offline = { module="io.getstream:stream-chat-android-offline", version.ref = "streamChatOffline"}
 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
+play-services-mlkit-text-recognition-common = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-common", version.ref = "playServicesMlkitTextRecognitionCommon" }
+play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraLifecycle" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

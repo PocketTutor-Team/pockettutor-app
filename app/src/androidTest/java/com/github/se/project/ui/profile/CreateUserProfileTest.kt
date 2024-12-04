@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.ProfilesRepository
@@ -35,6 +37,11 @@ class CreateProfileScreenTest {
   // Mock du ViewModel avec le ProfilesRepository mocké
   private val mockViewModel = ListProfilesViewModel(mockProfilesRepository)
 
+  private val certificationRepository = Mockito.mock(EpflVerificationRepository::class.java)
+
+  private val certificationViewModel =
+      CertificationViewModel(certificationRepository, mockViewModel)
+
   @Before
   fun setUp() {
     // Stubbing du getNewUid pour retourner une valeur factice
@@ -48,18 +55,19 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Assert all expected UI components are visible
     composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("instructionText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonStudent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
@@ -69,7 +77,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Click on the Confirm button with empty fields
@@ -86,7 +95,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Enter an invalid phone number
@@ -105,7 +115,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Select "Student" role
@@ -127,7 +138,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Click on the Tutor button
@@ -175,7 +187,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Enter invalid phone number
@@ -194,7 +207,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Leave fields empty and click the confirm button
@@ -210,7 +224,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockGoogleUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Enter valid data for all fields
@@ -238,7 +253,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Enter a phone number with special characters
@@ -257,7 +273,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -276,7 +293,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Open section dropdown and select a section
@@ -296,7 +314,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Select the Student role
@@ -317,7 +336,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -335,7 +355,8 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           googleUid = "mockUid",
-          listProfilesViewModel = mockViewModel)
+          listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -350,7 +371,11 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationIncompleteInput() {
     composeTestRule.setContent {
-      CreateProfileScreen(mockNavigationActions, mockViewModel, googleUid = "test_google_uid")
+      CreateProfileScreen(
+          mockNavigationActions,
+          mockViewModel,
+          googleUid = "test_google_uid",
+          certificationViewModel = certificationViewModel)
     }
 
     // Input first name only, leave other fields empty
@@ -367,7 +392,11 @@ class CreateProfileScreenTest {
   @Test
   fun testProfileCreationInvalidPhoneNumber() {
     composeTestRule.setContent {
-      CreateProfileScreen(mockNavigationActions, mockViewModel, googleUid = "test_google_uid")
+      CreateProfileScreen(
+          mockNavigationActions,
+          mockViewModel,
+          googleUid = "test_google_uid",
+          certificationViewModel = certificationViewModel)
     }
 
     // Input valid first name, last name, and invalid phone number

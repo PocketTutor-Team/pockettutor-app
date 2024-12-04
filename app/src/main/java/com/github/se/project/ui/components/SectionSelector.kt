@@ -15,33 +15,33 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.zIndex
 import com.github.se.project.model.profile.Section
 
 @Composable
-fun SectionSelector(section: MutableState<Section?> = mutableStateOf(null)) {
+fun SectionSelector(section: MutableState<Section?>, enabled: Boolean = true) {
   val expandedDropdown = remember { mutableStateOf(false) }
+
   Box {
     Text(
-        text = section.value?.name ?: "Section", // Directly access the value
+        text = section.value?.name ?: "Section",
         modifier =
             Modifier.fillMaxWidth()
-                .clickable { expandedDropdown.value = !expandedDropdown.value }
+                .clickable(enabled = enabled) { expandedDropdown.value = !expandedDropdown.value }
                 .background(Color.Transparent, shape = MaterialTheme.shapes.small)
                 .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
+                .padding(16.dp)
                 .testTag("sectionDropdown")
-                .padding(16.dp),
+                .alpha(if (enabled) 1f else 0.6f), // Visual feedback for disabled state
         style = MaterialTheme.typography.bodyLarge)
 
     DropdownMenu(
-        expanded = expandedDropdown.value,
+        expanded = expandedDropdown.value && enabled,
         onDismissRequest = { expandedDropdown.value = false },
-        modifier = Modifier.fillMaxWidth().zIndex(1f),
-        properties = PopupProperties(focusable = true)) {
+        modifier = Modifier.fillMaxWidth()) {
           Section.entries.forEach { s ->
             DropdownMenuItem(
                 text = { Text(s.name, style = MaterialTheme.typography.bodyMedium) },

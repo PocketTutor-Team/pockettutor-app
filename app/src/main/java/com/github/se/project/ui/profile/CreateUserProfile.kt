@@ -11,32 +11,57 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflCertification
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.AcademicSelector
+import com.github.se.project.ui.components.EpflVerificationCard
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProfileScreen(
     navigationActions: NavigationActions,
-    listProfilesViewModel: ListProfilesViewModel =
-        viewModel(factory = ListProfilesViewModel.Factory),
+    listProfilesViewModel: ListProfilesViewModel,
+    certificationViewModel: CertificationViewModel, // Add this parameter
     googleUid: String
 ) {
-
+  // State management
   var firstName by remember { mutableStateOf("") }
   var lastName by remember { mutableStateOf("") }
   var phoneNumber by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
+
+  var sciper by remember { mutableStateOf("") } // Add SCIPER state
+
   val context = LocalContext.current
-  var token = ""
+  var token = "" // For Firebase messaging
+
+  // Observe verification state
+  val verificationState by certificationViewModel.verificationState.collectAsState()
+  val isVerified = verificationState is CertificationViewModel.VerificationState.Success
+
+  // Effect to handle verification result
+  LaunchedEffect(verificationState) {
+    when (val state = verificationState) {
+      is CertificationViewModel.VerificationState.Success -> {
+        // Auto-fill form with verified data
+        firstName = state.result.firstName
+        lastName = state.result.lastName
+        section.value = state.result.section
+        academicLevel.value = state.result.academicLevel
+        Toast.makeText(context, "EPFL Profile verified successfully!", Toast.LENGTH_SHORT).show()
+      }
+      is CertificationViewModel.VerificationState.Error -> {
+        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+      }
+      else -> {} // Handle other states if needed
+    }
+  }
 
   Scaffold(
       topBar = {
@@ -44,45 +69,50 @@ fun CreateProfileScreen(
             text = "Welcome to Pocket Tutor!",
             style = MaterialTheme.typography.headlineMedium,
             modifier =
-                Modifier.padding(vertical = 16.dp)
-                    .padding(horizontal = 16.dp)
+                Modifier.padding(vertical = 16.dp, horizontal = 16.dp)
                     .fillMaxWidth()
-                    .testTag("welcomeText") // Test tag for top title text
-            )
+                    .testTag("welcomeText"))
       }) { paddingValues ->
         Column(
             modifier =
                 Modifier.fillMaxSize()
                     .padding(paddingValues)
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState()), // Make screen scrollable
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-              Text(
-                  text = "Please enter your details to create your profile:",
-                  style = MaterialTheme.typography.titleMedium,
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .padding(bottom = 8.dp)
-                          .testTag("instructionText") // Test tag for instruction text
-                  )
 
+              // EPFL Verification Section
+              EpflVerificationCard(
+                  sciper = sciper,
+                  onSciperChange = { sciper = it },
+                  verificationState = verificationState,
+                  onVerifyClick = { certificationViewModel.verifySciperNumber(it) },
+                  onResetVerification = { certificationViewModel.resetVerification() },
+                  modifier = Modifier.fillMaxWidth())
+
+              // Existing profile creation fields
               OutlinedTextField(
                   value = firstName,
                   onValueChange = { firstName = it },
                   label = { Text("First Name") },
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .testTag("firstNameField"), // Test tag for first name input
-                  singleLine = true)
+                  modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
+                  singleLine = true,
+                  enabled = !isVerified // Disable if verified
+                  )
 
               OutlinedTextField(
                   value = lastName,
                   onValueChange = { lastName = it },
                   label = { Text("Last Name") },
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .testTag("lastNameField"), // Test tag for last name input
-                  singleLine = true)
+                  modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
+                  singleLine = true,
+                  enabled = !isVerified // Disable if verified
+                  )
+
+              // Section and Academic Level
+              SectionSelector(section, !isVerified)
+
+              AcademicSelector(academicLevel, !isVerified)
 
               OutlinedTextField(
                   value = phoneNumber,
@@ -93,106 +123,70 @@ fun CreateProfileScreen(
                           .testTag("phoneNumberField"), // Test tag for phone number input
                   singleLine = true)
 
+              // Role selection
               Column(modifier = Modifier.fillMaxWidth()) {
                 Text("You are a:", style = MaterialTheme.typography.titleSmall)
-                val roles = listOf(Role.STUDENT, Role.TUTOR)
                 SingleChoiceSegmentedButtonRow(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .testTag("roleSelection") // Test tag for role selection row
-                    ) {
-                      roles.forEach { r ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.baseShape,
-                            selected = r == role,
-                            onClick = { role = r },
-                            colors =
-                                SegmentedButtonDefaults.colors(activeContentColor = Color.White),
-                            modifier =
-                                Modifier.padding(4.dp)
-                                    .testTag(
-                                        "roleButton${if (r == Role.STUDENT) "Student" else "Tutor"}") // Test tag for role buttons
-                            ) {
-                              Text(
-                                  text = if (r == Role.STUDENT) "Student" else "Tutor",
-                                  style = MaterialTheme.typography.labelLarge)
-                            }
-                      }
-                    }
+                    modifier = Modifier.fillMaxWidth().testTag("roleSelection"),
+                ) {
+                  listOf(Role.STUDENT, Role.TUTOR).forEach { r ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.baseShape,
+                        selected = r == role,
+                        onClick = { role = r },
+                        colors = SegmentedButtonDefaults.colors(activeContentColor = Color.White),
+                        modifier =
+                            Modifier.padding(4.dp)
+                                .testTag(
+                                    "roleButton${if (r == Role.STUDENT) "Student" else "Tutor"}")) {
+                          Text(if (r == Role.STUDENT) "Student" else "Tutor")
+                        }
+                  }
+                }
               }
-
-              Text(text = "Select your section", style = MaterialTheme.typography.titleSmall)
-              // Section dropdown menu with improved styling
-              SectionSelector(section)
-
-              Text(text = "Select your academic level", style = MaterialTheme.typography.titleSmall)
-              // Academic Level dropdown menu with improved styling
-              AcademicSelector(academicLevel)
 
               Spacer(modifier = Modifier.weight(1f))
 
-              FirebaseMessaging.getInstance()
-                  .token
-                  .addOnCompleteListener(
-                      OnCompleteListener { task ->
-                        if (!task.isSuccessful) {
-                          // Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                          return@OnCompleteListener
-                        }
-
-                        // Get new FCM registration token
-                        token = task.result
-
-                        // Log and toast
-                        val msg = "FCM Token: $token"
-                        // Log.d(TAG, msg)
-
-                        // Implement this method to send token to your app server.
-                        // Log.d("MainActivity" ,"sendRegistrationTokenToServer($token)")
-                      })
-
+              // Create profile button
               Button(
                   onClick = {
-                    if (firstName.isNotEmpty() &&
-                        lastName.isNotEmpty() &&
-                        phoneNumber.isNotEmpty() &&
-                        isPhoneNumberValid(phoneNumber) &&
-                        role != Role.UNKNOWN &&
-                        section.value != null &&
-                        academicLevel.value != null) {
-                      try {
-                        val newProfile =
-                            Profile(
-                                listProfilesViewModel.getNewUid(),
-                                token,
-                                googleUid,
-                                firstName,
-                                lastName,
-                                phoneNumber,
-                                role,
-                                section.value!!,
-                                academicLevel.value!!)
-                        listProfilesViewModel.addProfile(newProfile)
-                        listProfilesViewModel.setCurrentProfile(newProfile)
+                    if (validateInputs(
+                        firstName,
+                        lastName,
+                        phoneNumber,
+                        role,
+                        section.value,
+                        academicLevel.value)) {
+                      // Create profile with certification if verified
+                      val certification =
+                          if (verificationState
+                              is CertificationViewModel.VerificationState.Success) {
+                            EpflCertification(sciper = sciper, verified = true)
+                          } else null
 
-                        if (role == Role.TUTOR) {
-                          navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
-                        } else if (role == Role.STUDENT) {
-                          navigationActions.navigateTo(Screen.HOME)
-                        }
-                      } catch (e: Exception) {
-                        Toast.makeText(
-                                context,
-                                "An error occurred. Please check your inputs and try again.",
-                                Toast.LENGTH_SHORT)
-                            .show()
+                      val newProfile =
+                          Profile(
+                              uid = listProfilesViewModel.getNewUid(),
+                              token = token,
+                              googleUid = googleUid,
+                              firstName = firstName,
+                              lastName = lastName,
+                              phoneNumber = phoneNumber,
+                              role = role,
+                              section = section.value!!,
+                              academicLevel = academicLevel.value!!,
+                              certification = certification)
+
+                      listProfilesViewModel.addProfile(newProfile)
+                      listProfilesViewModel.setCurrentProfile(newProfile)
+
+                      if (role == Role.TUTOR) {
+                        navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
+                      } else {
+                        navigationActions.navigateTo(Screen.HOME)
                       }
                     } else {
-                      Toast.makeText(
-                              context,
-                              "Please fill all fields with valid information!",
-                              Toast.LENGTH_SHORT)
-                          .show()
+                      Toast.makeText(context, "Please fill all fields!", Toast.LENGTH_SHORT).show()
                     }
                   },
                   modifier =
@@ -204,6 +198,23 @@ fun CreateProfileScreen(
                   }
             }
       }
+}
+
+private fun validateInputs(
+    firstName: String,
+    lastName: String,
+    phoneNumber: String,
+    role: Role,
+    section: Section?,
+    academicLevel: AcademicLevel?
+): Boolean {
+  return firstName.isNotEmpty() &&
+      lastName.isNotEmpty() &&
+      phoneNumber.isNotEmpty() &&
+      isPhoneNumberValid(phoneNumber) &&
+      role != Role.UNKNOWN &&
+      section != null &&
+      academicLevel != null
 }
 
 /**
