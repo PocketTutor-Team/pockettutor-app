@@ -106,6 +106,106 @@ class EpflVerificationRepositoryTest {
   }
 
   @Test
+  fun `verifySciper with empty SCIPER returns InvalidSciper error`() = runBlocking {
+    val result = repository.verifySciper("")
+    assertTrue(result is VerificationResult.Error.InvalidSciper)
+  }
+
+  @Test
+  fun `verifySciper with unexpected HTML structure returns ParsingError`() = runBlocking {
+    val unexpectedHtml =
+        """
+            <!DOCTYPE html>
+            <html>
+                <head><title>EPFL People</title></head>
+                <body>
+                    <div>Invalid content structure</div>
+                </body>
+            </html>
+        """
+            .trimIndent()
+    setupMockResponseWithBody(unexpectedHtml)
+
+    val result = repository.verifySciper("123456")
+    assertTrue(result is VerificationResult.Error.ParsingError)
+  }
+
+  @Test
+  fun `verifySciper with network timeout returns NetworkError`() = runBlocking {
+    whenever(mockCall.execute()).thenThrow(java.net.SocketTimeoutException("Timeout"))
+
+    val result = repository.verifySciper("123456")
+    assertTrue(result is VerificationResult.Error.NetworkError)
+  }
+
+  @Test
+  fun `verifySciper with 500 server error returns NetworkError`() = runBlocking {
+    setupMockResponseWithCode(500)
+
+    val result = repository.verifySciper("123456")
+    assertTrue(result is VerificationResult.Error.NetworkError)
+  }
+
+  @Test
+  fun `verifySciper parses all academic levels correctly`() = runBlocking {
+    val academicLevelTestCases =
+        listOf(
+            "Bachelor semestre 1" to AcademicLevel.BA1,
+            "Bachelor semestre 2" to AcademicLevel.BA2,
+            "Bachelor semestre 3" to AcademicLevel.BA3,
+            "Bachelor semestre 4" to AcademicLevel.BA4,
+            "Bachelor semestre 5" to AcademicLevel.BA5,
+            "Bachelor semestre 6" to AcademicLevel.BA6,
+            "Master semestre 1" to AcademicLevel.MA1,
+            "Master semestre 2" to AcademicLevel.MA2,
+            "Master semestre 3" to AcademicLevel.MA3,
+            "Master semestre 4" to AcademicLevel.MA4,
+            "Doctorat" to AcademicLevel.PhD,
+            "Unrecognized level" to AcademicLevel.BA1 // Test the `else` case
+            )
+
+    academicLevelTestCases.forEach { (levelText, expectedLevel) ->
+      val html = createHtmlWithAcademicLevel(levelText)
+      setupMockResponseWithBody(html)
+
+      val result = repository.verifySciper("123456")
+      assertTrue(result is VerificationResult.Success)
+      assertEquals(expectedLevel, (result as VerificationResult.Success).academicLevel)
+    }
+  }
+
+  @Test
+  fun `verifySciper parses all sections correctly`() = runBlocking {
+    val sectionTestCases =
+        listOf(
+            "systèmes de communication" to Section.SC,
+            "informatique" to Section.IN,
+            "génie civil" to Section.GC,
+            "sciences et ingénierie de l'environnement" to Section.SIE,
+            "architecture" to Section.AR,
+            "mathématiques" to Section.MA,
+            "physique" to Section.PH,
+            "génie mécanique" to Section.GM,
+            "génie électrique" to Section.EL,
+            "science et génie des matériaux" to Section.MX,
+            "microtechnique" to Section.MT,
+            "sciences et technologies du vivant" to Section.SV,
+            "neuro-x" to Section.NX,
+            "quantum" to Section.SIQ,
+            "Unrecognized section" to Section.IN // Test the `else` case
+            )
+
+    sectionTestCases.forEach { (sectionText, expectedSection) ->
+      val html = createHtmlWithSection(sectionText)
+      setupMockResponseWithBody(html)
+
+      val result = repository.verifySciper("123456")
+      assertTrue(result is VerificationResult.Success)
+      assertEquals(expectedSection, (result as VerificationResult.Success).section)
+    }
+  }
+
+  @Test
   fun `verifySciper parses different sections correctly`() = runBlocking {
     val sectionTestCases =
         listOf(

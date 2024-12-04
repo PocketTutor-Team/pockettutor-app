@@ -23,6 +23,35 @@ class SciperScanButtonTest {
   }
 
   @Test
+  fun scanDialogOpensAndClosesProperly() {
+    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+
+    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+
+    // Close the dialog
+    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
+    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
+  }
+
+  @Test
+  fun scanButtonAllowsRetryAfterDismiss() {
+    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+
+    // Open the scan dialog
+    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+
+    // Dismiss the dialog
+    composeTestRule.onNodeWithContentDescription("Close camera").performClick()
+    composeTestRule.onNodeWithText("Scan your Camipro Card").assertDoesNotExist()
+
+    // Retry scanning
+    composeTestRule.onNodeWithText("Scan Camipro Card").performClick()
+    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
+  }
+
+  @Test
   fun scanButtonClickShowsDialog() {
     composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
 
