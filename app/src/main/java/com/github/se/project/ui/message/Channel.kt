@@ -90,8 +90,7 @@ fun ChannelScreen(
                   },
                   tabList = navigationItems,
                   selectedItem = navigationActions.currentRoute(),
-                    networkStatusViewModel = networkStatusViewModel
-              )
+                  networkStatusViewModel = networkStatusViewModel)
             }) {
               // Displays the list of chat channels
               ChannelsScreen(

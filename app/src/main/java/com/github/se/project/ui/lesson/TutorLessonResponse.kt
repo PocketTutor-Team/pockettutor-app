@@ -63,7 +63,7 @@ fun TutorLessonResponseScreen(
     networkStatusViewModel: NetworkStatusViewModel = viewModel(),
     navigationActions: NavigationActions,
 ) {
-    val isConnected by networkStatusViewModel.isConnected.collectAsState()
+  val isConnected by networkStatusViewModel.isConnected.collectAsState()
 
   val lesson =
       lessonViewModel.selectedLesson.collectAsState().value
@@ -186,50 +186,55 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("confirmDialogConfirmButton"),
                     onClick = {
-                        if(isConnected) {
-                          if (isInstant(lesson) &&
-                              lessonViewModel.currentUserLessons.value.any {
-                                it.status == LessonStatus.INSTANT_CONFIRMED
-                              }) {
-                            Toast.makeText(
-                                    context,
-                                    "You already have an instant lesson scheduled!",
-                                    Toast.LENGTH_SHORT)
-                                .show()
-                          } else {
-                            val formattedTimestamp =
-                                SimpleDateFormat("dd/MM/yyyy'T'HH:mm:ss", Locale.getDefault())
-                                    .format(java.util.Date())
-                            lessonViewModel.updateLesson(
-                                lesson.copy(
-                                    tutorUid = lesson.tutorUid + currentProfile.uid,
-                                    price = currentProfile.price.toDouble(),
-                                    status =
-                                        if (lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION) {
-                                          LessonStatus.CONFIRMED
-                                        } else if (isInstant(lesson)) {
-                                          LessonStatus.INSTANT_CONFIRMED
-                                        } else {
-                                          LessonStatus.STUDENT_REQUESTED
-                                        },
-                                    timeSlot =
-                                        if (isInstant(lesson)) formattedTimestamp else lesson.timeSlot),
-                                onComplete = {
-                                  lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                                  lessonViewModel.getAllRequestedLessons()
-                                  Toast.makeText(
-                                          context, "Offer sent successfully!", Toast.LENGTH_SHORT)
-                                      .show()
-                                  navigationActions.navigateTo(Screen.HOME)
-                                })
-                          }
+                      if (isConnected) {
+                        if (isInstant(lesson) &&
+                            lessonViewModel.currentUserLessons.value.any {
+                              it.status == LessonStatus.INSTANT_CONFIRMED
+                            }) {
+                          Toast.makeText(
+                                  context,
+                                  "You already have an instant lesson scheduled!",
+                                  Toast.LENGTH_SHORT)
+                              .show()
                         } else {
-                            Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
+                          val formattedTimestamp =
+                              SimpleDateFormat("dd/MM/yyyy'T'HH:mm:ss", Locale.getDefault())
+                                  .format(java.util.Date())
+                          lessonViewModel.updateLesson(
+                              lesson.copy(
+                                  tutorUid = lesson.tutorUid + currentProfile.uid,
+                                  price = currentProfile.price.toDouble(),
+                                  status =
+                                      if (lesson.status ==
+                                          LessonStatus.PENDING_TUTOR_CONFIRMATION) {
+                                        LessonStatus.CONFIRMED
+                                      } else if (isInstant(lesson)) {
+                                        LessonStatus.INSTANT_CONFIRMED
+                                      } else {
+                                        LessonStatus.STUDENT_REQUESTED
+                                      },
+                                  timeSlot =
+                                      if (isInstant(lesson)) formattedTimestamp
+                                      else lesson.timeSlot),
+                              onComplete = {
+                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                                lessonViewModel.getAllRequestedLessons()
+                                Toast.makeText(
+                                        context, "Offer sent successfully!", Toast.LENGTH_SHORT)
+                                    .show()
+                                navigationActions.navigateTo(Screen.HOME)
+                              })
                         }
-                    }
-                ) {
+                      } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.inform_user_offline),
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    }) {
                       Text("Confirm")
-                }
+                    }
               },
               dismissButton = {
                 TextButton(
@@ -257,26 +262,29 @@ fun TutorLessonResponseScreen(
                 Button(
                     modifier = Modifier.testTag("declineDialogConfirmButton"),
                     onClick = {
-                        if (isConnected) {
-                          lessonViewModel.updateLesson(
-                              lesson.copy(
-                                  tutorUid = listOf(),
-                                  status = LessonStatus.STUDENT_REQUESTED,
-                              ),
-                              onComplete = {
-                                lessonViewModel.getLessonsForTutor(currentProfile.uid)
-                                Toast.makeText(
-                                        context, "Lesson dismiss successfully.", Toast.LENGTH_SHORT)
-                                    .show()
-                                navigationActions.navigateTo(Screen.HOME)
-                              })
-                        } else {
-                        Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                ) {
+                      if (isConnected) {
+                        lessonViewModel.updateLesson(
+                            lesson.copy(
+                                tutorUid = listOf(),
+                                status = LessonStatus.STUDENT_REQUESTED,
+                            ),
+                            onComplete = {
+                              lessonViewModel.getLessonsForTutor(currentProfile.uid)
+                              Toast.makeText(
+                                      context, "Lesson dismiss successfully.", Toast.LENGTH_SHORT)
+                                  .show()
+                              navigationActions.navigateTo(Screen.HOME)
+                            })
+                      } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.inform_user_offline),
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    }) {
                       Text("Confirm")
-                }
+                    }
               },
               dismissButton = {
                 TextButton(

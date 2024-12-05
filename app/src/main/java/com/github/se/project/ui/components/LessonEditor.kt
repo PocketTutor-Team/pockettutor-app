@@ -63,7 +63,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -98,25 +97,25 @@ fun LessonEditor(
     onDelete: ((Lesson) -> Unit)? = null,
     onMapReady: (Boolean) -> Unit = {}
 ) {
-    // Context for the Toast messages
-    val context = LocalContext.current
+  // Context for the Toast messages
+  val context = LocalContext.current
 
-    val canBeInstant = remember { mutableStateOf(lesson == null) }
-    val instant = remember { mutableStateOf(isInstant(lesson)) }
+  val canBeInstant = remember { mutableStateOf(lesson == null) }
+  val instant = remember { mutableStateOf(isInstant(lesson)) }
 
-    //store the initial value of the lesson
-    // Track initial values for changes
-    val initialTitle = lesson?.title ?: ""
-    val initialDescription = lesson?.description ?: ""
-    val initialDate = lesson?.timeSlot?.split("T")?.get(0) ?: ""
-    val initialTime = lesson?.timeSlot?.split("T")?.get(1)?.substring(0, 5) ?: ""
-    val initialMinPrice = lesson?.minPrice ?: 5.0
-    val initialMaxPrice = lesson?.maxPrice ?: 50.0
-    val initialSubject = lesson?.subject ?: Subject.NONE
-    val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
-    val initialLanguage = lesson?.languages ?: listOf()
+  // store the initial value of the lesson
+  // Track initial values for changes
+  val initialTitle = lesson?.title ?: ""
+  val initialDescription = lesson?.description ?: ""
+  val initialDate = lesson?.timeSlot?.split("T")?.get(0) ?: ""
+  val initialTime = lesson?.timeSlot?.split("T")?.get(1)?.substring(0, 5) ?: ""
+  val initialMinPrice = lesson?.minPrice ?: 5.0
+  val initialMaxPrice = lesson?.maxPrice ?: 50.0
+  val initialSubject = lesson?.subject ?: Subject.NONE
+  val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
+  val initialLanguage = lesson?.languages ?: listOf()
 
-    // Initialize the lesson fields
+  // Initialize the lesson fields
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
   val selectedLanguages = remember { mutableStateListOf<Language>() }
@@ -138,24 +137,25 @@ fun LessonEditor(
   }
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
 
-    // State to check if any changes have been made
-    val hasChanges by remember { derivedStateOf {
-        title != initialTitle ||
-                description != initialDescription ||
-                selectedDate != initialDate ||
-                selectedTime != initialTime ||
-                minPrice != initialMinPrice ||
-                maxPrice != initialMaxPrice ||
-                selectedSubject.value != initialSubject ||
-                selectedLocation != initialLocation ||
-                selectedLanguages.toList() != initialLanguage
-    }}
+  // State to check if any changes have been made
+  val hasChanges by remember {
+    derivedStateOf {
+      title != initialTitle ||
+          description != initialDescription ||
+          selectedDate != initialDate ||
+          selectedTime != initialTime ||
+          minPrice != initialMinPrice ||
+          maxPrice != initialMaxPrice ||
+          selectedSubject.value != initialSubject ||
+          selectedLocation != initialLocation ||
+          selectedLanguages.toList() != initialLanguage
+    }
+  }
 
   var isLocationChecked by remember { mutableStateOf(false) }
 
   var showDatePicker by remember { mutableStateOf(false) }
   var showTimeDialog by remember { mutableStateOf(false) }
-
 
   var showMapDialog by remember { mutableStateOf(false) }
 
@@ -168,7 +168,6 @@ fun LessonEditor(
       selectedDate = lesson.timeSlot.split("T")[0]
     }
   }
-
 
   // Handles location permissions and updates the user's location if allowed
   LocationPermissionHandler { location ->
@@ -555,18 +554,22 @@ fun LessonEditor(
                   shape = MaterialTheme.shapes.medium,
                   enabled = hasChanges,
                   onClick = {
-                      if (isConnected) {
-                          onConfirmClick() // Perform the actual action
-                      } else {
-                          Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
-                      }
+                    if (isConnected) {
+                      onConfirmClick() // Perform the actual action
+                    } else {
+                      Toast.makeText(
+                              context,
+                              context.getString(R.string.inform_user_offline),
+                              Toast.LENGTH_SHORT)
+                          .show()
+                    }
                   }) {
-                  if (lesson != null) {
+                    if (lesson != null) {
                       Text(stringResource(id = R.string.update))
-                  } else {
+                    } else {
                       Text(stringResource(id = R.string.create))
+                    }
                   }
-              }
 
               if (onDelete != null) {
                 Button(
@@ -577,15 +580,18 @@ fun LessonEditor(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     onClick = {
-                        if (isConnected) {
-                            onDelete(lesson!!) // Perform the delete action
-                        } else {
-                            Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
-                        }
+                      if (isConnected) {
+                        onDelete(lesson!!) // Perform the delete action
+                      } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.inform_user_offline),
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    }) {
+                      Text("Delete")
                     }
-                ) {
-                    Text("Delete")
-                }
               }
             }
       })

@@ -14,12 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.network.NetworkStatusViewModel
 
@@ -34,9 +33,10 @@ import com.github.se.project.model.network.NetworkStatusViewModel
  * @param tabList A list of [TopLevelDestination] items to be displayed in the navigation menu. Each
  *   destination should have a route, an icon, and a label.
  * @param selectedItem A string representing the route of the currently selected tab.
- *     * This will be used to highlight the active tab in the navigation menu.
+ *         * This will be used to highlight the active tab in the navigation menu.
+ *
  * @param networkStatusViewModel The [NetworkStatusViewModel] used to check the network status.
- *    * This will be used to show a toast message when the user is offline.
+ *     * This will be used to show a toast message when the user is offline.
  */
 @Composable
 fun BottomNavigationMenu(
@@ -45,15 +45,15 @@ fun BottomNavigationMenu(
     selectedItem: String,
     networkStatusViewModel: NetworkStatusViewModel
 ) {
-    val home_text = stringResource(id = R.string.home)
-    val my_course_text = stringResource(id = R.string.my_course)
-    val find_tutor_text = stringResource(id = R.string.find_tutor)
-    val find_student_text = stringResource(id = R.string.find_student)
-    val chat_text = stringResource(id = R.string.chat)
+  val home_text = stringResource(id = R.string.home)
+  val my_course_text = stringResource(id = R.string.my_course)
+  val find_tutor_text = stringResource(id = R.string.find_tutor)
+  val find_student_text = stringResource(id = R.string.find_student)
+  val chat_text = stringResource(id = R.string.chat)
 
-    val isConnected by networkStatusViewModel.isConnected.collectAsState()
+  val isConnected by networkStatusViewModel.isConnected.collectAsState()
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
   NavigationBar(modifier = Modifier.fillMaxWidth().height(60.dp).testTag("bottomNavigationMenu")) {
     tabList.forEach { tab ->
@@ -62,18 +62,23 @@ fun BottomNavigationMenu(
           label = { Text(tab.textId) },
           selected = tab.route == selectedItem,
           colors =
-          NavigationBarItemDefaults.colors(
-              indicatorColor = Color.Transparent,
-          ),
+              NavigationBarItemDefaults.colors(
+                  indicatorColor = Color.Transparent,
+              ),
           onClick = {
-              // Proceed with navigation to any buttons if online or to home screen
-              if (isConnected || tab.textId == home_text || tab.textId == my_course_text) {
-                  onTabSelect(tab)
-              //only block and show the toast when user try to navigate to find tutor or find student or chat screen
-              } else if (tab.textId == find_tutor_text || tab.textId == find_student_text || tab.textId == chat_text) {
-                  // Show Toast if offline
-                  Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
-              }
+            // Proceed with navigation to any buttons if online or to home screen
+            if (isConnected || tab.textId == home_text || tab.textId == my_course_text) {
+              onTabSelect(tab)
+              // only block and show the toast when user try to navigate to find tutor or find
+              // student or chat screen
+            } else if (tab.textId == find_tutor_text ||
+                tab.textId == find_student_text ||
+                tab.textId == chat_text) {
+              // Show Toast if offline
+              Toast.makeText(
+                      context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT)
+                  .show()
+            }
           },
           modifier = Modifier.clip(RoundedCornerShape(50.dp)).testTag(tab.textId))
     }

@@ -131,7 +131,7 @@ fun TutorMatchingScreen(
                 navigationActions.navigateTo(Screen.HOME)
               }) {
                 Text(
-                    text = stringResource(id = R.string.request_another_tutor) ,
+                    text = stringResource(id = R.string.request_another_tutor),
                     modifier = Modifier.testTag("noTutorButtonText"))
               }
         } else if (currentLesson.status == LessonStatus.STUDENT_REQUESTED) {

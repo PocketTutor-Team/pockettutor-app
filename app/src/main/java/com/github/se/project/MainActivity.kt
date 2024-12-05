@@ -61,25 +61,23 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       SampleAppTheme {
-          NetworkStatusListener {
-              Surface(modifier = Modifier.fillMaxSize()) {
-                  PocketTutorApp(
-                      authenticationViewModel = viewModel(),
-                      listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-                      lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-                      networkStatusViewModel = viewModel(),
-                      certificationViewModel =
-                      viewModel(
-                          factory =
-                          CertificationViewModel.Factory(
-                              EpflVerificationRepository(),
-                              viewModel(factory = ListProfilesViewModel.Factory)
-                          )
-                      ),
-                      onMapReadyChange = {},
-                      chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
-            }
+        NetworkStatusListener {
+          Surface(modifier = Modifier.fillMaxSize()) {
+            PocketTutorApp(
+                authenticationViewModel = viewModel(),
+                listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+                lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+                networkStatusViewModel = viewModel(),
+                certificationViewModel =
+                    viewModel(
+                        factory =
+                            CertificationViewModel.Factory(
+                                EpflVerificationRepository(),
+                                viewModel(factory = ListProfilesViewModel.Factory))),
+                onMapReadyChange = {},
+                chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
           }
+        }
       }
     }
   }
@@ -150,7 +148,12 @@ fun PocketTutorApp(
       }
 
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
+        HomeScreen(
+            listProfilesViewModel,
+            lessonViewModel,
+            networkStatusViewModel,
+            chatViewModel,
+            navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(
@@ -175,101 +178,104 @@ fun PocketTutorApp(
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.CHANNEL) {
-        ChannelScreen(navigationActions, listProfilesViewModel, chatViewModel, lessonViewModel, networkStatusViewModel)
+        ChannelScreen(
+            navigationActions,
+            listProfilesViewModel,
+            chatViewModel,
+            lessonViewModel,
+            networkStatusViewModel)
       }
       composable(Screen.CHAT) { ChatScreen(navigationActions, chatViewModel) }
 
-        navigation(
-            startDestination = Screen.LESSONS_REQUESTED,
-            route = Route.FIND_STUDENT,
-        ) {
-            composable(Screen.HOME) {
-                HomeScreen(
-                    listProfilesViewModel,
-                    lessonViewModel,
-                    networkStatusViewModel,
-                    chatViewModel,
-                    navigationActions
-                )
-            }
-            composable(Screen.LESSONS_REQUESTED) {
-                RequestedLessonsScreen(
-                    listProfilesViewModel,
-                    lessonViewModel,
-                    networkStatusViewModel,
-                    navigationActions
-                )
-            }
-            composable(Screen.TUTOR_LESSON_RESPONSE) {
-                TutorLessonResponseScreen(
-                    listProfilesViewModel,
-                    lessonViewModel,
-                    networkStatusViewModel,
-                    navigationActions
-                )
-            }
-            composable(Screen.CONFIRMED_LESSON) {
-                ConfirmedLessonScreen(
-                    listProfilesViewModel,
-                    lessonViewModel,
-                    networkStatusViewModel,
-                    navigationActions
-                )
-            }
-            composable(Screen.COMPLETED_LESSON) {
-                CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-          }
+      navigation(
+          startDestination = Screen.LESSONS_REQUESTED,
+          route = Route.FIND_STUDENT,
+      ) {
+        composable(Screen.HOME) {
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
+        composable(Screen.LESSONS_REQUESTED) {
+          RequestedLessonsScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
+        }
+        composable(Screen.TUTOR_LESSON_RESPONSE) {
+          TutorLessonResponseScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
+        }
+        composable(Screen.CONFIRMED_LESSON) {
+          ConfirmedLessonScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
+        }
+        composable(Screen.COMPLETED_LESSON) {
+          CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+      }
 
-        navigation(
-            startDestination = Screen.HOME,
-            route = Route.HOME,
-        ) {
-          composable(Screen.HOME) {
-            HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
-          }
-          composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
-          composable(Screen.EDIT_SCHEDULE) {
-            EditTutorSchedule(navigationActions, listProfilesViewModel)
-          }
-          composable(Screen.EDIT_REQUESTED_LESSON) {
-            EditRequestedLessonScreen(
-                navigationActions,
-                listProfilesViewModel,
-                lessonViewModel,
-                networkStatusViewModel,
-                onMapReadyChange = onMapReadyChange)
-          }
-          composable(Screen.TUTOR_LESSON_RESPONSE) {
-            TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
-          }
+      navigation(
+          startDestination = Screen.HOME,
+          route = Route.HOME,
+      ) {
+        composable(Screen.HOME) {
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
+        composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
+        composable(Screen.EDIT_SCHEDULE) {
+          EditTutorSchedule(navigationActions, listProfilesViewModel)
+        }
+        composable(Screen.EDIT_REQUESTED_LESSON) {
+          EditRequestedLessonScreen(
+              navigationActions,
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              onMapReadyChange = onMapReadyChange)
+        }
+        composable(Screen.TUTOR_LESSON_RESPONSE) {
+          TutorLessonResponseScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
+        }
+      }
 
-        navigation(
-            startDestination = Screen.ADD_LESSON,
-            route = Route.FIND_TUTOR,
-        ) {
-          composable(Screen.HOME) {
-            HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
-          }
-          composable(Screen.ADD_LESSON) {
-            AddLessonScreen(
-                navigationActions,
-                listProfilesViewModel,
-                lessonViewModel,
-                networkStatusViewModel,
-                onMapReadyChange = onMapReadyChange)
-          }
-          composable(Screen.TUTOR_MATCH) {
-            TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-          }
-          composable(Screen.SELECTED_TUTOR_DETAILS) {
-            SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-          }
-          composable(Screen.COMPLETED_LESSON) {
-            CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-          }
+      navigation(
+          startDestination = Screen.ADD_LESSON,
+          route = Route.FIND_TUTOR,
+      ) {
+        composable(Screen.HOME) {
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
+        composable(Screen.ADD_LESSON) {
+          AddLessonScreen(
+              navigationActions,
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              onMapReadyChange = onMapReadyChange)
+        }
+        composable(Screen.TUTOR_MATCH) {
+          TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+        composable(Screen.SELECTED_TUTOR_DETAILS) {
+          SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+        composable(Screen.COMPLETED_LESSON) {
+          CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
+      }
     }
-    }
+  }
 }

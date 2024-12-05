@@ -14,10 +14,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 
-
-
 /**
- * A composable that handles the location permission request to the OS and fetches the user's location.
+ * A composable that handles the location permission request to the OS and fetches the user's
+ * location.
  *
  * @param onLocationAvailable The callback to be called when the user's location is shared.
  */
@@ -47,8 +46,6 @@ fun LocationPermissionHandler(onLocationAvailable: (LatLng?) -> Unit) {
     }
   }
 }
-
-
 
 /**
  * Fetches the user's location and calls the callback with the location.

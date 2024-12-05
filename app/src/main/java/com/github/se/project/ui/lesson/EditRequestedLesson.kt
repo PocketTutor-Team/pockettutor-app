@@ -33,7 +33,7 @@ fun EditRequestedLessonScreen(
   // Retrieves the current user's profile from the ViewModel as a state object
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
-    val isConnected = networkStatusViewModel.isConnected.collectAsState().value
+  val isConnected = networkStatusViewModel.isConnected.collectAsState().value
   val currentLesson =
       lessonViewModel.selectedLesson.collectAsState().value
           ?: return Text("No lesson selected. Should not happen")
@@ -84,7 +84,7 @@ fun EditRequestedLessonScreen(
           else "Edit requested lesson",
       profile = profile.value!!,
       lesson = currentLesson,
-        isConnected = isConnected,
+      isConnected = isConnected,
       onBack = { navigationActions.navigateTo(Screen.HOME) },
       onConfirm = onConfirm,
       onDelete = onDelete,

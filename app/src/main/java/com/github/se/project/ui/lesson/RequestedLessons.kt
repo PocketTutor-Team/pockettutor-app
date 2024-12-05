@@ -13,7 +13,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -167,7 +166,6 @@ fun RequestedLessonsScreen(
         refreshing = false
       }
 
-
   Scaffold(
       topBar = {
         LessonsRequestedTopBar(
@@ -183,8 +181,7 @@ fun RequestedLessonsScreen(
             onTabSelect = { navigationActions.navigateTo(it) },
             tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
             selectedItem = navigationActions.currentRoute(),
-            networkStatusViewModel = networkStatusViewModel
-        )
+            networkStatusViewModel = networkStatusViewModel)
       }) { padding ->
         var refreshing by remember { mutableStateOf(false) }
         val refreshScope = rememberCoroutineScope()
@@ -351,9 +348,9 @@ fun LessonsRequestedTopBar(
 
         // Filter button
         IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
-            CustomIcon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_list_alt_24),
-                contentDescription = "School Icon")
+          CustomIcon(
+              imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_list_alt_24),
+              contentDescription = "School Icon")
         }
       })
 }

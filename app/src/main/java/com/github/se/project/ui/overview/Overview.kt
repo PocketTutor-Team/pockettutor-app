@@ -214,8 +214,7 @@ fun HomeScreen(
             },
             tabList = navigationItems, // List of navigation items based on role
             selectedItem = navigationActions.currentRoute(),
-            networkStatusViewModel = networkStatusViewModel
-        ) // Currently selected navigation item
+            networkStatusViewModel = networkStatusViewModel) // Currently selected navigation item
       }) { paddingValues ->
 
         // Display the content or appropriate fallback based on the current profile

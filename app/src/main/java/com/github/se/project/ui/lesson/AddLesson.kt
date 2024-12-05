@@ -34,7 +34,7 @@ fun AddLessonScreen(
 
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
-    val isConnected = networkStatusViewModel.isConnected.collectAsState().value
+  val isConnected = networkStatusViewModel.isConnected.collectAsState().value
 
   val context = LocalContext.current
 

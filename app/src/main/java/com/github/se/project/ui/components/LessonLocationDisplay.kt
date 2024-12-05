@@ -74,39 +74,39 @@ fun LessonLocationDisplay(
         }
   }
 
-    Column(
-        modifier =
-            modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp)
-                .testTag("lessonLocationColumn"),
-        verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(
-              text = "Lesson Location",
-              style = MaterialTheme.typography.titleMedium,
-              modifier = Modifier.testTag("lessonLocationTitle"))
+  Column(
+      modifier =
+          modifier
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 16.dp)
+              .testTag("lessonLocationColumn"),
+      verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Lesson Location",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.testTag("lessonLocationTitle"))
 
-          Card(
-              modifier = Modifier.fillMaxWidth().testTag("lessonLocationCard"),
-              elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-                Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                  GoogleMap(
-                      modifier = Modifier.fillMaxSize().testTag("lessonLocationMap"),
-                      cameraPositionState = cameraPositionState,
-                      properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
-                      uiSettings =
-                          MapUiSettings(
-                              zoomControlsEnabled = true,
-                              scrollGesturesEnabled = true,
-                              zoomGesturesEnabled = true,
-                              tiltGesturesEnabled = false,
-                              rotationGesturesEnabled = false)) {
-                        // Marker for the lesson location
-                        Marker(state = MarkerState(position = lessonLocation), title = lessonTitle)
-                      }
-                }
+        Card(
+            modifier = Modifier.fillMaxWidth().testTag("lessonLocationCard"),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+              Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize().testTag("lessonLocationMap"),
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(isMyLocationEnabled = (userLocation != null)),
+                    uiSettings =
+                        MapUiSettings(
+                            zoomControlsEnabled = true,
+                            scrollGesturesEnabled = true,
+                            zoomGesturesEnabled = true,
+                            tiltGesturesEnabled = false,
+                            rotationGesturesEnabled = false)) {
+                      // Marker for the lesson location
+                      Marker(state = MarkerState(position = lessonLocation), title = lessonTitle)
+                    }
               }
-        }
+            }
+      }
 }
 
 /**

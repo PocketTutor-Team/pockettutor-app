@@ -16,10 +16,9 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 
-
 /**
- * A composable that displays a map picker box. The user can select a location on the map by
- * tapping on it. The selected location is then returned to the caller.
+ * A composable that displays a map picker box. The user can select a location on the map by tapping
+ * on it. The selected location is then returned to the caller.
  *
  * @param initialLocation The initial location to display on the map.
  * @param onLocationSelected The callback to be called when a location is selected.
@@ -33,13 +32,12 @@ fun LocationPickerBox(
 ) {
   val EPFLCoordinates = LatLng(46.520374, 6.568339)
 
-    var userLocation by remember { mutableStateOf<LatLng?>(null) }
+  var userLocation by remember { mutableStateOf<LatLng?>(null) }
 
   var selectedPosition by remember {
     mutableStateOf(LatLng(initialLocation.first, initialLocation.second))
   }
   val markerState = rememberMarkerState(position = selectedPosition)
-
 
   val cameraPositionState = rememberCameraPositionState {
     position =
@@ -50,17 +48,14 @@ fun LocationPickerBox(
         }
   }
 
-
-    //Fetch the user's location and update the map's camera and marker state with it
-    LocationPermissionHandler { fetchedLocation ->
-        fetchedLocation?.let {
-            // Update map's camera and marker state with the user's location
-            userLocation = it
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
-        } ?: run {
-            Log.e("LocationPickerBox", "User location not available.")
-        }
-    }
+  // Fetch the user's location and update the map's camera and marker state with it
+  LocationPermissionHandler { fetchedLocation ->
+    fetchedLocation?.let {
+      // Update map's camera and marker state with the user's location
+      userLocation = it
+      cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
+    } ?: run { Log.e("LocationPickerBox", "User location not available.") }
+  }
 
   Column(
       modifier = Modifier.fillMaxWidth().padding(16.dp),
