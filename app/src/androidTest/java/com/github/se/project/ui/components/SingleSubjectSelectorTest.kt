@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.se.project.model.profile.Subject
 import org.junit.Before
 import org.junit.Rule
@@ -15,17 +16,25 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SingleSubjectSelectorTest {
 
+  private var settedUp = false
+
   @get:Rule val composeTestRule = createComposeRule()
 
   @Before
   fun setUp() {
     val selectedSubject = mutableStateOf<Subject>(Subject.NONE)
-    composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
+    Thread.sleep(10000)
+    runOnUiThread {
+      composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
+    }
+    composeTestRule.waitForIdle()
+    settedUp = true
     Thread.sleep(10000)
   }
 
   @Test
   fun selectingSubjectUpdatesCorrectly() {
+    assert(settedUp)
     Thread.sleep(10000)
 
     // Initially, dropdown items are not displayed
