@@ -20,4 +20,24 @@
     <string name="update_profile">Update Profile</string>
     <string name="schedule">Schedule</string>
     <string name="ok">OK</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete">Delete</string>
+    <string name="select_location">Select Location</string>
+    <string name="location_selected">Location Selected</string>
+    <string name="title_desc">Give a title and add a description to your lesson</string>
+    <string name="give_title">Give a title to this lesson</string>
+    <string name="title_placeholder">You can write what this lesson is about in short</string>
+    <string name="give_description">Give a description to this lesson</string>
+    <string name="description_placeholder">You can write what this lesson is about in detail</string>
+    <string name="select_date_time">Select the desired date and time for this lesson</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="give_location">Select the location for this lesson</string>
+    <string name="give_subject">Select the subject you want to study</string>
+    <string name="give_language">Select the possible languages you want this lesson to take place in</string>
+    <string name="give_price">Select a price range for this lesson</string>
+    <string name="selected_price_range">Selected price range:</string>
+    <string name="missing_location">location is missing</string>
+    <string name="is_missing">is missing</string>
+    <string name="past_time">You cannot select a past time</string>
 </resources>
