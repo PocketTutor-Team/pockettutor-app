@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -60,7 +62,7 @@ fun AddLessonScreen(
         it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED
       }) {
         // Displays a message if the user already has an instant lesson scheduled
-        Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT)
+        Toast.makeText(context, context.getString(R.string.already_instant), Toast.LENGTH_SHORT)
             .show()
       } else {
         // Adds the instant lesson and fetches updated lessons for the user
@@ -69,7 +71,7 @@ fun AddLessonScreen(
             onComplete = {
               // Refreshes the lesson list for the user after successfully adding the lesson
               lessonViewModel.getLessonsForStudent(profile.value!!.uid)
-              Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+              Toast.makeText(context, context.getString(R.string.lesson_created), Toast.LENGTH_SHORT).show()
 
               // Marks the new lesson as selected
               lessonViewModel.selectLesson(lesson)

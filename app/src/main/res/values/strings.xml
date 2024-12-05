@@ -41,4 +41,6 @@
     <string name="missing_location">location is missing</string>
     <string name="is_missing">is missing</string>
     <string name="past_time">You cannot select a past time</string>
+    <string name="lesson_created">Lesson created successfully</string>
+    <string name="already_instant">You already have an instant lesson scheduled</string>
 </resources>

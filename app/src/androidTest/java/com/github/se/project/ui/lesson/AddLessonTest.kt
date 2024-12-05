@@ -150,7 +150,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithText(okMessage).performClick()
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText(okMessage).isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithText(okMessage).performClick()
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
@@ -191,8 +191,8 @@ class AddLessonTest {
   @Test
   fun testInitialState() {
     composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
-    composeTestRule.onNodeWithText("Select Date").assertExists()
-    composeTestRule.onNodeWithText("Select Time").assertExists()
+    composeTestRule.onNodeWithText(context.getString(R.string.select_date)).assertExists()
+    composeTestRule.onNodeWithText(context.getString(R.string.select_time)).assertExists()
   }
 
   @Test
