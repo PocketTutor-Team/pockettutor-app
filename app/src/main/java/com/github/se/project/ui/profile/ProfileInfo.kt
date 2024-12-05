@@ -312,17 +312,16 @@ fun ProfileInfoScreen(
                           modifier = Modifier.testTag("lessonsCount"),
                           color = MaterialTheme.colorScheme.onBackground)
 
-                            // Display Completed Lessons Section
-                            ExpandableLessonSection(
-                                section = completedLessonsSection,
-                                lessons = completedLessons,
-                                isTutor = isTutor,
-                                onClick = { lesson ->
-                                  lessonViewModel.selectLesson(lesson)
-                                  navigationActions.navigateTo(Screen.COMPLETED_LESSON)
-                                },
-                                listProfilesViewModel = listProfilesViewModel)
-                          }
+                      // Display Completed Lessons Section
+                      ExpandableLessonSection(
+                          section = completedLessonsSection,
+                          lessons = completedLessons,
+                          isTutor = isTutor,
+                          onClick = { lesson ->
+                            lessonViewModel.selectLesson(lesson)
+                            navigationActions.navigateTo(Screen.COMPLETED_LESSON)
+                          },
+                          listProfilesViewModel = listProfilesViewModel)
                     }
               }
         }
