@@ -14,6 +14,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 
+/**
+ * A composable that handles the location permission request to the OS and fetches the user's
+ * location.
+ *
+ * @param onLocationAvailable The callback to be called when the user's location is shared.
+ */
 @Composable
 fun LocationPermissionHandler(onLocationAvailable: (LatLng?) -> Unit) {
   val context = LocalContext.current
@@ -41,6 +47,12 @@ fun LocationPermissionHandler(onLocationAvailable: (LatLng?) -> Unit) {
   }
 }
 
+/**
+ * Fetches the user's location and calls the callback with the location.
+ *
+ * @param context The context of the application.
+ * @param onLocationReceived The callback to be called when the user's location is shared.
+ */
 fun fetchUserLocation(context: android.content.Context, onLocationReceived: (LatLng?) -> Unit) {
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 

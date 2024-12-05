@@ -1,6 +1,6 @@
 package com.github.se.project.ui.components
 
-import MapPickerBox
+import LocationPickerBox
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
@@ -41,6 +41,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -91,72 +92,90 @@ fun LessonEditor(
     mainTitle: String,
     profile: Profile,
     lesson: Lesson?,
+    isConnected: Boolean,
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
-    onMapReady: (Boolean) -> Unit
+    onMapReady: (Boolean) -> Unit = {}
 ) {
-  // State variables for storing lesson data. Initial values are set based on the provided lesson.
-  var title by remember { mutableStateOf(lesson?.title ?: "") } // Lesson title
-  var description by remember { mutableStateOf(lesson?.description ?: "") } // Lesson description
-  val selectedLanguages = remember {
-    mutableStateListOf<Language>()
-  } // Languages offered in the lesson
-  val tutorUid = remember { // List of tutor IDs associated with the lesson
+  // Context for the Toast messages
+  val context = LocalContext.current
+
+  val canBeInstant = remember { mutableStateOf(lesson == null) }
+  val instant = remember { mutableStateOf(isInstant(lesson)) }
+
+  // store the initial value of the lesson
+  // Track initial values for changes
+  val initialTitle = lesson?.title ?: ""
+  val initialDescription = lesson?.description ?: ""
+  val initialDate = lesson?.timeSlot?.split("T")?.get(0) ?: ""
+  val initialTime = lesson?.timeSlot?.split("T")?.get(1)?.substring(0, 5) ?: ""
+  val initialMinPrice = lesson?.minPrice ?: 5.0
+  val initialMaxPrice = lesson?.maxPrice ?: 50.0
+  val initialSubject = lesson?.subject ?: Subject.NONE
+  val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
+  val initialLanguage = lesson?.languages ?: listOf()
+
+  // Initialize the lesson fields
+  var title by remember { mutableStateOf(lesson?.title ?: "") }
+  var description by remember { mutableStateOf(lesson?.description ?: "") }
+  val selectedLanguages = remember { mutableStateListOf<Language>() }
+  val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
-  val canBeInstant = remember {
-    mutableStateOf(lesson == null)
-  } // Determines if the lesson can be instant
-  val instant = remember { mutableStateOf(isInstant(lesson)) } // Indicates if the lesson is instant
-  val selectedSubject = remember {
-    mutableStateOf(lesson?.subject ?: Subject.NONE)
-  } // Lesson subject
-  var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) } // Minimum price
-  var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) } // Maximum price
-  var selectedDate by remember { mutableStateOf("") } // Selected date
-  var selectedTime by remember { mutableStateOf("") } // Selected time
+  val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
+  var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
+  var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
+  var selectedDate by remember { mutableStateOf("") }
+  var selectedTime by remember { mutableStateOf("") }
 
-  // Calendar instances for date and time management
   val calendar = Calendar.getInstance()
   val currentDateTime = Calendar.getInstance()
-
-  // Holds the currently edited lesson ID for initialization checks
   val currentLessonId = remember { mutableStateOf<String?>(null) }
 
-  // State variables for location management
   var selectedLocation by remember {
-    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)) // Lesson location
+    mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
-  var userLocation by remember { mutableStateOf<LatLng?>(null) } // Current user location
-  var isLocationChecked by remember { mutableStateOf(false) } // Indicates if location is verified
+  var userLocation by remember { mutableStateOf<LatLng?>(null) }
 
-  // State variables for managing dialogs
-  var showDatePicker by remember { mutableStateOf(false) } // Show date picker dialog
-  var showTimeDialog by remember { mutableStateOf(false) } // Show time picker dialog
-  var showMapDialog by remember { mutableStateOf(false) } // Show map selection dialog
+  // State to check if any changes have been made
+  val hasChanges by remember {
+    derivedStateOf {
+      title != initialTitle ||
+          description != initialDescription ||
+          selectedDate != initialDate ||
+          selectedTime != initialTime ||
+          minPrice != initialMinPrice ||
+          maxPrice != initialMaxPrice ||
+          selectedSubject.value != initialSubject ||
+          selectedLocation != initialLocation ||
+          selectedLanguages.toList() != initialLanguage
+    }
+  }
+
+  var isLocationChecked by remember { mutableStateOf(false) }
+
+  var showDatePicker by remember { mutableStateOf(false) }
+  var showTimeDialog by remember { mutableStateOf(false) }
+
+  var showMapDialog by remember { mutableStateOf(false) }
 
   // Initializes state based on the provided lesson when the lesson ID changes
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
     if (lesson != null) {
-      selectedLanguages.clear() // Clears and updates selected languages
+      selectedLanguages.clear()
       selectedLanguages.addAll(lesson.languages)
-      selectedTime =
-          lesson.timeSlot.split("T")[1].substring(0, 5) // Extracts time from lesson time slot
-      selectedDate = lesson.timeSlot.split("T")[0] // Extracts date from lesson time slot
+      selectedTime = lesson.timeSlot.split("T")[1].substring(0, 5)
+      selectedDate = lesson.timeSlot.split("T")[0]
     }
   }
 
-  // Retrieves the current context for displaying messages (e.g., Toasts)
-  val context = LocalContext.current
-
   // Handles location permissions and updates the user's location if allowed
   LocationPermissionHandler { location ->
-    userLocation = location // Updates user location if permissions are granted
+    userLocation = location
     isLocationChecked = true
 
-    // Ensures the lesson cannot be instant if location is unavailable
     if (userLocation == null) {
       canBeInstant.value = false
     }
@@ -168,7 +187,6 @@ fun LessonEditor(
           calendar.timeInMillis,
           selectableDates =
               object : SelectableDates {
-                // Ensures only dates within one year of today are selectable
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                   val date = Date(utcTimeMillis)
                   val currentDate = Date()
@@ -209,7 +227,7 @@ fun LessonEditor(
 
   // Handles the confirm action by validating inputs and creating/updating the lesson
   val onConfirmClick = {
-    if (instant.value) { // Checks if the lesson is an instant lesson
+    if (instant.value) {
       val lat: Double
       val lon: Double
 
@@ -395,8 +413,8 @@ fun LessonEditor(
                       })
 
                   // Map content
-                  Box {
-                    MapPickerBox(
+                  Box() {
+                    LocationPickerBox(
                         initialLocation = selectedLocation,
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
@@ -568,8 +586,23 @@ fun LessonEditor(
               Button(
                   modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
-                  onClick = onConfirmClick) {
-                    Text(stringResource(R.string.confirm))
+                  enabled = hasChanges,
+                  onClick = {
+                    if (isConnected) {
+                      onConfirmClick() // Perform the actual action
+                    } else {
+                      Toast.makeText(
+                              context,
+                              context.getString(R.string.inform_user_offline),
+                              Toast.LENGTH_SHORT)
+                          .show()
+                    }
+                  }) {
+                    if (lesson != null) {
+                      Text(stringResource(id = R.string.update))
+                    } else {
+                      Text(stringResource(id = R.string.create))
+                    }
                   }
 
               if (onDelete != null) {
@@ -580,7 +613,17 @@ fun LessonEditor(
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    onClick = { onDelete(lesson!!) }) {
+                    onClick = {
+                      if (isConnected) {
+                        onDelete(lesson!!) // Perform the delete action
+                      } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.inform_user_offline),
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    }) {
                       Text(stringResource(R.string.delete))
                     }
               }

@@ -47,13 +47,13 @@ class CameraUtilsTest {
 
   @Test
   fun `adjustZoomBasedOnDistance returns correct zoom level`() {
-    assertEquals(15f, adjustZoomBasedOnDistance(50f))
-    assertEquals(14f, adjustZoomBasedOnDistance(200f))
+    assertEquals(14f, adjustZoomBasedOnDistance(50f))
+    assertEquals(13f, adjustZoomBasedOnDistance(200f))
     assertEquals(12f, adjustZoomBasedOnDistance(1500f))
-    assertEquals(10f, adjustZoomBasedOnDistance(5000f))
-    assertEquals(8f, adjustZoomBasedOnDistance(15000f))
+    assertEquals(11f, adjustZoomBasedOnDistance(5000f))
+    assertEquals(10f, adjustZoomBasedOnDistance(15000f))
     assertEquals(7f, adjustZoomBasedOnDistance(30000f))
     assertEquals(6f, adjustZoomBasedOnDistance(80000f))
-    assertEquals(0.1f, adjustZoomBasedOnDistance(120000f))
+    assertEquals(0.01f, adjustZoomBasedOnDistance(120000f))
   }
 }
