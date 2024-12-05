@@ -63,12 +63,28 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 
+/**
+ * A composable function for creating or editing a lesson.
+ *
+ * This function provides an interactive user interface to configure lesson details, including
+ * title, description, subject, languages, pricing, date, time, and location. It supports editing
+ * existing lessons or creating new ones, including instant lessons.
+ *
+ * @param mainTitle Title to display at the top of the screen.
+ * @param profile The user's profile information.
+ * @param lesson The Lesson object being edited, or null if creating a new lesson.
+ * @param onBack Callback to execute when the user navigates back.
+ * @param onConfirm Callback to execute when the user confirms their input.
+ * @param onDelete Optional callback for deleting a lesson.
+ * @param onMapReady Callback for when the map is fully initialized.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("NewApi")
 @Composable
@@ -154,6 +170,7 @@ fun LessonEditor(
   }
 
 
+  // Handles location permissions and updates the user's location if allowed
   LocationPermissionHandler { location ->
     userLocation = location
     isLocationChecked = true
@@ -163,20 +180,20 @@ fun LessonEditor(
     }
   }
 
+  // Date picker state with restrictions on selectable dates
   val datePickerState =
       rememberDatePickerState(
-          calendar.getTimeInMillis(),
+          calendar.timeInMillis,
           selectableDates =
               object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                  val date = Date().apply { time = utcTimeMillis }
+                  val date = Date(utcTimeMillis)
                   val currentDate = Date()
 
-                  // Reset the time of both dates to compare only the date (not the time)
                   val calendarDate = Calendar.getInstance().apply { time = date }
                   val calendarCurrentDate = Calendar.getInstance().apply { time = currentDate }
 
-                  // Set the time to midnight for both dates to ignore time component
+                  // Resets time components for accurate date comparison
                   calendarDate.set(Calendar.HOUR_OF_DAY, 0)
                   calendarDate.set(Calendar.MINUTE, 0)
                   calendarDate.set(Calendar.SECOND, 0)
@@ -187,23 +204,33 @@ fun LessonEditor(
                   calendarCurrentDate.set(Calendar.SECOND, 0)
                   calendarCurrentDate.set(Calendar.MILLISECOND, 0)
 
-                  // Check if the date is today or in the future
-                  return calendarDate.time.after(calendarCurrentDate.time) ||
-                      calendarDate.time == calendarCurrentDate.time
+                  // Allows selection only within the next year
+                  val oneYearFromNow =
+                      Calendar.getInstance().apply {
+                        time = currentDate
+                        add(Calendar.YEAR, 1)
+                      }
+
+                  return calendarDate.time.after(calendarCurrentDate.time) &&
+                      calendarDate.time.before(oneYearFromNow.time)
                 }
               })
 
+  // Time picker state for selecting hours and minutes
   val timePickerState =
       rememberTimePickerState(
-          initialHour = calendar.get(Calendar.HOUR_OF_DAY),
-          initialMinute = calendar.get(Calendar.MINUTE),
-          is24Hour = true,
+          initialHour = calendar.get(Calendar.HOUR_OF_DAY), // Default hour
+          initialMinute = calendar.get(Calendar.MINUTE), // Default minute
+          is24Hour = true, // 24-hour format
       )
 
+  // Handles the confirm action by validating inputs and creating/updating the lesson
   val onConfirmClick = {
     if (instant.value) {
       val lat: Double
       val lon: Double
+
+      // Uses current or stored location data
       if (userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
         lat = lesson!!.latitude
         lon = lesson.longitude
@@ -211,6 +238,8 @@ fun LessonEditor(
         lat = userLocation?.latitude ?: 0.0
         lon = userLocation?.longitude ?: 0.0
       }
+
+      // Validates inputs and creates an instant lesson
       val error =
           validateLessonInput(
               title,
@@ -244,6 +273,7 @@ fun LessonEditor(
                 lon))
       }
     } else {
+      // Validates inputs and creates a scheduled lesson
       val error =
           validateLessonInput(
               title,
@@ -270,7 +300,7 @@ fun LessonEditor(
                 maxPrice,
                 0.0,
                 "${selectedDate}T${selectedTime}:00",
-                if (lesson != null) lesson.status else LessonStatus.MATCHING,
+                lesson?.status ?: LessonStatus.MATCHING,
                 selectedLocation.first,
                 selectedLocation.second))
       }
@@ -561,6 +591,22 @@ fun LessonEditor(
       })
 }
 
+/**
+ * Validates the input fields required for creating or editing a lesson.
+ *
+ * This function checks whether all mandatory fields (title, description, subject, languages, date,
+ * time, and location) have been provided and are valid.
+ *
+ * @param title The title of the lesson.
+ * @param description The description of the lesson.
+ * @param selectedSubject The subject of the lesson wrapped in a MutableState object.
+ * @param selectedLanguages A list of languages associated with the lesson.
+ * @param date The selected date for the lesson.
+ * @param time The selected time for the lesson.
+ * @param latitude The latitude of the lesson's location.
+ * @param longitude The longitude of the lesson's location.
+ * @return A string describing the first missing field, or `null` if all inputs are valid.
+ */
 fun validateLessonInput(
     title: String,
     description: String,
@@ -571,39 +617,54 @@ fun validateLessonInput(
     latitude: Double,
     longitude: Double
 ): String? {
+  // Create a map of required fields with their corresponding values for validation
   val requiredFields =
       mapOf(
-          "title" to title,
-          "description" to description,
-          "subject" to selectedSubject.value.name,
-          "language" to selectedLanguages.joinToString { it.name },
-          "date" to date,
-          "time" to time)
+          "title" to title, // Lesson title
+          "description" to description, // Lesson description
+          "subject" to selectedSubject.value.name, // Selected subject name
+          "language" to
+              selectedLanguages.joinToString { it.name }, // Joined names of selected languages
+          "date" to date, // Selected date
+          "time" to time // Selected time
+          )
 
-  // Check if any required field is empty
+  // Iterate through each field and value to check if any are empty
   for ((field, value) in requiredFields) {
     if (value.isEmpty()) {
-      return "$field is missing"
+      return "$field is missing" // Return the first missing field as an error message
     }
   }
 
-  // Check if location has been set
+  // Ensure a valid location is set (latitude and longitude must not be default values)
   if (latitude == 0.0 && longitude == 0.0) {
-    return "location is missing"
+    return "location is missing" // Location validation error
   }
 
-  return null // All inputs are valid
+  return null // All fields are valid, return null
 }
 
+/**
+ * Determines if a given lesson is an "instant" lesson based on its status.
+ *
+ * Instant lessons are those that are either requested or confirmed for immediate scheduling.
+ *
+ * @param lesson The lesson to check, or null.
+ * @return `true` if the lesson has an instant status, `false` otherwise.
+ */
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false ||
-      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false || // Instant request status
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false // Instant confirmed status
 }
 
+/**
+ * Determines if a given time slot represents an "instant" lesson.
+ *
+ * An instant lesson's time slot typically ends with the letter 't'.
+ *
+ * @param timeSlot The time slot string to check.
+ * @return `true` if the time slot indicates an instant lesson, `false` otherwise.
+ */
 fun isInstant(timeSlot: String): Boolean {
-  return timeSlot.last() == 't'
+  return timeSlot.last() == 't' // Check if the last character in the time slot is 't'
 }
-
-
-
-

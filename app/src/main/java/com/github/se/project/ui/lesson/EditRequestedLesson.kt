@@ -13,6 +13,15 @@ import com.github.se.project.ui.components.LessonEditor
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 
+/**
+ * Composable function for the "Edit Requested Lesson" screen. Allows users to edit or delete an
+ * existing lesson that is in the "requested" state.
+ *
+ * @param navigationActions Provides navigation actions for navigating between screens.
+ * @param listProfilesViewModel ViewModel for accessing the current user's profile.
+ * @param lessonViewModel ViewModel for managing lessons.
+ * @param onMapReadyChange Callback for handling changes in the map's readiness state.
+ */
 @Composable
 fun EditRequestedLessonScreen(
     navigationActions: NavigationActions,
@@ -21,7 +30,7 @@ fun EditRequestedLessonScreen(
     networkStatusViewModel: NetworkStatusViewModel,
     onMapReadyChange: (Boolean) -> Unit
 ) {
-
+  // Retrieves the current user's profile from the ViewModel as a state object
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
     val isConnected = networkStatusViewModel.isConnected.collectAsState().value
@@ -31,7 +40,14 @@ fun EditRequestedLessonScreen(
 
   val context = LocalContext.current
 
+  /**
+   * Lambda function to handle lesson updates. Updates the lesson details and navigates back to the
+   * home screen upon completion.
+   *
+   * @param lesson The updated lesson to be saved.
+   */
   val onConfirm = { lesson: Lesson ->
+    // Updates the lesson in the ViewModel and refreshes the user's lesson list
     lessonViewModel.updateLesson(
         lesson,
         onComplete = {
@@ -42,7 +58,14 @@ fun EditRequestedLessonScreen(
     navigationActions.navigateTo(Screen.HOME)
   }
 
+  /**
+   * Lambda function to handle lesson deletion. Deletes the selected lesson and navigates back to
+   * the home screen upon completion.
+   *
+   * @param lesson The lesson to be deleted.
+   */
   val onDelete = { lesson: Lesson ->
+    // Deletes the lesson from the ViewModel and refreshes the user's lesson list
     lessonViewModel.deleteLesson(
         lesson.id,
         onComplete = {
@@ -50,6 +73,7 @@ fun EditRequestedLessonScreen(
           Toast.makeText(context, "Lesson deleted successfully", Toast.LENGTH_SHORT).show()
         })
 
+    // Navigates back to the home screen
     navigationActions.navigateTo(Screen.HOME)
   }
 

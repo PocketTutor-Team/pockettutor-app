@@ -2,11 +2,13 @@ package com.github.se.project.ui.message
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -48,6 +50,9 @@ fun ChannelScreen(
 
   // Fetches the list of confirmed lessons for the current user
   val confirmedLessons = lessonViewModel.currentUserLessons.collectAsState().value
+
+  // Retrieves the current context, used for displaying messages or initializing components
+  val context = LocalContext.current
 
   // Creates a list of chat group member identifiers based on confirmed lessons
   val chatGroupsMembers =
@@ -91,14 +96,24 @@ fun ChannelScreen(
               // Displays the list of chat channels
               ChannelsScreen(
                   title = "Chat",
+                  onHeaderActionClick = {
+                    Toast.makeText(
+                            context, "This is not supported at the moment.", Toast.LENGTH_LONG)
+                        .show()
+                  },
+                  onHeaderAvatarClick = {
+                    Toast.makeText(
+                            context, "This is not supported at the moment.", Toast.LENGTH_LONG)
+                        .show()
+                  },
                   onChannelClick = { channel ->
                     // Logs the channel details and navigates to the chat screen
                     Log.e("HELLO", "channel: id: " + channel.id + " cid: " + channel.cid)
                     chatViewModel.setChannelID(channel.cid)
                     navigationActions.navigateTo(Screen.CHAT)
                   },
-                  isShowingHeader = false,
-                  onBackPressed = { navigationActions.navigateTo(Screen.HOME) })
+                  isShowingHeader = true,
+              )
             }
       }
       InitializationState.INITIALIZING -> {

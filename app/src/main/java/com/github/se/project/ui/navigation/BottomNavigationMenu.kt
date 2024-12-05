@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -59,6 +61,10 @@ fun BottomNavigationMenu(
           icon = { Icon(tab.icon, contentDescription = tab.textId) },
           label = { Text(tab.textId) },
           selected = tab.route == selectedItem,
+          colors =
+          NavigationBarItemDefaults.colors(
+              indicatorColor = Color.Transparent,
+          ),
           onClick = {
               // Proceed with navigation to any buttons if online or to home screen
               if (isConnected || tab.textId == home_text || tab.textId == my_course_text) {
