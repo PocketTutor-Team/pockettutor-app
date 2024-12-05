@@ -24,6 +24,7 @@ class LessonsRequestedScreenTest {
   private val mockTutorProfile =
       Profile(
           uid = "100",
+          token = "",
           googleUid = "150",
           firstName = "Romeo",
           lastName = "Tutor",
