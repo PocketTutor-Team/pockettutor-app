@@ -192,7 +192,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("DateButton").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("TimeButton").assertIsNotDisplayed()
 
-    // Ch
+    // Test that the UI is correctly displayed
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("DescriptionField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("subjectButton").assertIsDisplayed()
@@ -221,8 +221,6 @@ class AddLessonTest {
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-
-    Thread.sleep(20000)
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
