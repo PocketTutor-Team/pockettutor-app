@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -135,7 +136,7 @@ class EditProfileTest {
             googleUid = "67890",
             firstName = "John",
             lastName = "Doe",
-            phoneNumber = "1234567890",
+            phoneNumber = "+4134567890",
             role = Role.TUTOR,
             section = Section.IN,
             academicLevel = AcademicLevel.MA2,
@@ -233,12 +234,22 @@ class EditProfileTest {
       EditProfile(navigationActions = mockNavigationActions, mockViewModel)
     }
 
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("00")
+    // Select country code
+    composeTestRule.onNodeWithTag("countryCodeField").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("country_plus41").performClick()
 
+    // Enter phone number without country code (and clean before)
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextClearance()
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123456780")
+
+    // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
-    assertEquals("001234567890", mockViewModel.currentProfile.value?.phoneNumber)
+    // Assert that the profile's phone number is correctly updated
+    assertEquals("+41123456780", mockViewModel.currentProfile.value?.phoneNumber)
 
+    // Verify that navigation occurred
     verify(mockNavigationActions).goBack()
   }
 

@@ -6,10 +6,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
@@ -38,6 +40,10 @@ fun BottomNavigationMenu(
           icon = { Icon(tab.icon, contentDescription = tab.textId) },
           label = { Text(tab.textId) },
           selected = tab.route == selectedItem,
+          colors =
+              NavigationBarItemDefaults.colors(
+                  indicatorColor = Color.Transparent,
+              ),
           onClick = { onTabSelect(tab) },
           modifier = Modifier.clip(RoundedCornerShape(50.dp)).testTag(tab.textId))
     }
