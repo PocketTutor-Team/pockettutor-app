@@ -63,15 +63,20 @@ private fun LessonActionButton(
     modifier: Modifier = Modifier,
     testTag: String,
     icon: @Composable () -> Unit,
-    isError: Boolean = false
+    isError: Boolean = false,
+    isActive: Boolean = true
 ) {
   Button(
       shape = MaterialTheme.shapes.medium,
       onClick = onClick,
       colors =
-          if (isError) {
+          if (!isActive) {
+            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.outline)
+          } else if (isError) {
             ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-          } else ButtonDefaults.buttonColors(),
+          } else {
+            ButtonDefaults.buttonColors()
+          },
       modifier = modifier.fillMaxWidth().padding(bottom = 16.dp).testTag(testTag)) {
         icon()
         Spacer(modifier = Modifier.width(8.dp))
@@ -292,7 +297,8 @@ private fun CancelLessonButton(
       icon = {
         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
       },
-      isError = true)
+      isError = true,
+      isActive = isCancellationValid(lesson.timeSlot))
 
   if (showCancelDialog) {
     AlertDialog(

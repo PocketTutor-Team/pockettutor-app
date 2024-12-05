@@ -1,18 +1,43 @@
 package com.github.se.project.ui.profile
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.se.project.model.profile.*
+import com.github.se.project.R
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.navigation.NavigationActions
@@ -68,7 +93,12 @@ fun CreateProfileScreen(
 
               OutlinedTextField(
                   value = firstName,
-                  onValueChange = { firstName = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.user_first_name)) {
+                      Log.d("CreateProfileScreen", "firstName length: ${it.length}")
+                      firstName = it
+                    }
+                  },
                   label = { Text("First Name") },
                   modifier =
                       Modifier.fillMaxWidth()
@@ -77,7 +107,12 @@ fun CreateProfileScreen(
 
               OutlinedTextField(
                   value = lastName,
-                  onValueChange = { lastName = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.user_last_name)) {
+                      Log.d("CreateProfileScreen", "lastName length: ${it.length}")
+                      lastName = it
+                    }
+                  },
                   label = { Text("Last Name") },
                   modifier =
                       Modifier.fillMaxWidth()
@@ -172,12 +207,12 @@ fun CreateProfileScreen(
                                 role,
                                 section.value!!,
                                 academicLevel.value!!)
-                        listProfilesViewModel.addProfile(newProfile)
                         listProfilesViewModel.setCurrentProfile(newProfile)
 
                         if (role == Role.TUTOR) {
                           navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
                         } else if (role == Role.STUDENT) {
+                          listProfilesViewModel.addProfile(newProfile)
                           navigationActions.navigateTo(Screen.HOME)
                         }
                       } catch (e: Exception) {

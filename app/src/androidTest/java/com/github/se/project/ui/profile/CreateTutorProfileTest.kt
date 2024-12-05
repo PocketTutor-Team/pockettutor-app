@@ -17,16 +17,20 @@ import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
-import com.github.se.project.ui.components.*
+import com.github.se.project.ui.components.LanguageSelector
+import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.navigation.NavigationActions
-import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
 
 @RunWith(AndroidJUnit4::class)
 class CreateTutorProfileTest {
@@ -35,10 +39,8 @@ class CreateTutorProfileTest {
 
   // Mocking navigation actions
   private val mockNavigationActions = Mockito.mock(NavigationActions::class.java)
-  private val mockViewModel =
-      Mockito.mock(ListProfilesViewModel::class.java).apply {
-        Mockito.`when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(null))
-      }
+  private val mockProfileRepository = Mockito.mock(ProfilesRepository::class.java)
+  private val mockViewModel = ListProfilesViewModel(mockProfileRepository)
 
   // Helper function to create a mock Profile
   private fun getMockProfile() =
@@ -56,9 +58,19 @@ class CreateTutorProfileTest {
           subjects = listOf(),
           schedule = listOf())
 
+  @Before
+  fun setUp() {
+    `when`(mockProfileRepository.getNewUid()).thenReturn("uid")
+    `when`(mockProfileRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf())
+    }
+  }
+
   @Test
   fun createTutorProfileScreen_rendersCorrectly() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+    mockViewModel.setCurrentProfile(getMockProfile())
+
     // Set the screen in the test environment
     composeTestRule.setContent {
       CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)
@@ -76,7 +88,7 @@ class CreateTutorProfileTest {
 
   @Test
   fun formValidation_displaysToastWhenFieldsAreEmpty() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+    mockViewModel.setCurrentProfile(getMockProfile())
 
     // Set the screen in the test environment
     composeTestRule.setContent {
@@ -132,7 +144,7 @@ class CreateTutorProfileTest {
 
   @Test
   fun sliderTextTest() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+    mockViewModel.setCurrentProfile(getMockProfile())
 
     // Set the screen in the test environment
     composeTestRule.setContent {
@@ -150,7 +162,8 @@ class CreateTutorProfileTest {
 
   @Test
   fun noProfileTest() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = null
+    mockViewModel.setCurrentProfile(null)
+
     // Set the screen in the test environment
     composeTestRule.setContent {
       CreateTutorProfile(
@@ -166,7 +179,7 @@ class CreateTutorProfileTest {
 
   @Test
   fun descriptionField_updatesCorrectly() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = getMockProfile()
+    mockViewModel.setCurrentProfile(getMockProfile())
 
     composeTestRule.setContent {
       CreateTutorProfile(navigationActions = mockNavigationActions, mockViewModel)

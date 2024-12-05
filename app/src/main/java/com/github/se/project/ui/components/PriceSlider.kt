@@ -10,8 +10,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PriceSlider(sliderValue: MutableFloatState) {
-  val averagePrice = 30
+fun PriceSlider(sliderValue: MutableFloatState, averagePrice: Double) {
   Slider(
       value = sliderValue.floatValue,
       onValueChange = { sliderValue.floatValue = it },
@@ -19,7 +18,7 @@ fun PriceSlider(sliderValue: MutableFloatState) {
       steps = 45,
       modifier = Modifier.padding(horizontal = 16.dp).testTag("priceSlider"))
 
-  val priceDifference = averagePrice - sliderValue.floatValue.toInt()
+  val priceDifference = averagePrice.toInt() - sliderValue.floatValue.toInt()
   if (priceDifference >= 0) {
     Text(
         "Your price is ${sliderValue.floatValue.toInt()}.-, which is $priceDifference.- less than the average.",

@@ -76,6 +76,7 @@ androidxCoreKtx = "1.6.1"
 # stream chat
 streamChatCompose = "6.4.4"
 streamChatOffline = "6.4.4"
+firebaseMessagingKtx = "24.1.0"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
@@ -140,6 +141,7 @@ stream-chat-compose = { module="io.getstream:stream-chat-android-compose", versi
 stream-chat-offline = { module="io.getstream:stream-chat-android-offline", version.ref = "streamChatOffline"}
 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

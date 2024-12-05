@@ -276,35 +276,54 @@ fun LessonEditor(
     Dialog(
         onDismissRequest = { showMapDialog = false },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
-          Column {
-            TimePicker(
-                state = timePickerState,
-            )
-            Button(onClick = { showTimeDialog = false }) { Text("Back") }
-            Button(
-                onClick = {
-                  val selectedCalendar =
-                      Calendar.getInstance().apply {
-                        timeInMillis = currentDateTime.timeInMillis
-                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                        set(Calendar.MINUTE, timePickerState.minute)
-                      }
+          Surface(
+              shape = MaterialTheme.shapes.medium,
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                  TimePicker(state = timePickerState)
 
-                  val isSelectedDateToday =
-                      selectedDate ==
-                          "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { showTimeDialog = false }) { Text("Back") }
 
-                  if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-                    Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT)
-                        .show()
-                  } else {
-                    selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
-                    showTimeDialog = false
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        onClick = {
+                          val selectedCalendar =
+                              Calendar.getInstance().apply {
+                                timeInMillis = currentDateTime.timeInMillis
+                                set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                                set(Calendar.MINUTE, timePickerState.minute)
+                              }
+
+                          val isSelectedDateToday =
+                              selectedDate ==
+                                  String.format(
+                                      "%02d/%02d/%04d",
+                                      calendar.get(Calendar.DAY_OF_MONTH),
+                                      calendar.get(Calendar.MONTH) + 1,
+                                      calendar.get(Calendar.YEAR))
+
+                          if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
+                            Toast.makeText(
+                                    context, "You cannot select a past time", Toast.LENGTH_SHORT)
+                                .show()
+                          } else {
+                            selectedTime =
+                                String.format(
+                                    "%02d:%02d", timePickerState.hour, timePickerState.minute)
+                            showTimeDialog = false
+                          }
+                        }) {
+                          Text("OK")
+                        }
                   }
-                }) {
-                  Text("OK")
                 }
-          }
+              }
         }
   }
   // Map Dialog
@@ -547,8 +566,8 @@ fun validateLessonInput(
 }
 
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false ||
-      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ||
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED)
 }
 
 fun isInstant(timeSlot: String): Boolean {

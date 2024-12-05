@@ -1,17 +1,41 @@
 package com.github.se.project.ui.profile
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.se.project.model.profile.*
+import com.github.se.project.R
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PriceSlider
 import com.github.se.project.ui.components.SubjectSelector
@@ -87,12 +111,17 @@ fun CreateTutorProfile(
                   "Select your tutoring price per hour:",
                   style = MaterialTheme.typography.titleSmall,
                   modifier = Modifier.testTag("priceText"))
-              PriceSlider(sliderValue)
+              PriceSlider(sliderValue, listProfilesViewModel.getAveragePrice())
 
               // Description text field
               OutlinedTextField(
                   value = description,
-                  onValueChange = { description = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.tutor_description)) {
+                      Log.d("CreateTutorProfile", "Description Length: ${it.length}")
+                      description = it
+                    }
+                  },
                   modifier =
                       Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("experienceField"),
                   label = { Text("Do you have any experience as a tutor ?") },
@@ -101,7 +130,8 @@ fun CreateTutorProfile(
                         "Share your previous tutoring experience, or if you don't have any, explain why you would be a great tutor.")
                   },
                   shape = MaterialTheme.shapes.medium,
-                  maxLines = 4)
+                  maxLines = 4,
+                  keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
             }
       },
       bottomBar = {
@@ -128,7 +158,6 @@ fun CreateTutorProfile(
                         price = sliderValue.floatValue.toInt(),
                         description = description)
 
-                listProfilesViewModel.updateProfile(updatedProfile)
                 listProfilesViewModel.setCurrentProfile(updatedProfile)
 
                 navigationActions.navigateTo(Screen.CREATE_TUTOR_SCHEDULE)
