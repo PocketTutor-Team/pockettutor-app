@@ -1,14 +1,30 @@
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag // Import for test tags
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,7 +71,7 @@ fun CompletedLessonScreen(
                     onClick = { navigationActions.goBack() },
                     modifier = Modifier.testTag("backButton") // Added test tag
                     ) {
-                      Icon(Icons.Default.ArrowBack, contentDescription = "Go Back")
+                      Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go Back")
                     }
               },
           )
@@ -188,7 +204,7 @@ private fun DisplayReview(lesson: Lesson, student: Profile) {
                                   contentDescription = "Star",
                                   tint =
                                       if (index < rating.grade) MaterialTheme.colorScheme.primary
-                                      else MaterialTheme.colorScheme.secondary,
+                                      else Color.Gray.copy(alpha = 0.5f),
                                   modifier = Modifier.size(16.dp))
                             }
                           }

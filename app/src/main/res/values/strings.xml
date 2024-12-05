@@ -4,7 +4,8 @@
     <string name="title_activity_second">SecondActivity</string>
     <string name="web_client_id">475882605501-gv47hlfhkd5j459vjv0kc1cj97ensm15.apps.googleusercontent.com</string>
     <string name="chat_api_key">fw3tsu2v5sug</string>
-"
+
+    "
     <string name="your_account">Your Account</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="close">Close</string>

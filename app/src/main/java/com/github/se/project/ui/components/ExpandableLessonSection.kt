@@ -7,8 +7,11 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -26,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -45,6 +49,7 @@ fun ExpandableLessonSection(
 ) {
   val isInstant = lessons.any { isInstant(it) }
   var expanded by remember { mutableStateOf(if (isInstant) true else lessons.isNotEmpty()) }
+  val lessonCountText = lessons.size.toString()
 
   LaunchedEffect(lessons.isNotEmpty()) { expanded = lessons.isNotEmpty() }
 
@@ -85,14 +90,25 @@ fun ExpandableLessonSection(
               trailingContent =
                   if (!isInstant) {
                     {
-                      IconButton(
-                          onClick = { expanded = !expanded },
-                          modifier = Modifier.testTag("section_${section.status.name}_expand")) {
-                            Icon(
-                                if (expanded) Icons.Default.KeyboardArrowDown
-                                else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                contentDescription = if (expanded) "Collapse" else "Expand")
-                          }
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (lessonCountText.isNotEmpty() && lessons.isNotEmpty()) {
+                          Text(
+                              text = lessonCountText + " lessons",
+                              style = MaterialTheme.typography.bodyMedium)
+                          Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        if (lessons.isNotEmpty()) {
+                          IconButton(
+                              modifier = Modifier.testTag("section_${section.status.name}_expand"),
+                              onClick = { expanded = !expanded }) {
+                                Icon(
+                                    imageVector =
+                                        if (expanded) Icons.Default.KeyboardArrowDown
+                                        else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                    contentDescription = if (expanded) "Collapse" else "Expand")
+                              }
+                        }
+                      }
                     }
                   } else null,
               modifier =

@@ -9,28 +9,35 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * ViewModel for managing profiles in the application. It handles fetching, updating, and managing
+ * the state of user profiles.
+ */
 open class ListProfilesViewModel(private val repository: ProfilesRepository) : ViewModel() {
 
-  // List of all profiles registered in the app.
+  // Backing property to hold the list of all profiles in the app.
   private val profiles_ = MutableStateFlow<List<Profile>>(emptyList())
+  // Exposed immutable StateFlow of profiles to be observed by the UI.
   val profiles: StateFlow<List<Profile>> = profiles_.asStateFlow()
-  // Note: This might be useful when a user log-in and already have an account.
-  //  It might be deleted if it is not necessary.
 
-  // The profile of the current user of the app (after log-in).
+  // Backing property for the current user's profile after login.
   private val currentProfile_ = MutableStateFlow<Profile?>(null)
+  // Exposed immutable StateFlow for observing the current user profile.
   open val currentProfile: StateFlow<Profile?> = currentProfile_.asStateFlow()
 
-  // This field is used to select another profile than the current user profile
-  // (used for example for the SelectedTutorDetails screen to select the tutor profile to display)
+  // Backing property for a selected profile (e.g., for displaying tutor details).
   private val selectedProfile_ = MutableStateFlow<Profile?>(null)
+  // Exposed immutable StateFlow for observing the selected profile.
   open val selectedProfile: StateFlow<Profile?> = selectedProfile_.asStateFlow()
 
   init {
+    // Initialize the repository and fetch profiles when ViewModel is created.
     repository.init { getProfiles() }
   }
 
-  // Create a factory
+  /**
+   * Factory object for creating instances of ListProfilesViewModel with the appropriate repository.
+   */
   companion object {
     val Factory: ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
@@ -42,29 +49,30 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
   }
 
   /**
-   * Generates a new unique ID.
+   * Generates a new unique identifier (UID).
    *
-   * @return A new unique ID.
+   * @return A string representing a new unique UID.
    */
   fun getNewUid(): String {
     return repository.getNewUid()
   }
 
-  /** Gets all Profile documents and update the 'profiles' state flow. */
+  /** Fetches all profiles from the repository and updates the profiles StateFlow. */
   fun getProfiles() {
     repository.getProfiles(
-        onSuccess = { profiles_.value = it },
-        onFailure = { Log.e("ListProfilesViewModel", "Error getting profiles", it) })
+        onSuccess = { profiles_.value = it }, // Update profiles on successful fetch.
+        onFailure = { Log.e("ListProfilesViewModel", "Error getting profiles", it) } // Log errors.
+        )
   }
 
   /**
-   * Gets a Profile document by its ID.
+   * Fetches a specific profile by its ID.
    *
-   * @param id The ID of the Profile document to be retrieved.
-   * @return The Profile document with the given ID, or null if not found.
+   * @param id The unique ID of the profile to retrieve.
+   * @return The Profile object with the matching ID, or null if not found.
    */
   fun getProfileById(id: String): Profile? {
-    getProfiles()
+    getProfiles() // Refresh the profiles list.
     return profiles_.value.find { it.uid == id }
   }
 
@@ -75,54 +83,62 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
   }
 
   /**
-   * Adds a Profile document.
+   * Adds a new profile to the repository and updates the profiles list.
    *
-   * @param profile The Profile document to be added.
+   * @param profile The Profile object to add.
    */
   fun addProfile(profile: Profile) {
     repository.addProfile(
         profile,
-        onSuccess = { getProfiles() },
-        onFailure = { Log.e("ListProfilesViewModel", "Error adding profile", it) })
+        onSuccess = { getProfiles() }, // Refresh the list on success.
+        onFailure = { Log.e("ListProfilesViewModel", "Error adding profile", it) } // Log errors.
+        )
   }
 
   /**
-   * Updates a Profile document.
+   * Updates an existing profile in the repository.
    *
-   * @param profile The Profile document to be updated.
+   * @param profile The Profile object with updated data.
    */
   fun updateProfile(profile: Profile) {
     repository.updateProfile(
         profile,
-        onSuccess = { getProfiles() },
-        onFailure = { Log.e("ListProfilesViewModel", "Error updating profile", it) })
+        onSuccess = { getProfiles() }, // Refresh the list on success.
+        onFailure = { Log.e("ListProfilesViewModel", "Error updating profile", it) } // Log errors.
+        )
   }
 
   /**
-   * Deletes a Profile document by its ID.
+   * Deletes a profile from the repository by its ID.
    *
-   * @param id The ID of the Profile document to be deleted.
+   * @param id The unique ID of the profile to delete.
    */
   fun deleteProfileById(id: String) {
     repository.deleteProfileById(
         id,
-        onSuccess = { getProfiles() },
-        onFailure = { Log.e("ListProfilesViewModel", "Error deleting profile", it) })
+        onSuccess = { getProfiles() }, // Refresh the list on success.
+        onFailure = { Log.e("ListProfilesViewModel", "Error deleting profile", it) } // Log errors.
+        )
+  }
+
+  /** Clears the current user's profile by setting it to null. */
+  fun clearCurrentProfile() {
+    currentProfile_.value = null
   }
 
   /**
-   * Selects a Profile document as the current user profile.
+   * Sets a specific profile as the current user's profile.
    *
-   * @param profile The Profile document to be selected.
+   * @param profile The Profile object to set as the current profile.
    */
   fun setCurrentProfile(profile: Profile?) {
     currentProfile_.value = profile
   }
 
   /**
-   * Selects a Profile document
+   * Selects a profile for viewing or other operations (not the current user profile).
    *
-   * @param profile the profile to select
+   * @param profile The Profile object to set as the selected profile.
    */
   fun selectProfile(profile: Profile) {
     selectedProfile_.value = profile
