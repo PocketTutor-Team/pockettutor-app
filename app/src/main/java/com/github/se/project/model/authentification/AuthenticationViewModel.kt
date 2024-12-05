@@ -24,30 +24,39 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+/** ViewModel class for managing authentication actions and user sign-in */
 class AuthenticationViewModel : ViewModel() {
 
+  // MutableLiveData to hold the current user ID, initialized to null
   val userId = MutableLiveData<String?>(null)
 
-  // Function to handle Google Sign-In
+  /**
+   * Function to handle Google Sign-In with a provided context and callback for success.
+   *
+   * @param context The context used to initialize the CredentialManager and perform the Google
+   *   sign-in.
+   * @param onSuccess Lambda function that will be triggered when sign-in is successful, providing
+   *   the user ID.
+   */
   fun handleGoogleSignIn(context: Context, onSuccess: (uid: String) -> Unit) {
     viewModelScope.launch {
-      // Collect the result of the Google Sign-In process
+      // Start Google sign-in and collect the result asynchronously
       googleSignIn(context).collect { result ->
-        result.fold( // It allows you to specify actions for both success and failure cases of the
-            // operation, making it easy to manage the different outcomes.
-            onSuccess = { authResult ->
-              // Handle successful sign-in
+        result.fold( // Fold function allows handling success and failure cases
+            onSuccess = { authResult -> // If sign-in is successful
               val currentUser = authResult.user
               if (currentUser != null) {
-                userId.value = currentUser.uid
+                userId.value = currentUser.uid // Set the user ID in LiveData
 
+                // Show success message
                 Toast.makeText(context, "Sign in successful", Toast.LENGTH_LONG).show()
 
+                // Trigger the onSuccess callback with the user ID
                 onSuccess(userId.value!!)
               }
             },
-            onFailure = { e ->
-              // Handle sign-in error
+            onFailure = { e -> // If there is an error in sign-in
+              // Show error message with the exception message
               Toast.makeText(context, "Authentication error: ${e.message}", Toast.LENGTH_LONG)
                   .show()
             })
@@ -55,107 +64,101 @@ class AuthenticationViewModel : ViewModel() {
     }
   }
 
-  // Function to perform Google Sign-In and return a Flow of AuthResult
+  /**
+   * Function to perform Google Sign-In and return a Flow with the AuthResult.
+   *
+   * @param context The context used for credential manager and Google Sign-In configuration.
+   * @return A Flow of Result<AuthResult> that represents the sign-in result.
+   */
   private suspend fun googleSignIn(context: Context): Flow<Result<AuthResult>> {
-    // Initialize Firebase Auth instance
+    // Initialize Firebase authentication instance
     val firebaseAuth = FirebaseAuth.getInstance()
 
-    // Return a Flow that emits the result of the Google Sign-In process
+    // Return a Flow that will emit the result of the Google Sign-In process
     return callbackFlow {
       try {
-        // Initialize Credential Manager
+        // Initialize the Credential Manager to handle credential retrieval
         val credentialManager: CredentialManager = CredentialManager.create(context)
 
-        // Generate a nonce (a random number used once) for security
+        // Generate a nonce (random value) for security purposes
         val ranNonce: String = UUID.randomUUID().toString()
         val bytes: ByteArray = ranNonce.toByteArray()
         val md: MessageDigest = MessageDigest.getInstance("SHA-256")
         val digest: ByteArray = md.digest(bytes)
         val hashedNonce: String = digest.fold("") { str, it -> str + "%02x".format(it) }
 
-        // Set up Google ID option with necessary parameters
+        // Set up Google ID option with necessary parameters for authentication
         val googleIdOption: GetGoogleIdOption =
             GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(
-                    false) // To give the user the option to choose from any Google account on their
-                // device, not just the ones they've used with your app before.
-                .setServerClientId(
-                    context.getString(
-                        R.string
-                            .web_client_id)) // This is required to identify the app on the backend
-                // server.
-                .setNonce(
-                    hashedNonce) // A nonce is a unique, random string used to ensure that the ID
-                // token received is fresh and to prevent replay attacks.
-                .setAutoSelectEnabled(
-                    true) // Which allows the user to be automatically signed in without additional
-                // user interaction if there is a single eligible account.
+                .setFilterByAuthorizedAccounts(false) // Allow selection of any account
+                .setServerClientId(context.getString(R.string.web_client_id)) // Specify client ID
+                .setNonce(hashedNonce) // Prevent replay attacks with a unique nonce
+                .setAutoSelectEnabled(true) // Automatically select account if only one exists
                 .build()
 
         // Create a credential request with the Google ID option
         val request: GetCredentialRequest =
             GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
-        // Get the credential result from the Credential Manager
+        // Retrieve the credentials from the Credential Manager
         val result = credentialManager.getCredential(context, request)
         val credential = result.credential
 
-        // Check if the received credential is a valid Google ID Token
+        // Check if the credential is a valid Google ID Token
         if (credential is CustomCredential &&
             credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
           // Extract the Google ID Token credential
           val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-          // Create an auth credential using the Google ID Token
+
+          // Create an AuthCredential from the Google ID Token
           val authCredential =
               GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
-          // Sign in with Firebase using the auth credential
-          val authResult =
-              firebaseAuth
-                  .signInWithCredential(authCredential)
-                  .await() // .await() -> allows the coroutine to wait for the result of the
-          // authentication operation before proceeding.
-          // Send the successful result
-          trySend(
-              Result.success(
-                  authResult)) // Is used to send the result of the Firebase sign-in operation to
-          // the Flow's collectors.
+
+          // Sign in with Firebase using the AuthCredential
+          val authResult = firebaseAuth.signInWithCredential(authCredential).await()
+
+          // Emit the result as successful sign-in
+          trySend(Result.success(authResult))
         } else {
-          // Throw an exception if the credential type is invalid
+          // If credential is invalid, log the error
           Log.e("AuthenticationViewModel", "Invalid credential type received.")
           throw RuntimeException("Received an invalid credential type.")
         }
       } catch (e: GetCredentialCancellationException) {
-        // Handle sign-in cancellation
+        // Handle case where sign-in is canceled by the user
         trySend(Result.failure(Exception("Sign-in was canceled.")))
       } catch (e: Exception) {
-        // Handle other exceptions
+        // Log and emit error for any other exceptions
         Log.e("AuthenticationViewModel", "Error during authentication process", e)
         trySend(Result.failure(e))
       }
 
-      // When a collector starts collecting from the callbackFlow, the flow remains open and ready
-      // to emit values until the awaitClose block is reached or the flow is cancelled.
-      // Even though the current block is empty, in other scenarios, you might use the awaitClose
-      // block to unregister listeners or release resources associated with the callback-based API.
+      // Ensure proper closure of the callbackFlow
       awaitClose {}
     }
   }
-  // Function to handle Firebase sign-out
+
+  /**
+   * Function to handle Firebase sign-out and notify when done.
+   *
+   * @param onSignOutComplete Lambda function that will be triggered when the sign-out process is
+   *   complete.
+   */
   fun signOut(onSignOutComplete: () -> Unit) {
     // Initialize Firebase Auth instance
     val firebaseAuth = FirebaseAuth.getInstance()
 
     try {
-      // Sign out the user
+      // Perform sign-out from Firebase
       firebaseAuth.signOut()
 
-      // Clear the LiveData userId since the user has signed out
+      // Clear the user ID from LiveData as the user has signed out
       userId.value = null
 
-      // Invoke callback to notify completion
+      // Notify the caller that sign-out is complete
       onSignOutComplete()
     } catch (e: Exception) {
-      // Handle any potential errors during sign-out
+      // Log and handle any errors during sign-out
       Log.e("AuthenticationViewModel", "Error during sign-out", e)
     }
   }
