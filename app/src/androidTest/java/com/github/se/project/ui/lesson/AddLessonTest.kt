@@ -62,14 +62,15 @@ class AddLessonTest {
             mockLessonRepository.addLesson(
                 org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any()))
         .thenAnswer { invocation ->
+            @Suppress("UNCHECKED_CAST")
           val onSuccess = invocation.arguments[1] as () -> Unit
           onSuccess() // Simulate a successful update
         }
   }
 
   @Test
-  fun AddLessonIsProperlyDisplayed() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+  fun addLessonIsProperlyDisplayed() {
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -108,7 +109,7 @@ class AddLessonTest {
 
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
@@ -165,21 +166,21 @@ class AddLessonTest {
 
   @Test
   fun goBack() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testInitialState() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
   }
 
   @Test
   fun testInstantLessonDisplaying() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
 
     // Set Instant Lesson
     composeTestRule.waitUntil(15000) {
@@ -203,7 +204,7 @@ class AddLessonTest {
 
   @Test
   fun testInstantLesson() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
 
     // Set Instant Lesson
     composeTestRule.waitUntil(15000) {
@@ -230,7 +231,7 @@ class AddLessonTest {
 
   @Test
   fun testInstantInvalid() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons) }
 
     // Set Instant Lesson
     composeTestRule.waitUntil(15000) {
