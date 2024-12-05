@@ -1,7 +1,12 @@
 package com.github.se.project.ui.overview
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.chat.ChatViewModel
@@ -355,5 +360,15 @@ class HomeScreenTest {
     composeTestRule.onNodeWithTag("cancelledLessonDialogTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelledLessonDialogText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelledLessonDialogConfirmButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEmptySectionTextDisplayed() {
+    composeTestRule.setContent {
+      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+    }
+    composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("section_CONFIRMED_expand").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("noLessonsConfirmed").assertIsDisplayed()
   }
 }

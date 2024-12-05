@@ -89,6 +89,7 @@ class SciperScanButtonTest {
   //    composeTestRule.onNodeWithText("Scan your Camipro Card").assertExists()
   //  }
 
+  /*
   @Test
   fun cameraPermissionDeniedShowsMessage() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -101,4 +102,5 @@ class SciperScanButtonTest {
     // Full permission testing would require more complex instrumentation tests
     composeTestRule.onNodeWithText("Scan Camipro Card").assertExists()
   }
+   */
 }

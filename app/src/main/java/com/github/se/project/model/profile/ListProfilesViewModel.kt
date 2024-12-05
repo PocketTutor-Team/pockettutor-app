@@ -76,6 +76,12 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
     return profiles_.value.find { it.uid == id }
   }
 
+  fun getAveragePrice(): Double {
+    getProfiles()
+    val tutorProfiles = profiles_.value.filter { it.role == Role.TUTOR && it.price != 0 }
+    return if (tutorProfiles.isEmpty()) 30.0 else tutorProfiles.map { it.price }.average()
+  }
+
   /**
    * Adds a new profile to the repository and updates the profiles list.
    *
