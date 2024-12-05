@@ -328,24 +328,30 @@ private fun CancelLessonButton(
           Button(
               modifier = Modifier.testTag("cancelDialogConfirmButton"),
                   onClick = {
-                    // If the lesson is within 24 hours, do not allow cancellation
-                    // Otherwise, update the lesson status and refresh the list of lessons
-                    if (isCancellationValid(lesson.timeSlot)) {
-                      if (currentProfile.role == Role.STUDENT) {
-                        lessonViewModel.updateLesson(
-                            lesson = lesson.copy(status = LessonStatus.STUDENT_CANCELLED),
-                            onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                      // Check if the user is connected to the internet
+                      if(isConnected) {
+                          // If the lesson is within 24 hours, do not allow cancellation
+                          // Otherwise, update the lesson status and refresh the list of lessons
+                          if (isCancellationValid(lesson.timeSlot)) {
+                              if (currentProfile.role == Role.STUDENT) {
+                                  lessonViewModel.updateLesson(
+                                      lesson = lesson.copy(status = LessonStatus.STUDENT_CANCELLED),
+                                      onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                              } else {
+                                  lessonViewModel.updateLesson(
+                                      lesson = lesson.copy(status = LessonStatus.TUTOR_CANCELLED),
+                                      onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
+                              }
+                              showCancelDialog = false
+                              navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+                          } else {
+                              context.showToast("You can only cancel a lesson 24 hours before it starts")
+                              showCancelDialog = false
+                          }
+                      //when the user is offline inform with a toast message
                       } else {
-                        lessonViewModel.updateLesson(
-                            lesson = lesson.copy(status = LessonStatus.TUTOR_CANCELLED),
-                            onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
+                          Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
                       }
-                      showCancelDialog = false
-                      navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
-                    } else {
-                      context.showToast("You can only cancel a lesson 24 hours before it starts")
-                      showCancelDialog = false
-                    }
                   }
           ) {
                 Text("Yes, cancel it")

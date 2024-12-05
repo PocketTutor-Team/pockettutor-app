@@ -98,6 +98,7 @@ fun LessonEditor(
     val initialMaxPrice = lesson?.maxPrice ?: 50.0
     val initialSubject = lesson?.subject ?: Subject.NONE
     val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
+    val initialLanguage = lesson?.languages ?: listOf()
 
     // Initialize the lesson fields
   var title by remember { mutableStateOf(lesson?.title ?: "") }
@@ -130,7 +131,8 @@ fun LessonEditor(
                 minPrice != initialMinPrice ||
                 maxPrice != initialMaxPrice ||
                 selectedSubject.value != initialSubject ||
-                selectedLocation != initialLocation
+                selectedLocation != initialLocation ||
+                selectedLanguages.toList() != initialLanguage
     }}
 
   var isLocationChecked by remember { mutableStateOf(false) }
