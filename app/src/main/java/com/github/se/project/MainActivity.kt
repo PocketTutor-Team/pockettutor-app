@@ -191,7 +191,7 @@ fun PocketTutorApp(
         RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
-        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
       }
       composable(Screen.CONFIRMED_LESSON) {
         ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
@@ -221,7 +221,7 @@ fun PocketTutorApp(
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
-        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
       }
     }
 
