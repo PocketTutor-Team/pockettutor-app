@@ -16,13 +16,12 @@ class SingleSubjectSelectorTest {
     }
     composeTestRule.waitForIdle()
     settedUp = true
-    Thread.sleep(10000)
   }
 
   @Test
   fun selectingSubjectUpdatesCorrectly() {
     assert(settedUp)
-    Thread.sleep(10000)
+    composeTestRule.waitforIdle()
 
     // Initially, dropdown items are not displayed
     Subject.entries.forEach { subject ->
