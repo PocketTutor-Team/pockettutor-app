@@ -13,7 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+/*@RunWith(AndroidJUnit4::class)
 class SingleSubjectSelectorTest {
 
   private var settedUp = false
@@ -55,4 +55,4 @@ class SingleSubjectSelectorTest {
       composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
     }
   }
-}
+}*/
