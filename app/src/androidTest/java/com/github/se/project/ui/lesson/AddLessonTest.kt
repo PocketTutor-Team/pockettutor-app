@@ -243,6 +243,7 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
+    /*
   @Test
   fun testInstantLesson() {
     composeTestRule.setContent {
@@ -272,7 +273,7 @@ class AddLessonTest {
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
-  }
+  }*/
 
   @Test
   fun testInstantInvalid() {

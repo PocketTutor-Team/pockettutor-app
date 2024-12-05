@@ -8,7 +8,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** ViewModel for managing the network status. Handles the retrieval of the network status. */
+/**
+ * ViewModel that provides the network status to the UI.
+ *
+ * @param application The application context.
+ */
 open class NetworkStatusViewModel(application: Application) : AndroidViewModel(application) {
 
   private val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
