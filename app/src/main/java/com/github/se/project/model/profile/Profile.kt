@@ -1,5 +1,7 @@
 package com.github.se.project.model.profile
 
+import com.github.se.project.model.certification.EpflCertification
+
 /** Data class representing a user profile. */
 data class Profile(
     val uid: String, // Unique string id for the profile
@@ -15,5 +17,6 @@ data class Profile(
     var languages: List<Language> = listOf(),
     var subjects: List<Subject> = listOf(),
     var schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
-    var price: Int = 0
+    var price: Int = 0,
+    val certification: EpflCertification? = null
 )
