@@ -225,26 +225,6 @@ private fun MessageButton(otherProfile: Profile, lesson: Lesson, isStudent: Bool
       })
 }
 
-/*
-// trying to replace @AlexisA's messaging version with the intra messaging feature
-@Composable
-private fun MessagingButton(navigationActions: NavigationActions, chatViewModel: ChatViewModel, otherProfile: Profile, isStudent: Boolean) {
-    LessonActionButton(
-        text = "Message ${if (isStudent) "Tutor" else "Student"}",
-        onClick = {
-            chatViewModel.setChannelID(channel.cid)
-            navigationActions.navigateTo(Screen.CHAT)
-        },
-        testTag = "chatButton",
-        icon = {
-            Icon(
-                Icons.AutoMirrored.Filled.Send,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp))
-        })
-}
-*/
-
 @Composable
 private fun DeleteLessonButton(
     lesson: Lesson,
