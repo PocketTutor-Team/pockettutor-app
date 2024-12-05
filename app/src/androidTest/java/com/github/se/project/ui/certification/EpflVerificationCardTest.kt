@@ -24,6 +24,8 @@ class EpflVerificationCardTest {
           onResetVerification = {})
     }
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNodeWithText("EPFL Verification").assertExists()
     composeTestRule
         .onNodeWithText(
@@ -46,6 +48,8 @@ class EpflVerificationCardTest {
           onResetVerification = {})
     }
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNodeWithText(errorMessage).assertExists()
   }
 
@@ -67,6 +71,8 @@ class EpflVerificationCardTest {
           onResetVerification = {})
     }
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNodeWithText("Verified as John Doe").assertExists()
     composeTestRule.onNodeWithText("IN - BA1").assertExists()
   }
@@ -84,6 +90,8 @@ class EpflVerificationCardTest {
           onResetVerification = {})
     }
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNode(hasSetTextAction()).performTextInput("1234567")
     assert(capturedSciper.length <= 6) { "SCIPER input should not exceed 6 digits" }
   }
@@ -100,6 +108,8 @@ class EpflVerificationCardTest {
           onVerifyClick = { verifyClicked = true },
           onResetVerification = {})
     }
+
+    composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithContentDescription("Verify").assertExists()
     composeTestRule.onNodeWithContentDescription("Verify").performClick()

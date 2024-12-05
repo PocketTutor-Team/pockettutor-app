@@ -19,6 +19,8 @@ class SciperScanButtonTest {
   fun scanButtonInitiallyDisplayed() {
     composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNodeWithText("Scan Camipro Card").assertExists()
   }
 
@@ -92,6 +94,8 @@ class SciperScanButtonTest {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}) }
+
+    composeTestRule.waitForIdle()
 
     // Note: This is a basic test for permission handling.
     // Full permission testing would require more complex instrumentation tests
