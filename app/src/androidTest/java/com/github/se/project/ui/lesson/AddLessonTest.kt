@@ -67,8 +67,9 @@ class AddLessonTest {
 
   private val mockLessons = LessonViewModel(mockLessonRepository)
 
-    // Accessing from ressources
-    private val okMessage = ApplicationProvider.getApplicationContext<Context>().getString(R.string.ok)
+  // Accessing from resources
+  private val okMessage =
+      ApplicationProvider.getApplicationContext<Context>().getString(R.string.ok)
 
   @Before
   fun setUp() {
