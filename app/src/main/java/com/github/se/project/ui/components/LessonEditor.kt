@@ -2,6 +2,7 @@ package com.github.se.project.ui.components
 
 import MapPickerBox
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,9 +51,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
@@ -60,7 +63,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -134,10 +136,6 @@ fun LessonEditor(
   var showTimeDialog by remember { mutableStateOf(false) } // Show time picker dialog
   var showMapDialog by remember { mutableStateOf(false) } // Show map selection dialog
 
-  // Camera position state for map interactions
-  val cameraPositionState = rememberCameraPositionState {}
-
-  // Initializes state based on the provided lesson when the lesson ID changes
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
     if (lesson != null) {
@@ -233,7 +231,8 @@ fun LessonEditor(
               "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}",
               "instant",
               lat,
-              lon)
+              lon,
+              context)
       if (error != null) {
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
       } else {
@@ -267,7 +266,8 @@ fun LessonEditor(
               selectedDate,
               selectedTime,
               selectedLocation.first,
-              selectedLocation.second)
+              selectedLocation.second,
+              context)
       if (error != null) {
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
       } else {
@@ -293,9 +293,9 @@ fun LessonEditor(
   // Format location for display
   val locationText =
       if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
-        "Location selected"
+        stringResource(R.string.location_selected)
       } else {
-        "Select location"
+        stringResource(R.string.select_location)
       }
 
   if (showDatePicker) {
@@ -309,7 +309,7 @@ fun LessonEditor(
             selectedDate = formatter.format(zonedDateTime)
             showDatePicker = false
           }) {
-            Text("OK")
+            Text(stringResource(R.string.ok))
           }
         },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -325,7 +325,7 @@ fun LessonEditor(
             TimePicker(
                 state = timePickerState,
             )
-            Button(onClick = { showTimeDialog = false }) { Text("Back") }
+            Button(onClick = { showTimeDialog = false }) { Text(stringResource(R.string.close)) }
             Button(
                 onClick = {
                   val selectedCalendar =
@@ -340,14 +340,15 @@ fun LessonEditor(
                           "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
 
                   if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-                    Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                            context, context.getString(R.string.past_time), Toast.LENGTH_SHORT)
                         .show()
                   } else {
                     selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
                     showTimeDialog = false
                   }
                 }) {
-                  Text("OK")
+                  Text(stringResource(R.string.ok))
                 }
           }
         }
@@ -363,7 +364,7 @@ fun LessonEditor(
                 Column {
                   // Dialog header
                   TopAppBar(
-                      title = { Text("Select Location") },
+                      title = { Text(stringResource(R.string.select_location)) },
                       navigationIcon = {
                         IconButton(onClick = { showMapDialog = false }) {
                           Icon(Icons.Default.Close, "Close map")
@@ -371,7 +372,7 @@ fun LessonEditor(
                       })
 
                   // Map content
-                  Box() {
+                  Box {
                     MapPickerBox(
                         initialLocation = selectedLocation,
                         onLocationSelected = { newLocation ->
@@ -422,23 +423,21 @@ fun LessonEditor(
                     .padding(horizontal = 24.dp)
                     .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Text(
-                  "Give a title and add a description to your lesson",
-                  style = MaterialTheme.typography.titleSmall)
+              Text(stringResource(R.string.title_desc), style = MaterialTheme.typography.titleSmall)
 
               OutlinedTextField(
                   value = title,
                   onValueChange = { title = it },
-                  label = { Text("Give a title to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in short") },
+                  label = { Text(stringResource(R.string.give_title)) },
+                  placeholder = { Text(stringResource(R.string.title_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("titleField"),
                   singleLine = true)
 
               OutlinedTextField(
                   value = description,
                   onValueChange = { description = it },
-                  label = { Text("Give a description to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in detail") },
+                  label = { Text(stringResource(R.string.give_description)) },
+                  placeholder = { Text(stringResource(R.string.description_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
                   singleLine = true)
 
@@ -446,7 +445,7 @@ fun LessonEditor(
 
               if (!instant.value) {
                 Text(
-                    "Select the desired date and time for the lesson",
+                    stringResource(R.string.select_date_time),
                     style = MaterialTheme.typography.titleSmall)
 
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -458,7 +457,7 @@ fun LessonEditor(
                               containerColor = MaterialTheme.colorScheme.secondaryContainer,
                               contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text(
-                            selectedDate.ifEmpty { "Select Date" },
+                            selectedDate.ifEmpty { stringResource(R.string.select_date) },
                             style = MaterialTheme.typography.titleSmall)
                       }
 
@@ -472,7 +471,7 @@ fun LessonEditor(
                               containerColor = MaterialTheme.colorScheme.secondaryContainer,
                               contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text(
-                            selectedTime.ifEmpty { "Select Time" },
+                            selectedTime.ifEmpty { stringResource(R.string.select_time) },
                             style = MaterialTheme.typography.titleSmall)
                       }
                 }
@@ -480,7 +479,7 @@ fun LessonEditor(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Select the location for the lesson",
+                    stringResource(R.string.give_location),
                     style = MaterialTheme.typography.titleSmall)
 
                 Button(
@@ -503,21 +502,21 @@ fun LessonEditor(
               }
 
               Text(
-                  "Select the subject you want to study",
+                  stringResource(R.string.give_subject),
                   style = MaterialTheme.typography.titleSmall)
               SubjectSelector(selectedSubject)
 
               Spacer(modifier = Modifier.height(8.dp))
 
               Text(
-                  "Select the possible languages you want the course to take place in",
+                  stringResource(R.string.give_language),
                   style = MaterialTheme.typography.titleSmall)
               LanguageSelector(selectedLanguages)
 
               Spacer(modifier = Modifier.height(8.dp))
 
               PriceRangeSlider(
-                  "Select a price range for your lesson:",
+                  stringResource(R.string.give_price),
                   { min, max ->
                     minPrice = min.toDouble()
                     maxPrice = max.toDouble()
@@ -525,7 +524,8 @@ fun LessonEditor(
                   initialStart = minPrice.toFloat(),
                   initialEnd = maxPrice.toFloat())
 
-              Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
+              Text(
+                  "${stringResource(R.string.selected_price_range)} ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
       },
       bottomBar = {
@@ -538,7 +538,7 @@ fun LessonEditor(
                   modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
                   onClick = onConfirmClick) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.confirm))
                   }
 
               if (onDelete != null) {
@@ -550,7 +550,7 @@ fun LessonEditor(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     onClick = { onDelete(lesson!!) }) {
-                      Text("Delete")
+                      Text(stringResource(R.string.delete))
                     }
               }
             }
@@ -581,7 +581,8 @@ fun validateLessonInput(
     date: String,
     time: String,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    context: Context
 ): String? {
   // Create a map of required fields with their corresponding values for validation
   val requiredFields =
@@ -598,13 +599,13 @@ fun validateLessonInput(
   // Iterate through each field and value to check if any are empty
   for ((field, value) in requiredFields) {
     if (value.isEmpty()) {
-      return "$field is missing" // Return the first missing field as an error message
+      return "$field ${context.getString(R.string.is_missing)}"
     }
   }
 
   // Ensure a valid location is set (latitude and longitude must not be default values)
   if (latitude == 0.0 && longitude == 0.0) {
-    return "location is missing" // Location validation error
+    return context.getString(R.string.missing_location)
   }
 
   return null // All fields are valid, return null
@@ -619,8 +620,10 @@ fun validateLessonInput(
  * @return `true` if the lesson has an instant status, `false` otherwise.
  */
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false || // Instant request status
-      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false // Instant confirmed status
+  return if (lesson == null) false
+  else
+      (lesson.status == LessonStatus.INSTANT_REQUESTED) ||
+          (lesson.status == LessonStatus.INSTANT_CONFIRMED)
 }
 
 /**
