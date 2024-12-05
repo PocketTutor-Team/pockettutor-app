@@ -1,6 +1,5 @@
 package com.github.se.project.ui.profile
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -117,8 +116,7 @@ fun CreateTutorProfile(
               OutlinedTextField(
                   value = description,
                   onValueChange = {
-                    if (it.length <= context.resources.getInteger(R.integer.tutor_description)) {
-                      Log.d("CreateTutorProfile", "Description Length: ${it.length}")
+                    if (it.length <= context.resources.getInteger(R.integer.description)) {
                       description = it
                     }
                   },

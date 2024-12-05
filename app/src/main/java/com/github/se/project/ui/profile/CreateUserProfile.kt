@@ -1,6 +1,5 @@
 package com.github.se.project.ui.profile
 
-import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.layout.Arrangement
@@ -133,7 +132,6 @@ fun CreateProfileScreen(
                   value = firstName,
                   onValueChange = {
                     if (it.length <= context.resources.getInteger(R.integer.user_first_name)) {
-                      Log.d("CreateProfileScreen", "firstName length: ${it.length}")
                       firstName = it
                     }
                   },
@@ -147,7 +145,6 @@ fun CreateProfileScreen(
                   value = lastName,
                   onValueChange = {
                     if (it.length <= context.resources.getInteger(R.integer.user_last_name)) {
-                      Log.d("CreateProfileScreen", "lastName length: ${it.length}")
                       lastName = it
                     }
                   },

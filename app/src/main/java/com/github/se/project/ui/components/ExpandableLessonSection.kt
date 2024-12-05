@@ -98,23 +98,23 @@ fun ExpandableLessonSection(
                           Spacer(modifier = Modifier.width(8.dp))
                         }
                         if (lessons.isNotEmpty()) {
-                          IconButton(
-                              modifier = Modifier.testTag("section_${section.status.name}_expand"),
-                              onClick = { expanded = !expanded }) {
-                                Icon(
-                                    imageVector =
-                                        if (expanded) Icons.Default.KeyboardArrowDown
-                                        else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                    contentDescription = if (expanded) "Collapse" else "Expand")
-                              }
+                          IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector =
+                                    if (expanded) Icons.Default.KeyboardArrowDown
+                                    else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = if (expanded) "Collapse" else "Expand")
+                          }
                         }
                       }
                     }
                   } else null,
               modifier =
                   if (!isInstant) {
-                    Modifier.clickable { expanded = !expanded }
-                  } else Modifier)
+                    Modifier.testTag("section_${section.status.name}_expand").clickable {
+                      expanded = !expanded
+                    }
+                  } else Modifier.testTag("section_${section.status.name}_expand"))
 
           if (expanded) {
             if (lessons.isEmpty()) {

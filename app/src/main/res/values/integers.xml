@@ -2,5 +2,7 @@
 <resources>
     <integer name="user_first_name">20</integer>
     <integer name="user_last_name">20</integer>
-    <integer name="tutor_description">500</integer>
+    <integer name="lesson_title">50</integer>
+    <integer name="description">500</integer>
+    <integer name="comment">200</integer>
 </resources>

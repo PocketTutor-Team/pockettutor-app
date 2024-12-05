@@ -147,7 +147,7 @@ class ProfileInfoScreenTest {
     composeTestRule
         .onNodeWithTag("phoneNumberRow")
         .assertIsDisplayed()
-        .assertTextEquals(mockTutorProfile.phoneNumber ?: "N/A")
+        .assertTextEquals(mockTutorProfile.phoneNumber)
   }
 
   @Test
@@ -203,7 +203,7 @@ class ProfileInfoScreenTest {
     composeTestRule
         .onNodeWithTag("errorLoadingProfile")
         .assertIsDisplayed()
-        .assertTextEquals("Error loading profile...")
+        .assertTextEquals("Error loading profile…")
   }
 
   // Pass

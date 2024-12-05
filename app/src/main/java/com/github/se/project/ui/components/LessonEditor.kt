@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
@@ -447,7 +448,11 @@ fun LessonEditor(
 
               OutlinedTextField(
                   value = title,
-                  onValueChange = { title = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.lesson_title)) {
+                      title = it
+                    }
+                  },
                   label = { Text("Give a title to this lesson") },
                   placeholder = { Text("You can write what the lesson is about in short") },
                   modifier = Modifier.fillMaxWidth().testTag("titleField"),
@@ -455,7 +460,11 @@ fun LessonEditor(
 
               OutlinedTextField(
                   value = description,
-                  onValueChange = { description = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.description)) {
+                      description = it
+                    }
+                  },
                   label = { Text("Give a description to this lesson") },
                   placeholder = { Text("You can write what the lesson is about in detail") },
                   modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
