@@ -22,7 +22,7 @@ class SingleSubjectSelectorTest {
 
   @Before
   fun setUp() {
-    val selectedSubject = mutableStateOf<Subject>(Subject.NONE)
+    val selectedSubject = mutableStateOf(Subject.NONE)
     Thread.sleep(10000)
     runOnUiThread {
       composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
