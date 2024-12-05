@@ -3,36 +3,23 @@ package com.github.se.project.model.chat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.Profile
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * A ViewModel responsible for managing chat-related state and interactions with the Stream Chat
- * client.
- *
- * @param chatClient The ChatClient instance used for interacting with the chat backend.
- */
-open class ChatViewModel(val chatClient: ChatClient) : ViewModel() {
-  // Mutable state for the current channel ID, used to track which chat channel is active
-  private val currentChannelID_: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
-  val currentChannelID = currentChannelID_.asStateFlow() // Exposes an immutable flow for observers
+class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
 
-  // Tracks whether the user is already connected to avoid duplicate connections
-  private var connected = false
+  private val _currentChannelId = MutableStateFlow<String?>(null)
+  val currentChannelId = _currentChannelId.asStateFlow()
 
-  // Represents the initialization state of the ChatClient (e.g., not initialized, initializing, or
-  // complete)
-  val clientInitialisationState = chatClient.clientState.initializationState
+  private var isConnected = false
+
+  val clientInitializationState = chatClient.clientState.initializationState
 
   companion object {
-    /**
-     * A factory method for creating an instance of ChatViewModel with the provided ChatClient.
-     *
-     * @param chatClient The ChatClient instance used by the ViewModel.
-     */
     fun Factory(chatClient: ChatClient): ViewModelProvider.Factory =
         object : ViewModelProvider.Factory {
           @Suppress("UNCHECKED_CAST")
@@ -43,52 +30,78 @@ open class ChatViewModel(val chatClient: ChatClient) : ViewModel() {
   }
 
   /**
-   * Connects the provided user profile to the Stream Chat client.
+   * Connects the user to the Stream Chat client.
    *
-   * @param profile The user's profile containing their unique ID, first name, and last name.
+   * @param profile The user's profile containing uid, firstName, and lastName.
    */
-  open fun connect(profile: Profile) {
-    if (connected) return // Prevents duplicate connections
-    connected = true
+  fun connectUser(profile: Profile) {
+    if (isConnected) return // Prevent duplicate connections
+
     val user =
         User(
-            id = profile.uid, // Unique user ID
-            name = "${profile.firstName} ${profile.lastName}" // User's full name
-            )
-    val token = chatClient.devToken(user.id) // Generates a development token for the user
-    chatClient.connectUser(user, token).enqueue() // Connects the user to the chat backend
+            id = profile.uid,
+            name = "${profile.firstName} ${profile.lastName}",
+        )
+
+    val token = chatClient.devToken(user.id)
+
+    chatClient.connectUser(user, token).enqueue { result ->
+      if (result.isSuccess) {
+        isConnected = true
+        Log.d("ChatViewModel", "User connected successfully.")
+      } else {
+        Log.e("ChatViewModel", "Error connecting user: ${result.errorOrNull()}")
+      }
+    }
   }
 
   /**
-   * Ensures a channel exists for the given list of member UIDs.
+   * Creates or retrieves a channel based on lesson participants.
    *
-   * @param channelMembersUid The list of user IDs that will be members of the channel.
+   * @param lesson The confirmed lesson object.
    */
-  open fun ensureChannelExists(channelMembersUid: List<String>) {
+  fun createOrGetChannel(
+      lesson: Lesson,
+      onChannelCreated: (io.getstream.chat.android.models.Channel) -> Unit = {},
+      otherUsername: String
+  ) {
+    val tutorId = lesson.tutorUid
+    val studentId = lesson.studentUid
+
+    // Generate a consistent channel ID
+    val channelId = generateChannelId(tutorId[0], studentId)
+
+    val channelMembers = listOf(tutorId[0], studentId)
+
+    var extraData = mapOf("name" to "$otherUsername")
+
     chatClient
         .createChannel(
-            channelType = "messaging", // Specifies the type of the channel
-            channelId = "", // Automatically generates a unique channel ID
-            memberIds = channelMembersUid, // Adds the specified users as members of the channel
-            extraData = emptyMap() // Allows for additional metadata (none in this case)
-            )
+            channelType = "messaging",
+            channelId = channelId,
+            memberIds = channelMembers,
+            extraData = extraData)
         .enqueue { result ->
           if (result.isSuccess) {
-            // Channel creation was successful
+            val createdChannel = result.getOrNull()
+            Log.d("ChatViewModel", "Channel $channelId created or retrieved successfully.")
+            if (createdChannel != null) {
+              onChannelCreated(createdChannel)
+            }
           } else {
-            // Logs the error message if channel creation fails
-            Log.e("ChatViewModel", "Error creating channel: " + result.errorOrNull()?.message)
+            Log.e("ChatViewModel", "Error creating channel: ${result.errorOrNull()}")
           }
         }
   }
 
-  /**
-   * Updates the currently active channel ID.
-   *
-   * @param channelID The ID of the channel to set as active. Pass `null` to clear the current
-   *   channel.
-   */
-  open fun setChannelID(channelID: String?) {
-    currentChannelID_.value = channelID
+  /** Generates a consistent channel ID based on user IDs. */
+  private fun generateChannelId(userId1: String, userId2: String): String {
+    // Ensure the channel ID is the same regardless of the order of user IDs
+    return listOf(userId1, userId2).sorted().joinToString("_")
+  }
+
+  /** Sets the current active channel ID. */
+  fun setCurrentChannelId(channelId: String?) {
+    _currentChannelId.value = channelId
   }
 }
