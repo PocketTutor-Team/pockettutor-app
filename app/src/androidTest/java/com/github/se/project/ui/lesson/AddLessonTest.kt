@@ -62,8 +62,7 @@ class AddLessonTest {
             mockLessonRepository.addLesson(
                 org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any()))
         .thenAnswer { invocation ->
-            @Suppress("UNCHECKED_CAST")
-          val onSuccess = invocation.arguments[1] as () -> Unit
+          @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
           onSuccess() // Simulate a successful update
         }
   }
