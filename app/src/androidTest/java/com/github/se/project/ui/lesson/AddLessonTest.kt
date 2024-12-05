@@ -1,12 +1,24 @@
 package com.github.se.project.ui.lesson
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeRight
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.*
@@ -54,6 +66,9 @@ class AddLessonTest {
   private val mockLessonRepository = mock(LessonRepository::class.java)
 
   private val mockLessons = LessonViewModel(mockLessonRepository)
+
+    // Accessing from ressources
+    private val okMessage = ApplicationProvider.getApplicationContext<Context>().getString(R.string.ok)
 
   @Before
   fun setUp() {
@@ -128,10 +143,10 @@ class AddLessonTest {
 
     // Select Date and Time
     composeTestRule.onNodeWithTag("DateButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText(okMessage).isDisplayed() }
+    composeTestRule.onNodeWithText(okMessage).performClick()
     composeTestRule.onNodeWithTag("TimeButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText(okMessage).isDisplayed() }
     composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
