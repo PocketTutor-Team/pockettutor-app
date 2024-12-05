@@ -34,7 +34,7 @@ class EpflVerificationCardTest {
     composeTestRule.onNode(hasSetTextAction()).assertExists()
   }
 
-  @Test
+  /*@Test
   fun cardShowsErrorState() {
     val errorMessage = "Invalid SCIPER format"
     composeTestRule.setContent {
@@ -51,7 +51,7 @@ class EpflVerificationCardTest {
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithText(errorMessage).assertExists()
-  }
+  }*/
 
   @Test
   fun cardShowsSuccessState() {

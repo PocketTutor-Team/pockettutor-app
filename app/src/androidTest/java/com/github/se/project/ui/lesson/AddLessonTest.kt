@@ -232,7 +232,9 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
     composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
 
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("instantButton").performClick()
+    composeTestRule.waitForIdle()
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("subjectButton").performClick()
