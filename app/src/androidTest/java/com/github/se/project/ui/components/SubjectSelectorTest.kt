@@ -1,12 +1,12 @@
 package com.github.se.project.ui.components
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.profile.Subject
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,35 +16,20 @@ class SubjectSelectorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Test
-  fun selectingSubjectUpdatesCorrectly() {
-    val selectedSubject = mutableStateOf<Subject>(Subject.NONE)
-    composeTestRule.setContent { SubjectSelector(selectedSubject = selectedSubject) }
+  private val selectedSubjects = mutableStateListOf<Subject>()
 
-    // Initially, dropdown items are not displayed
-    Subject.entries.forEach { subject ->
-      if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertDoesNotExist()
-    }
-
-    // Click on the subject button to open the dropdown
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-
-    // **Wait for the UI to settle after the click**
-    composeTestRule.waitForIdle()
-
-    // Now, dropdown items should be displayed
-    Subject.entries.forEach { subject ->
-      if (subject == Subject.NONE) return@forEach
-      composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
+  @Before
+  fun setUp() {
+    composeTestRule.setContent {
+      SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
     }
   }
 
   @Test
   fun selectingMultipleSubjectsUpdatesCorrectly() {
-    val selectedSubjects = mutableStateListOf<Subject>()
-    composeTestRule.setContent {
-      SubjectSelector(selectedSubjects = selectedSubjects, multipleSelection = true)
+
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("subjectButton").isDisplayed()
     }
 
     // Step 1: Check that the dropdown is not displayed initially

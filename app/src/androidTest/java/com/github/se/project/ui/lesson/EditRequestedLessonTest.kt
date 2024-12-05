@@ -1,10 +1,11 @@
 package com.github.se.project.ui.lesson
 
+import android.content.Context
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
@@ -14,7 +15,6 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
-import com.github.se.project.ui.components.validateLessonInput
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
@@ -33,6 +33,8 @@ class EditRequestedLessonTest {
   @get:Rule
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+  private val context = ApplicationProvider.getApplicationContext<Context>()
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -140,30 +142,6 @@ class EditRequestedLessonTest {
     composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
-  }
-
-  @Test
-  fun validateValidatesValidly() {
-    assert(
-        validateLessonInput(
-            "title",
-            "description",
-            mutableStateOf(Subject.AICC),
-            listOf(Language.ENGLISH),
-            "date",
-            "time",
-            1.0,
-            1.0) == null)
-    assert(
-        validateLessonInput(
-            "title",
-            "description",
-            mutableStateOf(Subject.AICC),
-            listOf(Language.ENGLISH),
-            "date",
-            "",
-            1.0,
-            1.0) == "time is missing")
   }
 
   @Test

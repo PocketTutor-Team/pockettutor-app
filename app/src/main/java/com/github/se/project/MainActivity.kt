@@ -137,7 +137,7 @@ fun PocketTutorApp(
               onSignInClick = {
                 authenticationViewModel.handleGoogleSignIn(
                     context,
-                    onSuccess = { uid ->
+                    onSuccess = { _ ->
                       // Navigate back to SplashScreen to let it handle navigation
                       navController.navigate(Screen.SPLASH) {
                         popUpTo(Screen.AUTH) { inclusive = true }

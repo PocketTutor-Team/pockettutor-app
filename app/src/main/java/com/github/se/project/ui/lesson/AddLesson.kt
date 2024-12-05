@@ -31,25 +31,38 @@ fun AddLessonScreen(
     networkStatusViewModel: NetworkStatusViewModel,
     onMapReadyChange: (Boolean) -> Unit = {}
 ) {
-
+  // Retrieves the current user's profile from the ViewModel as a state object
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
   val isConnected = networkStatusViewModel.isConnected.collectAsState().value
-
+  // Provides access to the current context (e.g., for showing Toast messages)
   val context = LocalContext.current
 
+  // Observes the currently selected lesson from the ViewModel
   val currentLesson = lessonViewModel.selectedLesson.collectAsState().value
 
+  // Retrieves the list of lessons associated with the current user
   val lessons = lessonViewModel.currentUserLessons.collectAsState().value
 
+  /**
+   * Lambda function to handle lesson confirmation. Either schedules a new lesson or updates the
+   * selected lesson, depending on the user's input.
+   *
+   * @param lesson The lesson to be added or updated.
+   */
   val onConfirm = { lesson: Lesson ->
+    // Assigns a new unique ID to the lesson if it's a new lesson
     if (currentLesson == null) {
       lesson.id = lessonViewModel.getNewUid()
     }
+
+    // Checks if the lesson is an "instant lesson" (based on its status)
     if (isInstant(lesson)) {
+      // Prevents scheduling multiple instant lessons at the same time
       if (lessons.any {
         it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED
       }) {
+        // Displays a message if the user already has an instant lesson scheduled
         Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT)
             .show()
       } else
