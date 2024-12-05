@@ -15,6 +15,8 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
+import com.github.se.project.model.profile.*
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -22,8 +24,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
-import com.github.se.project.model.network.NetworkStatusViewModel
-import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
