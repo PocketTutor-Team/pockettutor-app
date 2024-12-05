@@ -250,9 +250,9 @@ fun LessonEditor(
   // Format location for display
   val locationText =
       if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
-          stringResource(R.string.location_selected)
+        stringResource(R.string.location_selected)
       } else {
-          stringResource(R.string.select_location)
+        stringResource(R.string.select_location)
       }
 
   if (showDatePicker) {
@@ -297,7 +297,8 @@ fun LessonEditor(
                           "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
 
                   if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-                    Toast.makeText(context, context.getString(R.string.past_time), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                            context, context.getString(R.string.past_time), Toast.LENGTH_SHORT)
                         .show()
                   } else {
                     selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
@@ -400,7 +401,8 @@ fun LessonEditor(
               Spacer(modifier = Modifier.height(8.dp))
 
               if (!instant.value) {
-                Text(stringResource(R.string.select_date_time),
+                Text(
+                    stringResource(R.string.select_date_time),
                     style = MaterialTheme.typography.titleSmall)
 
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -433,7 +435,9 @@ fun LessonEditor(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(stringResource(R.string.give_location), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.give_location),
+                    style = MaterialTheme.typography.titleSmall)
 
                 Button(
                     onClick = { showMapDialog = true },
@@ -454,17 +458,22 @@ fun LessonEditor(
                 Spacer(modifier = Modifier.height(8.dp))
               }
 
-              Text(stringResource(R.string.give_subject), style = MaterialTheme.typography.titleSmall)
+              Text(
+                  stringResource(R.string.give_subject),
+                  style = MaterialTheme.typography.titleSmall)
               SubjectSelector(selectedSubject)
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              Text(stringResource(R.string.give_language), style = MaterialTheme.typography.titleSmall)
+              Text(
+                  stringResource(R.string.give_language),
+                  style = MaterialTheme.typography.titleSmall)
               LanguageSelector(selectedLanguages)
 
               Spacer(modifier = Modifier.height(8.dp))
 
-              PriceRangeSlider(stringResource(R.string.give_price),
+              PriceRangeSlider(
+                  stringResource(R.string.give_price),
                   { min, max ->
                     minPrice = min.toDouble()
                     maxPrice = max.toDouble()
@@ -472,7 +481,8 @@ fun LessonEditor(
                   initialStart = minPrice.toFloat(),
                   initialEnd = maxPrice.toFloat())
 
-              Text("${stringResource(R.string.selected_price_range)} ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
+              Text(
+                  "${stringResource(R.string.selected_price_range)} ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
       },
       bottomBar = {
@@ -540,9 +550,10 @@ fun validateLessonInput(
 }
 
 fun isInstant(lesson: Lesson?): Boolean {
-    return if(lesson == null) false
-    else (lesson.status == LessonStatus.INSTANT_REQUESTED) ||
-            (lesson.status == LessonStatus.INSTANT_CONFIRMED)
+  return if (lesson == null) false
+  else
+      (lesson.status == LessonStatus.INSTANT_REQUESTED) ||
+          (lesson.status == LessonStatus.INSTANT_CONFIRMED)
 }
 
 fun isInstant(timeSlot: String): Boolean {
