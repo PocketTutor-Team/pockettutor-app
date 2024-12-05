@@ -186,7 +186,7 @@ fun EditProfile(
                 Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
               }
             }) {
-              Text(stringResource(id = R.string.update_profil))
+              Text(stringResource(id = R.string.update_profile))
             }
       })
 }
