@@ -135,7 +135,7 @@ fun LessonEditor(
   var showDatePicker by remember { mutableStateOf(false) } // Show date picker dialog
   var showTimeDialog by remember { mutableStateOf(false) } // Show time picker dialog
   var showMapDialog by remember { mutableStateOf(false) } // Show map selection dialog
-  
+
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
     if (lesson != null) {
