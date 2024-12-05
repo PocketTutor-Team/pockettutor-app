@@ -77,7 +77,7 @@ class EpflVerificationCardTest {
     composeTestRule.onNodeWithText("IN - BA1").assertExists()
   }
 
-    /*
+  /*
   @Test
   fun sciperInputValidation() {
     var capturedSciper = ""
