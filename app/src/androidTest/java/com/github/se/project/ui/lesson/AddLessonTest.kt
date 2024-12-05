@@ -67,9 +67,9 @@ class AddLessonTest {
 
   private val mockLessons = LessonViewModel(mockLessonRepository)
 
+  private val context = ApplicationProvider.getApplicationContext<Context>()
   // Accessing from resources
-  private val okMessage =
-      ApplicationProvider.getApplicationContext<Context>().getString(R.string.ok)
+  private val okMessage = context.getString(R.string.ok)
 
   @Before
   fun setUp() {
@@ -109,7 +109,8 @@ class AddLessonTest {
             "date",
             "time",
             1.0,
-            1.0) == null)
+            1.0,
+            context) == null)
     assert(
         validateLessonInput(
             "title",
@@ -119,7 +120,8 @@ class AddLessonTest {
             "date",
             "",
             1.0,
-            1.0) == "time is missing")
+            1.0,
+            context) == "time is missing")
   }
 
   @Test
