@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
@@ -40,8 +41,13 @@ fun BottomNavigationMenu(
     onTabSelect: (TopLevelDestination) -> Unit,
     tabList: List<TopLevelDestination>,
     selectedItem: String,
-    networkStatusViewModel: NetworkStatusViewModel = viewModel()
+    networkStatusViewModel: NetworkStatusViewModel
 ) {
+    val home_text = stringResource(id = R.string.home)
+    val my_course_text = stringResource(id = R.string.my_course)
+    val find_tutor_text = stringResource(id = R.string.find_tutor)
+    val find_student_text = stringResource(id = R.string.find_student)
+    val chat_text = stringResource(id = R.string.chat)
 
     val isConnected by networkStatusViewModel.isConnected.collectAsState()
 
@@ -54,9 +60,11 @@ fun BottomNavigationMenu(
           label = { Text(tab.textId) },
           selected = tab.route == selectedItem,
           onClick = {
-              if (isConnected) {
-                  onTabSelect(tab) // Proceed with navigation if online
-              } else {
+              // Proceed with navigation to any buttons if online or to home screen
+              if (isConnected || tab.textId == home_text || tab.textId == my_course_text) {
+                  onTabSelect(tab)
+              //only block and show the toast when user try to navigate to find tutor or find student or chat screen
+              } else if (tab.textId == find_tutor_text || tab.textId == find_student_text || tab.textId == chat_text) {
                   // Show Toast if offline
                   Toast.makeText(context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT).show()
               }

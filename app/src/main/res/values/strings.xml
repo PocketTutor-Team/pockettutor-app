@@ -38,5 +38,14 @@
     <!-- LocationPickerBox -->
     <string name="confirm_location">Confirm Location</string>
 
+    <!-- BottomNavigationMenu -->
+    <string name="find_tutor">Find Tutor</string>
+    <string name="find_student">Find Student</string>
+    <string name="chat">Chat</string>
+    <string name="my_course">My Course</string>
+    <string name="home">Home</string>
+
+
+
 
 </resources>

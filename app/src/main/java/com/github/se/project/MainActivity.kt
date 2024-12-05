@@ -152,7 +152,7 @@ fun PocketTutorApp(
       }
 
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(navigationActions, listProfilesViewModel, googleUid)
@@ -175,7 +175,7 @@ fun PocketTutorApp(
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.CHANNEL) {
-        ChannelScreen(navigationActions, listProfilesViewModel, chatViewModel, lessonViewModel)
+        ChannelScreen(navigationActions, listProfilesViewModel, chatViewModel, lessonViewModel, networkStatusViewModel)
       }
       composable(Screen.CHAT) { ChatScreen(navigationActions, chatViewModel) }
     }
@@ -185,10 +185,10 @@ fun PocketTutorApp(
         route = Route.FIND_STUDENT,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.LESSONS_REQUESTED) {
-        RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel ,navigationActions)
       }
       composable(Screen.TUTOR_LESSON_RESPONSE) {
         TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
@@ -206,7 +206,7 @@ fun PocketTutorApp(
         route = Route.HOME,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
       composable(Screen.EDIT_SCHEDULE) {
@@ -230,7 +230,7 @@ fun PocketTutorApp(
         route = Route.FIND_TUTOR,
     ) {
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+        HomeScreen(listProfilesViewModel, lessonViewModel, networkStatusViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(

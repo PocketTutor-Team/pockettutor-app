@@ -34,6 +34,7 @@ import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeLanguageMatch
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeSubjectMatch
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
@@ -63,6 +64,7 @@ fun RequestedLessonsScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
+    networkStatusViewModel: NetworkStatusViewModel = viewModel(),
     navigationActions: NavigationActions
 ) {
   // State management
@@ -180,7 +182,9 @@ fun RequestedLessonsScreen(
         BottomNavigationMenu(
             onTabSelect = { navigationActions.navigateTo(it) },
             tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
-            selectedItem = navigationActions.currentRoute())
+            selectedItem = navigationActions.currentRoute(),
+            networkStatusViewModel = networkStatusViewModel
+        )
       }) { padding ->
         var refreshing by remember { mutableStateOf(false) }
         val refreshScope = rememberCoroutineScope()
