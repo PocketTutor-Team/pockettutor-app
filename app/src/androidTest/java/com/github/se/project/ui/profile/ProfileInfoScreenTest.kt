@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
@@ -17,6 +18,7 @@ import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.capitalizeFirstLetter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
@@ -39,6 +41,7 @@ class ProfileInfoScreenTest {
   private lateinit var mockListProfilesViewModel: ListProfilesViewModel
   private lateinit var mockLessonRepository: LessonRepository
   private lateinit var mockLessonViewModel: LessonViewModel
+  private lateinit var realAuthenticationViewModel: AuthenticationViewModel
 
   private val mockTutorProfile =
       Profile(
@@ -74,6 +77,7 @@ class ProfileInfoScreenTest {
     mockLessonRepository = mock(LessonRepository::class.java)
     mockProfilesRepository = mock(ProfilesRepository::class.java)
     mockNavigationActions = mock(NavigationActions::class.java)
+    realAuthenticationViewModel = AuthenticationViewModel()
 
     // Create a real instance of ListProfilesViewModel
     mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
@@ -97,7 +101,8 @@ class ProfileInfoScreenTest {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
-          lessonViewModel = mockLessonViewModel)
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel)
     }
 
     composeTestRule.onNodeWithTag("profileTopBar").assertIsDisplayed()
@@ -118,7 +123,8 @@ class ProfileInfoScreenTest {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
-          lessonViewModel = mockLessonViewModel)
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel)
     }
 
     // Check if profile details are displayed
@@ -156,7 +162,8 @@ class ProfileInfoScreenTest {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
-          lessonViewModel = mockLessonViewModel)
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel)
     }
 
     // Check if profile details are displayed
@@ -187,7 +194,9 @@ class ProfileInfoScreenTest {
 
     composeTestRule.setContent {
       ProfileInfoScreen(
-          navigationActions = mockNavigationActions, lessonViewModel = mockLessonViewModel)
+          navigationActions = mockNavigationActions,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel)
     }
 
     // Check that the error message is displayed
@@ -202,12 +211,46 @@ class ProfileInfoScreenTest {
   fun profileInfoScreenNavigatesBack_whenCloseButtonClicked() {
     `when`(mockNavigationActions.goBack()).thenAnswer {}
 
-    composeTestRule.setContent { ProfileInfoScreen(navigationActions = mockNavigationActions) }
+    composeTestRule.setContent {
+      ProfileInfoScreen(
+          navigationActions = mockNavigationActions,
+          authenticationViewModel = realAuthenticationViewModel)
+    }
 
     // Click the close button
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed().performClick()
 
     // Verify that the goBack action was called
     verify(mockNavigationActions).goBack()
+  }
+
+  @Test
+  fun logOutButton() {
+    // Mock the currentProfile StateFlow to return a valid profile
+    val currentProfileFlow = MutableStateFlow<Profile?>(mockTutorProfile)
+    doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
+
+    // Set the userId LiveData to simulate a logged-in user
+    realAuthenticationViewModel.userId.postValue("12345")
+
+    composeTestRule.setContent {
+      ProfileInfoScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel)
+    }
+
+    // Assert that the Log Out button is displayed
+    composeTestRule.onNodeWithTag("signOutButton").assertIsDisplayed()
+
+    // Perform click on the Log Out button
+    composeTestRule.onNodeWithTag("signOutButton").performClick()
+
+    // Assert that the userId is cleared (sign-out logic works)
+    assert(realAuthenticationViewModel.userId.value == null)
+
+    // Verify navigation to the login screen
+    verify(mockNavigationActions).navigateTo(Screen.AUTH)
   }
 }
