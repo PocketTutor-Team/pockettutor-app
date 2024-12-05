@@ -136,6 +136,7 @@ fun LessonEditor(
   var showTimeDialog by remember { mutableStateOf(false) } // Show time picker dialog
   var showMapDialog by remember { mutableStateOf(false) } // Show map selection dialog
 
+  // Initializes state based on the provided lesson when the lesson ID changes
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
     if (lesson != null) {
@@ -321,36 +322,58 @@ fun LessonEditor(
     Dialog(
         onDismissRequest = { showMapDialog = false },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
-          Column {
-            TimePicker(
-                state = timePickerState,
-            )
-            Button(onClick = { showTimeDialog = false }) { Text(stringResource(R.string.close)) }
-            Button(
-                onClick = {
-                  val selectedCalendar =
-                      Calendar.getInstance().apply {
-                        timeInMillis = currentDateTime.timeInMillis
-                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                        set(Calendar.MINUTE, timePickerState.minute)
-                      }
+          Surface(
+              shape = MaterialTheme.shapes.medium,
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                  TimePicker(state = timePickerState)
 
-                  val isSelectedDateToday =
-                      selectedDate ==
-                          "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { showTimeDialog = false }) {
+                      Text(stringResource(R.string.close))
+                    }
 
-                  if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-                    Toast.makeText(
-                            context, context.getString(R.string.past_time), Toast.LENGTH_SHORT)
-                        .show()
-                  } else {
-                    selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
-                    showTimeDialog = false
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        onClick = {
+                          val selectedCalendar =
+                              Calendar.getInstance().apply {
+                                timeInMillis = currentDateTime.timeInMillis
+                                set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                                set(Calendar.MINUTE, timePickerState.minute)
+                              }
+
+                          val isSelectedDateToday =
+                              selectedDate ==
+                                  String.format(
+                                      "%02d/%02d/%04d",
+                                      calendar.get(Calendar.DAY_OF_MONTH),
+                                      calendar.get(Calendar.MONTH) + 1,
+                                      calendar.get(Calendar.YEAR))
+
+                          if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
+                            Toast.makeText(
+                                    context,
+                                    context.getString(R.string.past_time),
+                                    Toast.LENGTH_SHORT)
+                                .show()
+                          } else {
+                            selectedTime =
+                                String.format(
+                                    "%02d:%02d", timePickerState.hour, timePickerState.minute)
+                            showTimeDialog = false
+                          }
+                        }) {
+                          Text(stringResource(R.string.ok))
+                        }
                   }
-                }) {
-                  Text(stringResource(R.string.ok))
                 }
-          }
+              }
         }
   }
   // Map Dialog
@@ -427,7 +450,11 @@ fun LessonEditor(
 
               OutlinedTextField(
                   value = title,
-                  onValueChange = { title = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.lesson_title)) {
+                      title = it
+                    }
+                  },
                   label = { Text(stringResource(R.string.give_title)) },
                   placeholder = { Text(stringResource(R.string.title_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("titleField"),
@@ -435,7 +462,11 @@ fun LessonEditor(
 
               OutlinedTextField(
                   value = description,
-                  onValueChange = { description = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.description)) {
+                      description = it
+                    }
+                  },
                   label = { Text(stringResource(R.string.give_description)) },
                   placeholder = { Text(stringResource(R.string.description_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
@@ -620,10 +651,8 @@ fun validateLessonInput(
  * @return `true` if the lesson has an instant status, `false` otherwise.
  */
 fun isInstant(lesson: Lesson?): Boolean {
-  return if (lesson == null) false
-  else
-      (lesson.status == LessonStatus.INSTANT_REQUESTED) ||
-          (lesson.status == LessonStatus.INSTANT_CONFIRMED)
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) || // Instant request status
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) // Instant confirmed status
 }
 
 /**

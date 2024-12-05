@@ -203,7 +203,7 @@ class ProfileInfoScreenTest {
     composeTestRule
         .onNodeWithTag("errorLoadingProfile")
         .assertIsDisplayed()
-        .assertTextEquals("Error loading profile...")
+        .assertTextEquals("Error loading profile…")
   }
 
   // Pass
