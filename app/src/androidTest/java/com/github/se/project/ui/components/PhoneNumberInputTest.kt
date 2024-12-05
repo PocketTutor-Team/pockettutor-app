@@ -70,44 +70,42 @@ class PhoneNumberInputTest {
           scenario.onActivity { assert(phoneNumber.value == "1234567890") }
         }
   }
-  /*
-   @Test
-   fun testCountryCodeDropdown() {
-     val selectedCountry = mutableStateOf(countries[0])
-     val phoneNumber = mutableStateOf("")
 
-     ActivityScenario.launch<ComponentActivity>(
-             Intent(ApplicationProvider.getApplicationContext(), ComponentActivity::class.java))
-         .use { scenario ->
-           scenario.onActivity { activity ->
-             activity.setContent {
-               MaterialTheme {
-                 PhoneNumberInput(
-                     selectedCountry = selectedCountry.value,
-                     onCountryChange = { selectedCountry.value = it },
-                     phoneNumber = phoneNumber.value,
-                     onPhoneNumberChange = { phoneNumber.value = it })
-               }
-             }
-           }
+  @Test
+  fun testCountryCodeDropdown() {
+    val selectedCountry = mutableStateOf(countries[0])
+    val phoneNumber = mutableStateOf("")
 
-           composeTestRule.waitForIdle()
+    ActivityScenario.launch<ComponentActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), ComponentActivity::class.java))
+        .use { scenario ->
+          scenario.onActivity { activity ->
+            activity.setContent {
+              MaterialTheme {
+                PhoneNumberInput(
+                    selectedCountry = selectedCountry.value,
+                    onCountryChange = { selectedCountry.value = it },
+                    phoneNumber = phoneNumber.value,
+                    onPhoneNumberChange = { phoneNumber.value = it })
+              }
+            }
+          }
 
-           // Open the country code dropdown
-           composeTestRule.onNodeWithTag("countryCodeField").performClick()
+          composeTestRule.waitForIdle()
 
-           composeTestRule.waitForIdle()
+          // Open the country code dropdown
+          composeTestRule.onNodeWithTag("countryCodeField").performClick()
 
-           // Select the second country
-           val secondCountry = countries[1]
-           val testTag = "country_${secondCountry.code.replace("+", "plus")}"
+          composeTestRule.waitForIdle()
 
-           composeTestRule.onNodeWithTag(testTag).performClick()
+          // Select the second country
+          val secondCountry = countries[1]
+          val testTag = "country_${secondCountry.code.replace("+", "plus")}"
 
-           // Verify the selected country
-           scenario.onActivity { assert(selectedCountry.value == secondCountry) }
-         }
-   }
+          composeTestRule.onNodeWithTag(testTag).performClick()
 
-  */
+          // Verify the selected country
+          scenario.onActivity { assert(selectedCountry.value == secondCountry) }
+        }
+  }
 }

@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.ProfilesRepository
@@ -35,6 +37,11 @@ class CreateProfileScreenTest {
   // Mock du ViewModel avec le ProfilesRepository mocké
   private val mockViewModel = ListProfilesViewModel(mockProfilesRepository)
 
+  private val certificationRepository = Mockito.mock(EpflVerificationRepository::class.java)
+
+  private val certificationViewModel =
+      CertificationViewModel(certificationRepository, mockViewModel)
+
   @Before
   fun setUp() {
     // Stubbing du getNewUid pour retourner une valeur factice
@@ -48,18 +55,19 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
     // Assert all expected UI components are visible
     composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("instructionText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonStudent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsDisplayed()
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
@@ -69,6 +77,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -86,6 +95,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -105,6 +115,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -127,6 +138,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -175,6 +187,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -194,6 +207,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -210,6 +224,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -237,6 +252,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA6").performClick()
 
     // Click the confirm button
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
 
     // Verify that navigation occurred
@@ -249,6 +265,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -268,6 +285,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -287,6 +305,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -307,6 +326,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -328,6 +348,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -346,6 +367,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -364,6 +386,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 
@@ -384,6 +407,7 @@ class CreateProfileScreenTest {
       CreateProfileScreen(
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockViewModel,
+          certificationViewModel = certificationViewModel,
           testMode = true)
     }
 

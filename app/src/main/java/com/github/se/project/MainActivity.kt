@@ -19,6 +19,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -62,6 +64,12 @@ class MainActivity : ComponentActivity() {
               authenticationViewModel = viewModel(),
               listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
               lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+              certificationViewModel =
+                  viewModel(
+                      factory =
+                          CertificationViewModel.Factory(
+                              EpflVerificationRepository(),
+                              viewModel(factory = ListProfilesViewModel.Factory))),
               onMapReadyChange = {},
               chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
         }
@@ -100,6 +108,7 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    certificationViewModel: CertificationViewModel,
     onMapReadyChange: (Boolean) -> Unit,
     chatViewModel: ChatViewModel,
 ) {
@@ -136,7 +145,8 @@ fun PocketTutorApp(
         HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
-        CreateProfileScreen(navigationActions, listProfilesViewModel, testMode)
+        CreateProfileScreen(
+            navigationActions, listProfilesViewModel, certificationViewModel, testMode)
       }
       composable(Screen.CREATE_TUTOR_PROFILE) {
         CreateTutorProfile(navigationActions, listProfilesViewModel)
