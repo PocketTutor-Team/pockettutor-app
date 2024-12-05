@@ -222,6 +222,8 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
+    composeTestRule.waitForIdle()
+
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }

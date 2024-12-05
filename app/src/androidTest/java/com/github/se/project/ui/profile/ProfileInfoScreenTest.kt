@@ -85,7 +85,7 @@ class ProfileInfoScreenTest {
     // Stub the updateProfile method to simulate a successful update
     doNothing().`when`(mockProfilesRepository).init(any())
     whenever(mockProfilesRepository.updateProfile(any(), any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
   }
