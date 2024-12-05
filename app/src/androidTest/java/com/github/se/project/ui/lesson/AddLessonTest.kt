@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.components.validateLessonInput
@@ -29,6 +30,10 @@ class AddLessonTest {
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  // Mock NetworkStatusViewModel to control the network status state
+  private val mockIsConnected = MutableStateFlow(true)
+  private lateinit var networkStatusViewModel: NetworkStatusViewModel
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -57,6 +62,13 @@ class AddLessonTest {
 
   @Before
   fun setUp() {
+    networkStatusViewModel =
+        object :
+            NetworkStatusViewModel(
+                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+          override val isConnected = mockIsConnected
+        }
+
     whenever(mockLessonRepository.getNewUid()).thenReturn("mockUid")
     whenever(
             mockLessonRepository.addLesson(
@@ -69,7 +81,9 @@ class AddLessonTest {
 
   @Test
   fun AddLessonIsProperlyDisplayed() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -108,7 +122,9 @@ class AddLessonTest {
 
   @Test
   fun confirmWithEmptyFieldsShowsToast() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
@@ -164,21 +180,27 @@ class AddLessonTest {
     */
   @Test
   fun goBack() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
   @Test
   fun testInitialState() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
     composeTestRule.onNodeWithText("Select Date").assertExists()
     composeTestRule.onNodeWithText("Select Time").assertExists()
   }
 
   @Test
   fun testInstantLessonDisplaying() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
 
     // Set Instant Lesson
     composeTestRule.waitUntil(15000) {
@@ -224,7 +246,9 @@ class AddLessonTest {
   */
   @Test
   fun testInstantInvalid() {
-    composeTestRule.setContent { AddLessonScreen(navigationActions, mockProfiles, mockLessons, {}) }
+    composeTestRule.setContent {
+      AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel, {})
+    }
 
     // Set Instant Lesson
     composeTestRule.waitUntil(15000) {
