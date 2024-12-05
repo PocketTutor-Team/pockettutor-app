@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
@@ -71,7 +70,9 @@ fun AddLessonScreen(
             onComplete = {
               // Refreshes the lesson list for the user after successfully adding the lesson
               lessonViewModel.getLessonsForStudent(profile.value!!.uid)
-              Toast.makeText(context, context.getString(R.string.lesson_created), Toast.LENGTH_SHORT).show()
+              Toast.makeText(
+                      context, context.getString(R.string.lesson_created), Toast.LENGTH_SHORT)
+                  .show()
 
               // Marks the new lesson as selected
               lessonViewModel.selectLesson(lesson)
