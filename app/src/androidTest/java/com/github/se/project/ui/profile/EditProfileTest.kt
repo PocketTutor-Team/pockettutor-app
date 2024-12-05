@@ -207,28 +207,6 @@ class EditProfileTest {
     Mockito.verify(mockNavigationActions, never()).navigateTo(Mockito.anyString())
   }
 
-  /*@Test
-  fun editNameButton() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = profile
-    // Set the screen in the test environment
-    composeTestRule.setContent {
-      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
-    }
-    composeTestRule.onNodeWithTag("editNameButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
-
-    composeTestRule.onNodeWithTag("firstNameField").performTextInput("New")
-    composeTestRule.onNodeWithTag("lastNameField").performTextInput("New")
-
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    assertEquals("NewFirst", mockViewModel.currentProfile.value?.firstName)
-    assertEquals("NewLast", mockViewModel.currentProfile.value?.lastName)
-
-    verify(mockNavigationActions).goBack()
-  }*/
-
   @Test
   fun phoneNumberValidation_showsErrorForInvalidPhone() {
     (mockViewModel.currentProfile as MutableStateFlow).value = profile
@@ -289,25 +267,4 @@ class EditProfileTest {
         .onNodeWithTag("editTutorNoProfile")
         .assertTextEquals("No Profile selected. Should not happen.")
   }
-
-  /*@Test
-  fun deleteName() {
-    (mockViewModel.currentProfile as MutableStateFlow).value = profile
-    // Set the screen in the test environment
-    composeTestRule.setContent {
-      EditProfile(navigationActions = mockNavigationActions, mockViewModel)
-    }
-    composeTestRule.onNodeWithTag("editNameButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
-
-    composeTestRule.onNodeWithTag("firstNameField").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").performTextClearance()
-
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    assertEquals("Last", mockViewModel.currentProfile.value?.lastName)
-
-    verify(mockNavigationActions, never()).goBack()
-  }*/
 }
