@@ -365,7 +365,12 @@ class HomeScreenTest {
   @Test
   fun testEmptySectionTextDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
     composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
     composeTestRule.onNodeWithTag("section_CONFIRMED_expand").assertIsDisplayed().performClick()
