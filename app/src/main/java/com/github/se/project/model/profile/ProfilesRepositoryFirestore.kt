@@ -1,7 +1,9 @@
 package com.github.se.project.model.profile
 
 import android.util.Log
+import com.github.se.project.model.certification.EpflCertification
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -135,6 +137,16 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
               ?: List(7) { List(12) { 0 } }
       val price = document.getLong("price")?.toInt() ?: 0
 
+        val certification = document.get("certification")?.let {
+            val certificationMap = it as Map<*, *>
+            val verificationDate = (certificationMap["verificationDate"] as Timestamp).toDate().time
+            EpflCertification(
+                sciper = certificationMap["sciper"] as String,
+                verified = certificationMap["verified"] as Boolean,
+                verificationDate = verificationDate
+            )
+        }
+
       Profile(
           uid,
           token,
@@ -149,7 +161,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
           languages,
           subjects,
           schedule,
-          price)
+          price,
+          certification)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null
@@ -158,20 +171,32 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
 
   /** Converts a Profile object to a Map for Firestore. */
   private fun profileToMap(profile: Profile): Map<String, Any> {
-    return mapOf(
-        "uid" to profile.uid,
-        "token" to profile.token,
-        "googleUid" to profile.googleUid,
-        "firstName" to profile.firstName,
-        "lastName" to profile.lastName,
-        "phoneNumber" to profile.phoneNumber,
-        "role" to profile.role.name,
-        "section" to profile.section.name,
-        "academicLevel" to profile.academicLevel.name,
-        "description" to profile.description,
-        "languages" to profile.languages.map { it.toString() },
-        "subjects" to profile.subjects.map { it.toString() },
-        "schedule" to profile.schedule.flatten(),
-        "price" to profile.price)
-  }
+          val baseMap = mutableMapOf(
+              "uid" to profile.uid,
+              "token" to profile.token,
+              "googleUid" to profile.googleUid,
+              "firstName" to profile.firstName,
+              "lastName" to profile.lastName,
+              "phoneNumber" to profile.phoneNumber,
+              "role" to profile.role.name,
+              "section" to profile.section.name,
+              "academicLevel" to profile.academicLevel.name,
+              "description" to profile.description,
+              "languages" to profile.languages.map { it.toString() },
+              "subjects" to profile.subjects.map { it.toString() },
+              "schedule" to profile.schedule.flatten(),
+              "price" to profile.price
+          )
+
+      profile.certification?.let { cert ->
+          baseMap["certification"] = mapOf(
+              "sciper" to cert.sciper,
+              "verified" to cert.verified,
+              "verificationDate" to Timestamp(cert.verificationDate / 1000, 0)
+          )
+      }
+
+          return baseMap
+      }
+
 }

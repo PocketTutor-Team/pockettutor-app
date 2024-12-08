@@ -154,7 +154,7 @@ fun EditProfile(
               }
               Button(
                   modifier =
-                      Modifier.fillMaxWidth().padding(16.dp).testTag("updateAvailabilityButton"),
+                      Modifier.fillMaxWidth().testTag("updateAvailabilityButton"),
                   shape = MaterialTheme.shapes.medium,
                   onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
                   colors =
@@ -164,17 +164,19 @@ fun EditProfile(
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = "Calendar",
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(end = 16.dp))
-                    Text(stringResource(id = R.string.schedule))
+                    Text(stringResource(id = R.string.schedule), color = MaterialTheme.colorScheme.onPrimary)
                   }
 
-              Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
-              SectionSelector(section)
+            if (profile.certification?.verified == false) {
+                Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
+                SectionSelector(section)
 
-              Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
-              AcademicSelector(academicLevel)
+                Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
+                AcademicSelector(academicLevel)
             }
+        }
       },
       bottomBar = {
         // Confirmation Button with Validation

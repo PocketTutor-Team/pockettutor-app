@@ -103,7 +103,11 @@ open class ListProfilesViewModel(private val repository: ProfilesRepository) : V
   fun updateProfile(profile: Profile) {
     repository.updateProfile(
         profile,
-        onSuccess = { getProfiles() }, // Refresh the list on success.
+        onSuccess = { getProfiles()
+            val current = currentProfile_.value
+            if (current != null && current.uid == profile.uid) {
+                currentProfile_.value = profile
+            }},
         onFailure = { Log.e("ListProfilesViewModel", "Error updating profile", it) } // Log errors.
         )
   }

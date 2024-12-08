@@ -91,20 +91,26 @@ fun ExpandableLessonSection(
                   if (!isInstant) {
                     {
                       Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (lessonCountText.isNotEmpty() && lessons.isNotEmpty()) {
-                          Text(
-                              text = lessonCountText + " lessons",
-                              style = MaterialTheme.typography.bodyMedium)
-                          Spacer(modifier = Modifier.width(8.dp))
+                        if (lessonCountText.isNotEmpty()) {
+                            if (lessons.size > 1) {
+                                Text(
+                                    text = "$lessonCountText lessons",
+                                    style = MaterialTheme.typography.bodyMedium)
+                                Spacer(modifier = Modifier.width(8.dp))
+                            } else {
+                                Text(
+                                    text = "$lessonCountText lesson",
+                                    style = MaterialTheme.typography.bodyMedium)
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
                         }
-                        if (lessons.isNotEmpty()) {
-                          IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector =
-                                    if (expanded) Icons.Default.KeyboardArrowDown
-                                    else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                contentDescription = if (expanded) "Collapse" else "Expand")
-                          }
+                      IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            imageVector =
+                                if (expanded) Icons.Default.KeyboardArrowDown
+                                else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = if (expanded) "Collapse" else "Expand")
+
                         }
                       }
                     }
@@ -120,9 +126,7 @@ fun ExpandableLessonSection(
             if (lessons.isEmpty()) {
               Text(
                   text =
-                      stringResource(R.string.no_lessons) +
-                          " " +
-                          section.status.name.capitalizeFirstLetter(),
+                      stringResource(R.string.no_lessons),
                   style = MaterialTheme.typography.bodyMedium,
                   modifier =
                       Modifier.padding(16.dp)
