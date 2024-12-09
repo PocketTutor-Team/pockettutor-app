@@ -184,6 +184,7 @@ class EditRequestedLessonTest {
           navigationActions,
           mockProfiles,
           mockLessonViewModel,
+          networkStatusViewModel,
           onMapReadyChange = { testMapReady = it })
     }
 
@@ -219,7 +220,9 @@ class EditRequestedLessonTest {
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
 
-      composeTestRule.waitUntil (15000) {assertExistsToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))}
+    composeTestRule.waitUntil(15000) {
+      assertExistsToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
+    }
 
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
@@ -243,7 +246,7 @@ class EditRequestedLessonTest {
   }
 }
 
-fun assertExistsToBoolean (node: SemanticsNodeInteraction): Boolean {
+fun assertExistsToBoolean(node: SemanticsNodeInteraction): Boolean {
   try {
     node.assertExists()
   } catch (e: AssertionError) {
