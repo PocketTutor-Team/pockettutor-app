@@ -12,6 +12,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -22,6 +23,7 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,6 +40,10 @@ class TutorLessonResponseTest {
   @get:Rule
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+  // Mock NetworkStatusViewModel to control the network status state
+  private val mockIsConnected = MutableStateFlow(true)
+  private lateinit var networkStatusViewModel: NetworkStatusViewModel
 
   private val mockProfilesRepository = mock(ProfilesRepository::class.java)
   private val mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
@@ -110,6 +116,13 @@ class TutorLessonResponseTest {
   @Before
   fun setUp() {
 
+    networkStatusViewModel =
+        object :
+            NetworkStatusViewModel(
+                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+          override val isConnected = mockIsConnected
+        }
+
     `when`(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
@@ -129,7 +142,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -170,7 +186,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -216,7 +235,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -246,7 +268,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -276,7 +301,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -297,7 +325,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -318,7 +349,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -347,7 +381,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 
@@ -369,7 +406,10 @@ class TutorLessonResponseTest {
 
     composeTestRule.setContent {
       TutorLessonResponseScreen(
-          mockListProfilesViewModel, mockLessonViewModel, mockNavigationActions)
+          mockListProfilesViewModel,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          mockNavigationActions)
     }
     composeTestRule.waitForIdle()
 

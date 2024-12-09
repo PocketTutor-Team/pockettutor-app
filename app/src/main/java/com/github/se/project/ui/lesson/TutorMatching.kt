@@ -32,8 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -129,7 +131,7 @@ fun TutorMatchingScreen(
                 navigationActions.navigateTo(Screen.HOME)
               }) {
                 Text(
-                    "Ask other tutors for your lesson",
+                    text = stringResource(id = R.string.request_another_tutor),
                     modifier = Modifier.testTag("noTutorButtonText"))
               }
         } else if (currentLesson.status == LessonStatus.STUDENT_REQUESTED) {

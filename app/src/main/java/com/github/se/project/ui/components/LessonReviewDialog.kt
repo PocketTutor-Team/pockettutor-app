@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.profile.Profile
@@ -47,6 +49,8 @@ fun LessonReviewDialog(
   var rating by remember { mutableIntStateOf(initialRating?.grade ?: 0) }
   var comment by remember { mutableStateOf(initialRating?.comment ?: "") }
   val starColor = Color(0xFFFFC107)
+
+  val context = LocalContext.current
 
   Dialog(onDismissRequest = onDismiss) {
     Card(
@@ -104,7 +108,11 @@ fun LessonReviewDialog(
 
                 OutlinedTextField(
                     value = comment,
-                    onValueChange = { comment = it },
+                    onValueChange = {
+                      if (it.length <= context.resources.getInteger(R.integer.comment)) {
+                        comment = it
+                      }
+                    },
                     label = { Text("Your feedback") },
                     placeholder = { Text("How was your experience?") },
                     modifier = Modifier.fillMaxWidth(),

@@ -1,7 +1,12 @@
 package com.github.se.project.ui.overview
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.chat.ChatViewModel
@@ -9,6 +14,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -53,6 +59,10 @@ class HomeScreenTest {
 
   private lateinit var navController: NavHostController
   private lateinit var navigationActions: NavigationActions
+
+  // Mock NetworkStatusViewModel to control the network status state
+  private val mockIsConnected = MutableStateFlow(true)
+  private lateinit var networkStatusViewModel: NetworkStatusViewModel
 
   private val tutorProfile =
       Profile(
@@ -175,6 +185,14 @@ class HomeScreenTest {
     lessonViewModel = LessonViewModel(lessonRepository)
     lessonViewModel = spy(lessonViewModel)
 
+    // Mock NetworkStatusViewModel
+    networkStatusViewModel =
+        object :
+            NetworkStatusViewModel(
+                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+          override val isConnected = mockIsConnected
+        }
+
     // Mock ChatViewModel
     chatViewModel = mock(ChatViewModel::class.java)
     doNothing().`when`(chatViewModel).connect(any())
@@ -202,7 +220,12 @@ class HomeScreenTest {
   @Test
   fun testIsDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Profile Icon").assertIsDisplayed()
@@ -211,7 +234,12 @@ class HomeScreenTest {
   @Test
   fun testProfileIconClickable() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
     composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
     verify(navigationActions).navigateTo(anyString())
@@ -220,7 +248,12 @@ class HomeScreenTest {
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
   }
@@ -228,7 +261,12 @@ class HomeScreenTest {
   @Test
   fun testSectionDisplays() {
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
     composeTestRule.onNodeWithText("Waiting for your Confirmation").assertIsDisplayed()
     composeTestRule.onNodeWithText("Waiting for the Student Confirmation").assertIsDisplayed()
@@ -245,7 +283,12 @@ class HomeScreenTest {
         }
     // Recompose
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
 
     // Verify that the "No profile is currently assigned" text is displayed
@@ -269,7 +312,12 @@ class HomeScreenTest {
           `when`(this.currentUserLessons).thenReturn(currentUserLessonsFlow)
         }
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
 
     // Verify the message indicating no lessons scheduled is displayed
@@ -282,7 +330,12 @@ class HomeScreenTest {
     currentUserLessonsFlow.value = mockLessons
 
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
 
     composeTestRule.onNodeWithText("Instant ICC Tutoring").assertIsDisplayed()
@@ -294,7 +347,12 @@ class HomeScreenTest {
     cancelledLessonsFlow.value = cancelledLesson
 
     composeTestRule.setContent {
-      HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
     }
 
     // Verify the dialog indicating that the lesson has been cancelled is displayed
@@ -302,5 +360,20 @@ class HomeScreenTest {
     composeTestRule.onNodeWithTag("cancelledLessonDialogTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelledLessonDialogText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelledLessonDialogConfirmButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEmptySectionTextDisplayed() {
+    composeTestRule.setContent {
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
+    }
+    composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("section_CONFIRMED_expand").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("noLessonsConfirmed").assertIsDisplayed()
   }
 }

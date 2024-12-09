@@ -89,4 +89,32 @@ class ListToDosViewModelTest {
     // Verify that the ViewModel handled the result as expected
     assertThat(collectedProfiles, `is`(profiles))
   }
+
+  @Test
+  fun getAveragePrice_worksWithOneProfile() {
+    `when`(profilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf(profile))
+    }
+    assert(listProfilesViewModel.getAveragePrice() == 50.0)
+  }
+
+  @Test
+  fun getAveragePrice_worksWithMultipleProfiles() {
+    val profile2 = profile.copy(price = 100)
+    `when`(profilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(listOf(profile, profile2))
+    }
+    assert(listProfilesViewModel.getAveragePrice() == 75.0)
+  }
+
+  @Test
+  fun getAveragePrice_worksWithNoProfiles() {
+    `when`(profilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      onSuccess(emptyList())
+    }
+    assert(listProfilesViewModel.getAveragePrice() == 30.0)
+  }
 }

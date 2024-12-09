@@ -2,19 +2,45 @@ package com.github.se.project.ui.profile
 
 import android.widget.Toast
 import androidx.camera.core.ExperimentalGetImage
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.se.project.R
 import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.certification.EpflCertification
-import com.github.se.project.model.profile.*
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.EpflVerificationCard
 import com.github.se.project.ui.components.PhoneNumberInput
@@ -22,6 +48,7 @@ import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.capitalizeFirstLetter
 import com.github.se.project.utils.countries
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
@@ -104,7 +131,11 @@ fun CreateProfileScreen(
               // Existing profile creation fields
               OutlinedTextField(
                   value = firstName,
-                  onValueChange = { firstName = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.user_first_name)) {
+                      firstName = it
+                    }
+                  },
                   label = { Text("First Name") },
                   modifier = Modifier.fillMaxWidth().testTag("firstNameField"),
                   singleLine = true,
@@ -113,7 +144,11 @@ fun CreateProfileScreen(
 
               OutlinedTextField(
                   value = lastName,
-                  onValueChange = { lastName = it },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.user_last_name)) {
+                      lastName = it
+                    }
+                  },
                   label = { Text("Last Name") },
                   modifier = Modifier.fillMaxWidth().testTag("lastNameField"),
                   singleLine = true,
@@ -205,19 +240,19 @@ fun CreateProfileScreen(
                                 listProfilesViewModel.getNewUid(),
                                 token,
                                 googleUid,
-                                firstName,
-                                lastName,
+                                firstName.capitalizeFirstLetter(),
+                                lastName.capitalizeFirstLetter(),
                                 selectedCountry.code + phoneNumber,
                                 role,
                                 section.value!!,
                                 academicLevel.value!!,
                                 certification = certification)
-                        listProfilesViewModel.addProfile(newProfile)
                         listProfilesViewModel.setCurrentProfile(newProfile)
 
                         if (role == Role.TUTOR) {
                           navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
                         } else if (role == Role.STUDENT) {
+                          listProfilesViewModel.addProfile(newProfile)
                           navigationActions.navigateTo(Screen.HOME)
                         }
                       } catch (e: Exception) {

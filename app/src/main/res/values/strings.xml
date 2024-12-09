@@ -4,8 +4,6 @@
     <string name="title_activity_second">SecondActivity</string>
     <string name="web_client_id">475882605501-gv47hlfhkd5j459vjv0kc1cj97ensm15.apps.googleusercontent.com</string>
     <string name="chat_api_key">fw3tsu2v5sug</string>
-
-    "
     <string name="your_account">Your Account</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="close">Close</string>
@@ -14,12 +12,41 @@
     <string name="phone_number">Phone Number</string>
     <string name="price_per_lesson">Price:</string>
     <string name="lessons_count">lessons count</string>
-    <string name="error_loading_profile">Error loading profile...</string>
+    <string name="error_loading_profile">Error loading profile…</string>
     <string name="lessons_given">lessons given since you joined PocketTutor</string>
     <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
     <string name="price_not_set">Not Set</string>
     <string name="update_profile">Update Profile</string>
     <string name="schedule">Schedule</string>
+
+    <string name="no_lessons">No Lessons</string>
+
+    <!-- Requested Lessons screen -->
+    <string name="check_back">Check back soon for available lessons</string>
+    <string name="comment_check_back">Try adjusting your filters or click here under to view any instant lesson</string>
+
+    <!-- LessonEditor -->
+    <!-- stringResource(id = R.string.example) -->
+    <string name="update">Update</string>
+    <string name="create">Create</string>
+    <string name="inform_user_offline">You are offline. Please connect to the internet to proceed</string>
+
+    <!-- TutorMatching -->
+    <string name="request_another_tutor">Ask for Another Tutor</string>
+
+    <!-- NetworkListener -->
+    <string name="no_internet_connection">No internet connection</string>
+
+    <!-- LocationPickerBox -->
+    <string name="confirm_location">Confirm Location</string>
+
+    <!-- BottomNavigationMenu -->
+    <string name="find_tutor">Find Tutor</string>
+    <string name="find_student">Find Student</string>
+    <string name="chat">Chat</string>
+    <string name="my_course">My Course</string>
+    <string name="home">Home</string>
+
     <string name="ok">OK</string>
     <string name="confirm">Confirm</string>
     <string name="delete">Delete</string>

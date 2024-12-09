@@ -40,6 +40,7 @@ class TutorEndToEndTest {
   private val mockStudent =
       Profile(
           uid = "student123",
+          token = "",
           googleUid = "mockTutor",
           firstName = "Ozymandias",
           lastName = "Halifax",

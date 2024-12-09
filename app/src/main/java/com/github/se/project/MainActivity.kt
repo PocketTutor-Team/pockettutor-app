@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,8 +22,10 @@ import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.authentification.SignInScreen
+import com.github.se.project.ui.components.NetworkStatusListener
 import com.github.se.project.ui.lesson.AddLessonScreen
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.lesson.EditRequestedLessonScreen
@@ -59,19 +60,22 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       SampleAppTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-          PocketTutorApp(
-              authenticationViewModel = viewModel(),
-              listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
-              lessonViewModel = viewModel(factory = LessonViewModel.Factory),
-              certificationViewModel =
-                  viewModel(
-                      factory =
-                          CertificationViewModel.Factory(
-                              EpflVerificationRepository(),
-                              viewModel(factory = ListProfilesViewModel.Factory))),
-              onMapReadyChange = {},
-              chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
+        NetworkStatusListener {
+          Surface(modifier = Modifier.fillMaxSize()) {
+            PocketTutorApp(
+                authenticationViewModel = viewModel(),
+                listProfilesViewModel = viewModel(factory = ListProfilesViewModel.Factory),
+                lessonViewModel = viewModel(factory = LessonViewModel.Factory),
+                networkStatusViewModel = viewModel(),
+                certificationViewModel =
+                    viewModel(
+                        factory =
+                            CertificationViewModel.Factory(
+                                EpflVerificationRepository(),
+                                viewModel(factory = ListProfilesViewModel.Factory))),
+                onMapReadyChange = {},
+                chatViewModel = viewModel(factory = ChatViewModel.Factory(buildChatClient())))
+          }
         }
       }
     }
@@ -108,8 +112,9 @@ fun PocketTutorApp(
     authenticationViewModel: AuthenticationViewModel,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel,
     certificationViewModel: CertificationViewModel,
-    onMapReadyChange: (Boolean) -> Unit,
+    onMapReadyChange: (Boolean) -> Unit = {},
     chatViewModel: ChatViewModel,
 ) {
   // Navigation
@@ -131,7 +136,7 @@ fun PocketTutorApp(
               onSignInClick = {
                 authenticationViewModel.handleGoogleSignIn(
                     context,
-                    onSuccess = { uid ->
+                    onSuccess = { _ ->
                       // Navigate back to SplashScreen to let it handle navigation
                       navController.navigate(Screen.SPLASH) {
                         popUpTo(Screen.AUTH) { inclusive = true }
@@ -142,7 +147,12 @@ fun PocketTutorApp(
       }
 
       composable(Screen.HOME) {
-        HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+        HomeScreen(
+            listProfilesViewModel,
+            lessonViewModel,
+            networkStatusViewModel,
+            chatViewModel,
+            navigationActions)
       }
       composable(Screen.CREATE_PROFILE) {
         CreateProfileScreen(
@@ -163,10 +173,16 @@ fun PocketTutorApp(
             navigationActions,
             listProfilesViewModel,
             lessonViewModel,
+            networkStatusViewModel,
             onMapReadyChange = onMapReadyChange)
       }
       composable(Screen.CHANNEL) {
-        ChannelScreen(navigationActions, listProfilesViewModel, chatViewModel, lessonViewModel)
+        ChannelScreen(
+            navigationActions,
+            listProfilesViewModel,
+            chatViewModel,
+            lessonViewModel,
+            networkStatusViewModel)
       }
       composable(Screen.CHAT) { ChatScreen(navigationActions, chatViewModel) }
 
@@ -175,16 +191,27 @@ fun PocketTutorApp(
           route = Route.FIND_STUDENT,
       ) {
         composable(Screen.HOME) {
-          HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
         composable(Screen.LESSONS_REQUESTED) {
-          RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+          RequestedLessonsScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
         }
         composable(Screen.TUTOR_LESSON_RESPONSE) {
-          TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+          TutorLessonResponseScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
         }
         composable(Screen.CONFIRMED_LESSON) {
-          ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+          ConfirmedLessonScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
+        }
+        composable(Screen.COMPLETED_LESSON) {
+          CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
       }
 
@@ -193,7 +220,12 @@ fun PocketTutorApp(
           route = Route.HOME,
       ) {
         composable(Screen.HOME) {
-          HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
         composable(Screen.EDIT_PROFILE) { EditProfile(navigationActions, listProfilesViewModel) }
         composable(Screen.EDIT_SCHEDULE) {
@@ -204,10 +236,12 @@ fun PocketTutorApp(
               navigationActions,
               listProfilesViewModel,
               lessonViewModel,
+              networkStatusViewModel,
               onMapReadyChange = onMapReadyChange)
         }
         composable(Screen.TUTOR_LESSON_RESPONSE) {
-          TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+          TutorLessonResponseScreen(
+              listProfilesViewModel, lessonViewModel, networkStatusViewModel, navigationActions)
         }
       }
 
@@ -216,13 +250,19 @@ fun PocketTutorApp(
           route = Route.FIND_TUTOR,
       ) {
         composable(Screen.HOME) {
-          HomeScreen(listProfilesViewModel, lessonViewModel, chatViewModel, navigationActions)
+          HomeScreen(
+              listProfilesViewModel,
+              lessonViewModel,
+              networkStatusViewModel,
+              chatViewModel,
+              navigationActions)
         }
         composable(Screen.ADD_LESSON) {
           AddLessonScreen(
               navigationActions,
               listProfilesViewModel,
               lessonViewModel,
+              networkStatusViewModel,
               onMapReadyChange = onMapReadyChange)
         }
         composable(Screen.TUTOR_MATCH) {
@@ -231,9 +271,9 @@ fun PocketTutorApp(
         composable(Screen.SELECTED_TUTOR_DETAILS) {
           SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
-      }
-      composable(Screen.COMPLETED_LESSON) {
-        CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        composable(Screen.COMPLETED_LESSON) {
+          CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
       }
     }
   }

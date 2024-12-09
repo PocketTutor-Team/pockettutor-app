@@ -4,10 +4,10 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
-import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.ui.components.LessonEditor
 import com.github.se.project.ui.components.isInstant
@@ -28,11 +28,13 @@ fun AddLessonScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel,
     onMapReadyChange: (Boolean) -> Unit = {}
 ) {
   // Retrieves the current user's profile from the ViewModel as a state object
   val profile = listProfilesViewModel.currentProfile.collectAsState()
 
+  val isConnected = networkStatusViewModel.isConnected.collectAsState().value
   // Provides access to the current context (e.g., for showing Toast messages)
   val context = LocalContext.current
 
@@ -61,26 +63,17 @@ fun AddLessonScreen(
         it.status == LessonStatus.INSTANT_REQUESTED || it.status == LessonStatus.INSTANT_CONFIRMED
       }) {
         // Displays a message if the user already has an instant lesson scheduled
-        Toast.makeText(context, context.getString(R.string.already_instant), Toast.LENGTH_SHORT)
+        Toast.makeText(context, "You already have an instant lesson scheduled", Toast.LENGTH_SHORT)
             .show()
-      } else {
-        // Adds the instant lesson and fetches updated lessons for the user
-        lessonViewModel.addLesson(
-            lesson,
-            onComplete = {
-              // Refreshes the lesson list for the user after successfully adding the lesson
-              lessonViewModel.getLessonsForStudent(profile.value!!.uid)
-              Toast.makeText(
-                      context, context.getString(R.string.lesson_created), Toast.LENGTH_SHORT)
-                  .show()
-
-              // Marks the new lesson as selected
-              lessonViewModel.selectLesson(lesson)
-
-              // Navigates back to the home screen
-              navigationActions.navigateTo(Screen.HOME)
-            })
-      }
+      } else
+          lessonViewModel.addLesson(
+              lesson,
+              onComplete = {
+                lessonViewModel.getLessonsForStudent(profile.value!!.uid)
+                Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+                lessonViewModel.selectLesson(lesson)
+                navigationActions.navigateTo(Screen.HOME)
+              })
     } else {
       // For non-instant lessons, navigates to the tutor match screen
       lessonViewModel.selectLesson(lesson)
@@ -101,12 +94,12 @@ fun AddLessonScreen(
    * @param onMapReady Callback for handling changes in the map's readiness state.
    */
   LessonEditor(
-      mainTitle = "Schedule a lesson", // Title displayed at the top
-      profile = profile.value!!, // Passes the user's profile to the editor
-      lesson = currentLesson, // The current lesson being edited
-      onBack = { navigationActions.navigateTo(Screen.HOME) }, // Navigates back to home on cancel
-      onConfirm = onConfirm, // Handles lesson confirmation
-      onDelete = null, // Lesson deletion is not handled in this screen
-      onMapReady = onMapReadyChange // Updates the map's readiness state
-      )
+      mainTitle = "Schedule a lesson",
+      profile = profile.value!!,
+      lesson = currentLesson,
+      isConnected = isConnected,
+      onBack = { navigationActions.navigateTo(Screen.HOME) },
+      onConfirm = onConfirm,
+      onDelete = null,
+      onMapReady = onMapReadyChange)
 }
