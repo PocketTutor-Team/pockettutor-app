@@ -153,8 +153,7 @@ fun EditProfile(
                 PriceSlider(priceSliderValue, listProfilesViewModel.getAveragePrice())
               }
               Button(
-                  modifier =
-                      Modifier.fillMaxWidth().testTag("updateAvailabilityButton"),
+                  modifier = Modifier.fillMaxWidth().testTag("updateAvailabilityButton"),
                   shape = MaterialTheme.shapes.medium,
                   onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
                   colors =
@@ -166,17 +165,21 @@ fun EditProfile(
                         contentDescription = "Calendar",
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(end = 16.dp))
-                    Text(stringResource(id = R.string.schedule), color = MaterialTheme.colorScheme.onPrimary)
+                    Text(
+                        stringResource(id = R.string.schedule),
+                        color = MaterialTheme.colorScheme.onPrimary)
                   }
 
-            if (profile.certification?.verified == false) {
+              if (profile.certification?.verified == false) {
                 Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
                 SectionSelector(section)
 
-                Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = "Modify your academic level",
+                    style = MaterialTheme.typography.titleSmall)
                 AcademicSelector(academicLevel)
+              }
             }
-        }
       },
       bottomBar = {
         // Confirmation Button with Validation

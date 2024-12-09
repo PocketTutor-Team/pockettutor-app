@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -22,9 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
@@ -66,156 +61,117 @@ fun BottomNavigationMenu(
     selectedItem: String,
     networkStatusViewModel: NetworkStatusViewModel
 ) {
-    val home_text = stringResource(id = R.string.home)
-    val my_course_text = stringResource(id = R.string.my_course)
+  val home_text = stringResource(id = R.string.home)
+  val my_course_text = stringResource(id = R.string.my_course)
 
-    val isConnected by networkStatusViewModel.isConnected.collectAsState()
-    val context = LocalContext.current
+  val isConnected by networkStatusViewModel.isConnected.collectAsState()
+  val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.95f),
-            tonalElevation = 3.dp,
-            shadowElevation = 8.dp,
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(16.dp)
-            )
+  Box(modifier = Modifier.fillMaxWidth().navigationBarsPadding()) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.95f),
+        tonalElevation = 3.dp,
+        shadowElevation = 8.dp,
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)) {
+          Box(modifier = Modifier.fillMaxWidth().height(16.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+          Row(
+              modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 8.dp),
+              horizontalArrangement = Arrangement.SpaceAround,
+              verticalAlignment = Alignment.CenterVertically) {
                 tabList.forEachIndexed { index, tab ->
-                    val selected = tab.route == selectedItem
-                    val enabled = isConnected ||
-                            tab.textId == home_text ||
-                            tab.textId == my_course_text
-                    val isMiddleItem = index == tabList.size / 2
+                  val selected = tab.route == selectedItem
+                  val enabled =
+                      isConnected || tab.textId == home_text || tab.textId == my_course_text
+                  val isMiddleItem = index == tabList.size / 2
 
-                    if (isMiddleItem) {
-                        Spacer(modifier = Modifier.width(72.dp))
-                    } else {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
+                  if (isMiddleItem) {
+                    Spacer(modifier = Modifier.width(72.dp))
+                  } else {
+                    Column(
+                        modifier =
+                            Modifier.weight(1f)
                                 .animateContentSize()
                                 .clip(RoundedCornerShape(12.dp))
                                 .clickable(
                                     enabled = enabled,
                                     onClick = {
-                                        if (enabled) {
-                                            onTabSelect(tab)
-                                        } else {
-                                            Toast.makeText(
+                                      if (enabled) {
+                                        onTabSelect(tab)
+                                      } else {
+                                        Toast.makeText(
                                                 context,
                                                 context.getString(R.string.inform_user_offline),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                )
+                                                Toast.LENGTH_SHORT)
+                                            .show()
+                                      }
+                                    })
                                 .padding(vertical = 4.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .scale(if (selected) 1.2f else 1f),
-                                tint = if (selected) {
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                          Icon(
+                              imageVector = tab.icon,
+                              contentDescription = null,
+                              modifier = Modifier.size(24.dp).scale(if (selected) 1.2f else 1f),
+                              tint =
+                                  if (selected) {
                                     MaterialTheme.colorScheme.primary
-                                } else {
+                                  } else {
                                     MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                }
-                            )
+                                  })
 
-                            Text(
-                                text = tab.textId,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (selected) {
+                          Text(
+                              text = tab.textId,
+                              style = MaterialTheme.typography.labelSmall,
+                              color =
+                                  if (selected) {
                                     MaterialTheme.colorScheme.primary
-                                } else {
+                                  } else {
                                     MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                                },
-                                modifier = Modifier.alpha(if (selected) 1f else 0.7f)
-                            )
+                                  },
+                              modifier = Modifier.alpha(if (selected) 1f else 0.7f))
 
-                            if (selected) {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(top = 4.dp)
+                          if (selected) {
+                            Box(
+                                modifier =
+                                    Modifier.padding(top = 4.dp)
                                         .size(4.dp)
-                                        .background(
-                                            MaterialTheme.colorScheme.primary,
-                                            CircleShape
-                                        )
-                                )
-                            }
+                                        .background(MaterialTheme.colorScheme.primary, CircleShape))
+                          }
                         }
-                    }
+                  }
                 }
-            }
+              }
         }
 
-        // FAB amélioré
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = (-28).dp)
-        ) {
-            val centerItem = tabList[tabList.size / 2]
-            val enabled = isConnected ||
-                    centerItem.textId == home_text ||
-                    centerItem.textId == my_course_text
+    // FAB amélioré
+    Box(modifier = Modifier.align(Alignment.TopCenter).offset(y = (-28).dp)) {
+      val centerItem = tabList[tabList.size / 2]
+      val enabled =
+          isConnected || centerItem.textId == home_text || centerItem.textId == my_course_text
 
-            // Shadow ring
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .background(Color.Black.copy(alpha = 0.1f), CircleShape)
-            )
+      // Shadow ring
+      Box(modifier = Modifier.size(64.dp).background(Color.Black.copy(alpha = 0.1f), CircleShape))
 
-            FloatingActionButton(
-                onClick = {
-                    if (enabled) {
-                        onTabSelect(centerItem)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.inform_user_offline),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = CircleShape,
-                modifier = Modifier
-                    .size(56.dp)
-                    .align(Alignment.Center)
-            ) {
-                Icon(
-                    imageVector = centerItem.icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .scale(1.2f)
-                )
+      FloatingActionButton(
+          onClick = {
+            if (enabled) {
+              onTabSelect(centerItem)
+            } else {
+              Toast.makeText(
+                      context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT)
+                  .show()
             }
-        }
+          },
+          containerColor = MaterialTheme.colorScheme.primary,
+          contentColor = MaterialTheme.colorScheme.onPrimary,
+          shape = CircleShape,
+          modifier = Modifier.size(56.dp).align(Alignment.Center)) {
+            Icon(
+                imageVector = centerItem.icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp).scale(1.2f))
+          }
     }
+  }
 }

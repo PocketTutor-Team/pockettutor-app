@@ -169,9 +169,8 @@ fun calculateDistance(userLocation: LatLng?, lessonLocation: LatLng): Float {
 }
 
 /**
- * Private function to adjust
- * evel based on the distance between two locations. The
- * further the locations, the lower the zoom level.
+ * Private function to adjust evel based on the distance between two locations. The further the
+ * locations, the lower the zoom level.
  */
 fun adjustZoomBasedOnDistance(distance: Float): Float {
   return when {

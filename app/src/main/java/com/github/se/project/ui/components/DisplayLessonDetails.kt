@@ -37,11 +37,7 @@ import com.github.se.project.utils.formatDate
 
 /** Displays detailed information about a lesson and the associated student. */
 @Composable
-fun DisplayLessonDetails(
-    lesson: Lesson,
-    profile: Profile,
-    modifier: Modifier = Modifier
-) {
+fun DisplayLessonDetails(lesson: Lesson, profile: Profile, modifier: Modifier = Modifier) {
   Card(
       modifier = modifier.fillMaxWidth().padding(vertical = 2.dp).testTag("lessonDetailsCard"),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
@@ -81,67 +77,65 @@ fun DisplayLessonDetails(
 
 @Composable
 private fun ProfileInfoSection(profile: Profile) {
-    Row(
-        modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+  Row(
+      modifier = Modifier.fillMaxWidth().testTag("profileInfoRow"),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically) {
         Box(contentAlignment = Alignment.Center) {
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
+          Surface(
+              modifier = Modifier.size(48.dp),
+              shape = MaterialTheme.shapes.medium,
+              color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.padding(8.dp),
                     tint = MaterialTheme.colorScheme.primary)
-            }
+              }
 
-            if (profile.certification?.verified == true && profile.role == Role.TUTOR) {
-                Surface(
-                    modifier =
-                    Modifier.size(24.dp)
-                        .align(Alignment.BottomEnd)
-                        .offset(x = 8.dp, y = 8.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.background,
-                    shadowElevation = 2.dp) {
-                    Surface(
-                        modifier = Modifier.padding(2.dp).fillMaxSize(),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
+          if (profile.certification?.verified == true && profile.role == Role.TUTOR) {
+            Surface(
+                modifier =
+                    Modifier.size(24.dp).align(Alignment.BottomEnd).offset(x = 8.dp, y = 8.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.background,
+                shadowElevation = 2.dp) {
+                  Surface(
+                      modifier = Modifier.padding(2.dp).fillMaxSize(),
+                      shape = CircleShape,
+                      color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.epflpng),
                             contentDescription = "EPFL Verified",
                             modifier = Modifier.padding(2.dp),
                             tint = Color.Red)
-                    }
+                      }
                 }
-            }
+          }
         }
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "${profile.firstName} ${profile.lastName}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.testTag("profileName"))
+          Text(
+              text = "${profile.firstName} ${profile.lastName}",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("profileName"))
 
-            Text(
-                text = "${profile.section} - ${profile.academicLevel}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag("profileAcademicInfo"))
+          Text(
+              text = "${profile.section} - ${profile.academicLevel}",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.testTag("profileAcademicInfo"))
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            profile.languages.forEach { language ->
-                Text(
-                    text = language.name,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary)
-            }
+          profile.languages.forEach { language ->
+            Text(
+                text = language.name,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary)
+          }
         }
-    }
+      }
 }
 
 @Composable

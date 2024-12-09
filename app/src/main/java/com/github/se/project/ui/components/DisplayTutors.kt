@@ -61,7 +61,7 @@ fun DisplayTutors(
                           horizontalAlignment = Alignment.CenterHorizontally,
                           verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             // Profile Picture
-                          Box(contentAlignment = Alignment.Center) {
+                            Box(contentAlignment = Alignment.Center) {
                               Surface(
                                   modifier = Modifier.size(48.dp),
                                   shape = CircleShape,
@@ -74,31 +74,35 @@ fun DisplayTutors(
                                   }
 
                               if (tutor.certification?.verified == true) {
-                                  Surface(
-                                      modifier =
-                                      Modifier.size(24.dp)
-                                          .align(Alignment.BottomEnd)
-                                          .offset(x = 8.dp, y = 8.dp),
-                                      shape = CircleShape,
-                                      color = MaterialTheme.colorScheme.background,
-                                      shadowElevation = 2.dp) {
+                                Surface(
+                                    modifier =
+                                        Modifier.size(24.dp)
+                                            .align(Alignment.BottomEnd)
+                                            .offset(x = 8.dp, y = 8.dp),
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.background,
+                                    shadowElevation = 2.dp) {
                                       Surface(
                                           modifier = Modifier.padding(2.dp).fillMaxSize(),
                                           shape = CircleShape,
-                                          color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-                                          Icon(
-                                              imageVector = ImageVector.vectorResource(id = R.drawable.epflpng),
-                                              contentDescription = "EPFL Verified",
-                                              modifier = Modifier.padding(2.dp),
-                                              tint = Color.Red)
-                                      }
-                                  }
+                                          color =
+                                              MaterialTheme.colorScheme.primary.copy(
+                                                  alpha = 0.1f)) {
+                                            Icon(
+                                                imageVector =
+                                                    ImageVector.vectorResource(
+                                                        id = R.drawable.epflpng),
+                                                contentDescription = "EPFL Verified",
+                                                modifier = Modifier.padding(2.dp),
+                                                tint = Color.Red)
+                                          }
+                                    }
                               }
-                          }
+                            }
 
-                          Spacer(modifier = Modifier.size(2.dp))
+                            Spacer(modifier = Modifier.size(2.dp))
 
-                          // Price tag
+                            // Price tag
                             Surface(
                                 shape = MaterialTheme.shapes.medium,
                                 color = MaterialTheme.colorScheme.secondary) {
