@@ -356,13 +356,6 @@ private fun ProfileCard(
                 }
             }
 
-            // Display the phone number
-            Text(
-                text = profile.phoneNumber,
-                modifier = Modifier.testTag("phoneNumberRow"),
-                style = MaterialTheme.typography.bodyMedium
-            )
-
             if (profile.role == Role.TUTOR) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 8.dp),
