@@ -8,6 +8,8 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
@@ -25,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
@@ -42,6 +45,12 @@ class ProfileInfoScreenTest {
   private lateinit var mockLessonRepository: LessonRepository
   private lateinit var mockLessonViewModel: LessonViewModel
   private lateinit var realAuthenticationViewModel: AuthenticationViewModel
+
+  private val certificationRepository = Mockito.mock(EpflVerificationRepository::class.java)
+  private val mockViewModel = ListProfilesViewModel(mockProfilesRepository)
+
+  private val certificationViewModel =
+      CertificationViewModel(certificationRepository, mockViewModel)
 
   private val mockTutorProfile =
       Profile(
@@ -102,7 +111,8 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     composeTestRule.onNodeWithTag("profileTopBar").assertIsDisplayed()
@@ -124,7 +134,8 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Check if profile details are displayed
@@ -163,7 +174,8 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Check if profile details are displayed
@@ -195,8 +207,10 @@ class ProfileInfoScreenTest {
     composeTestRule.setContent {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Check that the error message is displayed
@@ -214,7 +228,10 @@ class ProfileInfoScreenTest {
     composeTestRule.setContent {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
-          authenticationViewModel = realAuthenticationViewModel)
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Click the close button
@@ -238,7 +255,8 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     // Assert that the Log Out button is displayed

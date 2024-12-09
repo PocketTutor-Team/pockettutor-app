@@ -352,7 +352,7 @@ private fun ProfileCard(
                                         style = MaterialTheme.typography.labelMedium,
                                         modifier =
                                             Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                        color = MaterialTheme.colorScheme.onPrimary)
                                   }
                             }
                           }
