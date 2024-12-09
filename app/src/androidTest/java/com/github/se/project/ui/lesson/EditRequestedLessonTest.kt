@@ -180,6 +180,8 @@ class EditRequestedLessonTest {
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
 
+      composeTestRule.waitUntil (15000) {assertExistsToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))}
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
@@ -196,4 +198,13 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
   }
+}
+
+fun assertExistsToBoolean (node: SemanticsNodeInteraction): Boolean {
+  try {
+    node.assertExists()
+  } catch (e: AssertionError) {
+    return false
+  }
+  return true
 }
