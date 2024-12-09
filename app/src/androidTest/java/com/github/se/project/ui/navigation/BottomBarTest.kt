@@ -4,8 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -46,29 +44,26 @@ class BottomBarTest {
       BottomNavigationMenu(
           onTabSelect = {}, tabList = tabList, selectedItem = "home", networkStatusViewModel)
     }
-      composeTestRule.onNodeWithTag("Home").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("Profile").assertIsDisplayed()
-
+    composeTestRule.onNodeWithTag("Home").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Profile").assertIsDisplayed()
   }
 
-    @Test
-    fun bottomNavigationMenu_highlightsSelectedTab() {
-        val tabList = listOf(
+  @Test
+  fun bottomNavigationMenu_highlightsSelectedTab() {
+    val tabList =
+        listOf(
             TopLevelDestination("home", Icons.Default.Home, "Home"),
             TopLevelDestination("search", Icons.Default.Search, "Search"),
-            TopLevelDestination("profile", Icons.Default.Person, "Profile")
-        )
+            TopLevelDestination("profile", Icons.Default.Person, "Profile"))
 
-        composeTestRule.setContent {
-            BottomNavigationMenu(
-                onTabSelect = {},
-                tabList = tabList,
-                selectedItem = "home",
-                networkStatusViewModel = networkStatusViewModel
-            )
-        }
-
-        composeTestRule.onNodeWithTag("Home").assertIsSelected()
+    composeTestRule.setContent {
+      BottomNavigationMenu(
+          onTabSelect = {},
+          tabList = tabList,
+          selectedItem = "home",
+          networkStatusViewModel = networkStatusViewModel)
     }
 
+    composeTestRule.onNodeWithTag("Home").assertIsSelected()
+  }
 }
