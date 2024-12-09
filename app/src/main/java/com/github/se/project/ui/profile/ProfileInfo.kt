@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -74,114 +75,153 @@ fun ProfileInfoScreen(
     authenticationViewModel: AuthenticationViewModel,
     certificationViewModel: CertificationViewModel
 ) {
-  var profileState = listProfilesViewModel.currentProfile.collectAsState()
-  val lessons = lessonViewModel.currentUserLessons.collectAsState()
-  var showVerificationDialog by remember { mutableStateOf(false) }
+    val profileState = listProfilesViewModel.currentProfile.collectAsState()
+    val lessons = lessonViewModel.currentUserLessons.collectAsState()
+    var showVerificationDialog by remember { mutableStateOf(false) }
 
-  val completedLessons =
-      lessons.value.filter {
-        it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
-      }
+    val completedLessons =
+        lessons.value.filter {
+            it.status == LessonStatus.COMPLETED || it.status == LessonStatus.PENDING_REVIEW
+        }
 
-  Scaffold(
-      topBar = {
-        TopAppBar(
-            title = {},
-            navigationIcon = {
-              IconButton(onClick = { navigationActions.goBack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-              }
-            },
-            actions = {
-              IconButton(onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) }) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit")
-              }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
-      }) { padding ->
-        profileState.value?.let { profile ->
-          val isTutor = profile.role == Role.TUTOR
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.testTag("profileTopBar"),
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navigationActions.goBack() },
+                        modifier = Modifier.testTag("closeButton")
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { navigationActions.navigateTo(Screen.EDIT_PROFILE) },
+                        modifier = Modifier.testTag("editProfileButton")
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }) { padding ->
+        val profile = profileState.value
+        if (profile == null) {
+            // If profile is null, show error message
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error loading profile…",
+                    modifier = Modifier.testTag("errorLoadingProfile")
+                )
+            }
+        } else {
+            val isTutor = profile.role == Role.TUTOR
 
-          // Main container
-          Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Column(
-                modifier =
-                    Modifier.fillMaxSize().padding(bottom = 80.dp) // Space for sign out button
+            // Main container
+            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 80.dp) // Space for sign out button
                 ) {
-                  // 1. Profile Info Card (Fixed at top)
-                  ProfileCard(
-                      profile = profile,
-                      completedLessonsCount = completedLessons.size,
-                      onVerificationClick = { showVerificationDialog = true },
-                      completedLessons = completedLessons)
+                    // 1. Profile Info Card (Fixed at top)
+                    ProfileCard(
+                        profile = profile,
+                        completedLessonsCount = completedLessons.size,
+                        onVerificationClick = { showVerificationDialog = true },
+                        completedLessons = completedLessons
+                    )
 
-                  // 2. Lessons Box (Scrollable)
-                  Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    Card(
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
-                        colors =
+                    // 2. Lessons Box (Scrollable)
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxSize(),
+                            colors =
                             CardDefaults.cardColors(
                                 containerColor =
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))) {
-                          Text(
-                              text = "Completed Lessons",
-                              style = MaterialTheme.typography.titleMedium,
-                              modifier = Modifier.padding(16.dp))
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                            )
+                        ) {
+                            Text(
+                                text = "Completed Lessons",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(16.dp)
+                            )
 
-                          Column(
-                              modifier =
-                                  Modifier.fillMaxSize()
-                                      .padding(horizontal = 16.dp)
-                                      .verticalScroll(rememberScrollState())) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp)
+                                    .verticalScroll(rememberScrollState())
+                            ) {
                                 if (completedLessons.isEmpty()) {
-                                  EmptyState(
-                                      text = "No completed lessons yet",
-                                      icon = Icons.Default.CheckCircle)
+                                    EmptyState(
+                                        text = "No completed lessons yet",
+                                        icon = Icons.Default.CheckCircle
+                                    )
                                 } else {
-                                  DisplayLessons(
-                                      lessons = completedLessons,
-                                      listProfilesViewModel = listProfilesViewModel,
-                                      isTutor = isTutor,
-                                      onCardClick = { lesson ->
-                                        lessonViewModel.selectLesson(lesson)
-                                        navigationActions.navigateTo(Screen.COMPLETED_LESSON)
-                                      })
+                                    DisplayLessons(
+                                        lessons = completedLessons,
+                                        listProfilesViewModel = listProfilesViewModel,
+                                        isTutor = isTutor,
+                                        onCardClick = { lesson ->
+                                            lessonViewModel.selectLesson(lesson)
+                                            navigationActions.navigateTo(Screen.COMPLETED_LESSON)
+                                        }
+                                    )
                                 }
-                              }
+                            }
                         }
-                  }
+                    }
                 }
 
-            // 3. Sign Out Button (Fixed at bottom)
-            Button(
-                onClick = {
-                  authenticationViewModel.signOut {
-                    listProfilesViewModel.setCurrentProfile(null)
-                    navigationActions.navigateTo(Screen.AUTH)
-                  }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
-                colors =
+                // 3. Sign Out Button (Fixed at bottom)
+                Button(
+                    onClick = {
+                        authenticationViewModel.signOut {
+                            listProfilesViewModel.setCurrentProfile(null)
+                            navigationActions.navigateTo(Screen.AUTH)
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .testTag("signOutButton"),
+                    colors =
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer)) {
-                  Text("Sign Out")
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Text("Sign Out", modifier = Modifier.testTag("signOutButton"))
                 }
-          }
+            }
 
-          // Verification Dialog
-          if (showVerificationDialog && isTutor) {
-            EpflVerificationDialog(
-                isVerified = profile.certification?.verified == true,
-                onDismiss = { showVerificationDialog = false },
-                onVerify = { sciper -> certificationViewModel.verifySciperNumber(sciper) })
-          }
+            // Verification Dialog
+            if (showVerificationDialog && isTutor) {
+                EpflVerificationDialog(
+                    isVerified = profile.certification?.verified == true,
+                    onDismiss = { showVerificationDialog = false },
+                    onVerify = { sciper -> certificationViewModel.verifySciperNumber(sciper) }
+                )
+            }
         }
-      }
+    }
 }
 
 private fun getMostFrequentSubject(lessons: List<Lesson>): String? {
-  return lessons.groupBy { it.subject }.maxByOrNull { (_, lessons) -> lessons.size }?.key?.name
+    return lessons.groupBy { it.subject }.maxByOrNull { (_, lessons) -> lessons.size }?.key?.name
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -192,174 +232,220 @@ private fun ProfileCard(
     onVerificationClick: () -> Unit,
     completedLessons: List<Lesson> = emptyList()
 ) {
-  Card(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp),
-      elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
         Column(
-            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-              Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  verticalAlignment = Alignment.CenterVertically) {
-                    // Profile Picture with Badge
-                    Box {
-                      Surface(
-                          modifier = Modifier.size(80.dp),
-                          shape = CircleShape,
-                          color = MaterialTheme.colorScheme.primaryContainer) {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = null,
-                                modifier = Modifier.padding(16.dp).fillMaxSize(),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                          }
-
-                      if (profile.role == Role.TUTOR) {
-                        Surface(
-                            modifier =
-                                Modifier.align(Alignment.BottomEnd)
-                                    .offset(x = 8.dp, y = 8.dp)
-                                    .clickable(onClick = onVerificationClick),
-                            shape = CircleShape,
-                            color =
-                                if (profile.certification?.verified == true) Color.White
-                                else MaterialTheme.colorScheme.primary) {
-                              Icon(
-                                  if (profile.certification?.verified == true)
-                                      ImageVector.vectorResource(R.drawable.epflpng)
-                                  else Icons.Default.Warning,
-                                  contentDescription = "Verification status",
-                                  modifier = Modifier.padding(4.dp).size(20.dp),
-                                  tint =
-                                      if (profile.certification?.verified == true) Color.Red
-                                      else MaterialTheme.colorScheme.onPrimary)
-                            }
-                      }
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Profile Picture with Badge
+                Box {
+                    Surface(
+                        modifier = Modifier.size(80.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxSize(),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
-
-                    // Profile Info
-                    Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
-                      Text(
-                          text =
-                              "${profile.firstName.capitalizeFirstLetter()} ${profile.lastName.capitalizeFirstLetter()}",
-                          style = MaterialTheme.typography.headlineSmall)
-                      Text(
-                          text = "${profile.section} - ${profile.academicLevel}",
-                          style = MaterialTheme.typography.bodyMedium,
-                          color = MaterialTheme.colorScheme.onSurfaceVariant)
-                      Text(
-                          text = profile.role.name.lowercase().capitalizeFirstLetter(),
-                          style = MaterialTheme.typography.labelMedium,
-                          color = MaterialTheme.colorScheme.primary)
-                    }
-                  }
-
-              // Stats
-              Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.SpaceEvenly) {
-                    StatItem(
-                        count = completedLessonsCount,
-                        label =
-                            if (profile.role == Role.TUTOR) "Lessons Given" else "Lessons Taken",
-                        icon = Icons.Default.CheckCircle)
 
                     if (profile.role == Role.TUTOR) {
-                      StatItem(
-                          count = profile.price,
-                          label = "Price/Hour",
-                          icon = ImageVector.vectorResource(R.drawable.cash),
-                          prefix = "CHF")
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(x = 8.dp, y = 8.dp)
+                                .clickable(onClick = onVerificationClick),
+                            shape = CircleShape,
+                            color =
+                            if (profile.certification?.verified == true) Color.White
+                            else MaterialTheme.colorScheme.primary
+                        ) {
+                            Icon(
+                                if (profile.certification?.verified == true)
+                                    ImageVector.vectorResource(R.drawable.epflpng)
+                                else Icons.Default.Warning,
+                                contentDescription = "Verification status",
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(20.dp),
+                                tint =
+                                if (profile.certification?.verified == true) Color.Red
+                                else MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
 
-                      val averageRating =
-                          if (completedLessons.isNotEmpty()) {
+                // Profile Info
+                Column(modifier = Modifier.weight(1f).padding(horizontal = 16.dp)) {
+                    Text(
+                        text =
+                        "${profile.firstName.capitalizeFirstLetter()} ${profile.lastName.capitalizeFirstLetter()}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.testTag("profileName"),
+                    )
+                    Text(
+                        text = "${profile.section} - ${profile.academicLevel}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.testTag("profileAcademicInfo")
+                    )
+                    Text(
+                        text = profile.role.name.lowercase().capitalizeFirstLetter(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            // Stats
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                StatItem(
+                    count = completedLessonsCount,
+                    label =
+                    if (profile.role == Role.TUTOR) "Lessons Given" else "Lessons Taken",
+                    icon = Icons.Default.CheckCircle,
+                    modifier = Modifier.testTag("lessonsCount")
+                )
+
+                if (profile.role == Role.TUTOR) {
+                    StatItem(
+                        count = profile.price,
+                        label = "Price/Hour",
+                        icon = ImageVector.vectorResource(R.drawable.cash),
+                        prefix = "CHF",
+                        modifier = Modifier.testTag("priceText")
+                    )
+
+                    val averageRating =
+                        if (completedLessons.isNotEmpty()) {
                             completedLessons.mapNotNull { it.rating?.grade }.average()
-                          } else null
+                        } else null
 
-                      if (averageRating != null) {
+                    if (averageRating != null) {
                         StatItem(
-                            rating = averageRating, label = "Rating", icon = Icons.Default.Star)
-                      }
-                    } else {
-                      getMostFrequentSubject(completedLessons)?.let { subject ->
+                            rating = averageRating, label = "Rating", icon = Icons.Default.Star
+                        )
+                    }
+                } else {
+                    getMostFrequentSubject(completedLessons)?.let { subject ->
                         StatItem(
                             text = subject.lowercase().capitalizeFirstLetter(),
                             label = "Most Studied",
-                            icon = ImageVector.vectorResource(id = R.drawable.baseline_school_24))
-                      }
+                            icon = ImageVector.vectorResource(id = R.drawable.baseline_school_24)
+                        )
                     }
-                  }
-              if (profile.role == Role.TUTOR) {
+                }
+            }
+
+            // Display the phone number
+            Text(
+                text = profile.phoneNumber,
+                modifier = Modifier.testTag("phoneNumberRow"),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            if (profile.role == Role.TUTOR) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant)
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
 
                 // Languages Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically) {
-                      Icon(
-                          imageVector =
-                              ImageVector.vectorResource(id = R.drawable.baseline_language_24),
-                          contentDescription = null,
-                          tint = MaterialTheme.colorScheme.primary,
-                          modifier = Modifier.size(24.dp))
-                      Row(
-                          modifier = Modifier.weight(1f).padding(start = 16.dp),
-                          horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            profile.languages.forEach { language ->
-                              Surface(
-                                  color = MaterialTheme.colorScheme.primaryContainer,
-                                  shape = MaterialTheme.shapes.small) {
-                                    Text(
-                                        text = language.name.lowercase().capitalizeFirstLetter(),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier =
-                                            Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer)
-                                  }
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector =
+                        ImageVector.vectorResource(id = R.drawable.baseline_language_24),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Row(
+                        modifier = Modifier.weight(1f).padding(start = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        profile.languages.forEach { language ->
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = MaterialTheme.shapes.small
+                            ) {
+                                Text(
+                                    text = language.name.lowercase().capitalizeFirstLetter(),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier =
+                                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
                             }
-                          }
+                        }
                     }
+                }
 
                 // Subjects Row
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically) {
-                      Icon(
-                          imageVector =
-                              ImageVector.vectorResource(id = R.drawable.baseline_school_24),
-                          contentDescription = null,
-                          tint = MaterialTheme.colorScheme.primary,
-                          modifier = Modifier.size(24.dp))
-                      FlowRow(
-                          modifier = Modifier.weight(1f).padding(start = 16.dp),
-                          horizontalArrangement = Arrangement.spacedBy(8.dp),
-                          verticalArrangement = Arrangement.spacedBy(8.dp),
-                          maxItemsInEachRow = 3) {
-                            profile.subjects.forEach { subject ->
-                              Surface(
-                                  color = MaterialTheme.colorScheme.secondaryContainer,
-                                  shape = MaterialTheme.shapes.small) {
-                                    Text(
-                                        text =
-                                            subject.name
-                                                .lowercase()
-                                                .capitalizeFirstLetter()
-                                                .replace("_", " "),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier =
-                                            Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary)
-                                  }
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector =
+                        ImageVector.vectorResource(id = R.drawable.baseline_school_24),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    FlowRow(
+                        modifier = Modifier.weight(1f).padding(start = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        maxItemsInEachRow = 3
+                    ) {
+                        profile.subjects.forEach { subject ->
+                            Surface(
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                shape = MaterialTheme.shapes.small
+                            ) {
+                                Text(
+                                    text = subject.name
+                                        .lowercase()
+                                        .capitalizeFirstLetter()
+                                        .replace("_", " "),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier =
+                                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
                             }
-                          }
+                        }
                     }
-              }
+                }
             }
-      }
+        }
+    }
 }
 
 @SuppressLint("DefaultLocale")
@@ -370,55 +456,66 @@ private fun StatItem(
     text: String = "",
     label: String,
     icon: ImageVector,
-    prefix: String = ""
+    prefix: String = "",
+    modifier: Modifier = Modifier
 ) {
-  Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp))
+            modifier = Modifier.size(24.dp)
+        )
         if (count != -1) {
-          Text(
-              text = if (prefix.isEmpty()) "$count" else "$prefix $count",
-              style = MaterialTheme.typography.titleLarge,
-              color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = if (prefix.isEmpty()) "$count" else "$prefix $count",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = modifier
+            )
         } else if (rating != -1.0) {
-          Text(
-              text = if (prefix.isEmpty()) String.format("%.2f", rating) else "",
-              style = MaterialTheme.typography.titleLarge,
-              color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = if (prefix.isEmpty()) String.format("%.2f", rating) else "",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         } else {
-          Text(
-              text = text,
-              style = MaterialTheme.typography.titleLarge,
-              color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-      }
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
 
 @Composable
 private fun EmptyState(text: String, icon: ImageVector) {
-  Column(
-      modifier = Modifier.fillMaxWidth().padding(32.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(48.dp))
+            modifier = Modifier.size(48.dp)
+        )
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp))
-      }
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
 }

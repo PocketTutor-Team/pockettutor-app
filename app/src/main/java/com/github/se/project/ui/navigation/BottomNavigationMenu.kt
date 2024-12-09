@@ -33,7 +33,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
 import com.github.se.project.model.network.NetworkStatusViewModel
@@ -107,7 +110,9 @@ fun BottomNavigationMenu(
                                             .show()
                                       }
                                     })
-                                .padding(vertical = 4.dp),
+                                .padding(vertical = 4.dp)
+                                .testTag(tab.textId)
+                                .semantics { this.selected = selected },
                         horizontalAlignment = Alignment.CenterHorizontally) {
                           Icon(
                               imageVector = tab.icon,
@@ -144,7 +149,6 @@ fun BottomNavigationMenu(
               }
         }
 
-    // FAB amélioré
     Box(modifier = Modifier.align(Alignment.TopCenter).offset(y = (-28).dp)) {
       val centerItem = tabList[tabList.size / 2]
       val enabled =
