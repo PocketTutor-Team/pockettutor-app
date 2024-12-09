@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.TutorRecommender
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -71,15 +72,22 @@ fun TutorMatchingScreen(
 
   val filteredTutor =
       if (currentLesson.status == LessonStatus.MATCHING) {
-        allTutorProfiles.filter { profile -> // TODO: think of the filtering
-          profile.subjects.contains(currentLesson.subject) &&
-              profile.price <= currentLesson.maxPrice &&
-              profile.price >= currentLesson.minPrice &&
-              isTutorAvailable(profile.schedule, currentLesson.timeSlot)
-        }
+        val matchingTutors =
+            allTutorProfiles.filter { profile ->
+              profile.subjects.contains(currentLesson.subject) &&
+                  profile.price <= currentLesson.maxPrice &&
+                  profile.price >= currentLesson.minPrice &&
+                  isTutorAvailable(profile.schedule, currentLesson.timeSlot)
+            }
+        // sort the matching tutors using the recommender algorithm
+        TutorRecommender.recommendTutorsForLesson(
+            studentProfile = currentProfile,
+            availableTutors = matchingTutors,
+            lessonViewModel = lessonViewModel)
       } else {
         val tutorList =
             allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid) }
+
         tutorList.ifEmpty {
           return Text("No tutor for the selected lesson. Should not happen.")
         }
