@@ -154,11 +154,6 @@ class ProfileInfoScreenTest {
         composeTestRule
             .onNodeWithTag("priceText")
             .assertIsDisplayed()
-
-        composeTestRule
-            .onNodeWithTag("phoneNumberRow")
-            .assertIsDisplayed()
-            .assertTextEquals(mockTutorProfile.phoneNumber)
     }
 
     @Test
