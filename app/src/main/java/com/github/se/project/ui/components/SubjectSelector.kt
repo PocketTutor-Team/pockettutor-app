@@ -40,10 +40,10 @@ fun SubjectSelector(
           Text(
               if (multipleSelection) {
                 if (selectedSubjects.isNullOrEmpty()) "Select Subjects"
-                else selectedSubjects.joinToString(", ") { it.name.lowercase() }
+                else selectedSubjects.joinToString(", ") { it.name.lowercase().replace("_", " ") }
               } else {
                 if (selectedSubject?.value == Subject.NONE) "Select Subject"
-                else selectedSubject?.value?.name?.lowercase().orEmpty()
+                else selectedSubject?.value?.name?.lowercase()?.replace("_", " ").orEmpty()
               },
               style = MaterialTheme.typography.labelMedium,
               color = MaterialTheme.colorScheme.onPrimary)
@@ -65,7 +65,9 @@ fun SubjectSelector(
             DropdownMenuItem(
                 text = {
                   Row {
-                    Text(subject.name.lowercase(), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        subject.name.replace('_', ' ').lowercase(),
+                        style = MaterialTheme.typography.bodyMedium)
                     if (isSelected) {
                       Icon(
                           Icons.Filled.Check,

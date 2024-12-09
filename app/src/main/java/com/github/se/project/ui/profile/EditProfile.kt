@@ -151,29 +151,35 @@ fun EditProfile(
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.testTag("editTutorProfilePriceText"))
                 PriceSlider(priceSliderValue, listProfilesViewModel.getAveragePrice())
+
+                Button(
+                    modifier = Modifier.fillMaxWidth().testTag("updateAvailabilityButton"),
+                    shape = MaterialTheme.shapes.medium,
+                    onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                      Icon(
+                          imageVector = Icons.Default.DateRange,
+                          contentDescription = "Calendar",
+                          tint = MaterialTheme.colorScheme.onPrimary,
+                          modifier = Modifier.padding(end = 16.dp))
+                      Text(
+                          stringResource(id = R.string.schedule),
+                          color = MaterialTheme.colorScheme.onPrimary)
+                    }
               }
-              Button(
-                  modifier =
-                      Modifier.fillMaxWidth().padding(16.dp).testTag("updateAvailabilityButton"),
-                  shape = MaterialTheme.shapes.medium,
-                  onClick = { navigationActions.navigateTo(Screen.EDIT_SCHEDULE) },
-                  colors =
-                      ButtonDefaults.buttonColors(
-                          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Calendar",
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(end = 16.dp))
-                    Text(stringResource(id = R.string.schedule))
-                  }
 
-              Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
-              SectionSelector(section)
+              if (profile.certification?.verified == false) {
+                Text(text = "Modify your section", style = MaterialTheme.typography.titleSmall)
+                SectionSelector(section)
 
-              Text(text = "Modify your academic level", style = MaterialTheme.typography.titleSmall)
-              AcademicSelector(academicLevel)
+                Text(
+                    text = "Modify your academic level",
+                    style = MaterialTheme.typography.titleSmall)
+                AcademicSelector(academicLevel)
+              }
             }
       },
       bottomBar = {

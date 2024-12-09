@@ -1,7 +1,11 @@
 package com.github.se.project.ui.lesson
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +23,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -62,6 +68,10 @@ fun TutorMatchingScreen(
       lessonViewModel.selectedLesson.collectAsState().value
           ?: return Text("No lesson selected. Should not happen.")
 
+  var showFilterDialog by remember { mutableStateOf(false) }
+  var showVerifiedOnly by remember { mutableStateOf(false) }
+  var sortBy by remember { mutableStateOf(SortOption.PRICE) }
+
   val tutorProfilesFlow = remember {
     listProfilesViewModel.profiles.filter { profiles: List<Profile> ->
       profiles.any { profile -> profile.role == Role.TUTOR }
@@ -69,20 +79,31 @@ fun TutorMatchingScreen(
   }
   val allTutorProfiles by tutorProfilesFlow.collectAsState(listOf())
 
-  val filteredTutor =
+  val filteredTutors =
       if (currentLesson.status == LessonStatus.MATCHING) {
-        allTutorProfiles.filter { profile -> // TODO: think of the filtering
-          profile.subjects.contains(currentLesson.subject) &&
-              profile.price <= currentLesson.maxPrice &&
-              profile.price >= currentLesson.minPrice &&
-              isTutorAvailable(profile.schedule, currentLesson.timeSlot)
-        }
+        allTutorProfiles
+            .asSequence()
+            .filter { profile ->
+              profile.subjects.contains(currentLesson.subject) &&
+                  profile.price >= currentLesson.minPrice &&
+                  (!showVerifiedOnly || profile.certification?.verified == true) &&
+                  isTutorAvailable(profile.schedule, currentLesson.timeSlot)
+            }
+            .toList()
+            .let { tutors ->
+              when (sortBy) {
+                SortOption.PRICE -> tutors.sortedBy { it.price }
+                SortOption.ACADEMIC_LEVEL -> tutors.sortedByDescending { it.academicLevel.ordinal }
+                SortOption.VERIFICATION ->
+                    tutors.sortedByDescending { it.certification?.verified == true }
+              }
+            }
       } else {
-        val tutorList =
-            allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid) }
-        tutorList.ifEmpty {
-          return Text("No tutor for the selected lesson. Should not happen.")
-        }
+        allTutorProfiles
+            .filter { currentLesson.tutorUid.contains(it.uid) }
+            .ifEmpty {
+              return
+            }
       }
 
   val context = LocalContext.current
@@ -110,7 +131,7 @@ fun TutorMatchingScreen(
             },
             actions = {
               IconButton(
-                  onClick = { /* TODO: Additional filter options */},
+                  onClick = { showFilterDialog = true },
                   modifier = Modifier.testTag("filterButton")) {
                     Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Filter")
                   }
@@ -152,7 +173,7 @@ fun TutorMatchingScreen(
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
-          if (filteredTutor.isEmpty()) {
+          if (filteredTutors.isEmpty()) {
             Text(
                 text =
                     "No tutor available for your lesson: go back to change your lesson or click on the button to wait for a tutor to choose your lesson.",
@@ -165,7 +186,7 @@ fun TutorMatchingScreen(
                     Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
                         .fillMaxWidth()
                         .testTag("tutorsList"),
-                tutors = filteredTutor,
+                tutors = filteredTutors,
                 onCardClick = { tutor ->
                   listProfilesViewModel.selectProfile(tutor)
                   navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
@@ -210,6 +231,55 @@ fun TutorMatchingScreen(
                     }
               })
         }
+
+        if (showFilterDialog) {
+          AlertDialog(
+              modifier = Modifier.testTag("filterDialog"),
+              onDismissRequest = { showFilterDialog = false },
+              title = { Text("Filter Tutors") },
+              text = {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                  // Verified filter
+                  Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically) {
+                        Text("Show verified tutors only")
+                        Switch(
+                            checked = showVerifiedOnly,
+                            onCheckedChange = { showVerifiedOnly = it },
+                            modifier = Modifier.testTag("verifiedSwitch"))
+                      }
+
+                  // Sort options
+                  Text("Sort by:", style = MaterialTheme.typography.titleSmall)
+                  Column {
+                    SortOption.entries.forEach { option ->
+                      Row(
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .clickable { sortBy = option }
+                                  .padding(vertical = 8.dp),
+                          verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = sortBy == option,
+                                onClick = { sortBy = option },
+                                modifier = Modifier.testTag("sortOption_${option.name}"))
+                            Spacer(Modifier.width(8.dp))
+                            Text(option.displayName)
+                          }
+                    }
+                  }
+                }
+              },
+              confirmButton = {
+                Button(
+                    onClick = { showFilterDialog = false },
+                    modifier = Modifier.testTag("applyFiltersButton")) {
+                      Text("Apply Filters")
+                    }
+              })
+        }
       }
 }
 
@@ -240,4 +310,10 @@ fun isTutorAvailable(tutorSchedule: List<List<Int>>, timeSlot: String): Boolean 
   } catch (e: Exception) {
     throw IllegalArgumentException("Invalid timeSlot format. Expected: dd/MM/yyyyTHH:mm:ss")
   }
+}
+
+enum class SortOption(val displayName: String) {
+  PRICE("Price (lowest first)"),
+  ACADEMIC_LEVEL("Academic Level (highest first)"),
+  VERIFICATION("Verified tutors first")
 }

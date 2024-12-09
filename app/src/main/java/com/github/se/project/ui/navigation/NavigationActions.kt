@@ -1,6 +1,7 @@
 package com.github.se.project.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
@@ -45,12 +46,12 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 // Top-level destinations with icons
 object TopLevelDestinations {
   val HOME_TUTOR =
-      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "Home")
+      TopLevelDestination(route = Screen.HOME, icon = Icons.Outlined.Home, textId = "Home")
   val HOME_STUDENT =
-      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
+      TopLevelDestination(route = Screen.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
   val STUDENT =
       TopLevelDestination(
-          route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find Tutor")
+          route = Route.FIND_TUTOR, icon = Icons.Outlined.Add, textId = "Find Tutor")
   val TUTOR =
       TopLevelDestination(
           route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find Student")
