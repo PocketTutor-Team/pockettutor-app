@@ -1,6 +1,6 @@
 package com.github.se.project.ui.map
 
-import MapPickerBox
+import LocationPickerBox
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.junit.Assert.assertEquals
@@ -20,7 +20,7 @@ class MapPickerBoxTest {
 
     // Set the content with MapPickerBox
     composeTestRule.setContent {
-      MapPickerBox(
+      LocationPickerBox(
           initialLocation = initialLatitude to initialLongitude,
           onLocationSelected = { location -> selectedLocation = location },
           onMapReady = { _ -> })

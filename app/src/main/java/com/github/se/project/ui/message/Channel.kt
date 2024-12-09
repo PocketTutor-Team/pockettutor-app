@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.navigation.BottomNavigationMenu
@@ -38,7 +39,8 @@ fun ChannelScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     chatViewModel: ChatViewModel,
-    lessonViewModel: LessonViewModel // Use lessonViewModel to get confirmed lessons
+    lessonViewModel: LessonViewModel, // Use lessonViewModel to get confirmed lessons
+    networkStatusViewModel: NetworkStatusViewModel
 ) {
   // Observes the state of chat client initialization
   val clientInitialisationState = chatViewModel.clientInitialisationState.collectAsState()
@@ -87,7 +89,8 @@ fun ChannelScreen(
                     navigationActions.navigateTo(route)
                   },
                   tabList = navigationItems,
-                  selectedItem = navigationActions.currentRoute())
+                  selectedItem = navigationActions.currentRoute(),
+                  networkStatusViewModel = networkStatusViewModel)
             }) {
               // Displays the list of chat channels
               ChannelsScreen(

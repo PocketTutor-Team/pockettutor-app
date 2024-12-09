@@ -19,7 +19,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -197,7 +197,7 @@ fun ProfileInfoScreen(
                                 }
 
                             // Divider separating profile name and other information.
-                            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                             // Row displaying the user's role.
                             Row(
@@ -303,7 +303,7 @@ fun ProfileInfoScreen(
                                 }
                           }
 
-                      Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                       // Lessons Count
                       Text(
                           text =
