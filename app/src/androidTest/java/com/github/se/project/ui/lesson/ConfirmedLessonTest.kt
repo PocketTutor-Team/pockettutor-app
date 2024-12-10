@@ -1,5 +1,6 @@
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -322,6 +323,10 @@ public class ConfirmedLessonTest {
 
     // Confirm the dialog
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
+
+    composeTestRule.waitUntil (15000) {
+        composeTestRule.onNodeWithTag("cancelDialog").isNotDisplayed()
+    }
 
     // Check that the cancellation has been confirmed
     composeTestRule.onNodeWithTag("cancelDialog").assertIsNotDisplayed()
