@@ -324,8 +324,8 @@ public class ConfirmedLessonTest {
     // Confirm the dialog
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
 
-    composeTestRule.waitUntil (15000) {
-        composeTestRule.onNodeWithTag("cancelDialog").isNotDisplayed()
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("cancelDialog").isNotDisplayed()
     }
 
     // Check that the cancellation has been confirmed
