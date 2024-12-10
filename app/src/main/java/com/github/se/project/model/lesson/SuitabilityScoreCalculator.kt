@@ -55,10 +55,7 @@ object SuitabilityScoreCalculator {
     return if (tutorIsAvailable) 1.0 else 0.0
   }
 
-  private fun computeAcademicLevelCompatibility(
-      tutorProfile: Profile,
-      studentProfile: Profile?
-  ): Double {
+  fun computeAcademicLevelCompatibility(tutorProfile: Profile, studentProfile: Profile?): Double {
     if (studentProfile == null) {
       return 0.0 // return a default score if studentProfile is null
     }
