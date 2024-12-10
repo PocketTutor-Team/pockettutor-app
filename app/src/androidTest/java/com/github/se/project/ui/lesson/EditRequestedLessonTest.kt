@@ -113,16 +113,16 @@ class EditRequestedLessonTest {
         }
 
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
     whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
       ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
       onSuccess(lessons)
     }
     whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
     mockLessonViewModel.selectLesson(lessons[0])
