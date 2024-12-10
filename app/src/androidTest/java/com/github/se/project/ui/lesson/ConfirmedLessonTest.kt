@@ -1,5 +1,6 @@
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -258,6 +259,8 @@ public class ConfirmedLessonTest {
   @Test
   fun confirmedLessonScreenCancellationButtonClicked() {
     isLocationChecked = false
+
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("cancelButton").isDisplayed() }
 
     composeTestRule.waitForIdle()
 
