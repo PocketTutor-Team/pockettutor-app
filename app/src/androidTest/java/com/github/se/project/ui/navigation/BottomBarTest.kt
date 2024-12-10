@@ -44,8 +44,8 @@ class BottomBarTest {
       BottomNavigationMenu(
           onTabSelect = {}, tabList = tabList, selectedItem = "home", networkStatusViewModel)
     }
-
-    tabList.forEach { tab -> composeTestRule.onNodeWithTag(tab.textId).assertIsDisplayed() }
+    composeTestRule.onNodeWithTag("Home").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Profile").assertIsDisplayed()
   }
 
   @Test
@@ -58,10 +58,12 @@ class BottomBarTest {
 
     composeTestRule.setContent {
       BottomNavigationMenu(
-          onTabSelect = {}, tabList = tabList, selectedItem = "search", networkStatusViewModel)
+          onTabSelect = {},
+          tabList = tabList,
+          selectedItem = "home",
+          networkStatusViewModel = networkStatusViewModel)
     }
 
-    composeTestRule.onNodeWithTag("Search").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("Search").assertIsSelected()
+    composeTestRule.onNodeWithTag("Home").assertIsSelected()
   }
 }

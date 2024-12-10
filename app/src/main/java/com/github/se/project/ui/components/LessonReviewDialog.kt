@@ -127,7 +127,7 @@ fun LessonReviewDialog(
                           onClick = onDismiss,
                           modifier = Modifier.weight(1f),
                           shape = RoundedCornerShape(24.dp)) {
-                            Text("Dismiss")
+                            Text("Later")
                           }
                       Button(
                           onClick = { onSubmitReview(rating, comment) },
