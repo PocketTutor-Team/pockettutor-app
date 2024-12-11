@@ -1,3 +1,5 @@
+package com.github.se.project.ui.lesson
+
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isNotDisplayed
@@ -17,7 +19,6 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
-import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import org.junit.Before
@@ -31,7 +32,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
-public class ConfirmedLessonTest {
+class ConfirmedLessonTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   @get:Rule
@@ -107,7 +108,7 @@ public class ConfirmedLessonTest {
           longitude = -122.4194,
           status = LessonStatus.PENDING_TUTOR_CONFIRMATION)
 
-  var isLocationChecked = false
+  private var isLocationChecked = false
 
   @Before
   fun setUp() {
@@ -119,7 +120,7 @@ public class ConfirmedLessonTest {
           onLocationChecked = { isLocationChecked = true })
     }
     whenever(mockProfilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
       onSuccess(
           listOf(
               tutorProfile,
@@ -128,22 +129,22 @@ public class ConfirmedLessonTest {
 
     whenever(mockLessonRepository.getLessonsForTutor(eq(tutorProfile.uid), any(), any()))
         .thenAnswer { invocation ->
-          val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+            @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
           onSuccess(listOf(confirmedLesson, studentRequestedLesson, pendingTutorConfirmationLesson))
         }
 
     whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
 
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+        @Suppress("UNCHECKED_CAST")val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
 
     listProfilesViewModel.getProfiles()
-    lessonViewModel.getLessonsForTutor(tutorProfile.uid, {})
+    lessonViewModel.getLessonsForTutor(tutorProfile.uid) {}
 
     lessonViewModel.selectLesson(confirmedLesson)
     listProfilesViewModel.setCurrentProfile(tutorProfile)
