@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -107,6 +108,32 @@ fun SelectedTutorDetailsScreen(
                   text = "Available Tutors",
                   style = MaterialTheme.typography.titleLarge,
                   modifier = Modifier.testTag("confirmLessonTitle"))
+            },
+            actions = {
+              IconButton(
+                  onClick = {
+                    val newProfile =
+                        currentProfile.copy(
+                            favoriteTutors =
+                                if (currentProfile.favoriteTutors.contains(tutorProfile.uid))
+                                    currentProfile.favoriteTutors - tutorProfile.uid
+                                else currentProfile.favoriteTutors + tutorProfile.uid)
+
+                    listProfilesViewModel.updateProfile(newProfile)
+                    listProfilesViewModel.setCurrentProfile(newProfile)
+                  },
+                  modifier = Modifier.testTag("bookmarkButton")) {
+                    Icon(
+                        imageVector =
+                            if (currentProfile.favoriteTutors.contains(tutorProfile.uid))
+                                Icons.Default.Star
+                            else Icons.Outlined.Star,
+                        contentDescription = "Bookmark Tutor",
+                        tint =
+                            if (currentProfile.favoriteTutors.contains(tutorProfile.uid))
+                                MaterialTheme.colorScheme.tertiary
+                            else MaterialTheme.colorScheme.onSurfaceVariant)
+                  }
             })
       }) { paddingValues ->
         Column(
@@ -128,6 +155,7 @@ fun SelectedTutorDetailsScreen(
                     colors =
                         CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                      // Tutor information
                       DisplayTutorDetails(
                           tutorProfile = tutorProfile,
                           completedLessons = ratedLessons,

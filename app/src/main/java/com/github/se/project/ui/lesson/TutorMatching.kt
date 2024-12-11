@@ -2,6 +2,7 @@ package com.github.se.project.ui.lesson
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -84,6 +85,8 @@ fun TutorMatchingScreen(
           return Text("No tutor for the selected lesson. Should not happen.")
         }
       }
+  val (favoriteTutors, otherTutors) =
+      filteredTutor.partition { tutor -> currentProfile.favoriteTutors.contains(tutor.uid) }
 
   val context = LocalContext.current
 
@@ -160,16 +163,34 @@ fun TutorMatchingScreen(
                     Modifier.align(Alignment.Center).padding(16.dp).testTag("noTutorMessage"),
                 style = MaterialTheme.typography.bodyMedium)
           } else {
-            DisplayTutors(
-                modifier =
-                    Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
-                        .fillMaxWidth()
-                        .testTag("tutorsList"),
-                tutors = filteredTutor,
-                onCardClick = { tutor ->
-                  listProfilesViewModel.selectProfile(tutor)
-                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
-                })
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  if (favoriteTutors.isNotEmpty()) {
+                    DisplayTutors(
+                        modifier =
+                            Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                                .fillMaxWidth()
+                                .testTag("tutorsList"),
+                        tutors = favoriteTutors,
+                        isFavorite = true,
+                        onCardClick = { tutor ->
+                          listProfilesViewModel.selectProfile(tutor)
+                          navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                        })
+                  }
+
+                  DisplayTutors(
+                      modifier =
+                          Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                              .fillMaxWidth()
+                              .testTag("tutorsList"),
+                      tutors = otherTutors,
+                      onCardClick = { tutor ->
+                        listProfilesViewModel.selectProfile(tutor)
+                        navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                      })
+                }
           }
         }
 
