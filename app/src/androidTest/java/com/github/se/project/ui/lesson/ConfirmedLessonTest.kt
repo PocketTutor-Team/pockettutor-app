@@ -2,6 +2,7 @@ package com.github.se.project.ui.lesson
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -209,6 +210,8 @@ class ConfirmedLessonTest {
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
     composeTestRule.waitForIdle()
+
+      composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("backButton").isDisplayed() }
 
     composeTestRule.waitUntil(15000) {
       // wait max 15 seconds for the map to load,
