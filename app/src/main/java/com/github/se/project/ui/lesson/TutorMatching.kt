@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.TutorRecommender
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -105,6 +106,9 @@ fun TutorMatchingScreen(
               return
             }
       }
+
+  val sortedTutorsByRecommendation =
+      TutorRecommender.recommendTutorsForLesson(currentProfile, filteredTutors, lessonViewModel)
 
   val context = LocalContext.current
 
@@ -173,7 +177,7 @@ fun TutorMatchingScreen(
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
-          if (filteredTutors.isEmpty()) {
+          if (sortedTutorsByRecommendation.isEmpty()) {
             Text(
                 text =
                     "No tutor available for your lesson: go back to change your lesson or click on the button to wait for a tutor to choose your lesson.",
@@ -186,7 +190,7 @@ fun TutorMatchingScreen(
                     Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
                         .fillMaxWidth()
                         .testTag("tutorsList"),
-                tutors = filteredTutors,
+                tutors = sortedTutorsByRecommendation,
                 onCardClick = { tutor ->
                   listProfilesViewModel.selectProfile(tutor)
                   navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
