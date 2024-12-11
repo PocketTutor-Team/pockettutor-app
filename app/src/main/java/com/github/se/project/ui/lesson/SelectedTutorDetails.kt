@@ -4,15 +4,18 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,10 +46,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -256,7 +262,7 @@ private fun TutorInfoSection(profile: Profile, completedLessons: List<Lesson>) {
       modifier = Modifier.fillMaxWidth().testTag("tutorInfoRow"),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
-        DisplayProfilePicture("tutorProfilePicture")
+        DisplayProfilePicture("tutorProfilePicture", profile)
 
         Column(modifier = Modifier.weight(1f)) {
           Text(
@@ -404,15 +410,36 @@ private fun DisplayRatingGrade(grade: Double, testTag: String) {
 }
 
 @Composable
-private fun DisplayProfilePicture(testTag: String) {
-  Surface(
-      modifier = Modifier.size(48.dp),
-      shape = MaterialTheme.shapes.medium,
-      color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)) {
-        Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = null,
-            modifier = Modifier.padding(8.dp).testTag(testTag),
-            tint = MaterialTheme.colorScheme.primary)
-      }
+private fun DisplayProfilePicture(testTag: String, tutorProfile: Profile) {
+  Box(contentAlignment = Alignment.Center) {
+    Surface(
+        modifier = Modifier.size(48.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)) {
+          Icon(
+              imageVector = Icons.Default.Person,
+              contentDescription = null,
+              modifier = Modifier.padding(8.dp).testTag(testTag),
+              tint = MaterialTheme.colorScheme.primary)
+        }
+
+    if (tutorProfile.certification?.verified == true) {
+      Surface(
+          modifier = Modifier.size(24.dp).align(Alignment.BottomEnd).offset(x = 8.dp, y = 8.dp),
+          shape = CircleShape,
+          color = MaterialTheme.colorScheme.background,
+          shadowElevation = 2.dp) {
+            Surface(
+                modifier = Modifier.padding(2.dp).fillMaxSize(),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
+                  Icon(
+                      imageVector = ImageVector.vectorResource(id = R.drawable.epflpng),
+                      contentDescription = "EPFL Verified",
+                      modifier = Modifier.padding(2.dp),
+                      tint = Color.Red)
+                }
+          }
+    }
+  }
 }

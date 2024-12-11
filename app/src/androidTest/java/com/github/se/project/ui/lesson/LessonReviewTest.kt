@@ -164,7 +164,7 @@ class LessonReviewDialogTest {
     }
 
     // Click dismiss button
-    composeTestRule.onNodeWithText("Dismiss").performClick()
+    composeTestRule.onNodeWithText("Later").performClick()
 
     // Then
     assert(dismissCalled)

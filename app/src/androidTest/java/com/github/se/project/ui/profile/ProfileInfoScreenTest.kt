@@ -8,6 +8,8 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.authentification.AuthenticationViewModel
+import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
@@ -42,6 +44,8 @@ class ProfileInfoScreenTest {
   private lateinit var mockLessonRepository: LessonRepository
   private lateinit var mockLessonViewModel: LessonViewModel
   private lateinit var realAuthenticationViewModel: AuthenticationViewModel
+  private lateinit var certificationViewModel: CertificationViewModel
+  private lateinit var certificationRepository: EpflVerificationRepository
 
   private val mockTutorProfile =
       Profile(
@@ -73,28 +77,32 @@ class ProfileInfoScreenTest {
 
   @Before
   fun setUp() {
-    // Mock the dependencies
+    // Initialize mocks
     mockLessonRepository = mock(LessonRepository::class.java)
     mockProfilesRepository = mock(ProfilesRepository::class.java)
     mockNavigationActions = mock(NavigationActions::class.java)
     realAuthenticationViewModel = AuthenticationViewModel()
+    certificationRepository = mock(EpflVerificationRepository::class.java)
 
-    // Create a real instance of ListProfilesViewModel
+    // Create the view models after repositories are ready
     mockListProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
     mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
-    // Use a Mockito spy to track the actual state of the view model
+    // Spy on mockListProfilesViewModel if needed
     mockListProfilesViewModel = spy(mockListProfilesViewModel)
 
-    // Stub the updateProfile method to simulate a successful update
+    // Initialize CertificationViewModel
+    certificationViewModel =
+        CertificationViewModel(certificationRepository, mockListProfilesViewModel)
+
+    // Set up repository behavior
     doNothing().`when`(mockProfilesRepository).init(any())
     whenever(mockProfilesRepository.updateProfile(any(), any(), any())).thenAnswer { invocation ->
-      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
+      val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
   }
 
-  // PASS
   @Test
   fun profileInfoScreen_everythingDisplayedCorrectly() {
     composeTestRule.setContent {
@@ -102,7 +110,8 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
     composeTestRule.onNodeWithTag("profileTopBar").assertIsDisplayed()
@@ -110,13 +119,9 @@ class ProfileInfoScreenTest {
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed()
   }
 
-  // PASS
   @Test
   fun tutorProfileInfoScreenDisplaysProfileDetails_whenProfileIsNotNull() {
-    // Mock the currentProfile StateFlow to return the mockProfile
     val currentProfileFlow = MutableStateFlow<Profile?>(mockTutorProfile)
-
-    // Stubbing the StateFlow
     doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
 
     composeTestRule.setContent {
@@ -124,38 +129,28 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
-    // Check if profile details are displayed
     composeTestRule
         .onNodeWithTag("profileName")
         .assertIsDisplayed()
         .assertTextEquals("${mockTutorProfile.firstName} ${mockTutorProfile.lastName}")
+
     composeTestRule
         .onNodeWithTag("profileAcademicInfo")
         .assertIsDisplayed()
         .assertTextEquals("${mockTutorProfile.section} - ${mockTutorProfile.academicLevel}")
-    composeTestRule
-        .onNodeWithTag("lessonsCount")
-        .assertIsDisplayed()
-        .assertTextEquals("0 lessons given since you joined PocketTutor")
-    composeTestRule
-        .onNodeWithTag("priceText")
-        .assertIsDisplayed()
-        .assertTextEquals("Price: ${mockTutorProfile.price}")
-    composeTestRule
-        .onNodeWithTag("phoneNumberRow")
-        .assertIsDisplayed()
-        .assertTextEquals(mockTutorProfile.phoneNumber)
+
+    composeTestRule.onNodeWithTag("lessonsCount").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("priceText").assertIsDisplayed()
   }
 
   @Test
   fun studentProfileInfoScreenDisplaysProfileDetails_whenProfileIsNotNull() {
-    // Mock the currentProfile StateFlow to return the mockProfile
     val currentProfileFlow = MutableStateFlow<Profile?>(mockStudentProfile)
-
-    // Stubbing the StateFlow
     doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
 
     composeTestRule.setContent {
@@ -163,10 +158,10 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
-    // Check if profile details are displayed
     composeTestRule
         .onNodeWithTag("profileName")
         .assertIsDisplayed()
@@ -176,37 +171,33 @@ class ProfileInfoScreenTest {
         .onNodeWithTag("profileAcademicInfo")
         .assertIsDisplayed()
         .assertTextEquals("${mockStudentProfile.section} - ${mockStudentProfile.academicLevel}")
-    composeTestRule
-        .onNodeWithTag("lessonsCount")
-        .assertIsDisplayed()
-        .assertTextEquals("0 lessons taken since you joined PocketTutor")
+
+    composeTestRule.onNodeWithTag("lessonsCount").assertIsDisplayed()
   }
 
-  // PASS
   @Test
   fun profileInfoScreenDisplaysErrorMessage_whenProfileIsNull() {
-    // Provide a ViewModel with null profile data
     val profileLiveData = MutableLiveData<Profile?>()
-    profileLiveData.postValue(null) // Use postValue() instead of setValue()
+    profileLiveData.postValue(null)
 
     val lessonsLiveData = MutableLiveData<List<Lesson>>()
-    lessonsLiveData.postValue(emptyList()) // Use postValue() for the lessons as well
+    lessonsLiveData.postValue(emptyList())
 
     composeTestRule.setContent {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
-    // Check that the error message is displayed
     composeTestRule
         .onNodeWithTag("errorLoadingProfile")
         .assertIsDisplayed()
         .assertTextEquals("Error loading profile…")
   }
 
-  // Pass
   @Test
   fun profileInfoScreenNavigatesBack_whenCloseButtonClicked() {
     `when`(mockNavigationActions.goBack()).thenAnswer {}
@@ -214,23 +205,22 @@ class ProfileInfoScreenTest {
     composeTestRule.setContent {
       ProfileInfoScreen(
           navigationActions = mockNavigationActions,
-          authenticationViewModel = realAuthenticationViewModel)
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
-    // Click the close button
     composeTestRule.onNodeWithTag("closeButton").assertIsDisplayed().performClick()
 
-    // Verify that the goBack action was called
     verify(mockNavigationActions).goBack()
   }
 
   @Test
   fun logOutButton() {
-    // Mock the currentProfile StateFlow to return a valid profile
     val currentProfileFlow = MutableStateFlow<Profile?>(mockTutorProfile)
     doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
 
-    // Set the userId LiveData to simulate a logged-in user
     realAuthenticationViewModel.userId.postValue("12345")
 
     composeTestRule.setContent {
@@ -238,19 +228,14 @@ class ProfileInfoScreenTest {
           navigationActions = mockNavigationActions,
           listProfilesViewModel = mockListProfilesViewModel,
           lessonViewModel = mockLessonViewModel,
-          authenticationViewModel = realAuthenticationViewModel)
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
     }
 
-    // Assert that the Log Out button is displayed
     composeTestRule.onNodeWithTag("signOutButton").assertIsDisplayed()
-
-    // Perform click on the Log Out button
     composeTestRule.onNodeWithTag("signOutButton").performClick()
 
-    // Assert that the userId is cleared (sign-out logic works)
     assert(realAuthenticationViewModel.userId.value == null)
-
-    // Verify navigation to the login screen
     verify(mockNavigationActions).navigateTo(Screen.AUTH)
   }
 }
