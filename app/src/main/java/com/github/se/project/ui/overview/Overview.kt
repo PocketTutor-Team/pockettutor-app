@@ -95,153 +95,153 @@ fun HomeScreen(
     chatViewModel: ChatViewModel,
     navigationActions: NavigationActions,
 ) {
-  val context = LocalContext.current
-  val currentProfile = listProfileViewModel.currentProfile.collectAsState().value
-  val lessons = lessonViewModel.currentUserLessons.collectAsState().value
-  val cancelledLessons = lessonViewModel.cancelledLessons.collectAsState().value
+    val context = LocalContext.current
+    val currentProfile = listProfileViewModel.currentProfile.collectAsState().value
+    val lessons = lessonViewModel.currentUserLessons.collectAsState().value
+    val cancelledLessons = lessonViewModel.cancelledLessons.collectAsState().value
 
-  // Fetch lessons based on the role
-  when (currentProfile?.role) {
-    Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid) // Fetch lessons for tutor
-    Role.STUDENT ->
-        lessonViewModel.getLessonsForStudent(currentProfile.uid) // Fetch lessons for student
-    Role.UNKNOWN ->
-        Toast.makeText(context, "Unknown Profile Role", Toast.LENGTH_SHORT)
-            .show() // Show error if the role is unknown
-    null ->
-        Toast.makeText(context, "No Profile Found", Toast.LENGTH_SHORT)
-            .show() // Show error if no profile is found
-  }
-
-  // Connect chat for the current profile
-  LaunchedEffect(currentProfile) {
-    if (currentProfile != null) {
-      chatViewModel.connect(currentProfile) // Establish a chat connection for the user
+    // Fetch lessons based on the role
+    when (currentProfile?.role) {
+        Role.TUTOR -> lessonViewModel.getLessonsForTutor(currentProfile.uid) // Fetch lessons for tutor
+        Role.STUDENT ->
+            lessonViewModel.getLessonsForStudent(currentProfile.uid) // Fetch lessons for student
+        Role.UNKNOWN ->
+            Toast.makeText(context, "Unknown Profile Role", Toast.LENGTH_SHORT)
+                .show() // Show error if the role is unknown
+        null ->
+            Toast.makeText(context, "No Profile Found", Toast.LENGTH_SHORT)
+                .show() // Show error if no profile is found
     }
-  }
 
-  // Define navigation items based on user role
-  val navigationItems =
-      when (currentProfile?.role) {
-        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR // Navigation options for tutors
-        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Navigation options for students
-        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Default to student navigation options
-      }
-
-  // Define behavior for lesson item clicks based on role and lesson status
-  val onLessonClick = { lesson: Lesson ->
-    if (currentProfile?.role == Role.STUDENT) {
-      when (lesson.status) {
-        LessonStatus.STUDENT_REQUESTED -> {
-          if (lesson.tutorUid.isNotEmpty()) { // "Waiting for your confirmation" section
-            lessonViewModel.selectLesson(lesson)
-            navigationActions.navigateTo(Screen.TUTOR_MATCH)
-          } else { // "Waiting for a Tutor proposal" section
-            lessonViewModel.selectLesson(lesson)
-            navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-          }
+    // Connect chat for the current profile
+    LaunchedEffect(currentProfile) {
+        if (currentProfile != null) {
+            chatViewModel.connect(currentProfile) // Establish a chat connection for the user
         }
-        LessonStatus.CONFIRMED,
-        LessonStatus.INSTANT_CONFIRMED -> { // "Upcoming Lessons" section
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-        }
-        LessonStatus.INSTANT_REQUESTED -> { // "Pending instant Lesson" section
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
-        }
-        LessonStatus.PENDING_TUTOR_CONFIRMATION -> { // "Waiting for the Tutor Confirmation" section
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-        }
-        else -> {}
-      }
-    } else {
-      when (lesson.status) {
-        LessonStatus.PENDING_TUTOR_CONFIRMATION -> {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
-        }
-        LessonStatus.STUDENT_REQUESTED -> {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-        }
-        LessonStatus.CONFIRMED -> {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-        }
-        LessonStatus.INSTANT_CONFIRMED -> {
-          lessonViewModel.selectLesson(lesson)
-          navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
-        }
-        else -> {}
-      }
     }
-  }
-  var notificationchecked by remember { mutableStateOf(false) }
-  PushNotificationPermissionHandler { isGranted -> notificationchecked = true }
 
-  // Define the screen layout using a Scaffold
-  Scaffold(
-      topBar = {
-        TopAppBar(
-            modifier = Modifier.testTag("topBar").padding(top = 8.dp),
-            title = {
-              Text(
-                  text = "Welcome, ${currentProfile?.firstName}",
-                  style =
-                      MaterialTheme.typography
-                          .titleLarge) // Display the user's first name in the top bar
-            },
-            actions = {
-              IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = "Profile Icon",
-                    Modifier.testTag("Profile Icon")
-                        .size(32.dp)) // Icon to navigate to the profile screen
-              }
-            })
-      },
-      bottomBar = {
-        BottomNavigationMenu(
-            onTabSelect = { route ->
-              if (route == TopLevelDestinations.STUDENT) {
-                lessonViewModel
-                    .unselectLesson() // Unselect the lesson when navigating to student tab
-              }
-              navigationActions.navigateTo(route) // Navigate to selected route
-            },
-            tabList = navigationItems, // List of navigation items based on role
-            selectedItem = navigationActions.currentRoute(),
-            networkStatusViewModel = networkStatusViewModel) // Currently selected navigation item
-      }) { paddingValues ->
+    // Define navigation items based on user role
+    val navigationItems =
+        when (currentProfile?.role) {
+            Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR // Navigation options for tutors
+            Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Navigation options for students
+            else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT // Default to student navigation options
+        }
+
+    // Define behavior for lesson item clicks based on role and lesson status
+    val onLessonClick = { lesson: Lesson ->
+        if (currentProfile?.role == Role.STUDENT) {
+            when (lesson.status) {
+                LessonStatus.STUDENT_REQUESTED -> {
+                    if (lesson.tutorUid.isNotEmpty()) { // "Waiting for your confirmation" section
+                        lessonViewModel.selectLesson(lesson)
+                        navigationActions.navigateTo(Screen.TUTOR_MATCH)
+                    } else { // "Waiting for a Tutor proposal" section
+                        lessonViewModel.selectLesson(lesson)
+                        navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+                    }
+                }
+                LessonStatus.CONFIRMED,
+                LessonStatus.INSTANT_CONFIRMED -> { // "Upcoming Lessons" section
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                }
+                LessonStatus.INSTANT_REQUESTED -> { // "Pending instant Lesson" section
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.EDIT_REQUESTED_LESSON)
+                }
+                LessonStatus.PENDING_TUTOR_CONFIRMATION -> { // "Waiting for the Tutor Confirmation" section
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                }
+                else -> {}
+            }
+        } else {
+            when (lesson.status) {
+                LessonStatus.PENDING_TUTOR_CONFIRMATION -> {
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.TUTOR_LESSON_RESPONSE)
+                }
+                LessonStatus.STUDENT_REQUESTED -> {
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                }
+                LessonStatus.CONFIRMED -> {
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                }
+                LessonStatus.INSTANT_CONFIRMED -> {
+                    lessonViewModel.selectLesson(lesson)
+                    navigationActions.navigateTo(Screen.CONFIRMED_LESSON)
+                }
+                else -> {}
+            }
+        }
+    }
+    var notificationchecked by remember { mutableStateOf(false) }
+    PushNotificationPermissionHandler { isGranted -> notificationchecked = true }
+
+    // Define the screen layout using a Scaffold
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.testTag("topBar").padding(top = 8.dp),
+                title = {
+                    Text(
+                        text = "Welcome, ${currentProfile?.firstName}",
+                        style =
+                        MaterialTheme.typography
+                            .titleLarge) // Display the user's first name in the top bar
+                },
+                actions = {
+                    IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
+                        Icon(
+                            imageVector = Icons.Default.AccountBox,
+                            contentDescription = "Profile Icon",
+                            Modifier.testTag("Profile Icon")
+                                .size(32.dp)) // Icon to navigate to the profile screen
+                    }
+                })
+        },
+        bottomBar = {
+            BottomNavigationMenu(
+                onTabSelect = { route ->
+                    if (route == TopLevelDestinations.STUDENT) {
+                        lessonViewModel
+                            .unselectLesson() // Unselect the lesson when navigating to student tab
+                    }
+                    navigationActions.navigateTo(route) // Navigate to selected route
+                },
+                tabList = navigationItems, // List of navigation items based on role
+                selectedItem = navigationActions.currentRoute(),
+                networkStatusViewModel = networkStatusViewModel) // Currently selected navigation item
+        }) { paddingValues ->
 
         // Display the content or appropriate fallback based on the current profile
         currentProfile?.let { profile ->
-          if (cancelledLessons.isNotEmpty()) {
-            CancellationAlerts(
-                profile = profile,
-                lessons = cancelledLessons,
-                listProfilesViewModel = listProfileViewModel,
-                lessonViewModel = lessonViewModel)
-          } else {
-            if (lessons.any { it.status != LessonStatus.COMPLETED }) {
-              LessonsContent(
-                  profile = profile,
-                  lessons = lessons,
-                  onClick = onLessonClick,
-                  paddingValues = paddingValues,
-                  listProfilesViewModel = listProfileViewModel,
-                  lessonViewModel = lessonViewModel)
+            if (cancelledLessons.isNotEmpty()) {
+                CancellationAlerts(
+                    profile = profile,
+                    lessons = cancelledLessons,
+                    listProfilesViewModel = listProfileViewModel,
+                    lessonViewModel = lessonViewModel)
             } else {
-              EmptyLessonsState(paddingValues, lessonViewModel, profile)
+                if (lessons.any { it.status != LessonStatus.COMPLETED }) {
+                    LessonsContent(
+                        profile = profile,
+                        lessons = lessons,
+                        onClick = onLessonClick,
+                        paddingValues = paddingValues,
+                        listProfilesViewModel = listProfileViewModel,
+                        lessonViewModel = lessonViewModel)
+                } else {
+                    EmptyLessonsState(paddingValues, lessonViewModel, profile)
+                }
             }
-          }
         }
             ?: NoProfileFoundScreen(
                 context, navigationActions) // Show error screen if no profile is assigned
-  }
+    }
 }
 
 /**
@@ -264,40 +264,40 @@ private fun LessonsContent(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-  var refreshing by remember { mutableStateOf(false) }
-  val refreshScope = rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
 
-  // Refresh function to reload lessons based on profile role
-  fun refresh() =
-      refreshScope.launch {
-        refreshing = true
-        try {
-          when (profile.role) {
-            Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
-            Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
-            else -> {}
-          }
-        } finally {
-          delay(1000)
-          refreshing = false
+    // Refresh function to reload lessons based on profile role
+    fun refresh() =
+        refreshScope.launch {
+            refreshing = true
+            try {
+                when (profile.role) {
+                    Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+                    Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+                    else -> {}
+                }
+            } finally {
+                delay(1000)
+                refreshing = false
+            }
         }
-      }
 
-  val pullRefreshState =
-      rememberPullRefreshState(refreshing = refreshing, onRefresh = { refresh() })
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = refreshing, onRefresh = { refresh() })
 
-  Box(
-      modifier =
-          Modifier.fillMaxSize()
-              .padding(paddingValues)
-              .padding(horizontal = 16.dp)
-              .pullRefresh(pullRefreshState)) {
+    Box(
+        modifier =
+        Modifier.fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+            .pullRefresh(pullRefreshState)) {
         Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-          if (profile.role == Role.TUTOR) {
-            TutorSections(lessons, onClick, listProfilesViewModel)
-          } else {
-            StudentSections(lessons, onClick, listProfilesViewModel, lessonViewModel)
-          }
+            if (profile.role == Role.TUTOR) {
+                TutorSections(lessons, onClick, listProfilesViewModel)
+            } else {
+                StudentSections(lessons, onClick, listProfilesViewModel, lessonViewModel)
+            }
         }
 
         PullRefreshIndicator(
@@ -306,7 +306,7 @@ private fun LessonsContent(
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary)
-      }
+    }
 }
 
 @Composable
@@ -315,29 +315,34 @@ private fun TutorSections(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  val sections = mutableListOf<SectionInfo>()
+    val sections = mutableListOf<SectionInfo>()
 
-  if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+    if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+        sections.add(
+            SectionInfo(
+                "Upcoming Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                ImageVector.vectorResource(
+                    id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
+    }
     sections.add(
         SectionInfo(
-            "Upcoming Instant Lesson",
-            LessonStatus.INSTANT_CONFIRMED,
-            ImageVector.vectorResource(
-                id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
-  }
-  sections.add(
-      SectionInfo(
-          "Waiting for your Confirmation",
-          LessonStatus.PENDING_TUTOR_CONFIRMATION,
-          Icons.Default.Notifications))
-  sections.add(
-      SectionInfo(
-          "Waiting for the Student Confirmation",
-          LessonStatus.STUDENT_REQUESTED,
-          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
-  sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+            "Waiting for your Confirmation",
+            LessonStatus.PENDING_TUTOR_CONFIRMATION,
+            Icons.Default.Notifications))
+    sections.add(
+        SectionInfo(
+            "Waiting for the Student Confirmation",
+            LessonStatus.STUDENT_REQUESTED,
+            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
+    sections.add(
+        SectionInfo(
+            "Upcoming Lessons",
+            LessonStatus.CONFIRMED,
+            Icons.Default.Check)
+    )
 
-  LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
+    LessonSections(sections, lessons, true, onClick, listProfilesViewModel)
 }
 
 @Composable
@@ -347,77 +352,77 @@ private fun StudentSections(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-  var lessonToReview by remember { mutableStateOf<Lesson?>(null) }
-  val sections = mutableListOf<SectionInfo>()
+    var lessonToReview by remember { mutableStateOf<Lesson?>(null) }
+    val sections = mutableListOf<SectionInfo>()
 
-  // Check for lessons that need review
-  LaunchedEffect(lessons) {
-    if (lessonToReview == null) {
-      val pendingReview = lessons.find { lesson -> lesson.status == LessonStatus.PENDING_REVIEW }
-      lessonToReview = pendingReview
+    // Check for lessons that need review
+    LaunchedEffect(lessons) {
+        if (lessonToReview == null) {
+            val pendingReview = lessons.find { lesson -> lesson.status == LessonStatus.PENDING_REVIEW }
+            lessonToReview = pendingReview
+        }
     }
-  }
 
-  // Show review dialog if needed
-  lessonToReview?.let { lesson ->
-    LessonReviewDialog(
-        lesson = lesson,
-        initialRating = null,
-        onDismiss = {
-          val updatedLesson = lesson.copy(status = LessonStatus.COMPLETED)
-          lessonViewModel.updateLesson(updatedLesson) {
-            lessonViewModel.getLessonsForStudent(lesson.studentUid)
-          }
-          lessonToReview = null
-        },
-        onSubmitReview = { rating, comment ->
-          val updatedLesson =
-              lesson.copy(
-                  status = LessonStatus.COMPLETED,
-                  rating = LessonRating(grade = rating, comment = comment, date = Timestamp.now()))
-          lessonViewModel.updateLesson(updatedLesson) {
-            lessonViewModel.getLessonsForStudent(lesson.studentUid)
-          }
-          lessonToReview = null // Important: reset after submission
-        },
-        tutor = lesson.tutorUid.getOrNull(0)?.let { listProfilesViewModel.getProfileById(it) })
-  }
+    // Show review dialog if needed
+    lessonToReview?.let { lesson ->
+        LessonReviewDialog(
+            lesson = lesson,
+            initialRating = null,
+            onDismiss = {
+                val updatedLesson = lesson.copy(status = LessonStatus.COMPLETED)
+                lessonViewModel.updateLesson(updatedLesson) {
+                    lessonViewModel.getLessonsForStudent(lesson.studentUid)
+                }
+                lessonToReview = null
+            },
+            onSubmitReview = { rating, comment ->
+                val updatedLesson =
+                    lesson.copy(
+                        status = LessonStatus.COMPLETED,
+                        rating = LessonRating(grade = rating, comment = comment, date = Timestamp.now()))
+                lessonViewModel.updateLesson(updatedLesson) {
+                    lessonViewModel.getLessonsForStudent(lesson.studentUid)
+                }
+                lessonToReview = null // Important: reset after submission
+            },
+            tutor = lesson.tutorUid.getOrNull(0)?.let { listProfilesViewModel.getProfileById(it) })
+    }
 
-  if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {
+    if (lessons.any { it.status == LessonStatus.INSTANT_REQUESTED }) {
+        sections.add(
+            SectionInfo(
+                "Pending instant Lesson",
+                LessonStatus.INSTANT_REQUESTED,
+                ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24),
+                true))
+    }
+    if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
+        sections.add(
+            SectionInfo(
+                "Upcoming Instant Lesson",
+                LessonStatus.INSTANT_CONFIRMED,
+                ImageVector.vectorResource(
+                    id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
+    }
     sections.add(
         SectionInfo(
-            "Pending instant Lesson",
-            LessonStatus.INSTANT_REQUESTED,
-            ImageVector.vectorResource(id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24),
+            "Waiting for your Confirmation",
+            LessonStatus.STUDENT_REQUESTED,
+            Icons.Default.Notifications))
+    sections.add(
+        SectionInfo(
+            "Waiting for a Tutor proposal",
+            LessonStatus.STUDENT_REQUESTED,
+            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
             true))
-  }
-  if (lessons.any { it.status == LessonStatus.INSTANT_CONFIRMED }) {
     sections.add(
         SectionInfo(
-            "Upcoming Instant Lesson",
-            LessonStatus.INSTANT_CONFIRMED,
-            ImageVector.vectorResource(
-                id = R.drawable.bolt_24dp_000000_fill1_wght400_grad0_opsz24)))
-  }
-  sections.add(
-      SectionInfo(
-          "Waiting for your Confirmation",
-          LessonStatus.STUDENT_REQUESTED,
-          Icons.Default.Notifications))
-  sections.add(
-      SectionInfo(
-          "Waiting for a Tutor proposal",
-          LessonStatus.STUDENT_REQUESTED,
-          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
-          true))
-  sections.add(
-      SectionInfo(
-          "Waiting for the Tutor Confirmation",
-          LessonStatus.PENDING_TUTOR_CONFIRMATION,
-          ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
-  sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
+            "Waiting for the Tutor Confirmation",
+            LessonStatus.PENDING_TUTOR_CONFIRMATION,
+            ImageVector.vectorResource(id = R.drawable.baseline_access_time_24)))
+    sections.add(SectionInfo("Upcoming Lessons", LessonStatus.CONFIRMED, Icons.Default.Check))
 
-  LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
+    LessonSections(sections, lessons, false, onClick, listProfilesViewModel)
 }
 
 @Composable
@@ -428,20 +433,20 @@ private fun LessonSections(
     onClick: (Lesson) -> Unit,
     listProfilesViewModel: ListProfilesViewModel
 ) {
-  sections.forEach { section ->
-    val sectionLessons =
-        lessons.filter {
-          it.status == section.status && it.tutorUid.isEmpty() == section.tutorEmpty
-        }
+    sections.forEach { section ->
+        val sectionLessons =
+            lessons.filter {
+                it.status == section.status && it.tutorUid.isEmpty() == section.tutorEmpty
+            }
 
-    ExpandableLessonSection(
-        section = section,
-        lessons = sectionLessons,
-        isTutor = isTutor,
-        onClick = onClick,
-        listProfilesViewModel = listProfilesViewModel)
-    Spacer(modifier = Modifier.height(16.dp))
-  }
+        ExpandableLessonSection(
+            section = section,
+            lessons = sectionLessons,
+            isTutor = isTutor,
+            onClick = onClick,
+            listProfilesViewModel = listProfilesViewModel)
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -451,53 +456,53 @@ private fun EmptyLessonsState(
     lessonViewModel: LessonViewModel,
     profile: Profile
 ) {
-  var refreshing by remember { mutableStateOf(false) }
-  val refreshScope = rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
 
-  fun refresh() =
-      refreshScope.launch {
-        refreshing = true
-        when (profile.role) {
-          Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
-          Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
-          else -> {}
+    fun refresh() =
+        refreshScope.launch {
+            refreshing = true
+            when (profile.role) {
+                Role.TUTOR -> lessonViewModel.getLessonsForTutor(profile.uid)
+                Role.STUDENT -> lessonViewModel.getLessonsForStudent(profile.uid)
+                else -> {}
+            }
+            delay(1000)
+            refreshing = false
         }
-        delay(1000)
-        refreshing = false
-      }
 
-  LaunchedEffect(Unit) {
-    while (true) {
-      refresh()
-      delay(30000) // Refresh every 30 seconds
+    LaunchedEffect(Unit) {
+        while (true) {
+            refresh()
+            delay(30000) // Refresh every 30 seconds
+        }
     }
-  }
 
-  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
+    val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
-  Box(
-      modifier = Modifier.fillMaxSize().padding(paddingValues).pullRefresh(pullRefreshState),
-      contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(paddingValues).pullRefresh(pullRefreshState),
+        contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier =
-                Modifier.fillMaxWidth().padding(32.dp).verticalScroll(rememberScrollState())) {
-              Image(
-                  painter = painterResource(id = R.drawable.logopocket),
-                  contentDescription = null,
-                  modifier = Modifier.size(148.dp))
-              Text(
-                  text = "No active lessons",
-                  style = MaterialTheme.typography.titleLarge,
-                  textAlign = TextAlign.Center,
-                  modifier = Modifier.testTag("noLessonsText"))
-              Text(
-                  text = "Your lessons will appear here once you have some scheduled",
-                  style = MaterialTheme.typography.bodyMedium,
-                  textAlign = TextAlign.Center,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            Modifier.fillMaxWidth().padding(32.dp).verticalScroll(rememberScrollState())) {
+            Image(
+                painter = painterResource(id = R.drawable.logopocket),
+                contentDescription = null,
+                modifier = Modifier.size(148.dp))
+            Text(
+                text = "No active lessons",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.testTag("noLessonsText"))
+            Text(
+                text = "Your lessons will appear here once you have some scheduled",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
 
         PullRefreshIndicator(
             refreshing = refreshing,
@@ -505,7 +510,7 @@ private fun EmptyLessonsState(
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary)
-      }
+    }
 }
 /**
  * Displays an error screen when no profile is found for the current user.
@@ -515,11 +520,11 @@ private fun EmptyLessonsState(
  */
 @Composable
 fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions) {
-  // Center the contents within the screen
-  Column(
-      modifier = Modifier.fillMaxSize().testTag("noProfileScreen"), // Take up full screen space
-      verticalArrangement = Arrangement.Center, // Center vertically
-      horizontalAlignment = Alignment.CenterHorizontally) { // Center horizontally
+    // Center the contents within the screen
+    Column(
+        modifier = Modifier.fillMaxSize().testTag("noProfileScreen"), // Take up full screen space
+        verticalArrangement = Arrangement.Center, // Center vertically
+        horizontalAlignment = Alignment.CenterHorizontally) { // Center horizontally
 
         // Display an error message notifying the user that no profile is assigned
         Text(
@@ -531,31 +536,31 @@ fun NoProfileFoundScreen(context: Context, navigationActions: NavigationActions)
         // Provide a button to navigate back to the home screen
         Button(
             onClick = {
-              navigationActions.navigateTo(
-                  Screen.HOME) // Navigate back to the home screen when clicked
+                navigationActions.navigateTo(
+                    Screen.HOME) // Navigate back to the home screen when clicked
             },
             modifier = Modifier.testTag("goBackHomeButton")) { // Add a test tag for the button
-              Text(text = "Go back to HOME screen") // Button text
+            Text(text = "Go back to HOME screen") // Button text
         }
-      }
+    }
 }
 
 fun Lesson.shouldRequestReview(): Boolean {
-  if (this.status != LessonStatus.CONFIRMED && this.status != LessonStatus.INSTANT_CONFIRMED)
-      return false
-  if (this.rating != null) return false
+    if (this.status != LessonStatus.CONFIRMED && this.status != LessonStatus.INSTANT_CONFIRMED)
+        return false
+    if (this.rating != null) return false
 
-  try {
-    val now = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
-    val lessonDateTime = LocalDateTime.parse(this.timeSlot, formatter)
-    val oneHourAfterLesson = lessonDateTime.plusHours(1)
+    try {
+        val now = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
+        val lessonDateTime = LocalDateTime.parse(this.timeSlot, formatter)
+        val oneHourAfterLesson = lessonDateTime.plusHours(1)
 
-    return now.isAfter(oneHourAfterLesson)
-  } catch (e: Exception) {
-    Log.e("Lesson", "Error parsing date or calculating time", e)
-    return false
-  }
+        return now.isAfter(oneHourAfterLesson)
+    } catch (e: Exception) {
+        Log.e("Lesson", "Error parsing date or calculating time", e)
+        return false
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -566,60 +571,60 @@ private fun CancellationAlerts(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel
 ) {
-  lessons.forEach { lesson ->
-    val isTutor = profile.role == Role.TUTOR
+    lessons.forEach { lesson ->
+        val isTutor = profile.role == Role.TUTOR
 
-    val tutor =
-        if (isTutor) profile
-        else
-            listProfilesViewModel.getProfileById(lesson.tutorUid.first())
-                ?: return Text("Tutor not found")
+        val tutor =
+            if (isTutor) profile
+            else
+                listProfilesViewModel.getProfileById(lesson.tutorUid.first())
+                    ?: return Text("Tutor not found")
 
-    val student =
-        if (isTutor)
-            listProfilesViewModel.getProfileById(lesson.studentUid)
-                ?: return Text("Student not found")
-        else profile
+        val student =
+            if (isTutor)
+                listProfilesViewModel.getProfileById(lesson.studentUid)
+                    ?: return Text("Student not found")
+            else profile
 
-    var showCancelDialog = true // Show the alert dialog
+        var showCancelDialog = true // Show the alert dialog
 
-    if (showCancelDialog) {
-      AlertDialog(
-          modifier = Modifier.testTag("cancelledLessonDialog"),
-          onDismissRequest = { showCancelDialog = false },
-          title = {
-            Text(
-                text = "Lesson Cancelled by the ${if (isTutor) "Student" else "Tutor"}",
-                modifier = Modifier.testTag("cancelledLessonDialogTitle"))
-          },
-          text = {
-            Text(
-                text =
-                    if (isTutor)
-                        "Be careful! Your lesson with ${student.firstName} ${student.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}."
-                    else
-                        "Be careful! Your lesson with ${tutor.firstName} ${tutor.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}.",
-                modifier = Modifier.testTag("cancelledLessonDialogText"))
-          },
-          confirmButton = {
-            Button(
-                modifier = Modifier.testTag("cancelledLessonDialogConfirmButton"),
-                onClick = {
-                  lessonViewModel.deleteLesson(
-                      lessonId = lesson.id,
-                      onComplete = {
+        if (showCancelDialog) {
+            AlertDialog(
+                modifier = Modifier.testTag("cancelledLessonDialog"),
+                onDismissRequest = { showCancelDialog = false },
+                title = {
+                    Text(
+                        text = "Lesson Cancelled by the ${if (isTutor) "Student" else "Tutor"}",
+                        modifier = Modifier.testTag("cancelledLessonDialogTitle"))
+                },
+                text = {
+                    Text(
+                        text =
                         if (isTutor)
-                            lessonViewModel.getLessonsForTutor(
-                                tutor.uid, { showCancelDialog = false })
+                            "Be careful! Your lesson with ${student.firstName} ${student.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}."
                         else
-                            lessonViewModel.getLessonsForStudent(
-                                student.uid, { showCancelDialog = false })
-                      })
-                }) {
-                  Text("OK")
-                }
-          },
-      )
+                            "Be careful! Your lesson with ${tutor.firstName} ${tutor.lastName} has been cancelled. It was programmed for ${formatDate(lesson.timeSlot)}.",
+                        modifier = Modifier.testTag("cancelledLessonDialogText"))
+                },
+                confirmButton = {
+                    Button(
+                        modifier = Modifier.testTag("cancelledLessonDialogConfirmButton"),
+                        onClick = {
+                            lessonViewModel.deleteLesson(
+                                lessonId = lesson.id,
+                                onComplete = {
+                                    if (isTutor)
+                                        lessonViewModel.getLessonsForTutor(
+                                            tutor.uid, { showCancelDialog = false })
+                                    else
+                                        lessonViewModel.getLessonsForStudent(
+                                            student.uid, { showCancelDialog = false })
+                                })
+                        }) {
+                        Text("OK")
+                    }
+                },
+            )
+        }
     }
-  }
 }
