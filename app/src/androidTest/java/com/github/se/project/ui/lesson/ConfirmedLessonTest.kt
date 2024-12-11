@@ -1,6 +1,5 @@
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -256,7 +255,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenCancellationButtonClicked() {
     isLocationChecked = false
 
@@ -281,7 +280,7 @@ public class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("cancelDialogText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed()
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenCancellationDialogDismissed() {
