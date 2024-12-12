@@ -4,8 +4,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.github.se.project.R
+import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.ProfilesRepositoryFirestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,7 +20,33 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 
 class PushNotificationsService : FirebaseMessagingService() {
+    private val profilesRepository: ProfilesRepository = ProfilesRepositoryFirestore(
+        FirebaseFirestore.getInstance())
 
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+
+        Log.d("FCM", "New token generated: $token")
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userUid = currentUser.uid
+
+            // Update token in the Firestore database
+            profilesRepository.updateToken(
+                uid = userUid,
+                newToken = token,
+                onSuccess = {
+                    Log.d("FCM", "Token updated successfully for user: $userUid")
+                },
+                onFailure = { exception ->
+                    Log.e("FCM", "Failed to update token for user: $userUid", exception)
+                }
+            )
+        } else {
+            Log.w("FCM", "No authenticated user found; token not updated.")
+        }
+    }
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     super.onMessageReceived(remoteMessage)
     // Log.d("FCM", "Message received: ${remoteMessage.data}")
