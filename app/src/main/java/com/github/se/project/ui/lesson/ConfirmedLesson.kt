@@ -106,7 +106,8 @@ private fun LessonScreenTitle(status: LessonStatus) {
   val title =
       when (status) {
         LessonStatus.CONFIRMED -> stringResource(R.string.confirmed_lesson)
-        LessonStatus.PENDING_TUTOR_CONFIRMATION -> stringResource(R.string.pending_tutor_confirmation)
+        LessonStatus.PENDING_TUTOR_CONFIRMATION ->
+            stringResource(R.string.pending_tutor_confirmation)
         LessonStatus.INSTANT_CONFIRMED -> stringResource(R.string.confirmed_instant_lesson)
         LessonStatus.STUDENT_REQUESTED -> stringResource(R.string.pending_student_confirmation)
         else -> stringResource(R.string.lesson_details)
@@ -245,7 +246,9 @@ private fun MessageButton(
           val intent =
               Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("sms:${otherProfile.phoneNumber}")
-                putExtra("sms_body", "${context.getString(R.string.sms_greeting)} ${formatDate(lesson.timeSlot)}...")
+                putExtra(
+                    "sms_body",
+                    "${context.getString(R.string.sms_greeting)} ${formatDate(lesson.timeSlot)}...")
               }
           context.startActivity(intent)
         } else {
@@ -280,7 +283,8 @@ private fun DeleteLessonButton(
               lesson.id,
               onComplete = {
                 lessonViewModel.getLessonsForStudent(currentProfile.uid) {}
-                navigateWithToast(navigationActions, context, context.getString(R.string.lesson_canceled))
+                navigateWithToast(
+                    navigationActions, context, context.getString(R.string.lesson_canceled))
               })
         } else {
           Toast.makeText(
@@ -312,7 +316,8 @@ private fun CancelRequestButton(
               lesson.copy(tutorUid = lesson.tutorUid.filter { it != currentProfile.uid }),
               onComplete = {
                 lessonViewModel.getLessonsForTutor(currentProfile.uid) {}
-                navigateWithToast(navigationActions, context, context.getString(R.string.request_canceled))
+                navigateWithToast(
+                    navigationActions, context, context.getString(R.string.request_canceled))
               })
         } else {
           Toast.makeText(
