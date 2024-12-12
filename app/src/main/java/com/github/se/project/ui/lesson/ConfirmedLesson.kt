@@ -105,11 +105,11 @@ private fun navigateWithToast(
 private fun LessonScreenTitle(status: LessonStatus) {
   val title =
       when (status) {
-        LessonStatus.CONFIRMED -> "Confirmed Lesson"
-        LessonStatus.PENDING_TUTOR_CONFIRMATION -> "Pending Tutor Confirmation"
-        LessonStatus.INSTANT_CONFIRMED -> "Confirmed Instant Lesson"
-        LessonStatus.STUDENT_REQUESTED -> "Pending Student Confirmation"
-        else -> "Lesson Details"
+        LessonStatus.CONFIRMED -> stringResource(R.string.confirmed_lesson)
+        LessonStatus.PENDING_TUTOR_CONFIRMATION -> stringResource(R.string.pending_tutor_confirmation)
+        LessonStatus.INSTANT_CONFIRMED -> stringResource(R.string.confirmed_instant_lesson)
+        LessonStatus.STUDENT_REQUESTED -> stringResource(R.string.pending_student_confirmation)
+        else -> stringResource(R.string.lesson_details)
       }
   Text(text = title, style = MaterialTheme.typography.titleLarge)
 }
@@ -245,7 +245,7 @@ private fun MessageButton(
           val intent =
               Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("sms:${otherProfile.phoneNumber}")
-                putExtra("sms_body", "Hello, about our lesson ${formatDate(lesson.timeSlot)}...")
+                putExtra("sms_body", "${context.getString(R.string.sms_greeting)} ${formatDate(lesson.timeSlot)}...")
               }
           context.startActivity(intent)
         } else {
@@ -273,14 +273,14 @@ private fun DeleteLessonButton(
     isConnected: Boolean
 ) {
   LessonActionButton(
-      text = "Cancel Lesson",
+      text = stringResource(R.string.cancel_lesson),
       onClick = {
         if (isConnected) {
           lessonViewModel.deleteLesson(
               lesson.id,
               onComplete = {
                 lessonViewModel.getLessonsForStudent(currentProfile.uid) {}
-                navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+                navigateWithToast(navigationActions, context, context.getString(R.string.lesson_canceled))
               })
         } else {
           Toast.makeText(
@@ -305,14 +305,14 @@ private fun CancelRequestButton(
     isConnected: Boolean
 ) {
   LessonActionButton(
-      text = "Cancel your request",
+      text = stringResource(R.string.cancel_request),
       onClick = {
         if (isConnected) {
           lessonViewModel.updateLesson(
               lesson.copy(tutorUid = lesson.tutorUid.filter { it != currentProfile.uid }),
               onComplete = {
                 lessonViewModel.getLessonsForTutor(currentProfile.uid) {}
-                navigateWithToast(navigationActions, context, "Request cancelled successfully")
+                navigateWithToast(navigationActions, context, context.getString(R.string.request_canceled))
               })
         } else {
           Toast.makeText(
@@ -339,7 +339,7 @@ private fun CancelLessonButton(
   var showCancelDialog by remember { mutableStateOf(false) }
 
   LessonActionButton(
-      text = "Cancel Lesson",
+      text = stringResource(R.string.cancel_lesson),
       onClick = { showCancelDialog = true },
       testTag = "cancelButton",
       icon = {
@@ -357,7 +357,7 @@ private fun CancelLessonButton(
         },
         text = {
           Text(
-              text = "Are you sure you want to cancel the lesson? This action can not be undone.",
+              text = stringResource(R.string.cancel_warning),
               modifier = Modifier.testTag("cancelDialogText"))
         },
         confirmButton = {

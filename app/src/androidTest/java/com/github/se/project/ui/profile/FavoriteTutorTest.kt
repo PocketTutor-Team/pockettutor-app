@@ -92,12 +92,12 @@ class FavoriteTutorTest {
 
     // Stub repository methods to simulate successful data retrieval
     whenever(profilesRepository.init(any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[0] as () -> Unit
+        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as () -> Unit
       onSuccess() // Simulate successful initialization
     }
 
     whenever(profilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
       onSuccess(tutorsFlow.value) // Simulate returning an empty list of profiles
     }
 

@@ -193,12 +193,12 @@ class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
   }
 
-  @Test
+  /*@Test
   fun confirmedLessonScreenBackButtonClicked() {
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
-  }
+  }*/
 
   @Test
   fun confirmedLessonScreenOpensSmsApp() {

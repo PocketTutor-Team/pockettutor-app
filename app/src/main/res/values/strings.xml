@@ -74,6 +74,19 @@
     <string name="select_subject">Select Subject</string>
     <string name="select_subjects">Select Subjects</string>
 
+    <!-- Lesson Details  -->
+    <string name = "confirmed_lesson">Confirmed Lesson</string>
+    <string name = "pending_tutor_confirmation">Pending Tutor Confirmation</string>
+    <string name = "pending_student_confirmation">Pending Student Confirmation</string>
+    <string name = "confirmed_instant_lesson">Confirmed Instant Lesson</string>
+    <string name = "lesson_details">Lesson Details</string>
+    <string name = "sms_greeting">Hello, about our lesson</string>
+    <string name = "cancel_lesson">Cancel Lesson</string>
+    <string name = "cancel_warning">Are you sure you want to cancel this lesson? This action can not be undone</string>
+    <string name = "lesson_canceled">Lesson Canceled Successfully</string>
+    <string name = "cancel_request">Cancel Request</string>
+    <string name = "request_canceled">Request Cancelled Successfully</string>
+
     <!-- Tutor Details -->
     <string name="available_tutors">Available Tutors</string>
     <string name="confirm_lesson">Confirm your lesson</string>
