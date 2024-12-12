@@ -391,7 +391,6 @@ class HomeScreenTest {
           navigationActions)
     }
 
-    Thread.sleep(100000)
     // Check that the favorite tutor profile icon is displayed
     composeTestRule.onNodeWithTag("favorite_tutors_button").assertIsDisplayed()
 
