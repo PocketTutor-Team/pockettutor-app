@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.TutorRecommender
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -104,6 +105,14 @@ fun TutorMatchingScreen(
             .ifEmpty {
               return
             }
+      }
+
+  val sortedTutorsByRecommendation =
+      TutorRecommender.recommendTutorsForLesson(currentProfile, filteredTutors, lessonViewModel)
+
+  val (favoriteTutors, otherTutors) =
+      sortedTutorsByRecommendation.partition { tutor ->
+        currentProfile.favoriteTutors.contains(tutor.uid)
       }
 
   val context = LocalContext.current
@@ -173,7 +182,7 @@ fun TutorMatchingScreen(
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
-          if (filteredTutors.isEmpty()) {
+          if (sortedTutorsByRecommendation.isEmpty()) {
             Text(
                 text =
                     "No tutor available for your lesson: go back to change your lesson or click on the button to wait for a tutor to choose your lesson.",
@@ -181,16 +190,34 @@ fun TutorMatchingScreen(
                     Modifier.align(Alignment.Center).padding(16.dp).testTag("noTutorMessage"),
                 style = MaterialTheme.typography.bodyMedium)
           } else {
-            DisplayTutors(
-                modifier =
-                    Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
-                        .fillMaxWidth()
-                        .testTag("tutorsList"),
-                tutors = filteredTutors,
-                onCardClick = { tutor ->
-                  listProfilesViewModel.selectProfile(tutor)
-                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
-                })
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  if (favoriteTutors.isNotEmpty()) {
+                    DisplayTutors(
+                        modifier =
+                            Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                                .fillMaxWidth()
+                                .testTag("tutorsListFavorite"),
+                        tutors = favoriteTutors,
+                        isFavorite = true,
+                        onCardClick = { tutor ->
+                          listProfilesViewModel.selectProfile(tutor)
+                          navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                        })
+                  }
+
+                  DisplayTutors(
+                      modifier =
+                          Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                              .fillMaxWidth()
+                              .testTag("tutorsList"),
+                      tutors = otherTutors,
+                      onCardClick = { tutor ->
+                        listProfilesViewModel.selectProfile(tutor)
+                        navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                      })
+                }
           }
         }
 

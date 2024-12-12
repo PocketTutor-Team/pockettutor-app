@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -9,6 +10,7 @@ import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.LessonEditor
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.navigation.NavigationActions
@@ -29,7 +31,8 @@ fun AddLessonScreen(
     listProfilesViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
     networkStatusViewModel: NetworkStatusViewModel,
-    onMapReadyChange: (Boolean) -> Unit = {}
+    onMapReadyChange: (Boolean) -> Unit = {},
+    isAskedWithFavoriteTutor: Boolean = false
 ) {
   // Retrieves the current user's profile from the ViewModel as a state object
   val profile = listProfilesViewModel.currentProfile.collectAsState()
@@ -43,6 +46,9 @@ fun AddLessonScreen(
 
   // Retrieves the list of lessons associated with the current user
   val lessons = lessonViewModel.currentUserLessons.collectAsState().value
+
+  // Retrieves the tutor profile from the ViewModel as a state object
+  val favoriteTutor = listProfilesViewModel.selectedProfile.collectAsState().value
 
   /**
    * Lambda function to handle lesson confirmation. Either schedules a new lesson or updates the
@@ -74,6 +80,23 @@ fun AddLessonScreen(
                 lessonViewModel.selectLesson(lesson)
                 navigationActions.navigateTo(Screen.HOME)
               })
+    } else if (isAskedWithFavoriteTutor) {
+      // If the lesson was asked with a favorite tutor, sends the lesson to the tutor directly
+      if (favoriteTutor == null || favoriteTutor.role != Role.TUTOR) {
+        Toast.makeText(context, "No tutor selected", Toast.LENGTH_SHORT).show()
+      } else {
+        Log.d("AddLessonScreen", "Favorite tutor: ${favoriteTutor.firstName}")
+        lessonViewModel.addLesson(
+            lesson.copy(
+                tutorUid = listOf(favoriteTutor.uid),
+                status = LessonStatus.PENDING_TUTOR_CONFIRMATION),
+            onComplete = {
+              lessonViewModel.getLessonsForStudent(profile.value!!.uid)
+              Toast.makeText(context, "Lesson sent successfully!", Toast.LENGTH_SHORT).show()
+              lessonViewModel.selectLesson(lesson)
+              navigationActions.navigateTo(Screen.HOME)
+            })
+      }
     } else {
       // For non-instant lessons, navigates to the tutor match screen
       lessonViewModel.selectLesson(lesson)

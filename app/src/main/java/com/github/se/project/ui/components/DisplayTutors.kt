@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import com.github.se.project.model.profile.Profile
 fun DisplayTutors(
     modifier: Modifier = Modifier,
     tutors: List<Profile>,
+    isFavorite: Boolean = false,
     onCardClick: (Profile) -> Unit = {}
 ) {
   LazyColumn(
@@ -152,6 +154,19 @@ fun DisplayTutors(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 overflow = TextOverflow.Ellipsis)
                           }
+
+                      // Right side: If tutor is bookmarked as favorite
+                      if (isFavorite) {
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            modifier = Modifier.testTag("favoriteIcon_$index")) {
+                              Icon(
+                                  imageVector = Icons.Default.Star,
+                                  contentDescription = null,
+                                  modifier = Modifier.size(24.dp),
+                                  tint = MaterialTheme.colorScheme.tertiary)
+                            }
+                      }
                     }
               }
         }
