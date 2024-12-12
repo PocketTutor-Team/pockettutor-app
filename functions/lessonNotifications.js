@@ -1,5 +1,8 @@
 const { getFirestore } = require("firebase-admin/firestore");
-const { sendNotification, preparePayload } = require("./notifications");
+const { sendNotification, preparePayload } = require("./notification");
+const { initializeApp } = require("firebase-admin/app");
+
+initializeApp();
 
 const db = getFirestore();
 
