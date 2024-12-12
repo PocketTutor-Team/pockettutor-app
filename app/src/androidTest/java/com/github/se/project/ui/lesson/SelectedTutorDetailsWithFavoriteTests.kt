@@ -1,4 +1,4 @@
-package com.github.se.project.ui.profile
+package com.github.se.project.ui.lesson
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -34,7 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class FavoriteTutorDetailsTest {
+class SelectedTutorDetailsWithFavoriteTests {
   @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var profilesRepository: ProfilesRepository
@@ -166,17 +166,17 @@ class FavoriteTutorDetailsTest {
   @Test
   fun everythingIsDisplayed() {
     composeTestRule.setContent {
-      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions, true)
     }
 
     // Check top bar
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("favoriteTutorDetailsTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("selectedTutorDetailsTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("bookmarkButton").assertIsDisplayed()
 
     // Check tutor details
-    composeTestRule.onNodeWithTag("favoriteTutorDetailsScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("selectedTutorDetailsScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorInfoRow").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorProfilePicture").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorName").assertIsDisplayed()
@@ -203,7 +203,7 @@ class FavoriteTutorDetailsTest {
     tutorProfileFlow.value = tutorProfileFlow.value.copy(role = Role.STUDENT)
 
     composeTestRule.setContent {
-      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions, true)
     }
 
     composeTestRule.onNodeWithTag("errorStateColumn").assertIsDisplayed()
@@ -216,7 +216,7 @@ class FavoriteTutorDetailsTest {
     tutorProfileFlow.value = tutorProfileFlow.value.copy(description = "")
 
     composeTestRule.setContent {
-      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions, true)
     }
 
     composeTestRule.onNodeWithTag("tutorDescriptionSection").assertIsDisplayed()
@@ -228,7 +228,7 @@ class FavoriteTutorDetailsTest {
     completedLessonsFlow.value = emptyList()
 
     composeTestRule.setContent {
-      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions, true)
     }
 
     composeTestRule.onNodeWithTag("tutorReviewsSection").assertDoesNotExist()
@@ -237,7 +237,7 @@ class FavoriteTutorDetailsTest {
   @Test
   fun askForLessonButton_navigateToAskLesson() {
     composeTestRule.setContent {
-      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions, true)
     }
 
     composeTestRule.onNodeWithTag("askLessonButton").assertIsDisplayed().performClick()

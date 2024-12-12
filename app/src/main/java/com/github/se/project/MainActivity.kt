@@ -44,7 +44,6 @@ import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
 import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
-import com.github.se.project.ui.profile.FavoriteTutorDetailsScreen
 import com.github.se.project.ui.profile.FavoriteTutorsScreen
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
@@ -178,7 +177,8 @@ fun PocketTutorApp(
         FavoriteTutorsScreen(listProfilesViewModel, navigationActions)
       }
       composable(Screen.FAVORITE_TUTOR_DETAILS) {
-        FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        SelectedTutorDetailsScreen(
+            listProfilesViewModel, lessonViewModel, navigationActions, isFavoriteTutor = true)
       }
       composable(Screen.ADD_LESSON_WITH_FAVORITE) {
         AddLessonScreen(

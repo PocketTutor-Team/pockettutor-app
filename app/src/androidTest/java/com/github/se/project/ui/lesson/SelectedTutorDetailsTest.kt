@@ -175,7 +175,7 @@ class SelectedTutorDetailsTest {
     // Check top bar
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmLessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("selectedTutorDetailsTitle").assertIsDisplayed()
 
     // Check tutor details
     composeTestRule.onNodeWithTag("selectedTutorDetailsScreen").assertIsDisplayed()
