@@ -231,9 +231,9 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-      composeTestRule.waitUntil(20000) {
-          composeTestRule.onNodeWithText(context.getString(R.string.no_lesson_selected)).isDisplayed()
-      }
+    composeTestRule.waitUntil(20000) {
+      composeTestRule.onNodeWithText(context.getString(R.string.no_lesson_selected)).isDisplayed()
+    }
 
     composeTestRule
         .onNodeWithText(context.getString(R.string.no_lesson_selected))
@@ -250,9 +250,7 @@ class ConfirmedLessonTest {
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
 
-      composeTestRule.waitUntil (20000) {
-            composeTestRule.onNodeWithTag("cancelDialog").isDisplayed()
-      }
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
     // Check that the cancellation dialog is well displayed
     composeTestRule.onNodeWithTag("cancelDialog").assertIsDisplayed()
@@ -270,9 +268,7 @@ class ConfirmedLessonTest {
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
 
-      composeTestRule.waitUntil (20000) {
-          composeTestRule.onNodeWithTag("cancelDialog").isDisplayed()
-      }
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
     // Dismiss the dialog
     composeTestRule.onNodeWithTag("cancelDialogDismissButton").assertIsDisplayed().performClick()
@@ -289,9 +285,7 @@ class ConfirmedLessonTest {
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
 
-      composeTestRule.waitUntil (20000) {
-          composeTestRule.onNodeWithTag("cancelDialog").isDisplayed()
-      }
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
     // Confirm the dialog
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()

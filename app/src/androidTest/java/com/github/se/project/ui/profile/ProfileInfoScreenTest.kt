@@ -78,7 +78,7 @@ class ProfileInfoScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-    private val context = ApplicationProvider.getApplicationContext<Context>()
+  private val context = ApplicationProvider.getApplicationContext<Context>()
 
   @Before
   fun setUp() {
@@ -103,7 +103,7 @@ class ProfileInfoScreenTest {
     // Set up repository behavior
     doNothing().`when`(mockProfilesRepository).init(any())
     whenever(mockProfilesRepository.updateProfile(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
   }
