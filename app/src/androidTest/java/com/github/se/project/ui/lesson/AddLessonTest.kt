@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
 import androidx.test.core.app.ApplicationProvider
@@ -145,14 +147,17 @@ class AddLessonTest {
     verify(navigationActions, never()).navigateTo(anyString())
   }
 
-  /*
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
 
     composeTestRule.setContent {
       AddLessonScreen(
-          navigationActions, mockProfiles, mockLessons, networkStatusViewModel, onMapReadyChange = { testMapReady = it })
+          navigationActions,
+          mockProfiles,
+          mockLessons,
+          networkStatusViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
 
     // Fill in the required fields
@@ -189,14 +194,16 @@ class AddLessonTest {
     // click in the middle of GoogleMap
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
 
+    composeTestRule.waitUntil(20000) {
+      assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
+    }
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
-
-     */
 
   @Test
   fun goBack() {
@@ -242,7 +249,6 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
-  /*
   @Test
   fun testInstantLesson() {
     composeTestRule.setContent {
@@ -272,7 +278,7 @@ class AddLessonTest {
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
-  }*/
+  }
 
   @Test
   fun testInstantInvalid() {
