@@ -117,7 +117,7 @@ fun HomeScreen(
   // Connect chat for the current profile
   LaunchedEffect(currentProfile) {
     if (currentProfile != null) {
-      chatViewModel.connect(currentProfile) // Establish a chat connection for the user
+      chatViewModel.connectUser(currentProfile) // Establish a chat connection for the user
     }
   }
 
