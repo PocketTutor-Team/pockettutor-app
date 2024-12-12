@@ -1,8 +1,6 @@
 package com.github.se.project.ui.lesson
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -51,7 +50,6 @@ import com.github.se.project.ui.components.DisplayLessonDetails
 import com.github.se.project.ui.components.LessonLocationDisplay
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
-import com.github.se.project.utils.formatDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -113,6 +111,7 @@ fun ConfirmedLessonScreen(
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
     navigationActions: NavigationActions,
+    chatViewModel: ChatViewModel,
     onLocationChecked: () -> Unit = {}
 ) {
   val currentProfile =
@@ -162,12 +161,12 @@ fun ConfirmedLessonScreen(
 
               when {
                 lesson.status == LessonStatus.CONFIRMED -> {
-                  MessageButton(otherProfile, lesson, isStudent)
+                  MessageButton(lesson, isStudent, chatViewModel, navigationActions)
                   CancelLessonButton(
                       lesson, currentProfile, lessonViewModel, navigationActions, context)
                 }
                 lesson.status == LessonStatus.INSTANT_CONFIRMED -> {
-                  MessageButton(otherProfile, lesson, isStudent)
+                  MessageButton(lesson, isStudent, chatViewModel, navigationActions)
                 }
                 lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION && isStudent -> {
                   DeleteLessonButton(
@@ -204,17 +203,23 @@ private fun LessonDetailsCard(
 }
 
 @Composable
-private fun MessageButton(otherProfile: Profile, lesson: Lesson, isStudent: Boolean) {
-  val context = LocalContext.current
+private fun MessageButton(
+    lesson: Lesson,
+    isStudent: Boolean,
+    chatViewModel: ChatViewModel,
+    navigationActions: NavigationActions
+) {
+
   LessonActionButton(
       text = "Message ${if (isStudent) "Tutor" else "Student"}",
       onClick = {
-        val intent =
-            Intent(Intent.ACTION_VIEW).apply {
-              data = Uri.parse("sms:${otherProfile.phoneNumber}")
-              putExtra("sms_body", "Hello, about our lesson ${formatDate(lesson.timeSlot)}...")
-            }
-        context.startActivity(intent)
+        chatViewModel.createOrGetChannel(
+            lesson,
+            { channel ->
+              chatViewModel.setCurrentChannelId(channel.cid)
+              navigationActions.navigateTo(Screen.CHAT)
+            },
+            lesson.title)
       },
       testTag = "contactButton",
       icon = {

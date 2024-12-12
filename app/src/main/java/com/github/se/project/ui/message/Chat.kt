@@ -1,6 +1,7 @@
 // ChatScreen.kt
 package com.github.se.project.ui.message
 
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.chat.ChatViewModel
@@ -23,6 +24,9 @@ fun ChatScreen(navigationActions: NavigationActions, chatViewModel: ChatViewMode
   ChatTheme {
     MessagesScreen(
         viewModelFactory = MessagesViewModelFactory(context = context, channelId = channelId!!),
+        onChannelAvatarClick = {
+          Toast.makeText(context, "This is not supported at the moment.", Toast.LENGTH_LONG).show()
+        },
         onBackPressed = { navigationActions.navigateTo(Screen.CHANNEL) })
   }
 }

@@ -182,10 +182,10 @@ fun PocketTutorApp(
           TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
         composable(Screen.CONFIRMED_LESSON) {
-          ConfirmedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+          ConfirmedLessonScreen(
+              listProfilesViewModel, lessonViewModel, navigationActions, chatViewModel)
         }
       }
-
       navigation(
           startDestination = Screen.HOME,
           route = Route.HOME,
@@ -208,7 +208,6 @@ fun PocketTutorApp(
           TutorLessonResponseScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
       }
-
       navigation(
           startDestination = Screen.ADD_LESSON,
           route = Route.FIND_TUTOR,
@@ -229,9 +228,9 @@ fun PocketTutorApp(
         composable(Screen.SELECTED_TUTOR_DETAILS) {
           SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
         }
-      }
-      composable(Screen.COMPLETED_LESSON) {
-        CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        composable(Screen.COMPLETED_LESSON) {
+          CompletedLessonScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+        }
       }
     }
   }

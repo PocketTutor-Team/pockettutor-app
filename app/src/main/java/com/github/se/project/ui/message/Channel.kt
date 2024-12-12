@@ -34,7 +34,6 @@ fun ChannelScreen(
   LaunchedEffect(currentProfile) {
     currentProfile?.let { profile -> chatViewModel.connectUser(profile) }
   }
-
   // Observe confirmed lessons and create channels
   val confirmedLessons by lessonViewModel.currentUserLessons.collectAsState()
   LaunchedEffect(confirmedLessons) {
@@ -43,26 +42,14 @@ fun ChannelScreen(
     confirmedLessons
         .filter { it.status == LessonStatus.CONFIRMED }
         .forEach { lesson ->
-          val otherUserProfile =
-              if (currentProfile!!.role == Role.TUTOR) {
-                profiles.find { it.uid == lesson.studentUid }
-              } else {
-                profiles.find { it.uid == lesson.tutorUid.firstOrNull() }
-              }
+          val lessonTitle = lesson.title
 
-          // todo: fix the problem that it always retrieves the tutor's name
-          // Use the other user's name for the channel
-          val otherUsername =
-              otherUserProfile?.let { "${it.firstName} ${it.lastName}" } ?: "Unknown"
-
-          // Create or get the channel
           chatViewModel.createOrGetChannel(
               lesson,
               { channel -> Log.d("LaunchedEffect", "Channel created or retrieved: ${channel.id}") },
-              otherUsername)
+              lessonTitle)
         }
   }
-
   // Determine navigation items based on the user's role
   val navigationItems =
       when (currentProfile?.role) {
@@ -78,13 +65,19 @@ fun ChannelScreen(
             bottomBar = {
               BottomNavigationMenu(
                   onTabSelect = { route -> navigationActions.navigateTo(route) },
-                  tabList = navigationItems,
+                  tabList =
+                      when (currentProfile?.role) {
+                        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
+                        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+                        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
+                      },
                   selectedItem = navigationActions.currentRoute())
             }) {
               ChannelsScreen(
-                  title = "Chat",
+                  title = "PocketTutor Chat",
                   isShowingHeader = true,
                   onChannelClick = { channel ->
+                    // val otherUsername = channel.extraData["name"] as? String ?: "Unknown"
                     chatViewModel.setCurrentChannelId(channel.cid)
                     navigationActions.navigateTo(Screen.CHAT)
                   },
