@@ -177,7 +177,7 @@ class HomeScreenTest {
 
     // Mock ChatViewModel
     chatViewModel = mock(ChatViewModel::class.java)
-    doNothing().`when`(chatViewModel).connect(any())
+    doNothing().`when`(chatViewModel).connectUser(any())
 
     navigationActions = NavigationActions(navController)
     navigationActions = spy(navigationActions)

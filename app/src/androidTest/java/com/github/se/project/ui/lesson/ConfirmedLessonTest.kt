@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -17,10 +18,12 @@ import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.lesson.ConfirmedLessonScreen
 import com.github.se.project.ui.navigation.NavigationActions
+import io.getstream.chat.android.client.ChatClient
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -41,6 +44,8 @@ public class ConfirmedLessonTest {
   private val mockNavigationActions: NavigationActions = mock(NavigationActions::class.java)
   private val lessonViewModel = LessonViewModel(mockLessonRepository)
   private val listProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
+  private lateinit var chatViewModel: ChatViewModel
+  private lateinit var chatClient: ChatClient
 
   private val tutorProfile =
       Profile(
@@ -134,6 +139,10 @@ public class ConfirmedLessonTest {
 
     lessonViewModel.selectLesson(confirmedLesson)
     listProfilesViewModel.setCurrentProfile(tutorProfile)
+
+    // Mock ChatViewModel
+    chatViewModel = mock(ChatViewModel::class.java)
+    doNothing().`when`(chatViewModel).connectUser(any())
   }
 
   /*@Test
@@ -255,6 +264,7 @@ public class ConfirmedLessonTest {
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions,
+          chatViewModel = chatViewModel,
           onLocationChecked = { isLocationChecked = true })
     }
     composeTestRule.waitForIdle()
@@ -279,6 +289,7 @@ public class ConfirmedLessonTest {
       ConfirmedLessonScreen(
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
+          chatViewModel = chatViewModel,
           navigationActions = mockNavigationActions)
     }
 
