@@ -384,7 +384,8 @@ private fun CancelLessonButton(
                           onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
                     }
                     showCancelDialog = false
-                    navigateWithToast(navigationActions, context, context.getString(R.string.successful_cancel))
+                    navigateWithToast(
+                        navigationActions, context, context.getString(R.string.successful_cancel))
                   } else {
                     context.showToast(context.getString(R.string.failed_cancel))
                     showCancelDialog = false
