@@ -44,6 +44,8 @@ import com.github.se.project.ui.profile.CreateTutorProfile
 import com.github.se.project.ui.profile.CreateTutorSchedule
 import com.github.se.project.ui.profile.EditProfile
 import com.github.se.project.ui.profile.EditTutorSchedule
+import com.github.se.project.ui.profile.FavoriteTutorDetailsScreen
+import com.github.se.project.ui.profile.FavoriteTutorsScreen
 import com.github.se.project.ui.profile.ProfileInfoScreen
 import com.github.se.project.ui.theme.SampleAppTheme
 import io.getstream.chat.android.client.ChatClient
@@ -171,6 +173,21 @@ fun PocketTutorApp(
             lessonViewModel,
             authenticationViewModel,
             certificationViewModel)
+      }
+      composable(Screen.FAVORITE_TUTORS) {
+        FavoriteTutorsScreen(listProfilesViewModel, navigationActions)
+      }
+      composable(Screen.FAVORITE_TUTOR_DETAILS) {
+        FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      }
+      composable(Screen.ADD_LESSON_WITH_FAVORITE) {
+        AddLessonScreen(
+            navigationActions,
+            listProfilesViewModel,
+            lessonViewModel,
+            networkStatusViewModel,
+            onMapReadyChange = onMapReadyChange,
+            isAskedWithFavoriteTutor = true)
       }
       composable(Screen.ADD_LESSON) {
         AddLessonScreen(

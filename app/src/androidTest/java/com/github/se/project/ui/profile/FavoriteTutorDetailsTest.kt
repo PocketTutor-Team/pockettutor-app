@@ -1,11 +1,10 @@
-package com.github.se.project.ui.lesson
+package com.github.se.project.ui.profile
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonRepository
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.mock
@@ -36,8 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@RunWith(AndroidJUnit4::class)
-class SelectedTutorDetailsTest {
+class FavoriteTutorDetailsTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private lateinit var profilesRepository: ProfilesRepository
@@ -169,16 +166,17 @@ class SelectedTutorDetailsTest {
   @Test
   fun everythingIsDisplayed() {
     composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     // Check top bar
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmLessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("favoriteTutorDetailsTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bookmarkButton").assertIsDisplayed()
 
     // Check tutor details
-    composeTestRule.onNodeWithTag("selectedTutorDetailsScreen").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("favoriteTutorDetailsScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorInfoRow").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorProfilePicture").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorName").assertIsDisplayed()
@@ -197,7 +195,7 @@ class SelectedTutorDetailsTest {
     composeTestRule.onNodeWithTag("reviewComment").assertIsDisplayed()
 
     // Check confirmation button
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("askLessonButton").assertIsDisplayed()
   }
 
   @Test
@@ -205,7 +203,7 @@ class SelectedTutorDetailsTest {
     tutorProfileFlow.value = tutorProfileFlow.value.copy(role = Role.STUDENT)
 
     composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     composeTestRule.onNodeWithTag("errorStateColumn").assertIsDisplayed()
@@ -218,7 +216,7 @@ class SelectedTutorDetailsTest {
     tutorProfileFlow.value = tutorProfileFlow.value.copy(description = "")
 
     composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     composeTestRule.onNodeWithTag("tutorDescriptionSection").assertIsDisplayed()
@@ -230,46 +228,20 @@ class SelectedTutorDetailsTest {
     completedLessonsFlow.value = emptyList()
 
     composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
     composeTestRule.onNodeWithTag("tutorReviewsSection").assertDoesNotExist()
   }
 
   @Test
-  fun confirmationDialog_worksCorrectly() {
+  fun askForLessonButton_navigateToAskLesson() {
     composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      FavoriteTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
     }
 
-    // Check dialog appears
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmDialogTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmDialogText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("askLessonButton").assertIsDisplayed().performClick()
 
-    // Check confirmation works
-    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
-    verify(navigationActions).navigateTo(Screen.HOME)
-    verify(lessonRepository).addLesson(any(), any(), any())
-
-    // Check cancel works
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    composeTestRule.onNodeWithTag("confirmDialogCancelButton").performClick()
-    composeTestRule.onNodeWithTag("confirmDialog").assertDoesNotExist()
-  }
-
-  @Test
-  fun bookmarkButtonIsDisplayed() {
-    composeTestRule.setContent {
-      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-
-    // Check if bookmark button is displayed and perform click
-    composeTestRule.onNodeWithTag("bookmarkButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bookmarkButton").performClick()
-
-    // Check if profile is updated
-    verify(profilesRepository).updateProfile(any(), any(), any())
+    verify(navigationActions).navigateTo(Screen.ADD_LESSON_WITH_FAVORITE)
   }
 }

@@ -70,4 +70,15 @@
     <string name="past_time">You cannot select a past time</string>
     <string name="lesson_created">Lesson created successfully</string>
     <string name="already_instant">You already have an instant lesson scheduled</string>
+
+    <!-- Bookmark Tutors -->
+    <string name="favorite_tutors">Favorite Tutors</string>
+    <string name="screen_only_student">This screen is only available for students.</string>
+    <string name="no_favorite_tutors">No tutor marked as favorite.</string>
+    <string name="ask_lesson_with_tutor">Ask for a lesson with this tutor</string>
+
+    <!-- Error Messages -->
+    <string name="no_profile_selected">No profile selected. Should not happen.</string>
+    <string name="no_tutor_selected">No tutor selected. Should not happen.</string>
+
 </resources>

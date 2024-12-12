@@ -159,13 +159,13 @@ fun DisplayTutors(
                       if (isFavorite) {
                         Column(
                             horizontalAlignment = Alignment.End,
-                        ) {
-                          Icon(
-                              imageVector = Icons.Default.Star,
-                              contentDescription = null,
-                              modifier = Modifier.size(24.dp),
-                              tint = MaterialTheme.colorScheme.tertiary)
-                        }
+                            modifier = Modifier.testTag("favoriteIcon_$index")) {
+                              Icon(
+                                  imageVector = Icons.Default.Star,
+                                  contentDescription = null,
+                                  modifier = Modifier.size(24.dp),
+                                  tint = MaterialTheme.colorScheme.tertiary)
+                            }
                       }
                     }
               }

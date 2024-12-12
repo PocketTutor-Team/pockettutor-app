@@ -280,4 +280,18 @@ class TutorMatchingScreenTest {
     // Verify the dialog was dismissed
     composeTestRule.onNodeWithTag("cancellationDialog").assertIsNotDisplayed()
   }
+
+  @Test
+  fun starIconIsDisplayedWhenTutorIsFavorite() {
+    profileFlow.value = profileFlow.value.copy(favoriteTutors = listOf("tutor123"))
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+    composeTestRule.waitForIdle()
+
+    // Check that the favorite tutors section is displayed
+    composeTestRule.onNodeWithTag("tutorsListFavorite").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed()
+  }
 }

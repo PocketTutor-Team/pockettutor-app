@@ -198,7 +198,7 @@ fun TutorMatchingScreen(
                         modifier =
                             Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
                                 .fillMaxWidth()
-                                .testTag("tutorsList"),
+                                .testTag("tutorsListFavorite"),
                         tutors = favoriteTutors,
                         isFavorite = true,
                         onCardClick = { tutor ->
