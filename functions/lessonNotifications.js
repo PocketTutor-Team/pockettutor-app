@@ -94,6 +94,113 @@ module.exports = {
     }
   },
 
+  notifyStudentInstantLessonConfirmed: async (lesson) => {
+        const student = String(lesson.studentUid).split(",")[0];
+
+        try {
+          // Fetch the tutor's profile
+          const studentQuery = await db.collection("profiles").where("uid", "==", studentUid).limit(1).get();
+
+          if (studentQuery.empty) {
+            console.error("Tutor profile not found.");
+            return;
+          }
+
+          const studentData = studentQuery.docs[0].data();
+
+          // Prepare the notification payload for the tutor
+          const studentPayload = preparePayload(
+            "Instant Lesson Confirmed!",
+            `Great news, a tutor is available to help you now!`,
+            studentData.token
+          );
+
+          // Send the notification
+          await sendNotification(studentPayload);
+          console.log("Notification sent to student for lesson confirmation.");
+        } catch (error) {
+          console.error("Error in notifyStudentInstantLessonConfirmed:", error);
+        }
+      },
+
+    notifyTutorCancelled: async (lesson) => {
+      const studentUid = String(lesson.studentUid).split(",")[0];
+
+      try {
+        const studentDoc = await db.collection("profiles").where("uid", "==", studentUid).limit(1).get();
+
+         if (studentDoc.empty) {
+            console.error("Tutor profile not found.");
+            return;
+         }
+
+         const studentData = studentDoc.docs[0].data();
+         const studentPayload = preparePayload(
+            "Your lesson as been cancelled.",
+            `A tutor has cancelled his lesson with you.`,
+            tutorData.token
+         );
+
+         // Send notification
+         await sendNotification(tutorPayload);
+      } catch (error) {
+        console.error("Error in notifyStudentCancelled:", error);
+      }
+
+    },
+
+    // Notify the tutor when a student cancels a lesson he offered to teach
+    notifyStudentCancelled: async (lesson) => {
+       const tutorUid = String(lesson.tutorUid).split(",")[0];
+
+       try {
+         const tutorDoc = await db.collection("profiles").where("uid", "==", tutorUid).limit(1).get();
+
+          if (tutorDoc.empty) {
+            console.error("Tutor profile not found.");
+            return;
+          }
+
+          const tutorData = tutorDoc.docs[0].data();
+          const tutorPayload = preparePayload(
+            "Your lesson as been cancelled.",
+            `A student has cancelled his lesson with you.`,
+            tutorData.token
+          );
+
+          // Send notification
+          await sendNotification(tutorPayload);
+       } catch (error) {
+         console.error("Error in notifyStudentCancelled:", error);
+       }
+
+    },
+    // Notify the tutor when a student confirms a lesson he offered spontanously to teach
+    notifyTutorForConfirmation: async (lesson) => {
+      const tutorUid = String(lesson.tutorUid).split(",")[0];
+
+      try {
+        const tutorDoc = await db.collection("profiles").where("uid", "==", tutorUid).limit(1).get();
+
+        if (tutorDoc.empty) {
+          console.error("Tutor profile not found.");
+          return;
+        }
+
+        const tutorData = tutorDoc.docs[0].data();
+        const tutorPayload = preparePayload(
+          "New Lesson Request",
+          `A student has requested a lesson. Please confirm or decline.`,
+          tutorData.token
+        );
+
+        // Send notification
+        await sendNotification(tutorPayload);
+      } catch (error) {
+        console.error("Error in notifyTutorForConfirmation:", error);
+      }
+    },
+
   // Notify the tutor when a student confirms the lesson that the student initially requested
   notifyTutorLessonConfirmedByStudent: async (lesson) => {
       const tutorUid = String(lesson.tutorUid).split(",")[0];
