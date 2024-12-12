@@ -10,6 +10,13 @@ import io.getstream.chat.android.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * ViewModel responsible for managing chat-related functionality, such as user connection and
+ * channel management.
+ *
+ * This ViewModel interacts with the Stream Chat SDK to manage the connection of users, and channel
+ * creation/retrieval for specific lessons between tutors and students.
+ */
 class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
 
   private val _currentChannelId = MutableStateFlow<String?>(null)
@@ -56,9 +63,17 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
   }
 
   /**
-   * Creates or retrieves a channel based on lesson participants.
+   * Creates or retrieves a chat channel for a lesson between the tutor and student.
    *
-   * @param lesson The confirmed lesson object.
+   * The channel ID is generated based on the tutor and student UID to ensure the same channel is
+   * used for each lesson. The function handles both creating a new channel or retrieving an
+   * existing one.
+   *
+   * @param lesson The object containing the tutor and student UIDs for the lesson.
+   * @param onChannelCreated A callback that is invoked once the channel is successfully created or
+   *   retrieved.
+   * @param otherUsername The username of the other participant (either tutor or student) in the
+   *   lesson, used for extra data in the channel.
    */
   fun createOrGetChannel(
       lesson: Lesson,
@@ -94,13 +109,30 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
         }
   }
 
-  /** Generates a consistent channel ID based on user IDs. */
+  /**
+   * Generates a consistent and unique channel ID based on two user IDs (either tutor or student).
+   *
+   * This method sorts the user IDs to ensure the channel ID is always the same regardless of the
+   * order of the IDs.
+   *
+   * @param userId1 The first user ID (either tutor or student).
+   * @param userId2 The second user ID (either tutor or student).
+   * @return A string representing the consistent channel ID for the given users.
+   */
   private fun generateChannelId(userId1: String, userId2: String): String {
     // Ensure the channel ID is the same regardless of the order of user IDs
     return listOf(userId1, userId2).sorted().joinToString("_")
   }
 
-  /** Sets the current active channel ID. */
+  /**
+   * Sets the current active channel ID.
+   *
+   * This method updates the current active channel, allowing the UI to track which channel is
+   * currently being used.
+   *
+   * @param channelId The ID of the channel to set as the current active channel. Can be null to
+   *   indicate no active channel.
+   */
   fun setCurrentChannelId(channelId: String?) {
     _currentChannelId.value = channelId
   }
