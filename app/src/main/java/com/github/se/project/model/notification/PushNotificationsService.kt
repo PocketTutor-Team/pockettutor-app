@@ -20,33 +20,31 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 
 class PushNotificationsService : FirebaseMessagingService() {
-    private val profilesRepository: ProfilesRepository = ProfilesRepositoryFirestore(
-        FirebaseFirestore.getInstance())
+  private val profilesRepository: ProfilesRepository =
+      ProfilesRepositoryFirestore(FirebaseFirestore.getInstance())
 
-    override fun onNewToken(token: String) {
-        super.onNewToken(token)
+  override fun onNewToken(token: String) {
+    super.onNewToken(token)
 
-        Log.d("FCM", "New token generated: $token")
+    Log.d("FCM", "New token generated: $token")
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            val userUid = currentUser.uid
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    if (currentUser != null) {
+      val userUid = currentUser.uid
 
-            // Update token in the Firestore database
-            profilesRepository.updateToken(
-                uid = userUid,
-                newToken = token,
-                onSuccess = {
-                    Log.d("FCM", "Token updated successfully for user: $userUid")
-                },
-                onFailure = { exception ->
-                    Log.e("FCM", "Failed to update token for user: $userUid", exception)
-                }
-            )
-        } else {
-            Log.w("FCM", "No authenticated user found; token not updated.")
-        }
+      // Update token in the Firestore database
+      profilesRepository.updateToken(
+          uid = userUid,
+          newToken = token,
+          onSuccess = { Log.d("FCM", "Token updated successfully for user: $userUid") },
+          onFailure = { exception ->
+            Log.e("FCM", "Failed to update token for user: $userUid", exception)
+          })
+    } else {
+      Log.w("FCM", "No authenticated user found; token not updated.")
     }
+  }
+
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     super.onMessageReceived(remoteMessage)
     // Log.d("FCM", "Message received: ${remoteMessage.data}")

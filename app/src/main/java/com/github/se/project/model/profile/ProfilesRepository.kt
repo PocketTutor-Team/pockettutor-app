@@ -13,5 +13,10 @@ interface ProfilesRepository {
 
   fun deleteProfileById(id: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
-  fun updateToken(uid: String, newToken: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+  fun updateToken(
+      uid: String,
+      newToken: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  )
 }
