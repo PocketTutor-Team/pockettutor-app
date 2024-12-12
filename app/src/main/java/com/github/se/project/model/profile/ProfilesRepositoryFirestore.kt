@@ -24,6 +24,21 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
     }
   }
 
+  override fun updateToken(
+      uid: String,
+      newToken: String,
+      onSuccess: () -> Unit,
+      onFailure: (Exception) -> Unit
+  ) {
+    val tokenUpdate = mapOf("token" to newToken)
+
+    db.collection(collectionPath)
+        .document(uid)
+        .update(tokenUpdate)
+        .addOnSuccessListener { onSuccess() }
+        .addOnFailureListener { exception -> onFailure(exception) }
+  }
+
   override fun getProfiles(onSuccess: (List<Profile>) -> Unit, onFailure: (Exception) -> Unit) {
     Log.d("ProfilesRepositoryFirestore", "getProfiles")
     db.collection(collectionPath).get().addOnCompleteListener { task ->

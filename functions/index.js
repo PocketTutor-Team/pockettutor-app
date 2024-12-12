@@ -5,6 +5,7 @@ initializeApp();
 const { getFirestore } = require("firebase-admin/firestore");
 const logger = require("firebase-functions/logger");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const { notifyStudentLessonConfirmedByTutor, notifyTutorLessonConfirmedByStudent, notifyStudentLessonPendingReview, notifyStudentAsTutorOfferedToTeach} = require("./lessonNotifications");
 
 
@@ -13,6 +14,57 @@ setGlobalOptions({
     timeoutSeconds: 60,
     memory: "256MiB"
 });
+
+exports.onLessonCreatedPushNotification =onDocumentCreated("lessons/{lessonId}",
+    async (event) => {
+      const lessonData = event.data.data();
+      const lessonId = event.params.lessonId;
+      const db = getFirestore();
+      console.log(`data: ${lessonData}`);
+
+      if (lessonData.status !== "PENDING_TUTOR_CONFIRMATION") {
+        console.log(`Lesson ${lessonId} created but status is not
+      "PENDING_TUTOR_CONFIRMATION" it is ${lessonData.status}.`);
+        return null; // Exit early if status doesn't match
+      }
+
+      // Perform necessary operations for "PENDING_TUTOR_CONFIRMATION"
+      console.log(`Lesson ${lessonId} created with status
+      "PENDING_TUTOR_CONFIRMATION".`);
+
+      try {
+        const tutorUid = String(lessonData.tutorUid).split(",")[0];
+        // Assuming the lesson data contains a tutorId
+        const tutorQuery = await db.collection("profiles")
+            .where("uid", "==", tutorUid).limit(1).get();
+        if (tutorQuery.empty) {
+          console.error("Tutor or Student profile not found.");
+          return;
+        }
+        const tutorDoc = tutorQuery.docs[0];
+        if (!tutorDoc.exists) {
+          console.error(`Tutor with ID ${tutorUid} does not exist.`);
+          return null;
+        }
+
+        const tutorData = tutorDoc.data();
+
+        const tutorPayload = preparePayload(
+            "You have a new lesson!",
+            `A new lesson is awaiting your confirmation.`
+            tutorData.token
+        );
+
+        // Send notification
+        await sendNotification(tutorPayload);
+        console.log(`Notification sent to tutor ${tutorUid}
+        for lesson ${lessonId}.`);
+      } catch (error) {
+        console.error(`Error processing lesson ${lessonId}:`, error);
+      }
+
+      return null; // Indicate that the function execution is complete
+    });
 
 //Send a notification to the Tutor or Student when a lesson is updated
 exports.LessonUpdateNotification = onDocumentUpdated("lessons/{lessonId}", async (event) => {
@@ -31,6 +83,18 @@ exports.LessonUpdateNotification = onDocumentUpdated("lessons/{lessonId}", async
     if (before.status === "STUDENT_REQUESTED" && after.status === "CONFIRMED") {
       await notifyTutorLessonConfirmedByStudent(after);
     }
+
+    // Notify if student cancelled the lessons
+   if (after.status === "STUDENT_CANCELLED") {
+         await notifyStudentCancelled(after);
+
+   // Notify if student cancelled the lessons
+    if (after.status === "TUTOR_CANCELLED") {
+         await notifyTutorCancelled(after);
+
+    // Notify student when instant lesson is confirmed
+    if (before.status === "INSTANT_REQUESTED" && after.status === "INSTANT_CONFIRMED") {
+      await notifyStudentInstantLessonConfirmed(after);
 
     // Notify student when lesson is pending review
     if (before.status === "CONFIRMED" && after.status === "PENDING_REVIEW") {
