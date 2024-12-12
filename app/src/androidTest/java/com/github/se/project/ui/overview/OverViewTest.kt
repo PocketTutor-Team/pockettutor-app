@@ -92,6 +92,7 @@ class HomeScreenTest {
           role = Role.STUDENT,
           section = Section.AR,
           academicLevel = AcademicLevel.BA1,
+          favoriteTutors = listOf("tutor"),
           description = "",
           languages = listOf(Language.ENGLISH),
           subjects = listOf(Subject.ANALYSIS),
@@ -375,5 +376,26 @@ class HomeScreenTest {
     composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
     composeTestRule.onNodeWithTag("section_CONFIRMED_expand").assertIsDisplayed().performClick()
     composeTestRule.onNodeWithTag("noLessonsConfirmed").assertIsDisplayed()
+  }
+
+  @Test
+  fun testFavoriteTutorProfilesDisplayed() {
+    mockProfileFlow.value = studentProfile
+
+    composeTestRule.setContent {
+      HomeScreen(
+          listProfilesViewModel,
+          lessonViewModel,
+          networkStatusViewModel,
+          chatViewModel,
+          navigationActions)
+    }
+
+    // Check that the favorite tutor profile icon is displayed
+    composeTestRule.onNodeWithTag("favorite_tutors_button").assertIsDisplayed()
+
+    // Click on the favorite tutor profile icon and check that navigation is triggered
+    composeTestRule.onNodeWithTag("favorite_tutors_button").performClick()
+    verify(navigationActions).navigateTo(anyString())
   }
 }

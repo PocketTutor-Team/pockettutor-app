@@ -110,6 +110,11 @@ fun TutorMatchingScreen(
   val sortedTutorsByRecommendation =
       TutorRecommender.recommendTutorsForLesson(currentProfile, filteredTutors, lessonViewModel)
 
+  val (favoriteTutors, otherTutors) =
+      sortedTutorsByRecommendation.partition { tutor ->
+        currentProfile.favoriteTutors.contains(tutor.uid)
+      }
+
   val context = LocalContext.current
 
   var showCancelDialog by remember { mutableStateOf(false) }
@@ -185,16 +190,34 @@ fun TutorMatchingScreen(
                     Modifier.align(Alignment.Center).padding(16.dp).testTag("noTutorMessage"),
                 style = MaterialTheme.typography.bodyMedium)
           } else {
-            DisplayTutors(
-                modifier =
-                    Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
-                        .fillMaxWidth()
-                        .testTag("tutorsList"),
-                tutors = sortedTutorsByRecommendation,
-                onCardClick = { tutor ->
-                  listProfilesViewModel.selectProfile(tutor)
-                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
-                })
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  if (favoriteTutors.isNotEmpty()) {
+                    DisplayTutors(
+                        modifier =
+                            Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                                .fillMaxWidth()
+                                .testTag("tutorsListFavorite"),
+                        tutors = favoriteTutors,
+                        isFavorite = true,
+                        onCardClick = { tutor ->
+                          listProfilesViewModel.selectProfile(tutor)
+                          navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                        })
+                  }
+
+                  DisplayTutors(
+                      modifier =
+                          Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                              .fillMaxWidth()
+                              .testTag("tutorsList"),
+                      tutors = otherTutors,
+                      onCardClick = { tutor ->
+                        listProfilesViewModel.selectProfile(tutor)
+                        navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                      })
+                }
           }
         }
 
