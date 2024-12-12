@@ -61,7 +61,6 @@ open class LessonViewModel(private val repository: LessonRepository) : ViewModel
     repository.addLesson(
         lesson = lesson,
         onSuccess = {
-          Log.d("LessonViewModel", "Lesson added: $lesson")
           onComplete() // Call the provided callback on success
         },
         onFailure = {
