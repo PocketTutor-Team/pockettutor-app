@@ -276,7 +276,7 @@ class AddLessonTest {
 
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("instantButton").performClick()
-    composeTestRule.waitForIdle()
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("mapButton").isNotDisplayed() }
 
     // Set Subject and Language
     composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
