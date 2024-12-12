@@ -46,20 +46,20 @@ class EditRequestedLessonTest {
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
       Profile(
-          "uid",
-          "",
-          "googleUid",
-          "firstName",
-          "lastName",
-          "phoneNumber",
-          Role.TUTOR,
-          Section.AR,
-          AcademicLevel.BA1,
-          "I have experience teaching math and physics.",
-          listOf(Language.ENGLISH),
-          listOf(Subject.ANALYSIS),
-          List(7) { List(12) { 0 } },
-          0)
+          uid = "uid",
+          token = "",
+          googleUid = "googleUid",
+          firstName = "firstName",
+          lastName = "lastName",
+          phoneNumber = "phoneNumber",
+          role = Role.TUTOR,
+          section = Section.AR,
+          academicLevel = AcademicLevel.BA1,
+          description = "I have experience teaching math and physics.",
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 0)
   private val lessons =
       listOf(
           Lesson(
