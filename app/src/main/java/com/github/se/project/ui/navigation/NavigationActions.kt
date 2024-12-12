@@ -1,6 +1,7 @@
 package com.github.se.project.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
@@ -26,6 +27,9 @@ object Screen {
   const val EDIT_PROFILE = "Edit profile Screen"
   const val EDIT_SCHEDULE = "Edit schedule Screen"
   const val CREATE_TUTOR_PROFILE = "Tutor information creation Screen"
+  const val FAVORITE_TUTORS = "Favorite Tutors Screen"
+  const val FAVORITE_TUTOR_DETAILS = "Favorite Tutor Details Screen"
+  const val ADD_LESSON_WITH_FAVORITE = "Add Lesson with a Favorite Tutor Screen"
   const val ADD_LESSON = "Add Lesson Screen"
   const val TUTOR_MATCH = "Tutor matching Screen"
   const val SELECTED_TUTOR_DETAILS = "Selected Tutor Details Screen"
@@ -45,15 +49,15 @@ data class TopLevelDestination(val route: String, val icon: ImageVector, val tex
 // Top-level destinations with icons
 object TopLevelDestinations {
   val HOME_TUTOR =
-      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Work Space")
+      TopLevelDestination(route = Screen.HOME, icon = Icons.Outlined.Home, textId = "Home")
   val HOME_STUDENT =
-      TopLevelDestination(route = Route.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
+      TopLevelDestination(route = Screen.HOME, icon = Icons.Outlined.Home, textId = "My Courses")
   val STUDENT =
       TopLevelDestination(
-          route = Route.FIND_TUTOR, icon = Icons.Outlined.Search, textId = "Find a Tutor")
+          route = Route.FIND_TUTOR, icon = Icons.Outlined.Add, textId = "Find Tutor")
   val TUTOR =
       TopLevelDestination(
-          route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find a Student")
+          route = Route.FIND_STUDENT, icon = Icons.Outlined.Search, textId = "Find Student")
   val CHANNEL =
       TopLevelDestination(route = Screen.CHANNEL, icon = Icons.Outlined.Email, textId = "Chat")
 }

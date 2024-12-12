@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -56,6 +57,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.notification.PushNotificationPermissionHandler
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
@@ -90,6 +92,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     listProfileViewModel: ListProfilesViewModel,
     lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel,
     chatViewModel: ChatViewModel,
     navigationActions: NavigationActions,
 ) {
@@ -192,6 +195,18 @@ fun HomeScreen(
                           .titleLarge) // Display the user's first name in the top bar
             },
             actions = {
+              if (currentProfile?.role == Role.STUDENT) {
+                // Icon to navigate to the list of favorite tutor profiles screen
+                IconButton(
+                    onClick = { navigationActions.navigateTo(Screen.FAVORITE_TUTORS) },
+                    modifier = Modifier.testTag("favorite_tutors_button")) {
+                      Icon(
+                          imageVector = Icons.Default.Star,
+                          contentDescription = "Favorite Tutors Icon",
+                          Modifier.testTag("favorite_tutor_icon").size(32.dp))
+                    }
+              }
+
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
@@ -211,7 +226,8 @@ fun HomeScreen(
               navigationActions.navigateTo(route) // Navigate to selected route
             },
             tabList = navigationItems, // List of navigation items based on role
-            selectedItem = navigationActions.currentRoute()) // Currently selected navigation item
+            selectedItem = navigationActions.currentRoute(),
+            networkStatusViewModel = networkStatusViewModel) // Currently selected navigation item
       }) { paddingValues ->
 
         // Display the content or appropriate fallback based on the current profile

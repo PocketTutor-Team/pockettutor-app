@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,9 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.utils.capitalizeFirstLetter
 
 @Composable
 fun ExpandableLessonSection(
@@ -88,38 +91,54 @@ fun ExpandableLessonSection(
                   if (!isInstant) {
                     {
                       Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (lessonCountText.isNotEmpty() && lessons.isNotEmpty()) {
-                          Text(
-                              text = lessonCountText + " lessons",
-                              style = MaterialTheme.typography.bodyMedium)
-                          Spacer(modifier = Modifier.width(8.dp))
-                        }
-                        if (lessons.isNotEmpty()) {
-                          IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector =
-                                    if (expanded) Icons.Default.KeyboardArrowDown
-                                    else Icons.Default.KeyboardArrowLeft,
-                                contentDescription = if (expanded) "Collapse" else "Expand")
+                        if (lessonCountText.isNotEmpty()) {
+                          if (lessons.size > 1) {
+                            Text(
+                                text = "$lessonCountText lessons",
+                                style = MaterialTheme.typography.bodyMedium)
+                            Spacer(modifier = Modifier.width(8.dp))
+                          } else {
+                            Text(
+                                text = "$lessonCountText lesson",
+                                style = MaterialTheme.typography.bodyMedium)
+                            Spacer(modifier = Modifier.width(8.dp))
                           }
+                        }
+                        IconButton(onClick = { expanded = !expanded }) {
+                          Icon(
+                              imageVector =
+                                  if (expanded) Icons.Default.KeyboardArrowDown
+                                  else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                              contentDescription = if (expanded) "Collapse" else "Expand")
                         }
                       }
                     }
                   } else null,
               modifier =
                   if (!isInstant) {
-                    Modifier.clickable { expanded = !expanded }
-                  } else Modifier)
+                    Modifier.testTag("section_${section.status.name}_expand").clickable {
+                      expanded = !expanded
+                    }
+                  } else Modifier.testTag("section_${section.status.name}_expand"))
 
-          if (expanded && lessons.isNotEmpty()) {
-            DisplayLessons(
-                lessons = lessons,
-                statusFilter = section.status,
-                isTutor = isTutor,
-                tutorEmpty = section.tutorEmpty,
-                onCardClick = onClick,
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
-                listProfilesViewModel = listProfilesViewModel)
+          if (expanded) {
+            if (lessons.isEmpty()) {
+              Text(
+                  text = stringResource(R.string.no_lessons),
+                  style = MaterialTheme.typography.bodyMedium,
+                  modifier =
+                      Modifier.padding(16.dp)
+                          .testTag("noLessons" + section.status.name.capitalizeFirstLetter()))
+            } else {
+              DisplayLessons(
+                  lessons = lessons,
+                  statusFilter = section.status,
+                  isTutor = isTutor,
+                  tutorEmpty = section.tutorEmpty,
+                  onCardClick = onClick,
+                  modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
+                  listProfilesViewModel = listProfilesViewModel)
+            }
           }
         }
       }

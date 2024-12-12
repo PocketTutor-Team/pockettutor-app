@@ -39,10 +39,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -61,15 +63,20 @@ private fun LessonActionButton(
     modifier: Modifier = Modifier,
     testTag: String,
     icon: @Composable () -> Unit,
-    isError: Boolean = false
+    isError: Boolean = false,
+    isActive: Boolean = true
 ) {
   Button(
       shape = MaterialTheme.shapes.medium,
       onClick = onClick,
       colors =
-          if (isError) {
+          if (!isActive) {
+            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.outline)
+          } else if (isError) {
             ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-          } else ButtonDefaults.buttonColors(),
+          } else {
+            ButtonDefaults.buttonColors()
+          },
       modifier = modifier.fillMaxWidth().padding(bottom = 16.dp).testTag(testTag)) {
         icon()
         Spacer(modifier = Modifier.width(8.dp))
@@ -110,10 +117,14 @@ fun ConfirmedLessonScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
+    networkStatusViewModel: NetworkStatusViewModel = viewModel(),
     navigationActions: NavigationActions,
     chatViewModel: ChatViewModel,
     onLocationChecked: () -> Unit = {}
 ) {
+
+  val isConnected = networkStatusViewModel.isConnected.collectAsState().value
+
   val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
           ?: return Text("No profile found. Should not happen.")
@@ -163,18 +174,33 @@ fun ConfirmedLessonScreen(
                 lesson.status == LessonStatus.CONFIRMED -> {
                   MessageButton(lesson, isStudent, chatViewModel, navigationActions)
                   CancelLessonButton(
-                      lesson, currentProfile, lessonViewModel, navigationActions, context)
+                      lesson,
+                      currentProfile,
+                      lessonViewModel,
+                      navigationActions,
+                      context,
+                      isConnected)
                 }
                 lesson.status == LessonStatus.INSTANT_CONFIRMED -> {
                   MessageButton(lesson, isStudent, chatViewModel, navigationActions)
                 }
                 lesson.status == LessonStatus.PENDING_TUTOR_CONFIRMATION && isStudent -> {
                   DeleteLessonButton(
-                      lesson, currentProfile, lessonViewModel, navigationActions, context)
+                      lesson,
+                      currentProfile,
+                      lessonViewModel,
+                      navigationActions,
+                      context,
+                      isConnected)
                 }
                 lesson.status == LessonStatus.STUDENT_REQUESTED && !isStudent -> {
                   CancelRequestButton(
-                      lesson, currentProfile, lessonViewModel, navigationActions, context)
+                      lesson,
+                      currentProfile,
+                      lessonViewModel,
+                      navigationActions,
+                      context,
+                      isConnected)
                 }
               }
             }
@@ -236,17 +262,24 @@ private fun DeleteLessonButton(
     currentProfile: Profile,
     lessonViewModel: LessonViewModel,
     navigationActions: NavigationActions,
-    context: Context
+    context: Context,
+    isConnected: Boolean
 ) {
   LessonActionButton(
       text = "Cancel Lesson",
       onClick = {
-        lessonViewModel.deleteLesson(
-            lesson.id,
-            onComplete = {
-              lessonViewModel.getLessonsForStudent(currentProfile.uid) {}
-              navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
-            })
+        if (isConnected) {
+          lessonViewModel.deleteLesson(
+              lesson.id,
+              onComplete = {
+                lessonViewModel.getLessonsForStudent(currentProfile.uid) {}
+                navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+              })
+        } else {
+          Toast.makeText(
+                  context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT)
+              .show()
+        }
       },
       testTag = "deleteButton",
       icon = {
@@ -261,17 +294,24 @@ private fun CancelRequestButton(
     currentProfile: Profile,
     lessonViewModel: LessonViewModel,
     navigationActions: NavigationActions,
-    context: Context
+    context: Context,
+    isConnected: Boolean
 ) {
   LessonActionButton(
       text = "Cancel your request",
       onClick = {
-        lessonViewModel.updateLesson(
-            lesson.copy(tutorUid = lesson.tutorUid.filter { it != currentProfile.uid }),
-            onComplete = {
-              lessonViewModel.getLessonsForTutor(currentProfile.uid) {}
-              navigateWithToast(navigationActions, context, "Request cancelled successfully")
-            })
+        if (isConnected) {
+          lessonViewModel.updateLesson(
+              lesson.copy(tutorUid = lesson.tutorUid.filter { it != currentProfile.uid }),
+              onComplete = {
+                lessonViewModel.getLessonsForTutor(currentProfile.uid) {}
+                navigateWithToast(navigationActions, context, "Request cancelled successfully")
+              })
+        } else {
+          Toast.makeText(
+                  context, context.getString(R.string.inform_user_offline), Toast.LENGTH_SHORT)
+              .show()
+        }
       },
       testTag = "cancelRequestButton",
       icon = {
@@ -286,7 +326,8 @@ private fun CancelLessonButton(
     currentProfile: Profile,
     lessonViewModel: LessonViewModel,
     navigationActions: NavigationActions,
-    context: Context
+    context: Context,
+    isConnected: Boolean
 ) {
   var showCancelDialog by remember { mutableStateOf(false) }
 
@@ -297,7 +338,8 @@ private fun CancelLessonButton(
       icon = {
         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(20.dp))
       },
-      isError = true)
+      isError = true,
+      isActive = isCancellationValid(lesson.timeSlot))
 
   if (showCancelDialog) {
     AlertDialog(
@@ -315,23 +357,33 @@ private fun CancelLessonButton(
           Button(
               modifier = Modifier.testTag("cancelDialogConfirmButton"),
               onClick = {
-                // If the lesson is within 24 hours, do not allow cancellation
-                // Otherwise, update the lesson status and refresh the list of lessons
-                if (isCancellationValid(lesson.timeSlot)) {
-                  if (currentProfile.role == Role.STUDENT) {
-                    lessonViewModel.updateLesson(
-                        lesson = lesson.copy(status = LessonStatus.STUDENT_CANCELLED),
-                        onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                // Check if the user is connected to the internet
+                if (isConnected) {
+                  // If the lesson is within 24 hours, do not allow cancellation
+                  // Otherwise, update the lesson status and refresh the list of lessons
+                  if (isCancellationValid(lesson.timeSlot)) {
+                    if (currentProfile.role == Role.STUDENT) {
+                      lessonViewModel.updateLesson(
+                          lesson = lesson.copy(status = LessonStatus.STUDENT_CANCELLED),
+                          onComplete = { lessonViewModel.getLessonsForStudent(currentProfile.uid) })
+                    } else {
+                      lessonViewModel.updateLesson(
+                          lesson = lesson.copy(status = LessonStatus.TUTOR_CANCELLED),
+                          onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
+                    }
+                    showCancelDialog = false
+                    navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
                   } else {
-                    lessonViewModel.updateLesson(
-                        lesson = lesson.copy(status = LessonStatus.TUTOR_CANCELLED),
-                        onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
+                    context.showToast("You can only cancel a lesson 24 hours before it starts")
+                    showCancelDialog = false
                   }
-                  showCancelDialog = false
-                  navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+                  // when the user is offline inform with a toast message
                 } else {
-                  context.showToast("You can only cancel a lesson 24 hours before it starts")
-                  showCancelDialog = false
+                  Toast.makeText(
+                          context,
+                          context.getString(R.string.inform_user_offline),
+                          Toast.LENGTH_SHORT)
+                      .show()
                 }
               }) {
                 Text("Yes, cancel it")

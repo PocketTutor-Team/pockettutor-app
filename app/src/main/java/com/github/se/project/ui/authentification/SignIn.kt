@@ -22,59 +22,78 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
+/**
+ * Composable function for the SignIn screen that handles the UI of the authentication page.
+ *
+ * @param onSignInClick Lambda function that will be executed when the Google sign-in button is
+ *   clicked. Default is an empty lambda.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun SignInScreen(onSignInClick: () -> Unit = {}) {
+  // Remember pager state to control the pager for onboarding images
   val pagerState = rememberPagerState()
 
+  // Box is used to stack all elements on top of each other
   Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-    // Background image covering the whole screen
+    // Background image covering the entire screen
     Image(
-        painter = painterResource(id = R.drawable.bg),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.FillBounds)
+        painter = painterResource(id = R.drawable.bg), // Background image
+        contentDescription = null, // No description as it’s decorative
+        modifier = Modifier.fillMaxSize(), // Fill the screen
+        contentScale = ContentScale.FillBounds) // Stretch to cover bounds
 
-    // Logo at the top
+    // Logo at the top center
     Box(
         modifier =
             Modifier.fillMaxWidth()
-                .padding(top = 16.dp) // Adjust padding as needed
+                .padding(top = 16.dp) // Adjust top padding to place logo
                 .align(Alignment.TopCenter)) {
           Image(
-              painter = painterResource(id = R.drawable.logobrand),
-              contentDescription = "Brand logo",
-              modifier = Modifier.size(150.dp).padding(horizontal = 8.dp).testTag("logo"))
-        }
+              painter = painterResource(id = R.drawable.logobrand), // Logo image
+              contentDescription = "Brand logo", // Content description for accessibility
+              modifier =
+                  Modifier.size(150.dp)
+                      .padding(horizontal = 8.dp)
+                      .testTag("logo")) // Apply size and padding
+    }
 
-    // Center content for images and text
+    // Centered content with images and introductory text
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally, // Center elements horizontally
+        verticalArrangement = Arrangement.Center, // Center elements vertically
         modifier = Modifier.fillMaxSize()) {
+
+          // Horizontal pager to display multiple onboarding images
           HorizontalPager(
               state = pagerState,
-              count = 3,
+              count = 3, // Total number of pages
               modifier = Modifier.height(300.dp).fillMaxWidth().testTag("images")) { page ->
+                // Display different content based on the current page
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()) {
+                      // Display the images in the pager
                       Image(
                           painter =
                               painterResource(
                                   id =
                                       when (page) {
-                                        0 -> R.drawable.home1
-                                        1 -> R.drawable.home2
-                                        else -> R.drawable.home3
+                                        0 -> R.drawable.home1 // Page 1 image
+                                        1 -> R.drawable.home2 // Page 2 image
+                                        else -> R.drawable.home3 // Page 3 image
                                       }),
-                          contentDescription = null,
+                          contentDescription = null, // No description for images
                           modifier =
                               Modifier.height(200.dp).fillMaxWidth().padding(horizontal = 16.dp),
-                          contentScale = ContentScale.Fit)
+                          contentScale = ContentScale.Fit) // Fit the image within the container
 
-                      Spacer(modifier = Modifier.height(16.dp))
+                      Spacer(
+                          modifier =
+                              Modifier.height(
+                                  16.dp)) // Spacer to create space between the image and text
 
+                      // Displaying text for each page
                       Text(
                           text =
                               when (page) {
@@ -85,68 +104,82 @@ fun SignInScreen(onSignInClick: () -> Unit = {}) {
                                 else ->
                                     "Pocket Tutor connects university students and tutors for quick, effective learning support."
                               },
-                          style = Typography.bodyLarge,
-                          textAlign = TextAlign.Center,
-                          color = MaterialTheme.colorScheme.onBackground,
-                          modifier = Modifier.fillMaxWidth().padding(horizontal = 42.dp))
-                    }
+                          style = Typography.bodyLarge, // Apply typography style
+                          textAlign = TextAlign.Center, // Center-align the text
+                          color =
+                              MaterialTheme.colorScheme
+                                  .onBackground, // Set text color based on theme
+                          modifier =
+                              Modifier.fillMaxWidth().padding(horizontal = 42.dp)) // Adjust padding
+                }
               }
 
-          // Pagination Dots
+          // Row for pagination dots to indicate the current page in the pager
           Row(
               horizontalArrangement = Arrangement.Center,
               modifier = Modifier.testTag("dots").fillMaxWidth()) {
+                // Each dot represents a page in the pager
                 PaginationDot(isActive = pagerState.currentPage == 0)
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp)) // Add space between dots
                 PaginationDot(isActive = pagerState.currentPage == 1)
                 Spacer(modifier = Modifier.width(8.dp))
                 PaginationDot(isActive = pagerState.currentPage == 2)
               }
         }
 
-    // Bottom content for Google sign-in button and Terms
+    // Bottom content containing the Google sign-in button and terms message
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment =
+            Alignment.CenterHorizontally, // Align content to the center horizontally
         modifier =
             Modifier.fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp) // Adjust bottom padding as needed
-        ) {
+                .align(Alignment.BottomCenter) // Align to the bottom of the screen
+                .padding(bottom = 16.dp)) { // Adjust bottom padding
+
+          // Google sign-in button
           Button(
-              onClick = onSignInClick,
-              shape = Shapes.medium,
+              onClick = onSignInClick, // Trigger the onSignInClick action on button press
+              shape = Shapes.medium, // Apply custom shape
               modifier =
                   Modifier.fillMaxWidth(0.8f)
                       .height(48.dp)
-                      .clip(Shapes.medium)
-                      .testTag("loginButton")) {
+                      .clip(Shapes.medium) // Clip button to desired shape
+                      .testTag("loginButton")) { // Apply testTag for UI testing
+                // Google logo inside the button
                 Image(
                     painter = painterResource(id = R.drawable.google_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Continue with Google", style = Typography.labelMedium)
-              }
+                    contentDescription = null, // No description for logo
+                    modifier = Modifier.size(24.dp)) // Size of the logo
+                Spacer(modifier = Modifier.width(8.dp)) // Space between logo and text
+                Text(text = "Continue with Google", style = Typography.labelMedium) // Button text
+          }
 
-          Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp)) // Spacer between button and text
 
+          // Terms of service message
           Text(
               text =
                   "By clicking 'Continue', you agree to the Terms of Service and Privacy Policy, and consent to the use of cookies related to PocketTutor.",
-              style = Typography.bodySmall,
-              modifier = Modifier.testTag("terms").padding(horizontal = 32.dp),
-              textAlign = TextAlign.Center)
-        }
+              style = Typography.bodySmall, // Apply smaller text style
+              modifier = Modifier.testTag("terms").padding(horizontal = 32.dp), // Apply padding
+              textAlign = TextAlign.Center) // Center-align the text
+    }
   }
 }
 
+/**
+ * Composable function to display a pagination dot indicating the current page.
+ *
+ * @param isActive Boolean value that determines whether the dot is active (i.e., the current page
+ *   in the pager).
+ */
 @Composable
 fun PaginationDot(isActive: Boolean) {
   Box(
       modifier =
-          Modifier.size(8.dp)
-              .clip(Shapes.small) // Apply custom shape
+          Modifier.size(8.dp) // Size of the dot
+              .clip(Shapes.small) // Apply custom shape for the dot
               .background(
-                  if (isActive) MaterialTheme.colorScheme.primary
-                  else MaterialTheme.colorScheme.onSurface))
+                  if (isActive) MaterialTheme.colorScheme.primary // Active dot color
+                  else MaterialTheme.colorScheme.onSurface)) // Inactive dot color
 }

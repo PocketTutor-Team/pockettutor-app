@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="user_first_name">20</integer>
+    <integer name="user_last_name">20</integer>
+    <integer name="lesson_title">50</integer>
+    <integer name="description">500</integer>
+    <integer name="comment">200</integer>
+</resources>

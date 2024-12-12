@@ -5,10 +5,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.navigation.*
@@ -22,7 +26,8 @@ fun ChannelScreen(
     navigationActions: NavigationActions,
     listProfilesViewModel: ListProfilesViewModel,
     chatViewModel: ChatViewModel,
-    lessonViewModel: LessonViewModel
+    lessonViewModel: LessonViewModel,
+    networkStatusViewModel: NetworkStatusViewModel
 ) {
   val currentProfile by listProfilesViewModel.currentProfile.collectAsState()
   val clientInitializationState by chatViewModel.clientInitializationState.collectAsState()
@@ -71,7 +76,8 @@ fun ChannelScreen(
                         Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
                         else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
                       },
-                  selectedItem = navigationActions.currentRoute())
+                  selectedItem = navigationActions.currentRoute(),
+                  networkStatusViewModel = networkStatusViewModel)
             }) {
               ChannelsScreen(
                   title = "PocketTutor Chat",
