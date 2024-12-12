@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -40,37 +42,38 @@ fun EditRequestedLessonScreen(
 
   val context = LocalContext.current
 
-  /**
-   * Lambda function to handle lesson updates. Updates the lesson details and navigates back to the
-   * home screen upon completion.
-   *
-   * @param lesson The updated lesson to be saved.
-   */
   val onConfirm = { lesson: Lesson ->
-    // Updates the lesson in the ViewModel and refreshes the user's lesson list
+    /**
+     * Lambda function to handle lesson updates. Updates the lesson details and navigates back to
+     * the home screen upon completion.
+     *
+     * @param lesson The updated lesson to be saved.
+     */
     lessonViewModel.updateLesson(
         lesson,
         onComplete = {
           lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
-          Toast.makeText(context, "Lesson updated successfully", Toast.LENGTH_SHORT).show()
+          Toast.makeText(context, context.getString(R.string.lesson_updated), Toast.LENGTH_SHORT)
+              .show()
         })
 
     navigationActions.navigateTo(Screen.HOME)
   }
 
-  /**
-   * Lambda function to handle lesson deletion. Deletes the selected lesson and navigates back to
-   * the home screen upon completion.
-   *
-   * @param lesson The lesson to be deleted.
-   */
   val onDelete = { lesson: Lesson ->
+    /**
+     * Lambda function to handle lesson deletion. Deletes the selected lesson and navigates back to
+     * the home screen upon completion.
+     *
+     * @param lesson The lesson to be deleted.
+     */
     // Deletes the lesson from the ViewModel and refreshes the user's lesson list
     lessonViewModel.deleteLesson(
         lesson.id,
         onComplete = {
           lessonViewModel.getLessonsForStudent(profile.value!!.uid, onComplete = {})
-          Toast.makeText(context, "Lesson deleted successfully", Toast.LENGTH_SHORT).show()
+          Toast.makeText(context, context.getString(R.string.lesson_deleted), Toast.LENGTH_SHORT)
+              .show()
         })
 
     // Navigates back to the home screen
@@ -80,8 +83,8 @@ fun EditRequestedLessonScreen(
   LessonEditor(
       mainTitle =
           if (currentLesson.status == LessonStatus.INSTANT_REQUESTED)
-              "Edit requested instant lesson"
-          else "Edit requested lesson",
+              stringResource(R.string.edit_requested_instant)
+          else stringResource(R.string.edit_requested),
       profile = profile.value!!,
       lesson = currentLesson,
       isConnected = isConnected,

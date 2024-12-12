@@ -90,6 +90,10 @@
     <string name = "successful_cancel">Lesson Cancelled Successfully</string>
     <string name = "failed_cancel">You can only cancel a lesson 24 hours before it starts at the latest</string>
     <string name = "confirm_cancel">Yes, cancel it</string>
+    <string name = "lesson_updated">Lesson updated successfully</string>
+    <string name = "lesson_deleted">Lesson deleted successfully</string>
+    <string name = "edit_requested">Edit requested lesson</string>
+    <string name = "edit_requested_instant">Edit requested instant lesson</string>
 
     <!-- Tutor Details -->
     <string name="available_tutors">Available Tutors</string>
