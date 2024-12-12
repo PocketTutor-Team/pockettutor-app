@@ -1,9 +1,9 @@
 package com.github.se.project.ui.lesson
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -216,7 +216,7 @@ class ConfirmedLessonTest {
   @Test
   fun confirmedLessonScreenBackButtonClicked() {
 
-    Log.e("logTest", composeTestRule.toString())
+    assert(composeTestRule != null)
 
     composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
@@ -251,8 +251,12 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
+    composeTestRule.waitUntil(20000) {
+      composeTestRule.onNodeWithText(context.getString(R.string.no_profile_selected)).isDisplayed()
+    }
+
     composeTestRule
-        .onNodeWithText(context.getString(R.string.error_loading_profile))
+        .onNodeWithText(context.getString(R.string.no_profile_selected))
         .assertIsDisplayed()
   }
 

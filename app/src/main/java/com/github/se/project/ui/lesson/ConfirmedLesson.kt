@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
@@ -128,12 +129,12 @@ fun ConfirmedLessonScreen(
 
   val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text("No profile found. Should not happen.")
+          ?: return Text(stringResource(R.string.no_profile_selected))
   val isStudent = currentProfile.role == Role.STUDENT
 
   val lesson =
       lessonViewModel.selectedLesson.collectAsState().value
-          ?: return Text("No lesson selected. Should not happen.")
+          ?: return Text(stringResource(R.string.no_lesson_selected))
 
   val otherProfile =
       if (isStudent) {
