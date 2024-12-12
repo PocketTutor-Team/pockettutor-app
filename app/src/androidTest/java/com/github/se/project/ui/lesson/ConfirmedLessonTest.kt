@@ -264,7 +264,7 @@ class ConfirmedLessonTest {
     composeTestRule.waitForIdle()
 
     composeTestRule
-        .onNodeWithText(context.getString(R.string.error_loading_lesson))
+        .onNodeWithText(context.getString(R.string.no_lesson_selected))
         .assertIsDisplayed()
   }
 

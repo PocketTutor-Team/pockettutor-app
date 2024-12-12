@@ -1,7 +1,9 @@
 package com.github.se.project.ui.lesson
 
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.click
@@ -91,7 +93,7 @@ class AddLessonTest {
     networkStatusViewModel =
         object :
             NetworkStatusViewModel(
-                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+                application = ApplicationProvider.getApplicationContext()) {
           override val isConnected = mockIsConnected
         }
 
@@ -106,7 +108,7 @@ class AddLessonTest {
   }
 
   @Test
-  fun AddLessonIsProperlyDisplayed() {
+  fun addLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
       AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel)
     }

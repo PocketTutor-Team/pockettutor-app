@@ -71,6 +71,8 @@
     <string name="past_time">You cannot select a past time</string>
     <string name="lesson_created">Lesson created successfully</string>
     <string name="already_instant">You already have an instant lesson scheduled</string>
+    <string name="select_subject">Select Subject</string>
+    <string name="select_subjects">Select Subjects</string>
 
     <!-- Tutor Details -->
     <string name="available_tutors">Available Tutors</string>
