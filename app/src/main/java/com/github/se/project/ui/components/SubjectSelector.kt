@@ -15,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
+import com.github.se.project.R
 import com.github.se.project.model.profile.Subject
 
 @Composable
@@ -39,10 +41,10 @@ fun SubjectSelector(
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
           Text(
               if (multipleSelection) {
-                if (selectedSubjects.isNullOrEmpty()) "Select Subjects"
+                if (selectedSubjects.isNullOrEmpty()) stringResource(R.string.select_subject)
                 else selectedSubjects.joinToString(", ") { it.name.lowercase().replace("_", " ") }
               } else {
-                if (selectedSubject?.value == Subject.NONE) "Select Subject"
+                if (selectedSubject?.value == Subject.NONE) stringResource(R.string.select_subjects)
                 else selectedSubject?.value?.name?.lowercase()?.replace("_", " ").orEmpty()
               },
               style = MaterialTheme.typography.labelMedium,

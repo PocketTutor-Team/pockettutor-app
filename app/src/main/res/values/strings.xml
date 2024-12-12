@@ -51,6 +51,7 @@
     <string name="confirm">Confirm</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="no">No</string>
     <string name="select_location">Select Location</string>
     <string name="location_selected">Location Selected</string>
     <string name="title_desc">Give a title and add a description to your lesson</string>
@@ -71,6 +72,28 @@
     <string name="past_time">You cannot select a past time</string>
     <string name="lesson_created">Lesson created successfully</string>
     <string name="already_instant">You already have an instant lesson scheduled</string>
+    <string name="select_subject">Select Subject</string>
+    <string name="select_subjects">Select Subjects</string>
+
+    <!-- Lesson Details  -->
+    <string name = "confirmed_lesson">Confirmed Lesson</string>
+    <string name = "pending_tutor_confirmation">Pending Tutor Confirmation</string>
+    <string name = "pending_student_confirmation">Pending Student Confirmation</string>
+    <string name = "confirmed_instant_lesson">Confirmed Instant Lesson</string>
+    <string name = "lesson_details">Lesson Details</string>
+    <string name = "sms_greeting">Hello, about our lesson</string>
+    <string name = "cancel_lesson">Cancel Lesson</string>
+    <string name = "cancel_warning">Are you sure you want to cancel this lesson? This action can not be undone</string>
+    <string name = "lesson_canceled">Lesson Canceled Successfully</string>
+    <string name = "cancel_request">Cancel Request</string>
+    <string name = "request_canceled">Request Cancelled Successfully</string>
+    <string name = "successful_cancel">Lesson Cancelled Successfully</string>
+    <string name = "failed_cancel">You can only cancel a lesson 24 hours before it starts at the latest</string>
+    <string name = "confirm_cancel">Yes, cancel it</string>
+    <string name = "lesson_updated">Lesson updated successfully</string>
+    <string name = "lesson_deleted">Lesson deleted successfully</string>
+    <string name = "edit_requested">Edit requested lesson</string>
+    <string name = "edit_requested_instant">Edit requested instant lesson</string>
 
     <!-- Tutor Details -->
     <string name="available_tutors">Available Tutors</string>

@@ -1,14 +1,19 @@
 package com.github.se.project.ui.lesson
 
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
 import androidx.test.core.app.ApplicationProvider
@@ -86,9 +91,7 @@ class AddLessonTest {
   @Before
   fun setUp() {
     networkStatusViewModel =
-        object :
-            NetworkStatusViewModel(
-                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+        object : NetworkStatusViewModel(application = ApplicationProvider.getApplicationContext()) {
           override val isConnected = mockIsConnected
         }
 
@@ -103,7 +106,7 @@ class AddLessonTest {
   }
 
   @Test
-  fun AddLessonIsProperlyDisplayed() {
+  fun addLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
       AddLessonScreen(navigationActions, mockProfiles, mockLessons, networkStatusViewModel)
     }
@@ -154,14 +157,17 @@ class AddLessonTest {
     verify(navigationActions, never()).navigateTo(anyString())
   }
 
-  /*
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
 
     composeTestRule.setContent {
       AddLessonScreen(
-          navigationActions, mockProfiles, mockLessons, networkStatusViewModel, onMapReadyChange = { testMapReady = it })
+          navigationActions,
+          mockProfiles,
+          mockLessons,
+          networkStatusViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
 
     // Fill in the required fields
@@ -198,14 +204,16 @@ class AddLessonTest {
     // click in the middle of GoogleMap
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
 
+    composeTestRule.waitUntil(20000) {
+      assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
+    }
+
     composeTestRule.onNodeWithTag("confirmLocation").performClick()
 
     // Confirm
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
-
-     */
 
   @Test
   fun goBack() {
@@ -251,7 +259,6 @@ class AddLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
-  /*
   @Test
   fun testInstantLesson() {
     composeTestRule.setContent {
@@ -259,7 +266,7 @@ class AddLessonTest {
     }
 
     // Set Instant Lesson
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       composeTestRule.onNodeWithTag("instantButton").isDisplayed()
     }
 
@@ -269,19 +276,23 @@ class AddLessonTest {
 
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("instantButton").performClick()
-    composeTestRule.waitForIdle()
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("mapButton").isNotDisplayed() }
 
     // Set Subject and Language
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
     composeTestRule.waitForIdle()
 
+    composeTestRule.waitUntil(20000) {
+      composeTestRule.onNodeWithText(context.getString(R.string.select_subject)).isNotDisplayed()
+    }
+
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())
-  }*/
+  }
 
   @Test
   fun testInstantInvalid() {

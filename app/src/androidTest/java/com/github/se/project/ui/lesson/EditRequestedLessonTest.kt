@@ -1,6 +1,9 @@
 package com.github.se.project.ui.lesson
 
-import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,7 +11,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
@@ -16,13 +18,7 @@ import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.network.NetworkStatusViewModel
-import com.github.se.project.model.profile.AcademicLevel
-import com.github.se.project.model.profile.Language
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
-import com.github.se.project.model.profile.Subject
+import com.github.se.project.model.profile.*
 import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +42,6 @@ class EditRequestedLessonTest {
   @get:Rule
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
-  private val context = ApplicationProvider.getApplicationContext<Context>()
 
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
@@ -119,23 +113,23 @@ class EditRequestedLessonTest {
         }
 
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
     whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
       ->
-      val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
       onSuccess(lessons)
     }
     whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
     mockLessonViewModel.selectLesson(lessons[0])
   }
 
   @Test
-  fun EditRequestedLessonIsProperlyDisplayed() {
+  fun editRequestedLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
       EditRequestedLessonScreen(
           navigationActions,
@@ -152,7 +146,7 @@ class EditRequestedLessonTest {
   @Test
   fun sliderTest() {
     var changed = false
-    composeTestRule.setContent { PriceRangeSlider("testLabel", { a, b -> changed = true }) }
+    composeTestRule.setContent { PriceRangeSlider("testLabel", { _, _ -> changed = true }) }
     composeTestRule.onNodeWithTag("priceRangeSlider").performTouchInput { swipeRight() }
     assert(changed)
   }
@@ -170,57 +164,62 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
   }
-  /*
-    @Test
-    fun confirmWithValidFieldsNavigatesToHome() {
-      var testMapReady by mutableStateOf(false)
-      composeTestRule.setContent {
-        EditRequestedLessonScreen(
-            navigationActions,
-            mockProfiles,
-            mockLessonViewModel,
-            onMapReadyChange = { testMapReady = it })
-      }
 
-      // Fill in the required fields
-      composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
-      composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
-
-      // Select Date and Time
-      composeTestRule.onNodeWithTag("DateButton").performClick()
-      composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-      composeTestRule.onNodeWithText("OK").performClick()
-      composeTestRule.onNodeWithTag("TimeButton").performClick()
-      composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-      composeTestRule.onNodeWithText("OK").performClick()
-
-      // Set Subject and Language
-      composeTestRule.onNodeWithTag("subjectButton").performClick()
-      composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
-      composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
-
-      // Select location
-      composeTestRule.onNodeWithTag("mapButton").performClick()
-      composeTestRule.onNodeWithTag("mapContainer").performClick()
-
-      // replace the following code with the composeTestRule equivalent as
-      // the Thread.sleep() method is not recommended and
-      // device.click() is not well supported in compose
-      composeTestRule.waitUntil(15000) {
-        // wait max 4 seconds for the map to load,
-        // as soon as the map is ready, the next line will be executed
-        testMapReady
-      }
-
-      composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-
-      composeTestRule.onNodeWithTag("confirmLocation").performClick()
-
-      // Confirm
-      composeTestRule.onNodeWithTag("confirmButton").performClick()
-      verify(navigationActions).navigateTo(anyString())
+  @Test
+  fun confirmWithValidFieldsNavigatesToHome() {
+    var testMapReady by mutableStateOf(false)
+    composeTestRule.setContent {
+      EditRequestedLessonScreen(
+          navigationActions,
+          mockProfiles,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          onMapReadyChange = { testMapReady = it })
     }
-  */
+
+    // Fill in the required fields
+    composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
+    composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
+
+    // Select Date and Time
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+
+    // Set Subject and Language
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
+    composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
+
+    // Select location
+    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("mapContainer").performClick()
+
+    // replace the following code with the composeTestRule equivalent as
+    // the Thread.sleep() method is not recommended and
+    // device.click() is not well supported in compose
+    composeTestRule.waitUntil(15000) {
+      // wait max 4 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      testMapReady
+    }
+
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+
+    composeTestRule.waitUntil(15000) {
+      assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
+    }
+
+    composeTestRule.onNodeWithTag("confirmLocation").performClick()
+
+    // Confirm
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    verify(navigationActions).navigateTo(anyString())
+  }
+
   @Test
   fun testInitialState() {
     composeTestRule.setContent {
@@ -234,4 +233,13 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
   }
+}
+
+fun assertEnabledToBoolean(node: SemanticsNodeInteraction): Boolean {
+  try {
+    node.assertIsEnabled()
+  } catch (e: AssertionError) {
+    return false
+  }
+  return true
 }

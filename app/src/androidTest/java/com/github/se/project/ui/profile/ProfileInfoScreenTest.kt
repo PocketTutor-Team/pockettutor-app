@@ -1,12 +1,15 @@
 package com.github.se.project.ui.profile
 
+import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.project.R
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.certification.EpflVerificationRepository
@@ -75,6 +78,8 @@ class ProfileInfoScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private val context = ApplicationProvider.getApplicationContext<Context>()
+
   @Before
   fun setUp() {
     // Initialize mocks
@@ -98,7 +103,7 @@ class ProfileInfoScreenTest {
     // Set up repository behavior
     doNothing().`when`(mockProfilesRepository).init(any())
     whenever(mockProfilesRepository.updateProfile(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
   }
@@ -195,7 +200,7 @@ class ProfileInfoScreenTest {
     composeTestRule
         .onNodeWithTag("errorLoadingProfile")
         .assertIsDisplayed()
-        .assertTextEquals("Error loading profile…")
+        .assertTextEquals(context.getString(R.string.error_loading_profile))
   }
 
   @Test
