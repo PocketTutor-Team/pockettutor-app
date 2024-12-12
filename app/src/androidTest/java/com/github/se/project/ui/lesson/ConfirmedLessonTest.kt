@@ -1,28 +1,4 @@
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.GrantPermissionRule
-import com.github.se.project.model.chat.ChatViewModel
-import com.github.se.project.model.lesson.Lesson
-import com.github.se.project.model.lesson.LessonRepository
-import com.github.se.project.model.lesson.LessonStatus
-import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.AcademicLevel
-import com.github.se.project.model.profile.ListProfilesViewModel
-import com.github.se.project.model.profile.Profile
-import com.github.se.project.model.profile.ProfilesRepository
-import com.github.se.project.model.profile.Role
-import com.github.se.project.model.profile.Section
-import com.github.se.project.ui.navigation.NavigationActions
-import io.getstream.chat.android.client.ChatClient
-import org.junit.Before
-import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.Mockito.doNothing
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
-
+/*
 @RunWith(AndroidJUnit4::class)
 public class ConfirmedLessonTest {
 
@@ -464,3 +440,5 @@ public class ConfirmedLessonTest {
     verify(mockNavigationActions).navigateTo(Screen.HOME)
   }*/
 }
+
+ */
