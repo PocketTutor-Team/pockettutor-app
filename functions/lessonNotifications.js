@@ -1,8 +1,6 @@
 const { getFirestore } = require("firebase-admin/firestore");
 const { sendNotification, preparePayload } = require("./notification");
-const { initializeApp } = require("firebase-admin/app");
 
-initializeApp();
 
 const db = getFirestore();
 
@@ -96,6 +94,38 @@ module.exports = {
     }
   },
 
+  // Notify the tutor when a student confirms the lesson that the student initially requested
+  notifyTutorLessonConfirmedByStudent: async (lesson) => {
+      const tutorUid = String(lesson.tutorUid).split(",")[0];
+
+      try {
+        // Fetch the tutor's profile
+        const tutorQuery = await db.collection("profiles").where("uid", "==", tutorUid).limit(1).get();
+
+        if (tutorQuery.empty) {
+          console.error("Tutor profile not found.");
+          return;
+        }
+
+        const tutorData = tutorQuery.docs[0].data();
+
+        // Prepare the notification payload for the tutor
+        const tutorPayload = preparePayload(
+          "Lesson Confirmed!",
+          `Great news! The student has accepted your tutoring offer for ${lesson.title}.`,
+          tutorData.token
+        );
+
+        // Send the notification
+        await sendNotification(tutorPayload);
+        console.log("Notification sent to tutor for lesson confirmation.");
+      } catch (error) {
+        console.error("Error in notifyTutorLessonConfirmedByStudent:", error);
+      }
+    },
+
+
+    // Notify the tutor when a student confirms a lesson he offered spontanously to teach
   notifyTutorForConfirmation: async (lesson) => {
     const tutorUid = String(lesson.tutorUid).split(",")[0];
 

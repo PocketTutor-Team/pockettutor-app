@@ -1,13 +1,12 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const { initializeApp } = require("firebase-admin/app");
+initializeApp();
 const { getFirestore } = require("firebase-admin/firestore");
 const logger = require("firebase-functions/logger");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
-const { notifyStudentLessonConfirmedByTutor, notifyTutorForConfirmation, notifyStudentLessonPendingReview, notifyStudentAsTutorOfferedToTeach} = require("./lessonNotifications");
+const { notifyStudentLessonConfirmedByTutor, notifyTutorLessonConfirmedByStudent, notifyStudentLessonPendingReview, notifyStudentAsTutorOfferedToTeach} = require("./lessonNotifications");
 
-
-initializeApp();
 
 setGlobalOptions({
     maxInstances: 10,
@@ -15,21 +14,24 @@ setGlobalOptions({
     memory: "256MiB"
 });
 
-//Send notification when a lesson is updated
-exports.lessonStatusChanged = onDocumentUpdated("lessons/{lessonId}", async (event) => {
+//Send a notification to the Tutor or Student when a lesson is updated
+exports.LessonUpdateNotification = onDocumentUpdated("lessons/{lessonId}", async (event) => {
   const before = event.data.before.data();
   const after = event.data.after.data();
 
   if (before.status !== after.status) {
     console.log(`Lesson status changed from ${before.status} to ${after.status}`);
 
+    // Notify student when lesson is confirmed by tutor
     if (before.status === "PENDING_TUTOR_CONFIRMATION" && after.status === "CONFIRMED") {
       await notifyStudentLessonConfirmedByTutor(after);
     }
 
-    if (before.status === "MATCHING" && after.status === "PENDING_TUTOR_CONFIRMATION") {
-      await notifyTutorForConfirmation(after);
+    // Notify tutor when lesson is confirmed by student
+    if (before.status === "STUDENT_REQUESTED" && after.status === "CONFIRMED") {
+      await notifyTutorLessonConfirmedByStudent(after);
     }
+
     // Notify student when lesson is pending review
     if (before.status === "CONFIRMED" && after.status === "PENDING_REVIEW") {
       await notifyStudentLessonPendingReview(after);
@@ -44,7 +46,94 @@ exports.lessonStatusChanged = onDocumentUpdated("lessons/{lessonId}", async (eve
   }
 });
 
-//Check if lessons are completed and update their status accordingly
+
+exports.lessonReminder = onSchedule("every 5 minutes", async (event) => {
+  const now = new Date();
+  const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+
+  try {
+    // Format the time slots to match Firestore's string format
+    const formatter = (date) =>
+      `${date.getDate().toString().padStart(2, "0")}/${
+        (date.getMonth() + 1).toString().padStart(2, "0")
+      }/${date.getFullYear()}T${date.getHours().toString().padStart(2, "0")}:${
+        date.getMinutes().toString().padStart(2, "0")
+      }:00`;
+
+    const nowString = formatter(now);
+    const oneHourString = formatter(oneHourFromNow);
+
+    console.log(`Checking lessons between ${nowString} and ${oneHourString}`);
+
+    // Query Firestore for lessons scheduled in the next hour
+    const lessonsSnapshot = await db
+      .collection("lessons")
+      .where("status", "==", "CONFIRMED")
+      .where("timeSlot", ">=", nowString)
+      .where("timeSlot", "<=", oneHourString)
+      .get();
+
+    if (lessonsSnapshot.empty) {
+      console.log("No lessons found for the next hour.");
+      return;
+    }
+
+    // Process each lesson that requires a reminder
+    const notificationPromises = lessonsSnapshot.docs.map(async (doc) => {
+      const lesson = doc.data();
+      const tutorUid = String(lesson.tutorUid).split(",")[0];
+      const studentUid = lesson.studentUid;
+
+      try {
+        // Fetch tutor and student profiles in parallel
+        const [tutorQuery, studentQuery] = await Promise.all([
+          db.collection("profiles").where("uid", "==", tutorUid).limit(1).get(),
+          db.collection("profiles").where("uid", "==", studentUid).limit(1).get(),
+        ]);
+
+        if (tutorQuery.empty || studentQuery.empty) {
+          console.error("Tutor or Student profile not found.");
+          return;
+        }
+
+        const tutorData = tutorQuery.docs[0].data();
+        const studentData = studentQuery.docs[0].data();
+
+        // Prepare notification to both tutor and student
+        const tutorPayload = preparePayload(
+          "Upcoming Lesson Reminder",
+          `Your lesson with ${studentData.firstName} starts in one hour!`,
+          tutorData.token
+        );
+
+        const studentPayload = preparePayload(
+          "Upcoming Lesson Reminder",
+          `Your lesson with ${tutorData.firstName} starts in one hour!`,
+          studentData.token
+        );
+
+        // Send notifications
+        await Promise.all([
+          sendNotification(tutorPayload),
+          sendNotification(studentPayload),
+        ]);
+
+        console.log(
+          `Reminder notifications sent for lesson ${lesson.id} to tutor and student.`
+        );
+      } catch (error) {
+        console.error("Error processing lesson reminder:", error);
+      }
+    });
+
+    await Promise.all(notificationPromises);
+  } catch (error) {
+    console.error("Error in lessonReminder function:", error);
+  }
+});
+
+//Alexis' code here under
+//Check if any lessons are completed and update their status to PENDING_REVIEW 1 hour after the lesson ends
 exports.checkCompletedLessons = onSchedule("* * * * *", async (event) => {
     try {
         const now = new Date();
@@ -131,7 +220,7 @@ exports.checkCompletedLessons = onSchedule("* * * * *", async (event) => {
     }
 });
 
-//Check if lessons are reviewed and update their status accordingly
+//Check if lessons are reviewed and update their status to COMPLETED 8 days after the lesson ends
 exports.checkReviewedLessons = onSchedule("*/30 * * * *", async (event) => {
     try {
         const now = new Date();
