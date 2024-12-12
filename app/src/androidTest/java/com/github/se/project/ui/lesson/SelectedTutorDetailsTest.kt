@@ -158,6 +158,11 @@ class SelectedTutorDetailsTest {
       onSuccess(listOf(studentProfileFlow.value, tutorProfileFlow.value))
     }
 
+    whenever(profilesRepository.updateProfile(any(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess()
+    }
+
     listProfilesViewModel.getProfiles()
   }
 
@@ -170,7 +175,7 @@ class SelectedTutorDetailsTest {
     // Check top bar
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmLessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("selectedTutorDetailsTitle").assertIsDisplayed()
 
     // Check tutor details
     composeTestRule.onNodeWithTag("selectedTutorDetailsScreen").assertIsDisplayed()
@@ -252,5 +257,19 @@ class SelectedTutorDetailsTest {
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     composeTestRule.onNodeWithTag("confirmDialogCancelButton").performClick()
     composeTestRule.onNodeWithTag("confirmDialog").assertDoesNotExist()
+  }
+
+  @Test
+  fun bookmarkButtonIsDisplayed() {
+    composeTestRule.setContent {
+      SelectedTutorDetailsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Check if bookmark button is displayed and perform click
+    composeTestRule.onNodeWithTag("bookmarkButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bookmarkButton").performClick()
+
+    // Check if profile is updated
+    verify(profilesRepository).updateProfile(any(), any(), any())
   }
 }

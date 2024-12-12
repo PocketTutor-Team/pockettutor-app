@@ -1,7 +1,8 @@
 package com.github.se.project.ui.components
 
-import MapPickerBox
+import LocationPickerBox
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -50,9 +52,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.profile.Language
@@ -60,13 +64,27 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 
+/**
+ * A composable function for creating or editing a lesson.
+ *
+ * This function provides an interactive user interface to configure lesson details, including
+ * title, description, subject, languages, pricing, date, time, and location. It supports editing
+ * existing lessons or creating new ones, including instant lessons.
+ *
+ * @param mainTitle Title to display at the top of the screen.
+ * @param profile The user's profile information.
+ * @param lesson The Lesson object being edited, or null if creating a new lesson.
+ * @param onBack Callback to execute when the user navigates back.
+ * @param onConfirm Callback to execute when the user confirms their input.
+ * @param onDelete Optional callback for deleting a lesson.
+ * @param onMapReady Callback for when the map is fully initialized.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("NewApi")
 @Composable
@@ -74,19 +92,37 @@ fun LessonEditor(
     mainTitle: String,
     profile: Profile,
     lesson: Lesson?,
+    isConnected: Boolean,
     onBack: () -> Unit,
     onConfirm: (Lesson) -> Unit,
     onDelete: ((Lesson) -> Unit)? = null,
-    onMapReady: (Boolean) -> Unit
+    onMapReady: (Boolean) -> Unit = {}
 ) {
+  // Context for the Toast messages
+  val context = LocalContext.current
+
+  val canBeInstant = remember { mutableStateOf(lesson == null) }
+  val instant = remember { mutableStateOf(isInstant(lesson)) }
+
+  // store the initial value of the lesson
+  // Track initial values for changes
+  val initialTitle = lesson?.title ?: ""
+  val initialDescription = lesson?.description ?: ""
+  val initialDate = lesson?.timeSlot?.split("T")?.get(0) ?: ""
+  val initialTime = lesson?.timeSlot?.split("T")?.get(1)?.substring(0, 5) ?: ""
+  val initialMinPrice = lesson?.minPrice ?: 5.0
+  val initialMaxPrice = lesson?.maxPrice ?: 50.0
+  val initialSubject = lesson?.subject ?: Subject.NONE
+  val initialLocation = lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0)
+  val initialLanguage = lesson?.languages ?: listOf()
+
+  // Initialize the lesson fields
   var title by remember { mutableStateOf(lesson?.title ?: "") }
   var description by remember { mutableStateOf(lesson?.description ?: "") }
   val selectedLanguages = remember { mutableStateListOf<Language>() }
   val tutorUid = remember {
     mutableStateListOf<String>().apply { lesson?.tutorUid?.let { addAll(it) } }
   }
-  val canBeInstant = remember { mutableStateOf(lesson == null) }
-  val instant = remember { mutableStateOf(isInstant(lesson)) }
   val selectedSubject = remember { mutableStateOf(lesson?.subject ?: Subject.NONE) }
   var minPrice by remember { mutableDoubleStateOf(lesson?.minPrice ?: 5.0) }
   var maxPrice by remember { mutableDoubleStateOf(lesson?.maxPrice ?: 50.0) }
@@ -101,15 +137,30 @@ fun LessonEditor(
     mutableStateOf(lesson?.let { it.latitude to it.longitude } ?: (0.0 to 0.0))
   }
   var userLocation by remember { mutableStateOf<LatLng?>(null) }
+
+  // State to check if any changes have been made
+  val hasChanges by remember {
+    derivedStateOf {
+      title != initialTitle ||
+          description != initialDescription ||
+          selectedDate != initialDate ||
+          selectedTime != initialTime ||
+          minPrice != initialMinPrice ||
+          maxPrice != initialMaxPrice ||
+          selectedSubject.value != initialSubject ||
+          selectedLocation != initialLocation ||
+          selectedLanguages.toList() != initialLanguage
+    }
+  }
+
   var isLocationChecked by remember { mutableStateOf(false) }
 
   var showDatePicker by remember { mutableStateOf(false) }
   var showTimeDialog by remember { mutableStateOf(false) }
 
-  val cameraPositionState = rememberCameraPositionState {}
-
   var showMapDialog by remember { mutableStateOf(false) }
 
+  // Initializes state based on the provided lesson when the lesson ID changes
   if (currentLessonId.value != lesson?.id) {
     currentLessonId.value = lesson?.id
     if (lesson != null) {
@@ -120,9 +171,7 @@ fun LessonEditor(
     }
   }
 
-  // Context for the Toast messages
-  val context = LocalContext.current
-
+  // Handles location permissions and updates the user's location if allowed
   LocationPermissionHandler { location ->
     userLocation = location
     isLocationChecked = true
@@ -132,20 +181,20 @@ fun LessonEditor(
     }
   }
 
+  // Date picker state with restrictions on selectable dates
   val datePickerState =
       rememberDatePickerState(
-          calendar.getTimeInMillis(),
+          calendar.timeInMillis,
           selectableDates =
               object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                  val date = Date().apply { time = utcTimeMillis }
+                  val date = Date(utcTimeMillis)
                   val currentDate = Date()
 
-                  // Reset the time of both dates to compare only the date (not the time)
                   val calendarDate = Calendar.getInstance().apply { time = date }
                   val calendarCurrentDate = Calendar.getInstance().apply { time = currentDate }
 
-                  // Set the time to midnight for both dates to ignore time component
+                  // Resets time components for accurate date comparison
                   calendarDate.set(Calendar.HOUR_OF_DAY, 0)
                   calendarDate.set(Calendar.MINUTE, 0)
                   calendarDate.set(Calendar.SECOND, 0)
@@ -156,23 +205,33 @@ fun LessonEditor(
                   calendarCurrentDate.set(Calendar.SECOND, 0)
                   calendarCurrentDate.set(Calendar.MILLISECOND, 0)
 
-                  // Check if the date is today or in the future
-                  return calendarDate.time.after(calendarCurrentDate.time) ||
-                      calendarDate.time == calendarCurrentDate.time
+                  // Allows selection only within the next year
+                  val oneYearFromNow =
+                      Calendar.getInstance().apply {
+                        time = currentDate
+                        add(Calendar.YEAR, 1)
+                      }
+
+                  return calendarDate.time.after(calendarCurrentDate.time) &&
+                      calendarDate.time.before(oneYearFromNow.time)
                 }
               })
 
+  // Time picker state for selecting hours and minutes
   val timePickerState =
       rememberTimePickerState(
-          initialHour = calendar.get(Calendar.HOUR_OF_DAY),
-          initialMinute = calendar.get(Calendar.MINUTE),
-          is24Hour = true,
+          initialHour = calendar.get(Calendar.HOUR_OF_DAY), // Default hour
+          initialMinute = calendar.get(Calendar.MINUTE), // Default minute
+          is24Hour = true, // 24-hour format
       )
 
+  // Handles the confirm action by validating inputs and creating/updating the lesson
   val onConfirmClick = {
     if (instant.value) {
       val lat: Double
       val lon: Double
+
+      // Uses current or stored location data
       if (userLocation == null && (lesson?.longitude ?: 0.0) != 0.0) {
         lat = lesson!!.latitude
         lon = lesson.longitude
@@ -180,6 +239,8 @@ fun LessonEditor(
         lat = userLocation?.latitude ?: 0.0
         lon = userLocation?.longitude ?: 0.0
       }
+
+      // Validates inputs and creates an instant lesson
       val error =
           validateLessonInput(
               title,
@@ -189,7 +250,8 @@ fun LessonEditor(
               "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}",
               "instant",
               lat,
-              lon)
+              lon,
+              context)
       if (error != null) {
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
       } else {
@@ -213,6 +275,7 @@ fun LessonEditor(
                 lon))
       }
     } else {
+      // Validates inputs and creates a scheduled lesson
       val error =
           validateLessonInput(
               title,
@@ -222,7 +285,8 @@ fun LessonEditor(
               selectedDate,
               selectedTime,
               selectedLocation.first,
-              selectedLocation.second)
+              selectedLocation.second,
+              context)
       if (error != null) {
         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
       } else {
@@ -239,7 +303,7 @@ fun LessonEditor(
                 maxPrice,
                 0.0,
                 "${selectedDate}T${selectedTime}:00",
-                if (lesson != null) lesson.status else LessonStatus.MATCHING,
+                lesson?.status ?: LessonStatus.MATCHING,
                 selectedLocation.first,
                 selectedLocation.second))
       }
@@ -248,9 +312,9 @@ fun LessonEditor(
   // Format location for display
   val locationText =
       if (selectedLocation.first != 0.0 || selectedLocation.second != 0.0) {
-        "Location selected"
+        stringResource(R.string.location_selected)
       } else {
-        "Select location"
+        stringResource(R.string.select_location)
       }
 
   if (showDatePicker) {
@@ -264,7 +328,7 @@ fun LessonEditor(
             selectedDate = formatter.format(zonedDateTime)
             showDatePicker = false
           }) {
-            Text("OK")
+            Text(stringResource(R.string.ok))
           }
         },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -276,35 +340,58 @@ fun LessonEditor(
     Dialog(
         onDismissRequest = { showMapDialog = false },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
-          Column {
-            TimePicker(
-                state = timePickerState,
-            )
-            Button(onClick = { showTimeDialog = false }) { Text("Back") }
-            Button(
-                onClick = {
-                  val selectedCalendar =
-                      Calendar.getInstance().apply {
-                        timeInMillis = currentDateTime.timeInMillis
-                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                        set(Calendar.MINUTE, timePickerState.minute)
-                      }
+          Surface(
+              shape = MaterialTheme.shapes.medium,
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                  TimePicker(state = timePickerState)
 
-                  val isSelectedDateToday =
-                      selectedDate ==
-                          "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { showTimeDialog = false }) {
+                      Text(stringResource(R.string.close))
+                    }
 
-                  if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
-                    Toast.makeText(context, "You cannot select a past time", Toast.LENGTH_SHORT)
-                        .show()
-                  } else {
-                    selectedTime = "${timePickerState.hour}:${timePickerState.minute}"
-                    showTimeDialog = false
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        onClick = {
+                          val selectedCalendar =
+                              Calendar.getInstance().apply {
+                                timeInMillis = currentDateTime.timeInMillis
+                                set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                                set(Calendar.MINUTE, timePickerState.minute)
+                              }
+
+                          val isSelectedDateToday =
+                              selectedDate ==
+                                  String.format(
+                                      "%02d/%02d/%04d",
+                                      calendar.get(Calendar.DAY_OF_MONTH),
+                                      calendar.get(Calendar.MONTH) + 1,
+                                      calendar.get(Calendar.YEAR))
+
+                          if (isSelectedDateToday && selectedCalendar.before(currentDateTime)) {
+                            Toast.makeText(
+                                    context,
+                                    context.getString(R.string.past_time),
+                                    Toast.LENGTH_SHORT)
+                                .show()
+                          } else {
+                            selectedTime =
+                                String.format(
+                                    "%02d:%02d", timePickerState.hour, timePickerState.minute)
+                            showTimeDialog = false
+                          }
+                        }) {
+                          Text(stringResource(R.string.ok))
+                        }
                   }
-                }) {
-                  Text("OK")
                 }
-          }
+              }
         }
   }
   // Map Dialog
@@ -318,7 +405,7 @@ fun LessonEditor(
                 Column {
                   // Dialog header
                   TopAppBar(
-                      title = { Text("Select Location") },
+                      title = { Text(stringResource(R.string.select_location)) },
                       navigationIcon = {
                         IconButton(onClick = { showMapDialog = false }) {
                           Icon(Icons.Default.Close, "Close map")
@@ -327,7 +414,7 @@ fun LessonEditor(
 
                   // Map content
                   Box() {
-                    MapPickerBox(
+                    LocationPickerBox(
                         initialLocation = selectedLocation,
                         onLocationSelected = { newLocation ->
                           selectedLocation = newLocation
@@ -377,31 +464,37 @@ fun LessonEditor(
                     .padding(horizontal = 24.dp)
                     .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Text(
-                  "Give a title and add a description to your lesson",
-                  style = MaterialTheme.typography.titleSmall)
+              Text(stringResource(R.string.title_desc), style = MaterialTheme.typography.titleSmall)
 
               OutlinedTextField(
                   value = title,
-                  onValueChange = { title = it },
-                  label = { Text("Give a title to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in short") },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.lesson_title)) {
+                      title = it
+                    }
+                  },
+                  label = { Text(stringResource(R.string.give_title)) },
+                  placeholder = { Text(stringResource(R.string.title_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("titleField"),
                   singleLine = true)
 
               OutlinedTextField(
                   value = description,
-                  onValueChange = { description = it },
-                  label = { Text("Give a description to this lesson") },
-                  placeholder = { Text("You can write what the lesson is about in detail") },
+                  onValueChange = {
+                    if (it.length <= context.resources.getInteger(R.integer.description)) {
+                      description = it
+                    }
+                  },
+                  label = { Text(stringResource(R.string.give_description)) },
+                  placeholder = { Text(stringResource(R.string.description_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
-                  singleLine = true)
+                  maxLines = 3)
 
               Spacer(modifier = Modifier.height(8.dp))
 
               if (!instant.value) {
                 Text(
-                    "Select the desired date and time for the lesson",
+                    stringResource(R.string.select_date_time),
                     style = MaterialTheme.typography.titleSmall)
 
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -413,7 +506,7 @@ fun LessonEditor(
                               containerColor = MaterialTheme.colorScheme.secondaryContainer,
                               contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text(
-                            selectedDate.ifEmpty { "Select Date" },
+                            selectedDate.ifEmpty { stringResource(R.string.select_date) },
                             style = MaterialTheme.typography.titleSmall)
                       }
 
@@ -427,7 +520,7 @@ fun LessonEditor(
                               containerColor = MaterialTheme.colorScheme.secondaryContainer,
                               contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text(
-                            selectedTime.ifEmpty { "Select Time" },
+                            selectedTime.ifEmpty { stringResource(R.string.select_time) },
                             style = MaterialTheme.typography.titleSmall)
                       }
                 }
@@ -435,7 +528,7 @@ fun LessonEditor(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Select the location for the lesson",
+                    stringResource(R.string.give_location),
                     style = MaterialTheme.typography.titleSmall)
 
                 Button(
@@ -458,21 +551,21 @@ fun LessonEditor(
               }
 
               Text(
-                  "Select the subject you want to study",
+                  stringResource(R.string.give_subject),
                   style = MaterialTheme.typography.titleSmall)
               SubjectSelector(selectedSubject)
 
               Spacer(modifier = Modifier.height(8.dp))
 
               Text(
-                  "Select the possible languages you want the course to take place in",
+                  stringResource(R.string.give_language),
                   style = MaterialTheme.typography.titleSmall)
               LanguageSelector(selectedLanguages)
 
               Spacer(modifier = Modifier.height(8.dp))
 
               PriceRangeSlider(
-                  "Select a price range for your lesson:",
+                  stringResource(R.string.give_price),
                   { min, max ->
                     minPrice = min.toDouble()
                     maxPrice = max.toDouble()
@@ -480,7 +573,8 @@ fun LessonEditor(
                   initialStart = minPrice.toFloat(),
                   initialEnd = maxPrice.toFloat())
 
-              Text("Selected price range: ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
+              Text(
+                  "${stringResource(R.string.selected_price_range)} ${minPrice.toInt()}.- to ${maxPrice.toInt()}.-")
             }
       },
       bottomBar = {
@@ -492,8 +586,23 @@ fun LessonEditor(
               Button(
                   modifier = Modifier.fillMaxWidth().testTag("confirmButton"),
                   shape = MaterialTheme.shapes.medium,
-                  onClick = onConfirmClick) {
-                    Text("Confirm")
+                  enabled = hasChanges,
+                  onClick = {
+                    if (isConnected) {
+                      onConfirmClick() // Perform the actual action
+                    } else {
+                      Toast.makeText(
+                              context,
+                              context.getString(R.string.inform_user_offline),
+                              Toast.LENGTH_SHORT)
+                          .show()
+                    }
+                  }) {
+                    if (lesson != null) {
+                      Text(stringResource(id = R.string.update))
+                    } else {
+                      Text(stringResource(id = R.string.create))
+                    }
                   }
 
               if (onDelete != null) {
@@ -504,14 +613,40 @@ fun LessonEditor(
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                    onClick = { onDelete(lesson!!) }) {
-                      Text("Delete")
+                    onClick = {
+                      if (isConnected) {
+                        onDelete(lesson!!) // Perform the delete action
+                      } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.inform_user_offline),
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      }
+                    }) {
+                      Text(stringResource(R.string.delete))
                     }
               }
             }
       })
 }
 
+/**
+ * Validates the input fields required for creating or editing a lesson.
+ *
+ * This function checks whether all mandatory fields (title, description, subject, languages, date,
+ * time, and location) have been provided and are valid.
+ *
+ * @param title The title of the lesson.
+ * @param description The description of the lesson.
+ * @param selectedSubject The subject of the lesson wrapped in a MutableState object.
+ * @param selectedLanguages A list of languages associated with the lesson.
+ * @param date The selected date for the lesson.
+ * @param time The selected time for the lesson.
+ * @param latitude The latitude of the lesson's location.
+ * @param longitude The longitude of the lesson's location.
+ * @return A string describing the first missing field, or `null` if all inputs are valid.
+ */
 fun validateLessonInput(
     title: String,
     description: String,
@@ -520,37 +655,57 @@ fun validateLessonInput(
     date: String,
     time: String,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    context: Context
 ): String? {
+  // Create a map of required fields with their corresponding values for validation
   val requiredFields =
       mapOf(
-          "title" to title,
-          "description" to description,
-          "subject" to selectedSubject.value.name,
-          "language" to selectedLanguages.joinToString { it.name },
-          "date" to date,
-          "time" to time)
+          "title" to title, // Lesson title
+          "description" to description, // Lesson description
+          "subject" to selectedSubject.value.name, // Selected subject name
+          "language" to
+              selectedLanguages.joinToString { it.name }, // Joined names of selected languages
+          "date" to date, // Selected date
+          "time" to time // Selected time
+          )
 
-  // Check if any required field is empty
+  // Iterate through each field and value to check if any are empty
   for ((field, value) in requiredFields) {
     if (value.isEmpty()) {
-      return "$field is missing"
+      return "$field ${context.getString(R.string.is_missing)}"
     }
   }
 
-  // Check if location has been set
+  // Ensure a valid location is set (latitude and longitude must not be default values)
   if (latitude == 0.0 && longitude == 0.0) {
-    return "location is missing"
+    return context.getString(R.string.missing_location)
   }
 
-  return null // All inputs are valid
+  return null // All fields are valid, return null
 }
 
+/**
+ * Determines if a given lesson is an "instant" lesson based on its status.
+ *
+ * Instant lessons are those that are either requested or confirmed for immediate scheduling.
+ *
+ * @param lesson The lesson to check, or null.
+ * @return `true` if the lesson has an instant status, `false` otherwise.
+ */
 fun isInstant(lesson: Lesson?): Boolean {
-  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) ?: false ||
-      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) ?: false
+  return (lesson?.status == LessonStatus.INSTANT_REQUESTED) || // Instant request status
+      (lesson?.status == LessonStatus.INSTANT_CONFIRMED) // Instant confirmed status
 }
 
+/**
+ * Determines if a given time slot represents an "instant" lesson.
+ *
+ * An instant lesson's time slot typically ends with the letter 't'.
+ *
+ * @param timeSlot The time slot string to check.
+ * @return `true` if the time slot indicates an instant lesson, `false` otherwise.
+ */
 fun isInstant(timeSlot: String): Boolean {
-  return timeSlot.last() == 't'
+  return timeSlot.last() == 't' // Check if the last character in the time slot is 't'
 }

@@ -1,7 +1,11 @@
 package com.github.se.project.ui.lesson
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +23,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -32,10 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.lesson.TutorRecommender
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
@@ -60,6 +69,10 @@ fun TutorMatchingScreen(
       lessonViewModel.selectedLesson.collectAsState().value
           ?: return Text("No lesson selected. Should not happen.")
 
+  var showFilterDialog by remember { mutableStateOf(false) }
+  var showVerifiedOnly by remember { mutableStateOf(false) }
+  var sortBy by remember { mutableStateOf(SortOption.PRICE) }
+
   val tutorProfilesFlow = remember {
     listProfilesViewModel.profiles.filter { profiles: List<Profile> ->
       profiles.any { profile -> profile.role == Role.TUTOR }
@@ -67,20 +80,39 @@ fun TutorMatchingScreen(
   }
   val allTutorProfiles by tutorProfilesFlow.collectAsState(listOf())
 
-  val filteredTutor =
+  val filteredTutors =
       if (currentLesson.status == LessonStatus.MATCHING) {
-        allTutorProfiles.filter { profile -> // TODO: think of the filtering
-          profile.subjects.contains(currentLesson.subject) &&
-              profile.price <= currentLesson.maxPrice &&
-              profile.price >= currentLesson.minPrice &&
-              isTutorAvailable(profile.schedule, currentLesson.timeSlot)
-        }
+        allTutorProfiles
+            .asSequence()
+            .filter { profile ->
+              profile.subjects.contains(currentLesson.subject) &&
+                  profile.price >= currentLesson.minPrice &&
+                  (!showVerifiedOnly || profile.certification?.verified == true) &&
+                  isTutorAvailable(profile.schedule, currentLesson.timeSlot)
+            }
+            .toList()
+            .let { tutors ->
+              when (sortBy) {
+                SortOption.PRICE -> tutors.sortedBy { it.price }
+                SortOption.ACADEMIC_LEVEL -> tutors.sortedByDescending { it.academicLevel.ordinal }
+                SortOption.VERIFICATION ->
+                    tutors.sortedByDescending { it.certification?.verified == true }
+              }
+            }
       } else {
-        val tutorList =
-            allTutorProfiles.filter { profile -> currentLesson.tutorUid.contains(profile.uid) }
-        tutorList.ifEmpty {
-          return Text("No tutor for the selected lesson. Should not happen.")
-        }
+        allTutorProfiles
+            .filter { currentLesson.tutorUid.contains(it.uid) }
+            .ifEmpty {
+              return
+            }
+      }
+
+  val sortedTutorsByRecommendation =
+      TutorRecommender.recommendTutorsForLesson(currentProfile, filteredTutors, lessonViewModel)
+
+  val (favoriteTutors, otherTutors) =
+      sortedTutorsByRecommendation.partition { tutor ->
+        currentProfile.favoriteTutors.contains(tutor.uid)
       }
 
   val context = LocalContext.current
@@ -108,7 +140,7 @@ fun TutorMatchingScreen(
             },
             actions = {
               IconButton(
-                  onClick = { /* TODO: Additional filter options */},
+                  onClick = { showFilterDialog = true },
                   modifier = Modifier.testTag("filterButton")) {
                     Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Filter")
                   }
@@ -129,7 +161,7 @@ fun TutorMatchingScreen(
                 navigationActions.navigateTo(Screen.HOME)
               }) {
                 Text(
-                    "Ask other tutors for your lesson",
+                    text = stringResource(id = R.string.request_another_tutor),
                     modifier = Modifier.testTag("noTutorButtonText"))
               }
         } else if (currentLesson.status == LessonStatus.STUDENT_REQUESTED) {
@@ -150,7 +182,7 @@ fun TutorMatchingScreen(
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
-          if (filteredTutor.isEmpty()) {
+          if (sortedTutorsByRecommendation.isEmpty()) {
             Text(
                 text =
                     "No tutor available for your lesson: go back to change your lesson or click on the button to wait for a tutor to choose your lesson.",
@@ -158,16 +190,34 @@ fun TutorMatchingScreen(
                     Modifier.align(Alignment.Center).padding(16.dp).testTag("noTutorMessage"),
                 style = MaterialTheme.typography.bodyMedium)
           } else {
-            DisplayTutors(
-                modifier =
-                    Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
-                        .fillMaxWidth()
-                        .testTag("tutorsList"),
-                tutors = filteredTutor,
-                onCardClick = { tutor ->
-                  listProfilesViewModel.selectProfile(tutor)
-                  navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
-                })
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  if (favoriteTutors.isNotEmpty()) {
+                    DisplayTutors(
+                        modifier =
+                            Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                                .fillMaxWidth()
+                                .testTag("tutorsListFavorite"),
+                        tutors = favoriteTutors,
+                        isFavorite = true,
+                        onCardClick = { tutor ->
+                          listProfilesViewModel.selectProfile(tutor)
+                          navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                        })
+                  }
+
+                  DisplayTutors(
+                      modifier =
+                          Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                              .fillMaxWidth()
+                              .testTag("tutorsList"),
+                      tutors = otherTutors,
+                      onCardClick = { tutor ->
+                        listProfilesViewModel.selectProfile(tutor)
+                        navigationActions.navigateTo(Screen.SELECTED_TUTOR_DETAILS)
+                      })
+                }
           }
         }
 
@@ -208,6 +258,55 @@ fun TutorMatchingScreen(
                     }
               })
         }
+
+        if (showFilterDialog) {
+          AlertDialog(
+              modifier = Modifier.testTag("filterDialog"),
+              onDismissRequest = { showFilterDialog = false },
+              title = { Text("Filter Tutors") },
+              text = {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                  // Verified filter
+                  Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically) {
+                        Text("Show verified tutors only")
+                        Switch(
+                            checked = showVerifiedOnly,
+                            onCheckedChange = { showVerifiedOnly = it },
+                            modifier = Modifier.testTag("verifiedSwitch"))
+                      }
+
+                  // Sort options
+                  Text("Sort by:", style = MaterialTheme.typography.titleSmall)
+                  Column {
+                    SortOption.entries.forEach { option ->
+                      Row(
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .clickable { sortBy = option }
+                                  .padding(vertical = 8.dp),
+                          verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = sortBy == option,
+                                onClick = { sortBy = option },
+                                modifier = Modifier.testTag("sortOption_${option.name}"))
+                            Spacer(Modifier.width(8.dp))
+                            Text(option.displayName)
+                          }
+                    }
+                  }
+                }
+              },
+              confirmButton = {
+                Button(
+                    onClick = { showFilterDialog = false },
+                    modifier = Modifier.testTag("applyFiltersButton")) {
+                      Text("Apply Filters")
+                    }
+              })
+        }
       }
 }
 
@@ -238,4 +337,10 @@ fun isTutorAvailable(tutorSchedule: List<List<Int>>, timeSlot: String): Boolean 
   } catch (e: Exception) {
     throw IllegalArgumentException("Invalid timeSlot format. Expected: dd/MM/yyyyTHH:mm:ss")
   }
+}
+
+enum class SortOption(val displayName: String) {
+  PRICE("Price (lowest first)"),
+  ACADEMIC_LEVEL("Academic Level (highest first)"),
+  VERIFICATION("Verified tutors first")
 }

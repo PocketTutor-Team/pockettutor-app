@@ -121,16 +121,11 @@ fun DisplayLessons(
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     filteredLessons.forEachIndexed { index, lesson ->
       val otherUserProfile =
-          if (lesson.status == LessonStatus.COMPLETED ||
-              lesson.status == LessonStatus.PENDING_REVIEW ||
-              lesson.status == LessonStatus.CONFIRMED ||
-              lesson.status == LessonStatus.INSTANT_CONFIRMED) {
-            if (isTutor) {
-              listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid }
-            } else {
-              listProfilesViewModel.profiles.value.find { it.uid == lesson.tutorUid.firstOrNull() }
-            }
-          } else null
+          if (isTutor) {
+            listProfilesViewModel.profiles.value.find { it.uid == lesson.studentUid }
+          } else {
+            listProfilesViewModel.profiles.value.find { it.uid == lesson.tutorUid.firstOrNull() }
+          }
 
       Card(
           modifier =

@@ -3,6 +3,7 @@
     <string name="title_activity_main">PocketTutor</string>
     <string name="title_activity_second">SecondActivity</string>
     <string name="web_client_id">475882605501-gv47hlfhkd5j459vjv0kc1cj97ensm15.apps.googleusercontent.com</string>
+    <string name="chat_api_key">fw3tsu2v5sug</string>
     <string name="your_account">Your Account</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="close">Close</string>
@@ -11,10 +12,81 @@
     <string name="phone_number">Phone Number</string>
     <string name="price_per_lesson">Price:</string>
     <string name="lessons_count">lessons count</string>
-    <string name="error_loading_profile">Error loading profile...</string>
+    <string name="error_loading_profile">Error loading profile…</string>
     <string name="lessons_given">lessons given since you joined PocketTutor</string>
     <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
     <string name="price_not_set">Not Set</string>
-    <string name="update_profil">Update Profil</string>
+    <string name="update_profile">Update Profile</string>
     <string name="schedule">Schedule</string>
+
+    <string name="no_lessons">No Lessons</string>
+
+    <!-- Requested Lessons screen -->
+    <string name="check_back">Check back soon for available lessons</string>
+    <string name="comment_check_back">Try adjusting your filters or click here under to view any instant lesson</string>
+
+    <!-- LessonEditor -->
+    <!-- stringResource(id = R.string.example) -->
+    <string name="update">Update</string>
+    <string name="create">Create</string>
+    <string name="inform_user_offline">You are offline. Please connect to the internet to proceed</string>
+
+    <!-- TutorMatching -->
+    <string name="request_another_tutor">Ask for Another Tutor</string>
+
+    <!-- NetworkListener -->
+    <string name="no_internet_connection">No internet connection</string>
+
+    <!-- LocationPickerBox -->
+    <string name="confirm_location">Confirm Location</string>
+
+    <!-- BottomNavigationMenu -->
+    <string name="find_tutor">Find Tutor</string>
+    <string name="find_student">Find Student</string>
+    <string name="chat">Chat</string>
+    <string name="my_course">My Course</string>
+    <string name="home">Home</string>
+
+    <string name="ok">OK</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_location">Select Location</string>
+    <string name="location_selected">Location Selected</string>
+    <string name="title_desc">Give a title and add a description to your lesson</string>
+    <string name="give_title">Give a title to this lesson</string>
+    <string name="title_placeholder">You can write what this lesson is about in short</string>
+    <string name="give_description">Give a description to this lesson</string>
+    <string name="description_placeholder">You can write what this lesson is about in detail</string>
+    <string name="select_date_time">Select the desired date and time for this lesson</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="give_location">Select the location for this lesson</string>
+    <string name="give_subject">Select the subject you want to study</string>
+    <string name="give_language">Select the possible languages you want this lesson to take place in</string>
+    <string name="give_price">Select a price range for this lesson</string>
+    <string name="selected_price_range">Selected price range:</string>
+    <string name="missing_location">location is missing</string>
+    <string name="is_missing">is missing</string>
+    <string name="past_time">You cannot select a past time</string>
+    <string name="lesson_created">Lesson created successfully</string>
+    <string name="already_instant">You already have an instant lesson scheduled</string>
+
+    <!-- Tutor Details -->
+    <string name="available_tutors">Available Tutors</string>
+    <string name="confirm_lesson">Confirm your lesson</string>
+    <string name="confirm_choice">Confirm Your Choice</string>
+
+
+    <!-- Bookmark Tutors -->
+    <string name="favorite_tutors">Favorite Tutors</string>
+    <string name="screen_only_student">This screen is only available for students.</string>
+    <string name="no_favorite_tutors">No tutor marked as favorite.</string>
+    <string name="ask_lesson_with_tutor">Ask for a lesson with this tutor</string>
+
+    <!-- Error Messages -->
+    <string name="no_profile_selected">No profile selected. Should not happen.</string>
+    <string name="no_tutor_selected">No tutor selected. Should not happen.</string>
+    <string name="no_lesson_selected">No lesson selected. Should not happen.</string>
+
 </resources>

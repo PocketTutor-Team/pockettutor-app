@@ -8,12 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -21,18 +22,24 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeLanguageMatch
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator.computeSubjectMatch
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.ListProfilesViewModel
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.components.CustomIcon
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.components.InstantButton
 import com.github.se.project.ui.components.calculateDistance
@@ -40,6 +47,7 @@ import com.github.se.project.ui.components.getColorForDistance
 import com.github.se.project.ui.components.isInstant
 import com.github.se.project.ui.map.LocationPermissionHandler
 import com.github.se.project.ui.navigation.*
+import com.github.se.project.utils.capitalizeFirstLetter
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -52,17 +60,19 @@ import kotlinx.coroutines.launch
  * Screen displaying all requested lessons that tutors can respond to. Includes filtering by date
  * and subject, and detailed lesson information.
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun RequestedLessonsScreen(
     listProfilesViewModel: ListProfilesViewModel =
         viewModel(factory = ListProfilesViewModel.Factory),
     lessonViewModel: LessonViewModel = viewModel(factory = LessonViewModel.Factory),
+    networkStatusViewModel: NetworkStatusViewModel = viewModel(),
     navigationActions: NavigationActions
 ) {
   // State management
   var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
-  var selectedSubject by remember { mutableStateOf<Subject?>(null) }
+  var selectedSubjects by remember { mutableStateOf<Set<Subject>>(emptySet()) }
+
   var showFilterDialog by remember { mutableStateOf(false) }
 
   val canSeeInstants = remember { mutableStateOf(false) }
@@ -102,8 +112,8 @@ fun RequestedLessonsScreen(
                   parseLessonDate(lesson.timeSlot)?.toLocalDate() == date
                 } ?: true
 
-            val subjectMatches =
-                selectedSubject?.let { subject -> lesson.subject == subject } ?: true
+            val subjectsMatch =
+                if (selectedSubjects.isEmpty()) true else lesson.subject in selectedSubjects
 
             val notAlreadyResponded = !lesson.tutorUid.contains(currentProfile?.uid)
 
@@ -119,8 +129,8 @@ fun RequestedLessonsScreen(
             val tutorSubjectMatches = computeSubjectMatch(lesson, currentProfile!!)
             val languageMatches = computeLanguageMatch(lesson, currentProfile!!)
 
-            dateMatches &&
-                subjectMatches &&
+            subjectsMatch &&
+                dateMatches &&
                 notAlreadyResponded &&
                 instantaneityCorresponds &&
                 distanceFilter &&
@@ -160,8 +170,6 @@ fun RequestedLessonsScreen(
         refreshing = false
       }
 
-  val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
-
   Scaffold(
       topBar = {
         LessonsRequestedTopBar(
@@ -176,7 +184,8 @@ fun RequestedLessonsScreen(
         BottomNavigationMenu(
             onTabSelect = { navigationActions.navigateTo(it) },
             tabList = LIST_TOP_LEVEL_DESTINATIONS_TUTOR,
-            selectedItem = navigationActions.currentRoute())
+            selectedItem = navigationActions.currentRoute(),
+            networkStatusViewModel = networkStatusViewModel)
       }) { padding ->
         var refreshing by remember { mutableStateOf(false) }
         val refreshScope = rememberCoroutineScope()
@@ -194,18 +203,18 @@ fun RequestedLessonsScreen(
 
         Box(modifier = Modifier.fillMaxSize().padding(padding).pullRefresh(pullRefreshState)) {
           Column(modifier = Modifier.fillMaxSize()) {
-            if (selectedSubject != null) {
-              FilterChip(
-                  selected = true,
-                  onClick = { selectedSubject = null },
-                  label = { Text(selectedSubject?.name ?: "All Subjects") },
-                  leadingIcon = { Icon(Icons.Default.Clear, "Clear filter") },
+            if (selectedSubjects.isNotEmpty()) {
+              FlowRow(
                   modifier = Modifier.padding(horizontal = 16.dp),
-                  colors =
-                      FilterChipDefaults.filterChipColors(
-                          selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                          selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                          selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary))
+                  horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    selectedSubjects.forEach { subject ->
+                      FilterChip(
+                          selected = true,
+                          onClick = { selectedSubjects = selectedSubjects - subject },
+                          label = { Text(subject.name.lowercase().capitalizeFirstLetter()) },
+                          leadingIcon = { Icon(Icons.Default.Clear, "Remove filter") })
+                    }
+                  }
             }
 
             if (filteredLessonsWithScores.isEmpty()) {
@@ -257,9 +266,10 @@ fun RequestedLessonsScreen(
 
           if (showFilterDialog) {
             FilterDialog(
-                currentSubject = selectedSubject,
-                onSubjectSelected = { selectedSubject = it },
-                onDismiss = { showFilterDialog = false })
+                currentSubjects = selectedSubjects,
+                onSubjectsSelected = { selectedSubjects = it },
+                onDismiss = { showFilterDialog = false },
+                listProfilesViewModel = listProfilesViewModel)
           }
 
           if (distanceSliderOpen.value) {
@@ -343,54 +353,82 @@ fun LessonsRequestedTopBar(
 
         // Filter button
         IconButton(onClick = onFilterClick, modifier = Modifier.testTag("filterButton")) {
-          Icon(Icons.Outlined.Menu, "Filter")
+          CustomIcon(
+              imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_list_alt_24),
+              contentDescription = "School Icon")
         }
       })
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterDialog(
-    currentSubject: Subject?,
-    onSubjectSelected: (Subject?) -> Unit,
-    onDismiss: () -> Unit
+    currentSubjects: Set<Subject>,
+    onSubjectsSelected: (Set<Subject>) -> Unit,
+    onDismiss: () -> Unit,
+    listProfilesViewModel: ListProfilesViewModel =
+        viewModel(factory = ListProfilesViewModel.Factory)
 ) {
+  var tempSelectedSubjects by remember { mutableStateOf(currentSubjects) }
+  val currentProfile = listProfilesViewModel.currentProfile.collectAsState().value
+
   AlertDialog(
       onDismissRequest = onDismiss,
-      title = { Text("Filter by subject") },
+      title = { Text("Filter by subjects") },
       text = {
-        Column {
-          Subject.values()
-              .filter { it != Subject.NONE }
-              .forEach { subject ->
-                Row(
-                    modifier =
-                        Modifier.fillMaxWidth().clickable {
-                          onSubjectSelected(subject)
-                          onDismiss()
-                        },
-                    verticalAlignment = Alignment.CenterVertically) {
-                      RadioButton(
-                          selected = subject == currentSubject,
-                          onClick = {
-                            onSubjectSelected(subject)
-                            onDismiss()
-                          })
-                      Spacer(modifier = Modifier.width(8.dp))
-                      Text(subject.name, style = MaterialTheme.typography.titleSmall)
-                    }
-              }
-        }
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              FlowRow(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    currentProfile
+                        ?.subjects
+                        ?.filter { it != Subject.NONE }
+                        ?.forEach { subject ->
+                          FilterChip(
+                              selected = subject in tempSelectedSubjects,
+                              onClick = {
+                                tempSelectedSubjects =
+                                    if (subject in tempSelectedSubjects) {
+                                      tempSelectedSubjects - subject
+                                    } else {
+                                      tempSelectedSubjects + subject
+                                    }
+                              },
+                              label = { Text(subject.name.lowercase().capitalizeFirstLetter()) },
+                              leadingIcon =
+                                  if (subject in tempSelectedSubjects) {
+                                    {
+                                      Icon(
+                                          Icons.Filled.Check,
+                                          contentDescription = "Selected",
+                                          modifier = Modifier.size(FilterChipDefaults.IconSize))
+                                    }
+                                  } else null)
+                        }
+                  }
+            }
       },
       confirmButton = {
         TextButton(
             onClick = {
-              onSubjectSelected(null)
+              onSubjectsSelected(tempSelectedSubjects)
               onDismiss()
             }) {
-              Text("Clear filter")
+              Text("Apply")
             }
       },
-      dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } })
+      dismissButton = {
+        TextButton(
+            onClick = {
+              onSubjectsSelected(emptySet())
+              onDismiss()
+            }) {
+              Text("Clear all")
+            }
+      })
 }
 
 @Composable
@@ -460,12 +498,12 @@ private fun EmptyState(showInstant: MutableState<Boolean>, canSeeInstants: Mutab
           Button({ showInstant.value = false }) { Text("Show all lessons") }
         } else {
           Text(
-              text = "No lessons available",
+              text = stringResource(id = R.string.check_back),
               style = MaterialTheme.typography.titleLarge,
               textAlign = TextAlign.Center,
               modifier = Modifier.testTag("noLessonsMessage"))
           Text(
-              text = "Try adjusting your filters or check back later",
+              text = stringResource(id = R.string.comment_check_back),
               style = MaterialTheme.typography.bodyMedium,
               textAlign = TextAlign.Center,
               color = MaterialTheme.colorScheme.onSurfaceVariant)

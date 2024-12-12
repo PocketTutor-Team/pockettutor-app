@@ -1,26 +1,40 @@
 package com.github.se.project.ui.lesson
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeRight
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
-import com.github.se.project.model.profile.*
+import com.github.se.project.model.network.NetworkStatusViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.PriceRangeSlider
-import com.github.se.project.ui.components.validateLessonInput
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 
@@ -33,23 +47,25 @@ class EditRequestedLessonTest {
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
+  private val context = ApplicationProvider.getApplicationContext<Context>()
+
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
       Profile(
-          "uid",
-          "",
-          "googleUid",
-          "firstName",
-          "lastName",
-          "phoneNumber",
-          Role.TUTOR,
-          Section.AR,
-          AcademicLevel.BA1,
-          "I have experience teaching math and physics.",
-          listOf(Language.ENGLISH),
-          listOf(Subject.ANALYSIS),
-          List(7) { List(12) { 0 } },
-          0)
+          uid = "uid",
+          token = "",
+          googleUid = "googleUid",
+          firstName = "firstName",
+          lastName = "lastName",
+          phoneNumber = "phoneNumber",
+          role = Role.TUTOR,
+          section = Section.AR,
+          academicLevel = AcademicLevel.BA1,
+          description = "I have experience teaching math and physics.",
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 0)
   private val lessons =
       listOf(
           Lesson(
@@ -88,8 +104,20 @@ class EditRequestedLessonTest {
   private val mockLessonRepository = mock(LessonRepository::class.java)
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
+  // Mock NetworkStatusViewModel to control the network status state
+  private val mockIsConnected = MutableStateFlow(true)
+  private lateinit var networkStatusViewModel: NetworkStatusViewModel
+
   @Before
   fun setup() {
+
+    networkStatusViewModel =
+        object :
+            NetworkStatusViewModel(
+                application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+          override val isConnected = mockIsConnected
+        }
+
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
@@ -110,8 +138,13 @@ class EditRequestedLessonTest {
   fun EditRequestedLessonIsProperlyDisplayed() {
     composeTestRule.setContent {
       EditRequestedLessonScreen(
-          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
+          navigationActions,
+          mockProfiles,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          onMapReadyChange = {})
     }
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("lessonContent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("titleField").assertIsDisplayed()
   }
@@ -125,34 +158,14 @@ class EditRequestedLessonTest {
   }
 
   @Test
-  fun validateValidatesValidly() {
-    assert(
-        validateLessonInput(
-            "title",
-            "description",
-            mutableStateOf(Subject.AICC),
-            listOf(Language.ENGLISH),
-            "date",
-            "time",
-            1.0,
-            1.0) == null)
-    assert(
-        validateLessonInput(
-            "title",
-            "description",
-            mutableStateOf(Subject.AICC),
-            listOf(Language.ENGLISH),
-            "date",
-            "",
-            1.0,
-            1.0) == "time is missing")
-  }
-
-  @Test
   fun confirmWithEmptyFieldsShowsToast() {
     composeTestRule.setContent {
       EditRequestedLessonScreen(
-          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
+          navigationActions,
+          mockProfiles,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          onMapReadyChange = {})
     }
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions, never()).navigateTo(anyString())
@@ -212,7 +225,11 @@ class EditRequestedLessonTest {
   fun testInitialState() {
     composeTestRule.setContent {
       EditRequestedLessonScreen(
-          navigationActions, mockProfiles, mockLessonViewModel, onMapReadyChange = {})
+          navigationActions,
+          mockProfiles,
+          mockLessonViewModel,
+          networkStatusViewModel,
+          onMapReadyChange = {})
     }
     composeTestRule.onNodeWithText("10/10/2024").assertExists()
     composeTestRule.onNodeWithText("10:00").assertExists()
