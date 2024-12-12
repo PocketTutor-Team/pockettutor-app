@@ -13,6 +13,7 @@
     <string name="price_per_lesson">Price:</string>
     <string name="lessons_count">lessons count</string>
     <string name="error_loading_profile">Error loading profile…</string>
+    <string name="error_loading_lesson">Error loading lesson…</string>
     <string name="lessons_given">lessons given since you joined PocketTutor</string>
     <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
     <string name="price_not_set">Not Set</string>
@@ -70,4 +71,7 @@
     <string name="past_time">You cannot select a past time</string>
     <string name="lesson_created">Lesson created successfully</string>
     <string name="already_instant">You already have an instant lesson scheduled</string>
+
+    <string name="select_subject">Select Subject</string>
+    <string name="select_subjects">Select Subjects</string>
 </resources>

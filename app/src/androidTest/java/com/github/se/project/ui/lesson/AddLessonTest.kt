@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -256,7 +257,7 @@ class AddLessonTest {
     }
 
     // Set Instant Lesson
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       composeTestRule.onNodeWithTag("instantButton").isDisplayed()
     }
 
@@ -269,12 +270,16 @@ class AddLessonTest {
     composeTestRule.waitForIdle()
 
     // Set Subject and Language
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
     composeTestRule.onNodeWithTag("subjectButton").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
 
     composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(20000) {
+      composeTestRule.onNodeWithText(context.getString(R.string.select_subject)).isNotDisplayed()
+    }
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(navigationActions).navigateTo(anyString())

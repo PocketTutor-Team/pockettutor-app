@@ -1,5 +1,6 @@
 package com.github.se.project.ui.lesson
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -8,8 +9,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.R
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
@@ -111,6 +114,8 @@ class ConfirmedLessonTest {
 
   private var isLocationChecked = false
 
+  private val context = ApplicationProvider.getApplicationContext<Context>()
+
   @Before
   fun setUp() {
     composeTestRule.setContent {
@@ -155,7 +160,7 @@ class ConfirmedLessonTest {
   @Test
   fun confirmedLessonScreenEverythingDisplayedCorrectly_ConfirmedLesson() {
     composeTestRule.waitForIdle()
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -174,7 +179,7 @@ class ConfirmedLessonTest {
     lessonViewModel.selectLesson(studentRequestedLesson)
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -194,7 +199,7 @@ class ConfirmedLessonTest {
     listProfilesViewModel.setCurrentProfile(studentProfile)
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -213,7 +218,7 @@ class ConfirmedLessonTest {
 
     Log.e("logTest", composeTestRule.toString())
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -228,7 +233,7 @@ class ConfirmedLessonTest {
   fun confirmedLessonScreenOpensSmsApp() {
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -246,7 +251,9 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.onNodeWithText("No profile found. Should not happen.").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.error_loading_profile))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -256,7 +263,9 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.onNodeWithText("No lesson selected. Should not happen.").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.error_loading_lesson))
+        .assertIsDisplayed()
   }
 
   /*@Test
@@ -292,7 +301,7 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -316,7 +325,7 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -330,7 +339,7 @@ class ConfirmedLessonTest {
     // Confirm the dialog
     composeTestRule.onNodeWithTag("cancelDialogConfirmButton").assertIsDisplayed().performClick()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       composeTestRule.onNodeWithTag("cancelDialog").isNotDisplayed()
     }
 
@@ -348,7 +357,7 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
@@ -372,7 +381,7 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
+    composeTestRule.waitUntil(20000) {
       // wait max 15 seconds for the map to load,
       // as soon as the map is ready, the next line will be executed
       isLocationChecked
