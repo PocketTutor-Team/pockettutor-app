@@ -384,9 +384,9 @@ private fun CancelLessonButton(
                           onComplete = { lessonViewModel.getLessonsForTutor(currentProfile.uid) })
                     }
                     showCancelDialog = false
-                    navigateWithToast(navigationActions, context, "Lesson cancelled successfully")
+                    navigateWithToast(navigationActions, context, context.getString(R.string.successful_cancel))
                   } else {
-                    context.showToast("You can only cancel a lesson 24 hours before it starts")
+                    context.showToast(context.getString(R.string.failed_cancel))
                     showCancelDialog = false
                   }
                   // when the user is offline inform with a toast message
@@ -398,14 +398,14 @@ private fun CancelLessonButton(
                       .show()
                 }
               }) {
-                Text("Yes, cancel it")
+                Text(stringResource(R.string.confirm_cancel))
               }
         },
         dismissButton = {
           Button(
               modifier = Modifier.testTag("cancelDialogDismissButton"),
               onClick = { showCancelDialog = false }) {
-                Text("No")
+                Text(stringResource(R.string.no))
               }
         })
   }

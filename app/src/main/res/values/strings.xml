@@ -51,6 +51,7 @@
     <string name="confirm">Confirm</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="no">No</string>
     <string name="select_location">Select Location</string>
     <string name="location_selected">Location Selected</string>
     <string name="title_desc">Give a title and add a description to your lesson</string>
@@ -86,6 +87,9 @@
     <string name = "lesson_canceled">Lesson Canceled Successfully</string>
     <string name = "cancel_request">Cancel Request</string>
     <string name = "request_canceled">Request Cancelled Successfully</string>
+    <string name = "successful_cancel">Lesson Cancelled Successfully</string>
+    <string name = "failed_cancel">You can only cancel a lesson 24 hours before it starts at the latest</string>
+    <string name = "confirm_cancel">Yes, cancel it</string>
 
     <!-- Tutor Details -->
     <string name="available_tutors">Available Tutors</string>
