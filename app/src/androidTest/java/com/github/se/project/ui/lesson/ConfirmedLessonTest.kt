@@ -121,7 +121,7 @@ class ConfirmedLessonTest {
           onLocationChecked = { isLocationChecked = true })
     }
     whenever(mockProfilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
       onSuccess(
           listOf(
               tutorProfile,
@@ -130,17 +130,18 @@ class ConfirmedLessonTest {
 
     whenever(mockLessonRepository.getLessonsForTutor(eq(tutorProfile.uid), any(), any()))
         .thenAnswer { invocation ->
-            @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+          @Suppress("UNCHECKED_CAST")
+          val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
           onSuccess(listOf(confirmedLesson, studentRequestedLesson, pendingTutorConfirmationLesson))
         }
 
     whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
 
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
-        @Suppress("UNCHECKED_CAST")val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
 
@@ -211,7 +212,7 @@ class ConfirmedLessonTest {
   fun confirmedLessonScreenBackButtonClicked() {
     composeTestRule.waitForIdle()
 
-      composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("backButton").isDisplayed() }
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("backButton").isDisplayed() }
 
     composeTestRule.waitUntil(15000) {
       // wait max 15 seconds for the map to load,
