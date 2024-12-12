@@ -1,9 +1,7 @@
 package com.github.se.project.ui.lesson
 
 import android.content.Context
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.click
@@ -23,7 +21,13 @@ import com.github.se.project.R
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonViewModel
 import com.github.se.project.model.network.NetworkStatusViewModel
-import com.github.se.project.model.profile.*
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.components.PriceRangeSlider
 import com.github.se.project.ui.components.validateLessonInput
 import com.github.se.project.ui.navigation.NavigationActions
@@ -32,7 +36,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
@@ -51,23 +59,24 @@ class AddLessonTest {
   private val navigationActions = mock(NavigationActions::class.java)
   private val profile =
       Profile(
-          "uid",
-          "",
-          "googleUid",
-          "firstName",
-          "lastName",
-          "phoneNumber",
-          Role.TUTOR,
-          Section.AR,
-          AcademicLevel.BA1,
-          "",
-          listOf(Language.ENGLISH),
-          listOf(Subject.ANALYSIS),
-          List(7) { List(12) { 0 } },
-          0)
+          uid = "uid",
+          token = "",
+          googleUid = "googleUid",
+          firstName = "firstName",
+          lastName = "lastName",
+          phoneNumber = "phoneNumber",
+          role = Role.TUTOR,
+          section = Section.AR,
+          academicLevel = AcademicLevel.BA1,
+          description = "",
+          languages = listOf(Language.ENGLISH),
+          subjects = listOf(Subject.ANALYSIS),
+          schedule = List(7) { List(12) { 0 } },
+          price = 0)
   private val mockProfiles =
       mock(ListProfilesViewModel::class.java).apply {
         `when`(currentProfile).thenReturn(MutableStateFlow<Profile?>(profile))
+        `when`(selectedProfile).thenReturn(MutableStateFlow<Profile?>(null))
       }
   private val mockLessonRepository = mock(LessonRepository::class.java)
 

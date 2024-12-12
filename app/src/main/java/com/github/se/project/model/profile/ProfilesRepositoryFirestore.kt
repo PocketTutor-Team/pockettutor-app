@@ -108,6 +108,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
       val description = document.getString("description") ?: ""
 
+      val favoriteTutors = document.get("favoriteTutors")?.let { it as List<String> } ?: emptyList()
+
       val languages =
           document.get("languages")?.let { languagesList ->
             (languagesList as List<*>).mapNotNull {
@@ -157,6 +159,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
           role,
           section,
           academicLevel,
+          favoriteTutors,
           description,
           languages,
           subjects,
@@ -182,6 +185,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
             "role" to profile.role.name,
             "section" to profile.section.name,
             "academicLevel" to profile.academicLevel.name,
+            "favoriteTutors" to profile.favoriteTutors,
             "description" to profile.description,
             "languages" to profile.languages.map { it.toString() },
             "subjects" to profile.subjects.map { it.toString() },

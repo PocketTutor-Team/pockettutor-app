@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -194,6 +195,18 @@ fun HomeScreen(
                           .titleLarge) // Display the user's first name in the top bar
             },
             actions = {
+              if (currentProfile?.role == Role.STUDENT) {
+                // Icon to navigate to the list of favorite tutor profiles screen
+                IconButton(
+                    onClick = { navigationActions.navigateTo(Screen.FAVORITE_TUTORS) },
+                    modifier = Modifier.testTag("favorite_tutors_button")) {
+                      Icon(
+                          imageVector = Icons.Default.Star,
+                          contentDescription = "Favorite Tutors Icon",
+                          Modifier.testTag("favorite_tutor_icon").size(32.dp))
+                    }
+              }
+
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,

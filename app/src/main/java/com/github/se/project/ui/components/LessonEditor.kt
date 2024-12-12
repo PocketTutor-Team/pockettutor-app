@@ -488,7 +488,7 @@ fun LessonEditor(
                   label = { Text(stringResource(R.string.give_description)) },
                   placeholder = { Text(stringResource(R.string.description_placeholder)) },
                   modifier = Modifier.fillMaxWidth().testTag("DescriptionField"),
-                  singleLine = true)
+                  maxLines = 3)
 
               Spacer(modifier = Modifier.height(8.dp))
 
