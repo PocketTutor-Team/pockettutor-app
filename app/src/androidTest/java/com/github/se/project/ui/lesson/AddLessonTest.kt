@@ -91,9 +91,7 @@ class AddLessonTest {
   @Before
   fun setUp() {
     networkStatusViewModel =
-        object :
-            NetworkStatusViewModel(
-                application = ApplicationProvider.getApplicationContext()) {
+        object : NetworkStatusViewModel(application = ApplicationProvider.getApplicationContext()) {
           override val isConnected = mockIsConnected
         }
 
