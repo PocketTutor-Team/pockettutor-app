@@ -83,7 +83,6 @@ fun ChannelScreen(
                   title = "PocketTutor Chat",
                   isShowingHeader = true,
                   onChannelClick = { channel ->
-                    // val otherUsername = channel.extraData["name"] as? String ?: "Unknown"
                     chatViewModel.setCurrentChannelId(channel.cid)
                     navigationActions.navigateTo(Screen.CHAT)
                   },

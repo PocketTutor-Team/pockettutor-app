@@ -55,7 +55,6 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
     chatClient.connectUser(user, token).enqueue { result ->
       if (result.isSuccess) {
         isConnected = true
-        Log.d("ChatViewModel", "User connected successfully.")
       } else {
         Log.e("ChatViewModel", "Error connecting user: ${result.errorOrNull()}")
       }
