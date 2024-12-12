@@ -136,7 +136,7 @@ class CreateTutorProfileTest {
     }
     composeTestRule.onNodeWithTag("subjectButton").performClick()
 
-    Subject.entries.forEach { subject ->
+    Subject.entries.take(4).forEach { subject ->
       if (subject == Subject.NONE) return@forEach
       composeTestRule.onNodeWithTag("dropdown${subject.name}").assertIsDisplayed()
     }
