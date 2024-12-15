@@ -78,9 +78,6 @@ class EndToEndTest {
 
   private var currentLesson: Lesson? = null
 
-  // Mock ChatViewModel
-  // val mockChatClient = mock(ChatClient::class.java) // not used for now, will be used in a
-  // following PR
   val mockChatViewModel = mock(ChatViewModel::class.java)
 
   @get:Rule val composeTestRule = createComposeRule()
@@ -132,7 +129,7 @@ class EndToEndTest {
     }
 
     // Stub any methods or flows needed in ChatViewModel
-    whenever(mockChatViewModel.currentChannelID)
+    whenever(mockChatViewModel.currentChannelId)
         .thenReturn(MutableStateFlow<String?>(null).asStateFlow())
   }
 
@@ -361,4 +358,4 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
   }
 }
-*/
+ */

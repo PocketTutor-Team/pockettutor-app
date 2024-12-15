@@ -1,6 +1,41 @@
 package com.github.se.project.ui.lesson
 
-/*
+import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.R
+import com.github.se.project.model.chat.ChatViewModel
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Screen
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
+
 @RunWith(AndroidJUnit4::class)
 class ConfirmedLessonTest {
 
@@ -16,8 +51,7 @@ class ConfirmedLessonTest {
   private val mockNavigationActions: NavigationActions = mock(NavigationActions::class.java)
   private val lessonViewModel = LessonViewModel(mockLessonRepository)
   private val listProfilesViewModel = ListProfilesViewModel(mockProfilesRepository)
-  private lateinit var chatViewModel: ChatViewModel
-  private lateinit var chatClient: ChatClient
+  private val mockChatViewModel = mock(ChatViewModel::class.java)
 
   private val tutorProfile =
       Profile(
@@ -91,6 +125,7 @@ class ConfirmedLessonTest {
           listProfilesViewModel = listProfilesViewModel,
           lessonViewModel = lessonViewModel,
           navigationActions = mockNavigationActions,
+          chatViewModel = mockChatViewModel,
           onLocationChecked = { isLocationChecked = true })
     }
     whenever(mockProfilesRepository.getProfiles(any(), any())).thenAnswer { invocation ->
@@ -123,10 +158,6 @@ class ConfirmedLessonTest {
 
     lessonViewModel.selectLesson(confirmedLesson)
     listProfilesViewModel.setCurrentProfile(tutorProfile)
-
-    // Mock ChatViewModel
-    chatViewModel = mock(ChatViewModel::class.java)
-    doNothing().`when`(chatViewModel).connectUser(any())
   }
 
   @Test
@@ -165,19 +196,11 @@ class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
   }
 
-  /*@Test
+  @Test
   fun confirmedLessonScreenBackButtonClicked() {
 
     composeTestRule.onNodeWithTag("backButton").performClick()
     verify(mockNavigationActions).goBack()
-  }*/
-
-  @Test
-  fun confirmedLessonScreenOpensSmsApp() {
-    composeTestRule.waitForIdle()
-
-    // Click on the "Message Tutor/Student" button
-    composeTestRule.onNodeWithTag("contactButton").performClick()
   }
 
   @Test
@@ -301,5 +324,3 @@ class ConfirmedLessonTest {
     verify(mockNavigationActions).navigateTo(Screen.HOME)
   }
 }
-
- */
