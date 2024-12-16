@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * This ViewModel interacts with the Stream Chat SDK to manage the connection of users, and channel
  * creation/retrieval for specific lessons between tutors and students.
  */
-class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
+open class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
 
   private val _currentChannelId = MutableStateFlow<String?>(null)
   val currentChannelId = _currentChannelId.asStateFlow()
@@ -42,7 +42,8 @@ class ChatViewModel(private val chatClient: ChatClient) : ViewModel() {
    * @param profile The user's profile containing uid, firstName, and lastName.
    */
   fun connectUser(profile: Profile) {
-    if (isConnected) return // Prevent duplicate connections
+    if (isConnected || chatClient == null)
+        return // Prevent duplicate connections, chatClient can be null for tests
 
     val user =
         User(
