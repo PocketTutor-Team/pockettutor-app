@@ -93,9 +93,9 @@ class EndToEndStudentTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  /*@get:Rule
+  @get:Rule
   val grantNotificationPermission: GrantPermissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)*/
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
@@ -221,7 +221,6 @@ class EndToEndStudentTest {
       testMapReady
     }
     composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("googleMap").isDisplayed() }
-    Thread.sleep(100)
 
     composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
 
