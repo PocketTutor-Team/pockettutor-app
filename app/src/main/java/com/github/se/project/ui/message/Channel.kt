@@ -42,8 +42,6 @@ fun ChannelScreen(
   // Observe confirmed lessons and create channels
   val confirmedLessons by lessonViewModel.currentUserLessons.collectAsState()
   LaunchedEffect(confirmedLessons) {
-    val profiles = listProfilesViewModel.profiles.value
-
     confirmedLessons
         .filter { it.status == LessonStatus.CONFIRMED }
         .forEach { lesson ->
@@ -70,12 +68,7 @@ fun ChannelScreen(
             bottomBar = {
               BottomNavigationMenu(
                   onTabSelect = { route -> navigationActions.navigateTo(route) },
-                  tabList =
-                      when (currentProfile?.role) {
-                        Role.TUTOR -> LIST_TOP_LEVEL_DESTINATIONS_TUTOR
-                        Role.STUDENT -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-                        else -> LIST_TOP_LEVEL_DESTINATIONS_STUDENT
-                      },
+                  tabList = navigationItems,
                   selectedItem = navigationActions.currentRoute(),
                   networkStatusViewModel = networkStatusViewModel)
             }) {
