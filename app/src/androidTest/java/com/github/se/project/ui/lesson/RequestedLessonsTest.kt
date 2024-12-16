@@ -251,6 +251,5 @@ class LessonsRequestedScreenTest {
     composeTestRule.onNodeWithText("Physics").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
     composeTestRule.onNodeWithText("Physics").performClick()
-
   }
 }
