@@ -1,9 +1,51 @@
 package com.github.se.project.ui.endToEnd
 
-import com.github.se.project.model.profile.*
+/*
+import android.content.Context
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performTextInput
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.espresso.action.ViewActions.swipeRight
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.PocketTutorApp
+import com.github.se.project.model.chat.ChatViewModel
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.profile.AcademicLevel
+import com.github.se.project.model.profile.Language
+import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.model.profile.Profile
+import com.github.se.project.model.profile.ProfilesRepository
+import com.github.se.project.model.profile.Role
+import com.github.se.project.model.profile.Section
+import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.navigation.NavigationActions
+import io.getstream.chat.android.models.Filters.eq
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 
-/*@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class TutorEndToEndTest {
 
   @Mock lateinit var navigationActions: NavigationActions
@@ -19,7 +61,10 @@ class TutorEndToEndTest {
 
   private var mockLessonViewModel = spy(LessonViewModel(mockLessonRepository))
 
-  private var mockLessons =
+    private var chatViewModel = mock(ChatViewModel::class.java)
+
+
+    private var mockLessons =
       listOf(
           Lesson(
               id = "1",
@@ -97,7 +142,7 @@ class TutorEndToEndTest {
   fun TutorEndToEndTest() {
     composeTestRule.setContent {
       PocketTutorApp(
-          true, viewModel(), mockProfileViewModel, mockLessonViewModel, onMapReadyChange = {})
+          true, viewModel(), mockProfileViewModel, mockLessonViewModel, onMapReadyChange = {}, chatViewModel = chatViewModel)
     }
     composeTestRule.waitForIdle()
 
@@ -217,4 +262,5 @@ class TutorEndToEndTest {
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
     composeTestRule.onNodeWithText("Student: Ozymandias Halifax").assertIsDisplayed()
   }
-}*/
+}
+ */

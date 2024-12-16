@@ -16,6 +16,7 @@ ktfmt = "0.17.0"
 # UI Compose
 mockitoAndroid = "5.13.0"
 mockitoInlineVersion = "5.5.0"
+mockitoMockitoInline = "2.13.0"
 streamChatAndroidUiComponents = "6.4.4"
 ui = "1.6.8"
 uiTestJunit4 = "1.6.8"
@@ -138,6 +139,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockito-inline-v2130 = { module = "org.mockito:mockito-inline", version.ref = "mockitoMockitoInline" }
 mockito-inline-v550 = { module = "org.mockito:mockito-inline", version.ref = "mockitoInlineVersion" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref="mockitoKotlin"}
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
