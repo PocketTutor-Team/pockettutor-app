@@ -74,6 +74,9 @@
     <string name="already_instant">You already have an instant lesson scheduled</string>
     <string name="select_subject">Select Subject</string>
     <string name="select_subjects">Select Subjects</string>
+    <string name="no_completed_lessons">No completed lessons yet</string>
+    <string name="completed_lessons">Completed Lessons</string>
+    <string name="sign_out">Sign Out</string>
 
     <!-- Lesson Details  -->
     <string name = "confirmed_lesson">Confirmed Lesson</string>

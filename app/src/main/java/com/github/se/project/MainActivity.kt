@@ -111,12 +111,11 @@ fun PocketTutorApp(
     onMapReadyChange: (Boolean) -> Unit = {},
     chatViewModel: ChatViewModel,
 ) {
-    val certificationViewModel: CertificationViewModel =
-        viewModel(
-            factory =
-            CertificationViewModel.Factory(
-                EpflVerificationRepository(),
-                viewModel(factory = ListProfilesViewModel.Factory)))
+  val certificationViewModel: CertificationViewModel =
+      viewModel(
+          factory =
+              CertificationViewModel.Factory(
+                  EpflVerificationRepository(), viewModel(factory = ListProfilesViewModel.Factory)))
   // Navigation
   val navController = rememberNavController()
   val navigationActions = NavigationActions(navController)
