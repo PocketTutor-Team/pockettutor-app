@@ -64,6 +64,7 @@ class EndToEndStudentTest {
 
   private val mockIsConnected = MutableStateFlow(true)
   private lateinit var networkStatusViewModel: NetworkStatusViewModel
+  var testMapReady = false
 
   private val mockTutor =
       Profile(
@@ -141,15 +142,6 @@ class EndToEndStudentTest {
         object : NetworkStatusViewModel(application = ApplicationProvider.getApplicationContext()) {
           override val isConnected = mockIsConnected
         }
-  }
-
-  // The test interacts with the UI components to simulate the entire user journey, from logging in
-  // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
-  // displayed to students are tested: requesting a specific tutor, creating an open request, having
-  // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
-  @Test
-  fun endToEndStudentCreateAccountAndLessonLifecycle() {
-    var testMapReady = false
 
     // Start the app in test mode
     composeTestRule.setContent {
@@ -162,6 +154,14 @@ class EndToEndStudentTest {
           onMapReadyChange = { testMapReady = it },
           chatViewModel = mockChatViewModel)
     }
+  }
+
+  // The test interacts with the UI components to simulate the entire user journey, from logging in
+  // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
+  // displayed to students are tested: requesting a specific tutor, creating an open request, having
+  // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
+  @Test
+  fun endToEndStudentCreateAccountAndLessonLifecycle() {
     composeTestRule.waitForIdle()
 
     // Sign in
@@ -320,18 +320,6 @@ class EndToEndStudentTest {
 
   @Test
   fun endToEndStudentCreateAccountEditAccountAndInstantLesson() {
-
-    // Start the app in test mode
-    composeTestRule.setContent {
-      PocketTutorApp(
-          true,
-          viewModel(),
-          mockProfileViewModel,
-          mockLessonViewModel,
-          networkStatusViewModel,
-          onMapReadyChange = {},
-          chatViewModel = mockChatViewModel)
-    }
     composeTestRule.waitForIdle()
 
     // Sign in
