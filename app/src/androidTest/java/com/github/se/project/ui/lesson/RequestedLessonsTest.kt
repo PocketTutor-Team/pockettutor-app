@@ -1,18 +1,37 @@
 package com.github.se.project.ui.lesson
 
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.rule.GrantPermissionRule
+import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRepository
+import com.github.se.project.model.lesson.LessonStatus
+import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.*
+import com.github.se.project.ui.navigation.NavigationActions
+import com.github.se.project.ui.navigation.Route
+import com.github.se.project.ui.navigation.TopLevelDestinations
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
-
-/*
 class LessonsRequestedScreenTest {
-
-  @get:Rule val composeTestRule = createComposeRule()
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
+  @get:Rule val composeTestRule = createComposeRule()
   private lateinit var profilesRepository: ProfilesRepository
   private lateinit var listProfilesViewModel: ListProfilesViewModel
 
@@ -20,6 +39,9 @@ class LessonsRequestedScreenTest {
   private lateinit var lessonViewModel: LessonViewModel
 
   private lateinit var navigationActions: NavigationActions
+
+  private lateinit var mockOnSubjectsSelected: (Set<Subject>) -> Unit
+  private lateinit var mockOnDismiss: () -> Unit
 
   private val mockTutorProfile =
       Profile(
@@ -84,6 +106,16 @@ class LessonsRequestedScreenTest {
               longitude = 0.0))
   private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
+  // Mock NetworkStatusViewModel to control the network status state
+  private val mockIsConnected = MutableStateFlow(true)
+
+  private val mockNetworkStatusViewModel =
+      object :
+          NetworkStatusViewModel(
+              application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+        override val isConnected = mockIsConnected
+      }
+
   @Before
   fun setup() {
 
@@ -103,29 +135,33 @@ class LessonsRequestedScreenTest {
           `when`(currentRoute()).thenReturn(Route.FIND_STUDENT)
         }
 
-    doReturn(requestedLessonsFlow).`when`(lessonViewModel).requestedLessons
-    doNothing().`when`(lessonRepository).getAllRequestedLessons(any(), any())
+    doAnswer { invocation ->
+          val onSuccess = invocation.arguments[0] as (List<Lesson>) -> Unit
+          onSuccess(mockLessons) // Trigger the success callback with mockLessons
+          null
+        }
+        .`when`(lessonRepository)
+        .getAllRequestedLessons(
+            org.mockito.kotlin.any<(List<Lesson>) -> Unit>(),
+            org.mockito.kotlin.any<(Exception) -> Unit>())
 
     doReturn(currentUserFlow).`when`(listProfilesViewModel).currentProfile
 
-    doNothing().`when`(profilesRepository).getProfiles(any(), any())
-  }
+    `when`(profilesRepository.getProfiles(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+        .thenAnswer { invocation ->
+          val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+          onSuccess(listOf())
+        }
 
-  @Test
-  fun testScreenComponentsDisplayed() {
-    composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-
-    // Verify Top Bar and Bottom Navigation are displayed
-    composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bottomNavigationMenu").assertIsDisplayed()
+    mockOnSubjectsSelected = mock()
+    mockOnDismiss = mock()
   }
 
   @Test
   fun testLessonItemsDisplayed() {
     composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
 
     // Verify the lesson items are displayed
@@ -137,7 +173,8 @@ class LessonsRequestedScreenTest {
   @Test
   fun testNavigation() {
     composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
     composeTestRule.onNodeWithText("Physics Tutoring").performClick()
     verify(navigationActions).navigateTo(anyString())
@@ -146,7 +183,8 @@ class LessonsRequestedScreenTest {
   @Test
   fun testDatePickerButtonFunctionality() {
     composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
 
     // Click on the DatePicker to ensure it can be interacted with
@@ -154,68 +192,24 @@ class LessonsRequestedScreenTest {
   }
 
   @Test
-  fun testLessonsFilteredBySelectedDate() {
-    // Set the selected date to filter lessons
-    val filteredDate = "2024-10-10"
-
-    // Change the lessons to include only those that match the date
-    requestedLessonsFlow.value = mockLessons.filter { it.timeSlot.contains(filteredDate) }
-
-    composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-    // Verify that only the filtered lesson items are displayed
-    composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Math Tutoring").assertIsNotDisplayed()
-  }
-
-  @Test
   fun testBottomNavigationSelection() {
     composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
 
     // Interact with Bottom Navigation and verify navigation action
-    composeTestRule.onNodeWithTag("Find a Student").performClick()
+    composeTestRule.onNodeWithTag("centerElement").performClick()
 
     // Verify using the actual TopLevelDestination object
     verify(navigationActions).navigateTo(TopLevelDestinations.TUTOR)
   }
 
   @Test
-  fun testNoLessonsMessageDisplayedWhenEmpty() {
-    requestedLessonsFlow.value = emptyList() // Set no lessons
-
-    composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-
-    // Verify "No lessons available" message or any placeholder is displayed
-    composeTestRule.onNodeWithTag("noLessonsMessage").assertIsDisplayed()
-  }
-
-  @Test
-  fun testNoInstantLessonsMessageDisplayedWhenEmpty() {
-    requestedLessonsFlow.value = emptyList() // Set no lessons
-
-    composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-    }
-
-    // Wait for location to load, then set Instant Filter
-    composeTestRule.waitUntil(15000) {
-      composeTestRule.onNodeWithTag("instantToggleButton").isDisplayed()
-    }
-    composeTestRule.onNodeWithTag("instantToggleButton").performClick()
-
-    // Verify "No lessons available" message or any placeholder is displayed
-    composeTestRule.onNodeWithTag("noInstantLessonsMessage").assertIsDisplayed()
-  }
-
-  @Test
   fun testInstantLesson() {
     composeTestRule.setContent {
-      RequestedLessonsScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
 
     // Wait for location to load, then set Instant Filter
@@ -245,5 +239,30 @@ class LessonsRequestedScreenTest {
     composeTestRule.onNodeWithText("Instant Tutoring").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
+
+  @Test
+  fun testFilterDialogInteraction() {
+    // Setup the initial content for RequestedLessonsScreen
+    composeTestRule.setContent {
+      RequestedLessonsScreen(
+          listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
+    }
+
+    // Step 1: Click on the "Filter by subjects" button (assumed to be in the UI)
+    // This will trigger the display of the FilterDialog
+    composeTestRule.onNodeWithTag("filterButton").performClick()
+
+    // Step 2: Verify that the FilterDialog opens and displays the subjects (PHYSICS and ANALYSIS)
+    composeTestRule.onNodeWithText("Physics").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
+
+    // Step 3: Simulate user selecting a subject (e.g., selecting Physics)
+    composeTestRule.onNodeWithText("Physics").performClick()
+
+    // Step 5: Simulate user dismissing the FilterDialog
+    // composeTestRule.onNodeWithContentDescription("Dismiss").performClick()
+
+    // Step 6: Verify that the dismiss callback (mockOnDismiss) was triggered
+    // verify(mockOnDismiss).invoke()
+  }
 }
-*/

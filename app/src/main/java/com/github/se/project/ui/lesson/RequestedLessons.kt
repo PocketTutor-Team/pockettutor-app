@@ -190,15 +190,6 @@ fun RequestedLessonsScreen(
         var refreshing by remember { mutableStateOf(false) }
         val refreshScope = rememberCoroutineScope()
 
-        fun refresh() =
-            refreshScope.launch {
-              refreshing = true
-              lessonViewModel.getAllRequestedLessons()
-              listProfilesViewModel.getProfiles()
-              delay(1000)
-              refreshing = false
-            }
-
         val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
         Box(modifier = Modifier.fillMaxSize().padding(padding).pullRefresh(pullRefreshState)) {
@@ -362,7 +353,7 @@ fun LessonsRequestedTopBar(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun FilterDialog(
+fun FilterDialog(
     currentSubjects: Set<Subject>,
     onSubjectsSelected: (Set<Subject>) -> Unit,
     onDismiss: () -> Unit,
@@ -517,7 +508,7 @@ private fun EmptyState(showInstant: MutableState<Boolean>, canSeeInstants: Mutab
 /**
  * Parses a lesson's time slot string into a LocalDateTime object. Returns null if parsing fails.
  */
-private fun parseLessonDate(timeSlot: String): LocalDateTime? {
+fun parseLessonDate(timeSlot: String): LocalDateTime? {
   return try {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss")
     LocalDateTime.parse(timeSlot, formatter)
