@@ -242,27 +242,15 @@ class LessonsRequestedScreenTest {
 
   @Test
   fun testFilterDialogInteraction() {
-    // Setup the initial content for RequestedLessonsScreen
     composeTestRule.setContent {
       RequestedLessonsScreen(
           listProfilesViewModel, lessonViewModel, mockNetworkStatusViewModel, navigationActions)
     }
 
-    // Step 1: Click on the "Filter by subjects" button (assumed to be in the UI)
-    // This will trigger the display of the FilterDialog
     composeTestRule.onNodeWithTag("filterButton").performClick()
-
-    // Step 2: Verify that the FilterDialog opens and displays the subjects (PHYSICS and ANALYSIS)
     composeTestRule.onNodeWithText("Physics").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
-
-    // Step 3: Simulate user selecting a subject (e.g., selecting Physics)
     composeTestRule.onNodeWithText("Physics").performClick()
 
-    // Step 5: Simulate user dismissing the FilterDialog
-    // composeTestRule.onNodeWithContentDescription("Dismiss").performClick()
-
-    // Step 6: Verify that the dismiss callback (mockOnDismiss) was triggered
-    // verify(mockOnDismiss).invoke()
   }
 }
