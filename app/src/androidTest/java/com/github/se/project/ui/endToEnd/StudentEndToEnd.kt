@@ -1,6 +1,6 @@
 package com.github.se.project.ui.endToEnd
 
-/*
+
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
@@ -70,6 +70,7 @@ class EndToEndTest {
           Role.TUTOR,
           Section.IN,
           AcademicLevel.BA3,
+          listOf(),
           "I have experience teaching math and physics.",
           listOf(Language.ENGLISH),
           listOf(Subject.AICC),
@@ -361,4 +362,3 @@ class EndToEndTest {
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
   }
 }
-*/
