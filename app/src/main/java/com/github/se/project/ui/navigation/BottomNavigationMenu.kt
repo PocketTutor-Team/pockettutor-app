@@ -170,7 +170,7 @@ fun BottomNavigationMenu(
           containerColor = MaterialTheme.colorScheme.primary,
           contentColor = MaterialTheme.colorScheme.onPrimary,
           shape = CircleShape,
-          modifier = Modifier.size(56.dp).align(Alignment.Center)) {
+          modifier = Modifier.size(56.dp).align(Alignment.Center).testTag("centerElement")) {
             Icon(
                 imageVector = centerItem.icon,
                 contentDescription = null,
