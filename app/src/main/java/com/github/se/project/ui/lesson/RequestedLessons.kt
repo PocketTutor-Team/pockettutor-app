@@ -187,8 +187,6 @@ fun RequestedLessonsScreen(
             selectedItem = navigationActions.currentRoute(),
             networkStatusViewModel = networkStatusViewModel)
       }) { padding ->
-        var refreshing by remember { mutableStateOf(false) }
-        val refreshScope = rememberCoroutineScope()
 
         val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
