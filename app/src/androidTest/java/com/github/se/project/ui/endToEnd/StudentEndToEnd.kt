@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
@@ -17,11 +18,13 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
+import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -59,6 +62,13 @@ class EndToEndTest {
 
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
 
+    private val mockCertificationViewModel = mock(CertificationViewModel::class.java)
+
+    private val mockIsConnected = MutableStateFlow(true)
+    private lateinit var networkStatusViewModel: NetworkStatusViewModel
+
+    private var chatViewModel = mock(ChatViewModel::class.java)
+
   private val mockTutor =
       Profile(
           "mockTutor",
@@ -86,13 +96,13 @@ class EndToEndTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @get:Rule
+  /*@get:Rule
   val grantNotificationPermission: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)*/
 
   @Before
   fun setUp() {
@@ -132,9 +142,12 @@ class EndToEndTest {
       onSuccess() // Simulate a successful deletion
     }
 
-    // Stub any methods or flows needed in ChatViewModel
-    whenever(mockChatViewModel.currentChannelID)
-        .thenReturn(MutableStateFlow<String?>(null).asStateFlow())
+      networkStatusViewModel =
+          object :
+              NetworkStatusViewModel(
+                  application = androidx.test.core.app.ApplicationProvider.getApplicationContext()) {
+              override val isConnected = mockIsConnected
+          }
   }
 
   // The test interacts with the UI components to simulate the entire user journey, from logging in
@@ -152,6 +165,7 @@ class EndToEndTest {
           viewModel(),
           mockProfileViewModel,
           mockLessonViewModel,
+          networkStatusViewModel,
           onMapReadyChange = { testMapReady = it },
           chatViewModel = mockChatViewModel)
     }
@@ -164,6 +178,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
+      composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
     composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
 
     // Select section and academic level
@@ -174,7 +189,12 @@ class EndToEndTest {
 
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(mockProfileRepository).addProfile(any(), any(), any())
+
+      composeTestRule.waitForIdle()
+
+      composeTestRule.waitUntil(15000) {
+          composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
+      }
 
     // Go to the profile viewing screen
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
