@@ -187,7 +187,6 @@ fun RequestedLessonsScreen(
             selectedItem = navigationActions.currentRoute(),
             networkStatusViewModel = networkStatusViewModel)
       }) { padding ->
-
         val pullRefreshState = rememberPullRefreshState(refreshing, ::refresh)
 
         Box(modifier = Modifier.fillMaxSize().padding(padding).pullRefresh(pullRefreshState)) {
