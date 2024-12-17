@@ -1,31 +1,22 @@
 package com.github.se.project.ui.lesson
 
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class IsTutorAvailableTest {
   @Test
   fun isTutorAvailable_respondToEdgeCases() {
     // check if exception thrown when tutor schedule is empty
-    try {
+    assertThrows(IllegalArgumentException::class.java) {
       isTutorAvailable(listOf(), "01/01/2050T10:00:00")
-      assert(false)
-    } catch (e: Exception) {
-      assert(e is IllegalArgumentException)
     }
-
-    try {
+    assertThrows(IllegalArgumentException::class.java) {
       isTutorAvailable(List(7) { listOf() }, "01/01/2050T10:00:00")
-      assert(false)
-    } catch (e: Exception) {
-      assert(e is IllegalArgumentException)
     }
 
     // check if exception thrown when timeslot is invalid
-    try {
+    assertThrows(IllegalArgumentException::class.java) {
       isTutorAvailable(List(7) { List(12) { 1 } }, "invalid")
-      assert(false)
-    } catch (e: Exception) {
-      assert(e is IllegalArgumentException)
     }
 
     // check if false is return when hourIndex is not in 0..11
