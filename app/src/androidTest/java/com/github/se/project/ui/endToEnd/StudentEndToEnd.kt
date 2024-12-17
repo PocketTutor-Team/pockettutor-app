@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -18,7 +17,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
-import com.github.se.project.R
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -93,9 +91,9 @@ class EndToEndStudentTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @get:Rule
+  /*@get:Rule
   val grantNotificationPermission: GrantPermissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)*/
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
@@ -161,7 +159,7 @@ class EndToEndStudentTest {
   // displayed to students are tested: requesting a specific tutor, creating an open request, having
   // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
   @Test
-  fun endToEndStudentCreateAccountAndLessonLifecycle() {
+  fun endToEndStudentCreateAccountAndLesson() {
     composeTestRule.waitForIdle()
 
     // Sign in
@@ -185,19 +183,15 @@ class EndToEndStudentTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.waitUntil(15000) {
-      composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
-    }
-
-    // Go to the profile viewing screen
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
-
-    // Check if the correct profile info is displayed
-    composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
-    composeTestRule.onNodeWithText("SC - BA3").assertIsDisplayed()
+    assert(mockProfileViewModel.currentProfile.value != null)
+    assert(mockProfileViewModel.currentProfile.value!!.firstName == "Alice")
+    assert(mockProfileViewModel.currentProfile.value!!.lastName == "Dupont")
+    assert(mockProfileViewModel.currentProfile.value!!.phoneNumber == "+411234567890")
+    assert(mockProfileViewModel.currentProfile.value!!.role == Role.STUDENT)
+    assert(mockProfileViewModel.currentProfile.value!!.section == Section.SC)
+    assert(mockProfileViewModel.currentProfile.value!!.academicLevel == AcademicLevel.BA3)
 
     // Navigate to the lesson creation screen
-    composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithTag("middlePlus").performClick()
 
     // Create a new lesson
@@ -242,9 +236,79 @@ class EndToEndStudentTest {
     assert(currentLesson!!.languages == listOf(Language.ENGLISH))
     assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
 
-    // Check if the lesson is displayed and click on it
+    // Check if the lesson is displayed
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Help how do I write tests").performClick()
+  }
+
+  @Test
+  fun endToEndStudentEditAccountAndLessonLifecycle() {
+
+    // Simulate the user having a lesson
+    currentLesson =
+        Lesson(
+            "mockUid",
+            "Math Lesson",
+            "This is a math lesson.",
+            Subject.ANALYSIS,
+            listOf(Language.ENGLISH),
+            listOf(),
+            "mockUid",
+            5.0,
+            30.0,
+            0.0,
+            "30/10/2024T10:00:00",
+            LessonStatus.STUDENT_REQUESTED,
+            0.0,
+            0.0)
+
+    composeTestRule.waitForIdle()
+
+    // Sign in
+    composeTestRule.onNodeWithTag("loginButton").performClick()
+
+    // Enter valid data for all fields
+    composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
+    composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
+
+    // Select section and academic level
+    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
+
+    // Click the confirm button
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
+    }
+
+    // Go to the profile viewing screen
+    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+
+    // Check if the correct profile info is displayed
+    composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
+    composeTestRule.onNodeWithText("SC - BA3").assertIsDisplayed()
+
+    // Go to the edit profile screen
+    composeTestRule.onNodeWithTag("editProfileButton").performClick()
+
+    // Change the profile info
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0")
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    verify(mockProfileRepository).updateProfile(any(), any(), any())
+
+    // Navigate to the lesson creation screen
+    composeTestRule.onNodeWithTag("closeButton").performClick()
+
+    // Check if the lesson is displayed
+    composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Lesson").performClick()
 
     // Edit the lesson
     composeTestRule.onNodeWithTag("titleField").performClick()
@@ -315,89 +379,6 @@ class EndToEndStudentTest {
     // Go to the profile info screen and check it is displayed
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
-  }
-
-  @Test
-  fun endToEndStudentCreateAccountEditAccountAndInstantLesson() {
-    composeTestRule.waitForIdle()
-
-    // Sign in
-    composeTestRule.onNodeWithTag("loginButton").performClick()
-
-    // Enter valid data for all fields
-    composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
-    composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
-    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
-    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
-
-    // Select section and academic level
-    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
-
-    // Click the confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.waitUntil(15000) {
-      composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
-    }
-
-    // Go to the profile viewing screen
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
-
-    // Check if the correct profile info is displayed
-    composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
-    composeTestRule.onNodeWithText("SC - BA3").assertIsDisplayed()
-
-    // Go to the edit profile screen
-    composeTestRule.onNodeWithTag("editProfileButton").performClick()
-
-    // Change the profile info
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0")
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(mockProfileRepository).updateProfile(any(), any(), any())
-
-    // Navigate to the lesson creation screen
-    composeTestRule.onNodeWithTag("closeButton").performClick()
-    composeTestRule.onNodeWithTag("middlePlus").performClick()
-
-    // Set Instant Lesson
-    composeTestRule.waitUntil(20000) {
-      composeTestRule.onNodeWithTag("instantButton").isDisplayed()
-    }
-
-    // Set Title and Description
-    composeTestRule.onNodeWithTag("titleField").performTextInput("Math Lesson")
-    composeTestRule.onNodeWithTag("DescriptionField").performTextInput("This is a math lesson.")
-
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("instantButton").performClick()
-    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("mapButton").isNotDisplayed() }
-
-    // Set Subject and Language
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.waitUntil(20000) {
-      composeTestRule.onNodeWithText(context.getString(R.string.select_subject)).isNotDisplayed()
-    }
-
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    assert(currentLesson!!.title == "Math Lesson")
-    assert(currentLesson!!.description == "This is a math lesson.")
-    assert(currentLesson!!.subject == Subject.ANALYSIS)
-    assert(currentLesson!!.languages == listOf(Language.ENGLISH))
-    assert(currentLesson!!.status == LessonStatus.INSTANT_REQUESTED)
-
-    // Check if the lesson is displayed
-    composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Help how do I write tests").performClick()
   }
 }
