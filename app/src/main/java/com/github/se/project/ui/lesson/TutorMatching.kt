@@ -63,11 +63,15 @@ fun TutorMatchingScreen(
 ) {
   val currentProfile =
       listProfilesViewModel.currentProfile.collectAsState().value
-          ?: return Text("No profile selected. Should not happen.")
+          ?: return Text(
+              text = stringResource(R.string.no_profile_selected),
+              modifier = Modifier.testTag("noProfileSelected"))
 
   val currentLesson =
       lessonViewModel.selectedLesson.collectAsState().value
-          ?: return Text("No lesson selected. Should not happen.")
+          ?: return Text(
+              text = stringResource(R.string.no_lesson_selected),
+              modifier = Modifier.testTag("noLessonSelected"))
 
   var showFilterDialog by remember { mutableStateOf(false) }
   var showVerifiedOnly by remember { mutableStateOf(false) }
@@ -263,7 +267,9 @@ fun TutorMatchingScreen(
           AlertDialog(
               modifier = Modifier.testTag("filterDialog"),
               onDismissRequest = { showFilterDialog = false },
-              title = { Text("Filter Tutors") },
+              title = {
+                Text(text = "Filter Tutors", modifier = Modifier.testTag("filterDialogTitle"))
+              },
               text = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                   // Verified filter

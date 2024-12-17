@@ -47,7 +47,7 @@ class TutorMatchingScreenTest {
   private lateinit var navController: NavHostController
 
   private val profileFlow =
-      MutableStateFlow(
+      MutableStateFlow<Profile?>(
           Profile(
               uid = "uid",
               token = "",
@@ -63,7 +63,7 @@ class TutorMatchingScreenTest {
               schedule = List(7) { List(12) { 1 } }))
 
   private val lessonFlow =
-      MutableStateFlow(
+      MutableStateFlow<Lesson?>(
           Lesson(
               id = "lessonId",
               title = "Math Lesson",
@@ -137,6 +137,11 @@ class TutorMatchingScreenTest {
     whenever(lessonRepository.addLesson(any(), any(), any())).thenAnswer { invocation ->
       val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
+    }
+
+    whenever(lessonRepository.deleteLesson(anyString(), any(), any())).thenAnswer { invocation ->
+      val onSuccess = invocation.arguments[1] as () -> Unit
+      onSuccess() // Simulate a successful deletion
     }
 
     listProfilesViewModel.getProfiles()
@@ -214,7 +219,7 @@ class TutorMatchingScreenTest {
 
   @Test
   fun correctButtonAreDisplayed_whenStatusIsStudentRequested() {
-    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+    lessonFlow.value = lessonFlow.value!!.copy(status = LessonStatus.STUDENT_REQUESTED)
 
     composeTestRule.setContent {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -226,7 +231,7 @@ class TutorMatchingScreenTest {
 
   @Test
   fun lessonCancellationDialogIsDisplayed_whenCancellationButtonClicked() {
-    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+    lessonFlow.value = lessonFlow.value!!.copy(status = LessonStatus.STUDENT_REQUESTED)
 
     composeTestRule.setContent {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -239,32 +244,33 @@ class TutorMatchingScreenTest {
     composeTestRule.onNodeWithTag("cancellationDialogConfirmButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("cancellationDialogDismissButton").assertIsDisplayed()
   }
-  /*
-   @Test
-   fun lessonDeleted_whenCancellationDialogConfirmed() {
-     lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
 
-     composeTestRule.setContent {
-       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
-     }
+  @Test
+  fun lessonDeleted_whenCancellationDialogConfirmed() {
+    lessonFlow.value = lessonFlow.value!!.copy(status = LessonStatus.STUDENT_REQUESTED)
 
-     // Click on the cancellation button and confirm the dialog
-     composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
-     composeTestRule
-         .onNodeWithTag("cancellationDialogConfirmButton")
-         .assertIsDisplayed()
-         .performClick()
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
 
-     // Verify the dialog is dismissed and the navigation is done
-     composeTestRule.onNodeWithTag("cancellationDialog").assertIsNotDisplayed()
-     verify(navigationActions).goBack()
-   }
+    // Click on the cancellation button and confirm the dialog
+    composeTestRule.onNodeWithTag("cancellationButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancellationDialogConfirmButton")
+        .assertIsDisplayed()
+        .performClick()
+    composeTestRule.waitForIdle() // wait for the dialog to be displayed
 
-  */
+    // Verify the dialog is dismissed and the navigation is done
+    composeTestRule.onNodeWithTag("cancellationDialog").assertIsNotDisplayed()
+    verify(lessonRepository).deleteLesson(anyString(), any(), any())
+    verify(lessonRepository).getLessonsForStudent(anyString(), any(), any())
+    verify(navigationActions).goBack()
+  }
 
   @Test
   fun dialogDismissed_whenCancellationDialogDismissed() {
-    lessonFlow.value = lessonFlow.value.copy(status = LessonStatus.STUDENT_REQUESTED)
+    lessonFlow.value = lessonFlow.value!!.copy(status = LessonStatus.STUDENT_REQUESTED)
 
     composeTestRule.setContent {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -283,7 +289,7 @@ class TutorMatchingScreenTest {
 
   @Test
   fun starIconIsDisplayedWhenTutorIsFavorite() {
-    profileFlow.value = profileFlow.value.copy(favoriteTutors = listOf("tutor123"))
+    profileFlow.value = profileFlow.value!!.copy(favoriteTutors = listOf("tutor123"))
 
     composeTestRule.setContent {
       TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
@@ -293,5 +299,112 @@ class TutorMatchingScreenTest {
     // Check that the favorite tutors section is displayed
     composeTestRule.onNodeWithTag("tutorsListFavorite").assertIsDisplayed()
     composeTestRule.onNodeWithTag("tutorCard_0").assertIsDisplayed()
+  }
+
+  @Test
+  fun filterDialogDisplayed_whenFilterButtonClicked() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the filter button to display the filter dialog
+    composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify the filter dialog is displayed correctly
+    composeTestRule.onNodeWithTag("filterDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("filterDialogTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("applyFiltersButton").assertIsDisplayed()
+
+    // Verify the filter options are displayed
+    composeTestRule.onNodeWithTag("verifiedSwitch").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sortOption_PRICE").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sortOption_ACADEMIC_LEVEL").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("sortOption_VERIFICATION").assertIsDisplayed()
+  }
+
+  @Test
+  fun filterDialogDismissed_whenConfirmedButtonClicked() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the filter button to display the filter dialog
+    composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Click on the apply filters button to dismiss the dialog
+    composeTestRule.onNodeWithTag("applyFiltersButton").assertIsDisplayed().performClick()
+
+    // Verify the filter dialog is dismissed
+    composeTestRule.onNodeWithTag("filterDialog").assertIsNotDisplayed()
+  }
+
+  @Test
+  fun filterWithAcademicLevelWorks() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the filter button to display the filter dialog
+    composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Click on the academic level filter option
+    composeTestRule.onNodeWithTag("sortOption_ACADEMIC_LEVEL").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("applyFiltersButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify the filter dialog is dismissed
+    composeTestRule.onNodeWithTag("filterDialog").assertIsNotDisplayed()
+
+    // Verify the tutor list is displayed
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+  }
+
+  @Test
+  fun filterWithVerificationWorks() {
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Click on the filter button to display the filter dialog
+    composeTestRule.onNodeWithTag("filterButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Click on the academic level filter option
+    composeTestRule.onNodeWithTag("sortOption_VERIFICATION").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("applyFiltersButton").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    // Verify the filter dialog is dismissed
+    composeTestRule.onNodeWithTag("filterDialog").assertIsNotDisplayed()
+
+    // Verify the tutor list is displayed
+    composeTestRule.onNodeWithTag("tutorsList").assertIsDisplayed()
+  }
+
+  @Test
+  fun errorMessageDisplayed_whenNoLessonSelected() {
+    lessonFlow.value = null
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Verify the error message is displayed
+    composeTestRule.onNodeWithTag("noLessonSelected").assertIsDisplayed()
+  }
+
+  @Test
+  fun errorMessageDisplayed_whenNoProfileSelected() {
+    profileFlow.value = null
+
+    composeTestRule.setContent {
+      TutorMatchingScreen(listProfilesViewModel, lessonViewModel, navigationActions)
+    }
+
+    // Verify the error message is displayed
+    composeTestRule.onNodeWithTag("noProfileSelected").assertIsDisplayed()
   }
 }
