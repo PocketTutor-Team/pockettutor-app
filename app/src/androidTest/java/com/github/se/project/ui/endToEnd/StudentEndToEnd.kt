@@ -1,6 +1,5 @@
 package com.github.se.project.ui.endToEnd
 
-/*
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
@@ -9,11 +8,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.PocketTutorApp
@@ -22,6 +22,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
+import com.github.se.project.model.network.NetworkStatusViewModel
 import com.github.se.project.model.profile.AcademicLevel
 import com.github.se.project.model.profile.Language
 import com.github.se.project.model.profile.ListProfilesViewModel
@@ -30,9 +31,9 @@ import com.github.se.project.model.profile.ProfilesRepository
 import com.github.se.project.model.profile.Role
 import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.ui.lesson.assertEnabledToBoolean
 import com.github.se.project.ui.navigation.NavigationActions
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,11 +45,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
-class EndToEndTest {
+class EndToEndStudentTest {
 
   @Mock lateinit var navigationActions: NavigationActions
 
-  @Mock lateinit var context: Context
+  private val context = ApplicationProvider.getApplicationContext<Context>()
 
   // Mock du ProfilesRepository
   private val mockProfileRepository = mock(ProfilesRepository::class.java)
@@ -58,6 +59,10 @@ class EndToEndTest {
   private val mockLessonRepository = mock(LessonRepository::class.java)
 
   private val mockLessonViewModel = LessonViewModel(mockLessonRepository)
+
+  private val mockIsConnected = MutableStateFlow(true)
+  private lateinit var networkStatusViewModel: NetworkStatusViewModel
+  var testMapReady = false
 
   private val mockTutor =
       Profile(
@@ -70,6 +75,7 @@ class EndToEndTest {
           Role.TUTOR,
           Section.IN,
           AcademicLevel.BA3,
+          listOf(),
           "I have experience teaching math and physics.",
           listOf(Language.ENGLISH),
           listOf(Subject.AICC),
@@ -78,7 +84,10 @@ class EndToEndTest {
 
   private var currentLesson: Lesson? = null
 
-  val mockChatViewModel = mock(ChatViewModel::class.java)
+  // Mock ChatViewModel
+  // val mockChatClient = mock(ChatClient::class.java) // not used for now, will be used in a
+  // following PR
+  private val mockChatViewModel: ChatViewModel = mock(ChatViewModel::class.java)
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -92,30 +101,29 @@ class EndToEndTest {
 
   @Before
   fun setUp() {
-    context = mock(Context::class.java)
     whenever(mockProfileRepository.addProfile(any(), any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
     whenever(mockProfileRepository.getProfiles(any(), any())).thenAnswer { invocation ->
-      val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[0] as (List<Profile>) -> Unit
       onSuccess(listOf(mockTutor)) // Simulate a list of profiles with our beloved Ozymandias
     }
     whenever(mockProfileRepository.getNewUid()).thenReturn("mockUid")
     whenever(mockLessonRepository.getNewUid()).thenReturn("mockUid")
     whenever(mockLessonRepository.addLesson(any(), any(), any())).thenAnswer { invocation ->
       currentLesson = invocation.arguments[0] as Lesson
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
     whenever(mockLessonRepository.updateLesson(any(), any(), any())).thenAnswer { invocation ->
       currentLesson = invocation.arguments[0] as Lesson
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful update
     }
     whenever(mockLessonRepository.getLessonsForStudent(any(), any(), any())).thenAnswer { invocation
       ->
-      val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as (List<Lesson>) -> Unit
       if (currentLesson == null) {
         onSuccess(emptyList()) // Simulate an empty list of lessons
       } else {
@@ -124,22 +132,14 @@ class EndToEndTest {
     }
     whenever(mockLessonRepository.deleteLesson(any(), any(), any())).thenAnswer { invocation ->
       currentLesson = null
-      val onSuccess = invocation.arguments[1] as () -> Unit
+      @Suppress("UNCHECKED_CAST") val onSuccess = invocation.arguments[1] as () -> Unit
       onSuccess() // Simulate a successful deletion
     }
 
-    // Stub any methods or flows needed in ChatViewModel
-    whenever(mockChatViewModel.currentChannelId)
-        .thenReturn(MutableStateFlow<String?>(null).asStateFlow())
-  }
-
-  // The test interacts with the UI components to simulate the entire user journey, from logging in
-  // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
-  // displayed to students are tested: requesting a specific tutor, creating an open request, having
-  // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
-  @Test
-  fun endToEndStudentTest() {
-    var testMapReady = false
+    networkStatusViewModel =
+        object : NetworkStatusViewModel(application = ApplicationProvider.getApplicationContext()) {
+          override val isConnected = mockIsConnected
+        }
 
     // Start the app in test mode
     composeTestRule.setContent {
@@ -148,9 +148,18 @@ class EndToEndTest {
           viewModel(),
           mockProfileViewModel,
           mockLessonViewModel,
+          networkStatusViewModel,
           onMapReadyChange = { testMapReady = it },
           chatViewModel = mockChatViewModel)
     }
+  }
+
+  // The test interacts with the UI components to simulate the entire user journey, from logging in
+  // and editing profile information, to creating and scheduling a lesson. All 5 types of lessons
+  // displayed to students are tested: requesting a specific tutor, creating an open request, having
+  // a tutor respond to your request, having a confirmed lesson, and having a completed lesson.
+  @Test
+  fun endToEndStudentCreateAccountAndLesson() {
     composeTestRule.waitForIdle()
 
     // Sign in
@@ -160,6 +169,7 @@ class EndToEndTest {
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
     composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
 
     // Select section and academic level
@@ -170,122 +180,135 @@ class EndToEndTest {
 
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(mockProfileRepository).addProfile(any(), any(), any())
+
+    composeTestRule.waitForIdle()
+
+    assert(mockProfileViewModel.currentProfile.value != null)
+    assert(mockProfileViewModel.currentProfile.value!!.firstName == "Alice")
+    assert(mockProfileViewModel.currentProfile.value!!.lastName == "Dupont")
+    assert(mockProfileViewModel.currentProfile.value!!.phoneNumber == "+411234567890")
+    assert(mockProfileViewModel.currentProfile.value!!.role == Role.STUDENT)
+    assert(mockProfileViewModel.currentProfile.value!!.section == Section.SC)
+    assert(mockProfileViewModel.currentProfile.value!!.academicLevel == AcademicLevel.BA3)
+
+    // Navigate to the lesson creation screen
+    composeTestRule.onNodeWithTag("middlePlus").performClick()
+
+    // Create a new lesson
+    composeTestRule.onNodeWithTag("titleField").performTextInput("Help how do I write tests")
+    composeTestRule.onNodeWithTag("DescriptionField").performTextInput("CI is hard, pls help")
+    composeTestRule.onNodeWithTag("DateButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("TimeButton").performClick()
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
+    composeTestRule.onNodeWithText("OK").performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("dropdownAICC").performClick()
+    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("mapContainer").performClick()
+
+    composeTestRule.waitUntil(15000) {
+      // wait max 4 seconds for the map to load,
+      // as soon as the map is ready, the next line will be executed
+      testMapReady
+    }
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("googleMap").isDisplayed() }
+
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+
+    composeTestRule.waitUntil(20000) {
+      assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
+    }
+    testMapReady = false
+
+    composeTestRule.onNodeWithTag("confirmLocation").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    // Do not select any tutors
+    composeTestRule.onNodeWithTag("noTutorButton").performClick()
+
+    // Assert lesson has correct fields
+    assert(currentLesson!!.title == "Help how do I write tests")
+    assert(currentLesson!!.description == "CI is hard, pls help")
+    assert(currentLesson!!.subject == Subject.AICC)
+    assert(currentLesson!!.languages == listOf(Language.ENGLISH))
+    assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
+
+    // Check if the lesson is displayed
+    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+  }
+
+  @Test
+  fun endToEndStudentEditAccountAndLessonLifecycle() {
+
+    // Simulate the user having a lesson
+    currentLesson =
+        Lesson(
+            "mockUid",
+            "Math Lesson",
+            "This is a math lesson.",
+            Subject.ANALYSIS,
+            listOf(Language.ENGLISH),
+            listOf(),
+            "mockUid",
+            5.0,
+            30.0,
+            0.0,
+            "30/10/2024T10:00:00",
+            LessonStatus.STUDENT_REQUESTED,
+            0.0,
+            0.0)
+
+    composeTestRule.waitForIdle()
+
+    // Sign in
+    composeTestRule.onNodeWithTag("loginButton").performClick()
+
+    // Enter valid data for all fields
+    composeTestRule.onNodeWithTag("firstNameField").performTextInput("Alice")
+    composeTestRule.onNodeWithTag("lastNameField").performTextInput("Dupont")
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
+
+    // Select section and academic level
+    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
+
+    // Click the confirm button
+    composeTestRule.onNodeWithTag("confirmButton").performClick()
+
+    composeTestRule.waitForIdle()
+
+    composeTestRule.waitUntil(15000) {
+      composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
+    }
 
     // Go to the profile viewing screen
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
 
     // Check if the correct profile info is displayed
     composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Status: BA3 Student").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Section: SC").assertIsDisplayed()
+    composeTestRule.onNodeWithText("SC - BA3").assertIsDisplayed()
 
     // Go to the edit profile screen
     composeTestRule.onNodeWithTag("editProfileButton").performClick()
 
     // Change the profile info
-    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA5").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdownItem-MA").performClick()
+    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0")
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     verify(mockProfileRepository).updateProfile(any(), any(), any())
 
-    // Check if the profile info updated correctly
-    composeTestRule.onNodeWithText("Status: BA5 Student").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Section: MA").assertIsDisplayed()
-
     // Navigate to the lesson creation screen
     composeTestRule.onNodeWithTag("closeButton").performClick()
-    composeTestRule.onNodeWithText("Find a Tutor").performClick()
 
-    // Create a new lesson
-    composeTestRule.onNodeWithTag("titleField").performTextInput("End-to-end testing")
-    composeTestRule
-        .onNodeWithTag("DescriptionField")
-        .performTextInput("Teach me how to write tests pls")
-    composeTestRule.onNodeWithTag("DateButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
-    composeTestRule.onNodeWithTag("TimeButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdownAICC").performClick()
-    composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-
-    composeTestRule.waitUntil(15000) {
-      // wait max 4 seconds for the map to load,
-      // as soon as the map is ready, the next line will be executed
-      testMapReady
-    }
-    Thread.sleep(5000)
-
-    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-    testMapReady = false
-
-    composeTestRule.onNodeWithTag("confirmLocation").performClick()
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    // Select a tutor
-    composeTestRule.onNodeWithTag("tutorCard_0").performClick()
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-    composeTestRule.onNodeWithTag("confirmDialogButton").performClick()
-    // composeTestRule.onNodeWithTag("confirmButton").performClick()
-    assert(currentLesson!!.title == "End-to-end testing")
-    assert(currentLesson!!.description == "Teach me how to write tests pls")
-    assert(currentLesson!!.subject == Subject.AICC)
-    assert(currentLesson!!.languages == listOf(Language.ENGLISH))
-    assert(currentLesson!!.status == LessonStatus.PENDING_TUTOR_CONFIRMATION)
-
-    // Navigate to the lesson creation screen
-    composeTestRule.onNodeWithText("Find a Tutor").performClick()
-
-    // Create a new lesson
-    composeTestRule.onNodeWithTag("titleField").performTextInput("Help how do I write tests")
-    composeTestRule
-        .onNodeWithTag("DescriptionField")
-        .performTextInput("Teach me how to write tests pls")
-    composeTestRule.onNodeWithTag("DateButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
-    composeTestRule.onNodeWithTag("TimeButton").performClick()
-    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
-    composeTestRule.onNodeWithText("OK").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdownAICC").performClick()
-    composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
-
-    Thread.sleep(15000)
-    composeTestRule.waitUntil(15000) {
-      // wait max 4 seconds for the map to load,
-      // as soon as the map is ready, the next line will be executed
-      testMapReady
-    }
-
-    Thread.sleep(5000)
-
-    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-    testMapReady = false
-
-    composeTestRule.onNodeWithTag("confirmLocation").performClick()
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
-
-    // Here we could assert all the fields again, but it has already been done above
-
-    // Do not select any tutors
-    composeTestRule.onNodeWithTag("noTutorButton").performClick()
-    assert(currentLesson!!.status == LessonStatus.STUDENT_REQUESTED)
-
-    // check if the lesson is displayed
-    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
-
-    composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Help how do I write tests").performClick()
+    // Check if the lesson is displayed
+    composeTestRule.onNodeWithText("Math Lesson").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Math Lesson").performClick()
 
     // Edit the lesson
     composeTestRule.onNodeWithTag("titleField").performClick()
@@ -305,7 +328,7 @@ class EndToEndTest {
     // Check if the lesson was deleted correctly
     composeTestRule.onNodeWithTag("noLessonsText").assertIsDisplayed()
 
-    // Simulate the open lesson being taken up by a tutor
+    // Simulate an open lesson being taken up by a tutor
     currentLesson =
         Lesson(
             "mockUid",
@@ -356,6 +379,6 @@ class EndToEndTest {
     // Go to the profile info screen and check it is displayed
     composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Help how do I write tests").performClick()
   }
 }
- */
