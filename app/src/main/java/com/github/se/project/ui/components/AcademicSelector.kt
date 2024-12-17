@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.profile.AcademicLevel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AcademicSelector(academicLevel: MutableState<AcademicLevel?>, enabled: Boolean = true) {
   val expandedDropdown = remember { mutableStateOf(false) }
