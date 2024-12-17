@@ -4,15 +4,15 @@ PocketTutor is an Android application designed to help students find tutors effo
 
 ## Find Your Perfect Tutor Easily!
 
-At the heart of PocketTutor is a powerful matching algorithm that seamlessly connects students with tutors who are ready to assist them, ensuring an optimal learning experience. The algorithm takes into account the availability and academic level of each tutor, making it easier for students to find help when they need it the most.
+At the heart of PocketTutor is a _powerful matching algorithm_ that seamlessly connects students with tutors who are ready to assist them, ensuring an optimal learning experience. The algorithm takes into account the availability and academic level of each tutor, making it easier for students to find help when they need it the most.
 
-In addition to the core matching functionality, PocketTutor offers several features to enhance the user experience. Students can bookmark their favorite tutors, allowing them to quickly reconnect with tutors they have had successful sessions with. This feature ensures that students can build strong, ongoing relationships with tutors who understand their learning style and needs.
+In addition to the core matching functionality, PocketTutor offers several features to enhance the user experience. Students can _bookmark their favorite tutors_, allowing them to quickly reconnect with tutors they have had successful sessions with. This feature ensures that students can build strong, ongoing relationships with tutors who understand their learning style and needs.
 
-PocketTutor also provides an option for tutors to certify their accounts by scanning their Camipro card, or directly using their sciper number. This certification process adds an extra layer of trust and security, ensuring that all users are legitimate students seeking academic assistance.
+PocketTutor also provides an option for tutors to _certify their accounts_ by scanning their Camipro card, or directly using their sciper number. This certification process adds an extra layer of trust and security, ensuring that all users are legitimate tutors offering academic assistance.
 
-Notifications are another crucial aspect of the PocketTutor experience. Students receive timely reminders and updates, ensuring they never miss a scheduled session or important action. Whether it's a reminder for an upcoming lesson or a notification about a tutor's availability, students are always kept in the loop.
+_Notifications_ are another crucial aspect of the PocketTutor experience. Students receive timely reminders and updates, ensuring they never miss a scheduled session or important action. Whether it's a reminder for an upcoming lesson or a notification about a tutor's availability, students are always kept in the loop.
 
-One of the standout features of PocketTutor is the ability to take instantaneous lessons. Students can quickly find available tutors and start a lesson immediately, based on their location, making it convenient for those urgent moments of need. This real-time connection allows for spontaneous and effective tutoring sessions, catering to the fast-paced demands of academic life.
+One of the standout features of PocketTutor is the ability to take _instantaneous lessons_. Students can quickly find available tutors and start a lesson immediately, based on their location, making it convenient for those urgent moments of need. This real-time connection allows for spontaneous and effective tutoring sessions, catering to the fast-paced demands of academic life.
 
 
 ## Features
