@@ -91,9 +91,9 @@ class EndToEndStudentTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  /*@get:Rule
+  @get:Rule
   val grantNotificationPermission: GrantPermissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)*/
+      GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @get:Rule
   val permissionRule: GrantPermissionRule =
