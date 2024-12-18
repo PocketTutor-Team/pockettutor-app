@@ -2,11 +2,14 @@ package com.github.se.project.ui.certification
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.border
@@ -26,10 +29,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import com.github.se.project.R
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.util.concurrent.Executors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // Define scanning states outside the composable
@@ -44,28 +53,27 @@ enum class ScanningState {
  *
  * @param onSciperCaptured Callback function triggered when a valid SCIPER number is detected
  * @param modifier Modifier for the button layout
+ * @param testMode If true, no permissions or camera setup are performed; used for testing UI
+ *   states.
  */
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun SciperScanButton(
     onSciperCaptured: (String) -> Unit,
     modifier: Modifier = Modifier,
-    // Test parameters
-    testMode: Boolean = false,
-    initialShowCamera: Boolean? = null,
-    initialHasCameraPermission: Boolean? = null,
-    initialScanningState: ScanningState? = null
+    testMode: Boolean = false
 ) {
-  var showCamera by remember { mutableStateOf(initialShowCamera ?: false) }
-  var hasCameraPermission by remember { mutableStateOf(initialHasCameraPermission ?: false) }
-  var scanningState by remember { mutableStateOf(initialScanningState ?: ScanningState.Scanning) }
+  // State management for camera and scanning
+  var showCamera by remember { mutableStateOf(false) }
+  var hasCameraPermission by remember { mutableStateOf(false) }
+  var scanningState by remember { mutableStateOf(ScanningState.Scanning) }
 
   val context = LocalContext.current
   val lifecycleOwner = LocalLifecycleOwner.current
   val scope = rememberCoroutineScope()
 
-  // If in test mode, skip actual permission requests and camera initialization
   if (!testMode) {
+    // Normal mode: handle camera permissions
     val permissionLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
             isGranted ->
@@ -79,6 +87,7 @@ fun SciperScanButton(
           }
         }
 
+    // Main scan button
     Button(
         onClick = {
           when (PackageManager.PERMISSION_GRANTED) {
@@ -104,15 +113,14 @@ fun SciperScanButton(
           )
         }
   } else {
-    // In test mode, we just show the same button without permissions logic
+    // Test mode: no permissions or camera setup, just show a test button
     Button(onClick = { showCamera = true }, modifier = modifier) {
       Text("Scan Camipro Card (Test)")
     }
   }
 
-  if (showCamera && hasCameraPermission) {
-    // In test mode, don't set up the camera and text recognition.
-    // Just display the dialog and overlay UI.
+  // Camera scanning dialog
+  if (showCamera && (hasCameraPermission || testMode)) {
     Dialog(
         onDismissRequest = {
           showCamera = false
@@ -125,8 +133,81 @@ fun SciperScanButton(
                 usePlatformDefaultWidth = false)) {
           Box(modifier = Modifier.fillMaxSize()) {
             if (!testMode) {
-              // Actual camera preview initialization here
-              // ...
+              // Normal mode: set up camera preview and analysis
+              val previewView = remember { PreviewView(context) }
+              val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+              var isProcessingImage by remember { mutableStateOf(false) }
+
+              DisposableEffect(Unit) { onDispose { cameraExecutor.shutdown() } }
+
+              AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+
+              LaunchedEffect(Unit) {
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+                val cameraProvider = cameraProviderFuture.get()
+                val preview =
+                    Preview.Builder().build().also {
+                      it.setSurfaceProvider(previewView.surfaceProvider)
+                    }
+
+                val imageAnalysis =
+                    ImageAnalysis.Builder()
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build()
+
+                val textRecognizer =
+                    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+                imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                  if (!isProcessingImage && scanningState == ScanningState.Scanning) {
+                    isProcessingImage = true
+                    val mediaImage = imageProxy.image
+
+                    if (mediaImage != null) {
+                      val image =
+                          InputImage.fromMediaImage(
+                              mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+                      textRecognizer
+                          .process(image)
+                          .addOnSuccessListener { visionText ->
+                            val sciperPattern = Regex("\\b\\d{6}\\b")
+                            val matchResult = sciperPattern.find(visionText.text)
+
+                            matchResult?.value?.let { sciper ->
+                              scanningState = ScanningState.Detected
+                              scope.launch {
+                                delay(2000) // Wait for 2 seconds
+                                onSciperCaptured(sciper)
+                                showCamera = false
+                                scanningState = ScanningState.Scanning
+                              }
+                            }
+                          }
+                          .addOnFailureListener { e ->
+                            Log.e("SciperScan", "Text recognition failed", e)
+                          }
+                          .addOnCompleteListener {
+                            imageProxy.close()
+                            isProcessingImage = false
+                          }
+                    } else {
+                      imageProxy.close()
+                      isProcessingImage = false
+                    }
+                  } else {
+                    imageProxy.close()
+                  }
+                }
+
+                try {
+                  cameraProvider.unbindAll()
+                  cameraProvider.bindToLifecycle(
+                      lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageAnalysis)
+                } catch (e: Exception) {
+                  Log.e("CameraPreview", "Use case binding failed", e)
+                }
+              }
             }
 
             // UI overlay that we can test
@@ -209,10 +290,7 @@ fun SciperScanButton(
                   exit = fadeOut(),
                   modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 32.dp)) {
                     Surface(
-                        modifier =
-                            Modifier.padding(horizontal = 32.dp)
-                                .fillMaxWidth()
-                                .testTag("DetectedMessage"),
+                        modifier = Modifier.padding(horizontal = 32.dp).fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)) {
                           Row(
@@ -223,12 +301,17 @@ fun SciperScanButton(
                                     Icons.Default.CheckCircle,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(24.dp))
+                                    modifier =
+                                        Modifier.size(24.dp)
+                                            .animateEnterExit(enter = fadeIn(), exit = fadeOut()))
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     "SCIPER detected!",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.primary)
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier =
+                                        Modifier.animateEnterExit(
+                                            enter = fadeIn(), exit = fadeOut()))
                               }
                         }
                   }

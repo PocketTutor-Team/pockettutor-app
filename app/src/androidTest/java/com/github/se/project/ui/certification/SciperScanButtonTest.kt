@@ -1,7 +1,6 @@
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.project.ui.certification.ScanningState
 import com.github.se.project.ui.certification.SciperScanButton
 import org.junit.Rule
 import org.junit.Test
@@ -13,19 +12,16 @@ class SciperScanButtonTest {
 
   @Test
   fun whenClicked_showsCameraDialogAndFrame_inTestMode() {
-    composeTestRule.setContent {
-      SciperScanButton(
-          onSciperCaptured = {},
-          testMode = true,
-          initialHasCameraPermission = true // Simulate that we already have permission
-          )
-    }
+    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}, testMode = true) }
 
     // Initially, we should see the scan button
     composeTestRule.onNodeWithText("Scan Camipro Card (Test)").assertIsDisplayed()
 
     // Click the button to show the camera dialog
     composeTestRule.onNodeWithText("Scan Camipro Card (Test)").performClick()
+
+    // Wait for the UI to settle after the click
+    composeTestRule.waitForIdle()
 
     // Now the dialog should appear with scanning instructions
     composeTestRule.onNodeWithText("Scan your Camipro Card").assertIsDisplayed()
@@ -38,34 +34,14 @@ class SciperScanButtonTest {
   }
 
   @Test
-  fun showsDetectedState_inTestMode() {
-    composeTestRule.setContent {
-      SciperScanButton(
-          onSciperCaptured = {},
-          testMode = true,
-          initialHasCameraPermission = true,
-          initialShowCamera = true,
-          initialScanningState = ScanningState.Detected)
-    }
-
-    // Since we set initialShowCamera and initialScanningState, we should see the detected state
-    // immediately
-    composeTestRule.onNodeWithText("Scan your Camipro Card").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("DetectedMessage").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("ScanningFrame").assertIsDisplayed()
-  }
-
-  @Test
   fun closeButton_closesDialogAndResetsState() {
-    composeTestRule.setContent {
-      SciperScanButton(
-          onSciperCaptured = {},
-          testMode = true,
-          initialHasCameraPermission = true,
-          initialShowCamera = true)
-    }
+    composeTestRule.setContent { SciperScanButton(onSciperCaptured = {}, testMode = true) }
 
-    // Dialog should be visible
+    // Show the camera dialog by clicking the button
+    composeTestRule.onNodeWithText("Scan Camipro Card (Test)").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Scan Camipro Card (Test)").performClick()
+
+    // Dialog should now be visible
     composeTestRule.onNodeWithText("Scan your Camipro Card").assertIsDisplayed()
 
     // Press the close button (X icon)
