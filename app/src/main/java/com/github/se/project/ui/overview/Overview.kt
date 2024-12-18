@@ -207,9 +207,11 @@ fun HomeScreen(
                     }
               }
 
-              IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
-                ProfilePhoto(currentProfile?.profilePhotoUrl, size = 32.dp)
-              }
+              IconButton(
+                  onClick = { navigationActions.navigateTo(Screen.PROFILE) },
+                  modifier = Modifier.testTag("profile_photo")) {
+                    ProfilePhoto(currentProfile?.profilePhotoUrl, size = 32.dp)
+                  }
             })
       },
       bottomBar = {

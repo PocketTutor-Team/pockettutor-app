@@ -197,18 +197,17 @@ fun RequestedLessonsScreen(
                   modifier = Modifier.padding(horizontal = 16.dp),
                   horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     selectedSubjects.forEach { subject ->
+                      val subjectName =
+                          subject.name.lowercase().capitalizeFirstLetter().replace("_", " ")
                       FilterChip(
                           selected = true,
                           onClick = { selectedSubjects = selectedSubjects - subject },
-                          label = {
-                            Text(subject.name.lowercase().capitalizeFirstLetter().replace("_", " "))
-                          },
+                          label = { Text(subjectName) },
                           leadingIcon = { Icon(Icons.Default.Clear, "Remove filter") },
                           colors =
                               FilterChipDefaults.filterChipColors(
                                   selectedLabelColor = Color.White,
-                                  selectedLeadingIconColor = Color.White,
-                              ))
+                                  selectedLeadingIconColor = Color.White))
                     }
                   }
             }
@@ -383,6 +382,9 @@ fun FilterDialog(
                         ?.subjects
                         ?.filter { it != Subject.NONE }
                         ?.forEach { subject ->
+                          val subjectName =
+                              subject.name.lowercase().capitalizeFirstLetter().replace("_", " ")
+
                           FilterChip(
                               selected = subject in tempSelectedSubjects,
                               onClick = {
@@ -393,17 +395,12 @@ fun FilterDialog(
                                       tempSelectedSubjects + subject
                                     }
                               },
-                              label = {
-                                Text(
-                                    subject.name
-                                        .lowercase()
-                                        .capitalizeFirstLetter()
-                                        .replace("_", " "))
-                              },
+                              label = { Text(subjectName) },
                               colors =
                                   FilterChipDefaults.filterChipColors(
                                       selectedLabelColor = Color.White,
                                       selectedLeadingIconColor = Color.White),
+                              modifier = Modifier.testTag("$subjectName chip"),
                               leadingIcon =
                                   if (subject in tempSelectedSubjects) {
                                     {

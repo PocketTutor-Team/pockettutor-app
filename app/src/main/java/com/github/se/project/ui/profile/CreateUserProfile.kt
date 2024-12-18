@@ -309,7 +309,7 @@ fun CreateProfileScreen(
                     }
                   },
                   enabled = !isLoading, // Disable button when loading
-                  modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                  modifier = Modifier.fillMaxWidth().height(48.dp).testTag("confirmButton")) {
                     if (isLoading) {
                       CircularProgressIndicator(
                           modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)

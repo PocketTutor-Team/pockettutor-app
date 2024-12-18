@@ -179,7 +179,11 @@ fun ProfileInfoScreen(
                     navigationActions.navigateTo(Screen.AUTH)
                   }
                 },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
+                modifier =
+                    Modifier.align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .testTag("signOutButton"),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
