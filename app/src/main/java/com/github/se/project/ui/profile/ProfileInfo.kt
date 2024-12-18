@@ -168,7 +168,7 @@ fun ProfileInfoScreen(
                                 })
                           }
                         }
-                  }
+                      }
                 }
 
             // Fixed Sign Out Button at the bottom

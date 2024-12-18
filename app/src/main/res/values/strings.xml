@@ -13,8 +13,8 @@
     <string name="price_per_lesson">Price:</string>
     <string name="lessons_count">lessons count</string>
     <string name="error_loading_profile">Error loading profile…</string>
-    <string name="lessons_given">lessons given since you joined PocketTutor</string>
-    <string name="lessons_taken">lessons taken since you joined PocketTutor</string>
+    <string name="lessons_given">lessons given</string>
+    <string name="lessons_taken">lessons taken</string>
     <string name="price_not_set">Not Set</string>
     <string name="update_profile">Update Profile</string>
     <string name="schedule">Schedule</string>
