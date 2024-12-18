@@ -221,13 +221,6 @@ fun CreateProfileScreen(
 
                         // Get new FCM registration token
                         token = task.result
-
-                        // Log and toast
-                        val msg = "FCM Token: $token"
-                        // Log.d(TAG, msg)
-
-                        // Implement this method to send token to your app server.
-                        // Log.d("MainActivity" ,"sendRegistrationTokenToServer($token)")
                       })
 
               Button(

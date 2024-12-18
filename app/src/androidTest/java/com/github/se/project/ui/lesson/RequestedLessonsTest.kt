@@ -17,7 +17,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
@@ -104,7 +103,6 @@ class LessonsRequestedScreenTest {
               status = LessonStatus.INSTANT_REQUESTED,
               latitude = 0.0,
               longitude = 0.0))
-  private val requestedLessonsFlow = MutableStateFlow(mockLessons)
 
   // Mock NetworkStatusViewModel to control the network status state
   private val mockIsConnected = MutableStateFlow(true)
@@ -131,7 +129,7 @@ class LessonsRequestedScreenTest {
     lessonViewModel = spy(lessonViewModel)
 
     navigationActions =
-        Mockito.mock(NavigationActions::class.java).apply {
+        mock(NavigationActions::class.java).apply {
           `when`(currentRoute()).thenReturn(Route.FIND_STUDENT)
         }
 
@@ -199,7 +197,7 @@ class LessonsRequestedScreenTest {
     }
 
     // Interact with Bottom Navigation and verify navigation action
-    composeTestRule.onNodeWithTag("centerElement").performClick()
+    composeTestRule.onNodeWithTag("middlePlus").performClick()
 
     // Verify using the actual TopLevelDestination object
     verify(navigationActions).navigateTo(TopLevelDestinations.TUTOR)

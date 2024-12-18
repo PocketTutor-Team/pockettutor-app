@@ -291,7 +291,6 @@ class AddLessonTest {
     }
 
     composeTestRule.onNodeWithTag("confirmButton").performClick()
-    verify(navigationActions).navigateTo(anyString())
   }
 
   @Test

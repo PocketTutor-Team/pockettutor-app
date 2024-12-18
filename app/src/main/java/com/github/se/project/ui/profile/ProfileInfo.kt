@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,7 +117,7 @@ fun ProfileInfoScreen(
               modifier = Modifier.fillMaxSize().padding(padding),
               contentAlignment = Alignment.Center) {
                 Text(
-                    text = "Error loading profile…",
+                    text = stringResource(R.string.error_loading_profile),
                     modifier = Modifier.testTag("errorLoadingProfile"))
               }
         } else {
@@ -149,14 +150,13 @@ fun ProfileInfoScreen(
                                   MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))) {
                         Column(modifier = Modifier.padding(16.dp)) {
                           Text(
-                              text = "Completed Lessons",
+                              text = stringResource(R.string.completed_lessons),
                               style = MaterialTheme.typography.titleMedium)
 
                           Spacer(modifier = Modifier.height(8.dp))
 
                           if (completedLessons.isEmpty()) {
-                            EmptyState(
-                                text = "No completed lessons yet", icon = Icons.Default.CheckCircle)
+                            EmptyState(icon = Icons.Default.CheckCircle)
                           } else {
                             DisplayLessons(
                                 lessons = completedLessons,
@@ -168,7 +168,7 @@ fun ProfileInfoScreen(
                                 })
                           }
                         }
-                      }
+                  }
                 }
 
             // Fixed Sign Out Button at the bottom
@@ -188,7 +188,9 @@ fun ProfileInfoScreen(
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer)) {
-                  Text("Sign Out")
+                  Text(
+                      stringResource(R.string.sign_out),
+                      modifier = Modifier.testTag("signOutButton"))
                 }
           }
 
@@ -277,7 +279,8 @@ private fun ProfileCard(
                     StatItem(
                         count = completedLessonsCount,
                         label =
-                            if (profile.role == Role.TUTOR) "Lessons Given" else "Lessons Taken",
+                            if (profile.role == Role.TUTOR) stringResource(R.string.lessons_given)
+                            else stringResource(R.string.lessons_taken),
                         icon = Icons.Default.CheckCircle,
                         modifier = Modifier.testTag("lessonsCount"))
 
@@ -384,13 +387,13 @@ private fun ProfileCard(
 @SuppressLint("DefaultLocale")
 @Composable
 private fun StatItem(
+    modifier: Modifier = Modifier,
     count: Int = -1,
     rating: Double = -1.0,
     text: String = "",
     label: String,
     icon: ImageVector,
     prefix: String = "",
-    modifier: Modifier = Modifier
 ) {
   Column(
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -425,7 +428,7 @@ private fun StatItem(
 }
 
 @Composable
-private fun EmptyState(text: String, icon: ImageVector) {
+private fun EmptyState(icon: ImageVector) {
   Column(
       modifier = Modifier.fillMaxWidth().padding(32.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -436,7 +439,7 @@ private fun EmptyState(text: String, icon: ImageVector) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(48.dp))
         Text(
-            text = text,
+            text = stringResource(R.string.no_completed_lessons),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             textAlign = TextAlign.Center,

@@ -42,7 +42,6 @@ object LessonColors {
   private val LightUrgent = Color(0xFFF3E5F5) // Violet pastel clair
   private val LightCancelled = Color(0xFFFFEBEE) // Rouge pastel clair
   private val LightInstantConfirmed = Color(0xFFBBDEFB) // Bleu ciel pastel
-  private val LightInstantRequested = Color(0xFFC8E6C9) // Vert menthe pastel
 
   private val DarkCompleted = Color(0xFF571E98) // Violet foncé
   private val DarkConfirmed = Color(0xFF1565C0) // Bleu foncé
