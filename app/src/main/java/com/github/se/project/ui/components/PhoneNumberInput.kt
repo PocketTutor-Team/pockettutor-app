@@ -21,13 +21,14 @@ fun PhoneNumberInput(
     onPhoneNumberChange: (String) -> Unit
 ) {
   var countryCodeExpanded by remember { mutableStateOf(false) }
+  val maxPhoneNumberLength = 12
 
   Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     // Country code dropdown
     ExposedDropdownMenuBox(
         expanded = countryCodeExpanded,
         onExpandedChange = { countryCodeExpanded = !countryCodeExpanded },
-        modifier = Modifier.weight(1f)) {
+        modifier = Modifier.weight(1.2f)) {
           OutlinedTextField(
               readOnly = true,
               value = "${selectedCountry.flagEmoji} ${selectedCountry.code}",
@@ -67,7 +68,11 @@ fun PhoneNumberInput(
     // Phone number input
     OutlinedTextField(
         value = phoneNumber,
-        onValueChange = onPhoneNumberChange,
+        onValueChange = { newValue ->
+          if (newValue.length <= maxPhoneNumberLength) {
+            onPhoneNumberChange(newValue)
+          }
+        },
         label = { Text("Phone Number") },
         modifier = Modifier.weight(2f).testTag("phoneNumberField"), // Ensure test tag is set
         singleLine = true,

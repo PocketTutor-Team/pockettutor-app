@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.se.project.ui.certification.SciperScanButton
@@ -37,7 +38,12 @@ fun EpflVerificationDialog(isVerified: Boolean, onDismiss: () -> Unit, onVerify:
                 if (isVerified) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onSurface)
       },
-      title = { Text(if (isVerified) "EPFL Verified" else "EPFL Verification Required") },
+      title = {
+        // Add a test tag to the title if needed
+        Text(
+            text = if (isVerified) "EPFL Verified" else "EPFL Verification Required",
+            modifier = Modifier.testTag("epflVerificationTitle"))
+      },
       text = {
         if (isVerified) {
           Text("Your EPFL profile has been verified")
@@ -64,13 +70,17 @@ fun EpflVerificationDialog(isVerified: Boolean, onDismiss: () -> Unit, onVerify:
               }
               onDismiss()
             },
-            enabled = isVerified || sciper.length == 6) {
+            enabled = isVerified || sciper.length == 6,
+            modifier = Modifier.testTag("epflVerificationConfirmButton")) {
               Text(if (isVerified) "Close" else "Verify")
             }
       },
       dismissButton = {
         if (!isVerified) {
-          TextButton(onClick = onDismiss) { Text("Later") }
+          TextButton(
+              onClick = onDismiss, modifier = Modifier.testTag("epflVerificationDismissButton")) {
+                Text("Later")
+              }
         }
       })
 }

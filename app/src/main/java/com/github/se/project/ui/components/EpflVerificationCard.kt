@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -182,7 +183,8 @@ fun EpflVerificationCard(
 
               if (verificationState is VerificationState.Loading) {
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary)
+                    modifier = Modifier.fillMaxWidth().testTag("progressIndicator"),
+                    color = MaterialTheme.colorScheme.primary)
               }
             }
       }
