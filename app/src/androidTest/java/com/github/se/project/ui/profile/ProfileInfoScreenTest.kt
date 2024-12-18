@@ -1,10 +1,14 @@
 package com.github.se.project.ui.profile
 
 import android.content.Context
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
@@ -12,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.project.R
 import com.github.se.project.model.authentification.AuthenticationViewModel
 import com.github.se.project.model.certification.CertificationViewModel
+import com.github.se.project.model.certification.EpflCertification
 import com.github.se.project.model.certification.EpflVerificationRepository
 import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonRepository
@@ -242,5 +247,89 @@ class ProfileInfoScreenTest {
 
     assert(realAuthenticationViewModel.userId.value == null)
     verify(mockNavigationActions).navigateTo(Screen.AUTH)
+  }
+
+  @Test
+  fun tutorWithNonVerifiedSciper_opensVerificationDialogOnClick() {
+    val unverifiedTutorProfile =
+        mockTutorProfile.copy(
+            certification = EpflCertification(sciper = "123456", verified = false))
+    val currentProfileFlow = MutableStateFlow<Profile?>(unverifiedTutorProfile)
+    doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
+
+    composeTestRule.setContent {
+      ProfileInfoScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
+    }
+
+    // Click on the verification status icon
+    composeTestRule
+        .onNodeWithContentDescription("Verification status")
+        .assertExists()
+        .performClick()
+
+    // After clicking, the EPFL verification dialog should appear with this title for non-verified
+    composeTestRule.onNodeWithText("EPFL Verification Required").assertIsDisplayed()
+  }
+
+  @Test
+  fun tutorWithVerifiedSciper_showsVerifiedIcon_and_opensDialog() {
+    val verifiedTutorProfile =
+        mockTutorProfile.copy(certification = EpflCertification(sciper = "123456", verified = true))
+    val currentProfileFlow = MutableStateFlow<Profile?>(verifiedTutorProfile)
+    doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
+
+    composeTestRule.setContent {
+      ProfileInfoScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
+    }
+
+    // Check that the verified icon is displayed and clickable
+    composeTestRule
+        .onNodeWithContentDescription("Verification status")
+        .assertExists()
+        .performClick()
+
+    // Dialog should appear with "EPFL Verified" for a verified profile
+    composeTestRule.onNodeWithText("EPFL Verified").assertIsDisplayed()
+  }
+
+  @Test
+  fun verificationDialog_dismissesOnCancel() {
+    val unverifiedTutorProfile =
+        mockTutorProfile.copy(
+            certification = EpflCertification(sciper = "123456", verified = false))
+    val currentProfileFlow = MutableStateFlow<Profile?>(unverifiedTutorProfile)
+    doReturn(currentProfileFlow).`when`(mockListProfilesViewModel).currentProfile
+
+    composeTestRule.setContent {
+      ProfileInfoScreen(
+          navigationActions = mockNavigationActions,
+          listProfilesViewModel = mockListProfilesViewModel,
+          lessonViewModel = mockLessonViewModel,
+          authenticationViewModel = realAuthenticationViewModel,
+          certificationViewModel = certificationViewModel)
+    }
+
+    // Open the verification dialog
+    composeTestRule
+        .onNodeWithContentDescription("Verification status")
+        .assertExists()
+        .performClick()
+    composeTestRule.onNodeWithText("EPFL Verification Required").assertIsDisplayed()
+
+    // The dismiss button for non-verified is "Later"
+    composeTestRule.onNodeWithText("Later").assertIsDisplayed().performClick()
+
+    // After dismissing, the dialog should not be visible
+    composeTestRule.onAllNodesWithText("EPFL Verification Required").assertCountEquals(0)
   }
 }
