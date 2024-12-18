@@ -19,6 +19,7 @@ import com.github.se.project.PocketTutorApp
 import com.github.se.project.model.certification.CertificationViewModel
 import com.github.se.project.model.chat.ChatViewModel
 import com.github.se.project.model.lesson.Lesson
+import com.github.se.project.model.lesson.LessonRating
 import com.github.se.project.model.lesson.LessonRepository
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.LessonViewModel
@@ -33,6 +34,7 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.model.profile.Subject
 import com.github.se.project.ui.navigation.NavigationActions
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Timestamp
 import com.google.firebase.messaging.FirebaseMessaging
 import io.getstream.chat.android.models.Filters.eq
 import junit.framework.TestCase.assertEquals
@@ -243,7 +245,7 @@ class TutorEndToEndTest {
   }
 
     @Test
-    fun StudentMatchAndCancelTest() {
+    fun TutorMatchAndReviewConsultation() {
         var testMapReady = false
         composeTestRule.setContent {
             PocketTutorApp(
@@ -309,13 +311,11 @@ class TutorEndToEndTest {
                     longitude = 6.5685102716088295),
             )
         // Call the updatelesson
-        val updatedMockLessonFlow = MutableStateFlow(mockLessons[0])
+        var updatedMockLessonFlow = MutableStateFlow(mockLessons[0])
+        //val updatedMockLessonFlow2 = MutableStateFlow(mockLessons[1])
         doReturn(updatedMockLessonFlow).`when`(mockLessonViewModel).selectedLesson
         // Reload the screen
-        composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
-        composeTestRule.onNodeWithTag("closeButton").performClick()
-        //
-        composeTestRule.onNodeWithTag("section_Waiting for your Confirmation").assertExists()
+
         composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
         composeTestRule.onNodeWithText("Maths Tutoring").assertIsDisplayed()
         composeTestRule.onNodeWithText("analysis").assertIsDisplayed()
@@ -332,8 +332,30 @@ class TutorEndToEndTest {
         composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
         composeTestRule.onNodeWithText("Student: Ozymandias Halifax").assertIsDisplayed()
         composeTestRule.onNodeWithText("Maths Tutoring").performClick()
-        composeTestRule.onNodeWithTag("cancelButton").performClick()
-        composeTestRule.onNodeWithTag("cancelDialogConfirmButton ").performClick()
+        composeTestRule.onNodeWithTag("backButton").performClick()
+
+        mockLessons =
+            listOf(
+                Lesson(
+                    id = "1",
+                    title = "Maths Tutoring",
+                    description = "Fourrier Transform",
+                    subject = Subject.ANALYSIS,
+                    languages = listOf(Language.ENGLISH),
+                    tutorUid = listOf("mockUid"),
+                    studentUid = "student123",
+                    minPrice = 20.0,
+                    maxPrice = 50.0,
+                    rating = LessonRating(5, "Really Good, Liked it!", Timestamp.now(), true),
+                    timeSlot = "16/11/2024T12:00:00",
+                    status = LessonStatus.COMPLETED,
+                    latitude = 46.518973490411526,
+                    longitude = 6.5685102716088295),
+            )
+        //doReturn(updatedMockLessonFlow2).`when`(mockLessonViewModel).selectedLesson
+        composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
+        composeTestRule.onNodeWithTag("lessonsCount").assertTextEquals("1")
+        composeTestRule.onNodeWithText("Maths Tutoring").performClick()
+        composeTestRule.onNodeWithText("Lesson not rated yet!").assertExists()
     }
 }
-
