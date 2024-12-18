@@ -22,6 +22,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -199,8 +200,15 @@ fun RequestedLessonsScreen(
                       FilterChip(
                           selected = true,
                           onClick = { selectedSubjects = selectedSubjects - subject },
-                          label = { Text(subject.name.lowercase().capitalizeFirstLetter()) },
-                          leadingIcon = { Icon(Icons.Default.Clear, "Remove filter") })
+                          label = {
+                            Text(subject.name.lowercase().capitalizeFirstLetter().replace("_", " "))
+                          },
+                          leadingIcon = { Icon(Icons.Default.Clear, "Remove filter") },
+                          colors =
+                              FilterChipDefaults.filterChipColors(
+                                  selectedLabelColor = Color.White,
+                                  selectedLeadingIconColor = Color.White,
+                              ))
                     }
                   }
             }
@@ -385,14 +393,25 @@ fun FilterDialog(
                                       tempSelectedSubjects + subject
                                     }
                               },
-                              label = { Text(subject.name.lowercase().capitalizeFirstLetter()) },
+                              label = {
+                                Text(
+                                    subject.name
+                                        .lowercase()
+                                        .capitalizeFirstLetter()
+                                        .replace("_", " "))
+                              },
+                              colors =
+                                  FilterChipDefaults.filterChipColors(
+                                      selectedLabelColor = Color.White,
+                                      selectedLeadingIconColor = Color.White),
                               leadingIcon =
                                   if (subject in tempSelectedSubjects) {
                                     {
                                       Icon(
                                           Icons.Filled.Check,
                                           contentDescription = "Selected",
-                                          modifier = Modifier.size(FilterChipDefaults.IconSize))
+                                          modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                          tint = Color.White)
                                     }
                                   } else null)
                         }

@@ -1,5 +1,6 @@
 package com.github.se.project.model.profile
 
+import android.net.Uri
 import com.github.se.project.model.certification.EpflCertification
 
 /** Data class representing a user profile. */
@@ -19,5 +20,6 @@ data class Profile(
     var subjects: List<Subject> = listOf(),
     var schedule: List<List<Int>> = List(7) { List(12) { 0 } }, // Weekly schedule
     var price: Int = 0,
-    var certification: EpflCertification? = null
+    var certification: EpflCertification? = null,
+    var profilePhotoUrl: Uri? = null
 )

@@ -32,6 +32,7 @@ import com.github.se.project.model.lesson.Lesson
 import com.github.se.project.model.lesson.LessonStatus
 import com.github.se.project.model.lesson.SuitabilityScoreCalculator
 import com.github.se.project.model.profile.ListProfilesViewModel
+import com.github.se.project.utils.capitalizeFirstLetter
 import com.github.se.project.utils.formatDate
 
 object LessonColors {
@@ -196,7 +197,11 @@ fun DisplayLessons(
                             color = MaterialTheme.colorScheme.background.copy(alpha = 0.2f),
                             tonalElevation = 2.dp) {
                               Text(
-                                  text = lesson.subject.name.lowercase(),
+                                  text =
+                                      lesson.subject.name
+                                          .lowercase()
+                                          .capitalizeFirstLetter()
+                                          .replace("_", " "),
                                   style = MaterialTheme.typography.labelMedium,
                                   modifier =
                                       Modifier.padding(horizontal = 8.dp, vertical = 4.dp)

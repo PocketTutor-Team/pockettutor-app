@@ -20,6 +20,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.github.se.project.R
 import com.github.se.project.model.profile.Subject
+import com.github.se.project.utils.capitalizeFirstLetter
 
 @Composable
 fun SubjectSelector(
@@ -42,10 +43,20 @@ fun SubjectSelector(
           Text(
               if (multipleSelection) {
                 if (selectedSubjects.isNullOrEmpty()) stringResource(R.string.select_subject)
-                else selectedSubjects.joinToString(", ") { it.name.lowercase().replace("_", " ") }
+                else
+                    selectedSubjects.joinToString(", ") {
+                      it.name.lowercase().capitalizeFirstLetter().replace("_", " ")
+                    }
               } else {
                 if (selectedSubject?.value == Subject.NONE) stringResource(R.string.select_subjects)
-                else selectedSubject?.value?.name?.lowercase()?.replace("_", " ").orEmpty()
+                else
+                    selectedSubject
+                        ?.value
+                        ?.name
+                        ?.lowercase()
+                        ?.capitalizeFirstLetter()
+                        ?.replace("_", " ")
+                        .orEmpty()
               },
               style = MaterialTheme.typography.labelMedium,
               color = MaterialTheme.colorScheme.onPrimary)
@@ -68,7 +79,7 @@ fun SubjectSelector(
                 text = {
                   Row {
                     Text(
-                        subject.name.replace('_', ' ').lowercase(),
+                        subject.name.replace('_', ' ').lowercase().capitalizeFirstLetter(),
                         style = MaterialTheme.typography.bodyMedium)
                     if (isSelected) {
                       Icon(

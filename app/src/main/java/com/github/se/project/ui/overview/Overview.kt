@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
@@ -64,6 +63,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.ExpandableLessonSection
 import com.github.se.project.ui.components.LessonReviewDialog
+import com.github.se.project.ui.components.ProfilePhoto
 import com.github.se.project.ui.components.SectionInfo
 import com.github.se.project.ui.navigation.BottomNavigationMenu
 import com.github.se.project.ui.navigation.LIST_TOP_LEVEL_DESTINATIONS_STUDENT
@@ -208,11 +208,7 @@ fun HomeScreen(
               }
 
               IconButton(onClick = { navigationActions.navigateTo(Screen.PROFILE) }) {
-                Icon(
-                    imageVector = Icons.Default.AccountBox,
-                    contentDescription = "Profile Icon",
-                    Modifier.testTag("Profile Icon")
-                        .size(32.dp)) // Icon to navigate to the profile screen
+                ProfilePhoto(currentProfile?.profilePhotoUrl, size = 32.dp)
               }
             })
       },

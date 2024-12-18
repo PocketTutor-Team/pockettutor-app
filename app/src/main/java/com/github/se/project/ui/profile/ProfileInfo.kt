@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -62,6 +65,7 @@ import com.github.se.project.model.profile.Profile
 import com.github.se.project.model.profile.Role
 import com.github.se.project.ui.components.DisplayLessons
 import com.github.se.project.ui.components.EpflVerificationDialog
+import com.github.se.project.ui.components.ProfilePhoto
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
 import com.github.se.project.utils.capitalizeFirstLetter
@@ -118,57 +122,56 @@ fun ProfileInfoScreen(
         } else {
           val isTutor = profile.role == Role.TUTOR
 
-          // Main container
           Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // Scrollable content
             Column(
                 modifier =
-                    Modifier.fillMaxSize().padding(bottom = 80.dp) // Space for sign out button
-                ) {
-                  // 1. Profile Info Card (Fixed at top)
+                    Modifier.fillMaxSize()
+                        .padding(bottom = 80.dp) // Leave space for the fixed button
+                        .verticalScroll(rememberScrollState())) {
+                  // Profile Info Card
                   ProfileCard(
                       profile = profile,
                       completedLessonsCount = completedLessons.size,
                       onVerificationClick = { showVerificationDialog = true },
                       completedLessons = completedLessons)
 
-                  // 2. Lessons Box (Scrollable)
-                  Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    Card(
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
-                        colors =
-                            CardDefaults.cardColors(
-                                containerColor =
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))) {
+                  // Lessons Box
+                  Card(
+                      modifier =
+                          Modifier.padding(horizontal = 16.dp)
+                              .fillMaxWidth()
+                              .defaultMinSize(minHeight = 200.dp)
+                              .fillMaxHeight(),
+                      colors =
+                          CardDefaults.cardColors(
+                              containerColor =
+                                  MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))) {
+                        Column(modifier = Modifier.padding(16.dp)) {
                           Text(
                               text = "Completed Lessons",
-                              style = MaterialTheme.typography.titleMedium,
-                              modifier = Modifier.padding(16.dp))
+                              style = MaterialTheme.typography.titleMedium)
 
-                          Column(
-                              modifier =
-                                  Modifier.fillMaxSize()
-                                      .padding(horizontal = 16.dp)
-                                      .verticalScroll(rememberScrollState())) {
-                                if (completedLessons.isEmpty()) {
-                                  EmptyState(
-                                      text = "No completed lessons yet",
-                                      icon = Icons.Default.CheckCircle)
-                                } else {
-                                  DisplayLessons(
-                                      lessons = completedLessons,
-                                      listProfilesViewModel = listProfilesViewModel,
-                                      isTutor = isTutor,
-                                      onCardClick = { lesson ->
-                                        lessonViewModel.selectLesson(lesson)
-                                        navigationActions.navigateTo(Screen.COMPLETED_LESSON)
-                                      })
-                                }
-                              }
+                          Spacer(modifier = Modifier.height(8.dp))
+
+                          if (completedLessons.isEmpty()) {
+                            EmptyState(
+                                text = "No completed lessons yet", icon = Icons.Default.CheckCircle)
+                          } else {
+                            DisplayLessons(
+                                lessons = completedLessons,
+                                listProfilesViewModel = listProfilesViewModel,
+                                isTutor = isTutor,
+                                onCardClick = { lesson ->
+                                  lessonViewModel.selectLesson(lesson)
+                                  navigationActions.navigateTo(Screen.COMPLETED_LESSON)
+                                })
+                          }
                         }
-                  }
+                      }
                 }
 
-            // 3. Sign Out Button (Fixed at bottom)
+            // Fixed Sign Out Button at the bottom
             Button(
                 onClick = {
                   authenticationViewModel.signOut {
@@ -176,16 +179,12 @@ fun ProfileInfoScreen(
                     navigationActions.navigateTo(Screen.AUTH)
                   }
                 },
-                modifier =
-                    Modifier.align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .testTag("signOutButton"),
+                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer)) {
-                  Text("Sign Out", modifier = Modifier.testTag("signOutButton"))
+                  Text("Sign Out")
                 }
           }
 
@@ -221,18 +220,8 @@ private fun ProfileCard(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.SpaceBetween,
                   verticalAlignment = Alignment.CenterVertically) {
-                    // Profile Picture with Badge
                     Box {
-                      Surface(
-                          modifier = Modifier.size(80.dp),
-                          shape = CircleShape,
-                          color = MaterialTheme.colorScheme.primaryContainer) {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = null,
-                                modifier = Modifier.padding(16.dp).fillMaxSize(),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                          }
+                      ProfilePhoto(photoUri = profile.profilePhotoUrl, size = 80.dp)
 
                       if (profile.role == Role.TUTOR) {
                         Surface(
