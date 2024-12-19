@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -158,7 +157,7 @@ private fun DisplayReview(lesson: Lesson, student: Profile) {
                                 tint =
                                     if (index < lesson.rating.grade)
                                         MaterialTheme.colorScheme.primary
-                                    else Color.Transparent,
+                                    else Color.Gray,
                                 modifier = Modifier.size(16.dp))
                           }
                         }
@@ -213,16 +212,11 @@ private fun DisplayRatingGrade(grade: Double, testTag: String) {
 @Composable
 private fun DisplayProfilePicture(testTag: String, tutorProfile: Profile) {
   Box(contentAlignment = Alignment.Center) {
-    Surface(
-        modifier = Modifier.size(48.dp),
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)) {
-          Icon(
-              imageVector = Icons.Default.Person,
-              contentDescription = null,
-              modifier = Modifier.padding(8.dp).testTag(testTag),
-              tint = MaterialTheme.colorScheme.primary)
-        }
+    ProfilePhoto(
+        photoUri = tutorProfile.profilePhotoUrl,
+        size = 60.dp,
+        showPlaceholder = true,
+        modifier = Modifier.size(60.dp).testTag(testTag))
 
     if (tutorProfile.certification?.verified == true) {
       Surface(

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.project.model.profile.Language
+import com.github.se.project.utils.capitalizeFirstLetter
 
 @Composable
 fun LanguageSelector(selectedLanguages: MutableList<Language>) {
@@ -52,7 +53,7 @@ fun LanguageSelector(selectedLanguages: MutableList<Language>) {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = language.name.lowercase(),
+                    text = language.name.lowercase().capitalizeFirstLetter(),
                     style = MaterialTheme.typography.titleSmall,
                     modifier =
                         Modifier.align(Alignment.CenterVertically)

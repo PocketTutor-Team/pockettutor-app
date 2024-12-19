@@ -1,5 +1,6 @@
 package com.github.se.project.ui.profile
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,15 +48,18 @@ import com.github.se.project.model.profile.Section
 import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.EpflVerificationCard
 import com.github.se.project.ui.components.PhoneNumberInput
+import com.github.se.project.ui.components.ProfilePhotoSelector
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.StorageManager
 import com.github.se.project.utils.capitalizeFirstLetter
 import com.github.se.project.utils.countries
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,12 +71,16 @@ fun CreateProfileScreen(
     testMode: Boolean
 ) {
   // State management
+  val uid = listProfilesViewModel.getNewUid()
+  var localPhotoUri by remember { mutableStateOf<Uri?>(null) }
   var firstName by remember { mutableStateOf("") }
   var lastName by remember { mutableStateOf("") }
   var role by remember { mutableStateOf(Role.UNKNOWN) }
   val section: MutableState<Section?> = remember { mutableStateOf(null) }
   val academicLevel: MutableState<AcademicLevel?> = remember { mutableStateOf(null) }
   var token = ""
+  val coroutineScope = rememberCoroutineScope()
+  var isLoading by remember { mutableStateOf(false) }
 
   var sciper by remember { mutableStateOf("") } // Add SCIPER state
 
@@ -127,6 +138,13 @@ fun CreateProfileScreen(
                   onVerifyClick = { certificationViewModel.verifySciperNumber(it) },
                   onResetVerification = { certificationViewModel.resetVerification() },
                   modifier = Modifier.fillMaxWidth())
+
+              Text(
+                  text = "Add a profile picture (Optional)",
+                  style = MaterialTheme.typography.titleSmall)
+
+              ProfilePhotoSelector(
+                  currentPhotoUrl = null, onLocalPhotoSelected = { uri -> localPhotoUri = uri })
 
               // Existing profile creation fields
               OutlinedTextField(
@@ -214,46 +232,66 @@ fun CreateProfileScreen(
                         role != Role.UNKNOWN &&
                         section.value != null &&
                         academicLevel.value != null) {
-                      try {
-                        val googleUid: String =
-                            if (testMode) {
-                              "testingUid"
-                            } else {
-                              FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                            }
+                      isLoading = true
+                      coroutineScope.launch {
+                        try {
+                          val googleUid: String =
+                              if (testMode) "testingUid"
+                              else FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-                        val certification =
-                            if (verificationState
-                                is CertificationViewModel.VerificationState.Success) {
-                              EpflCertification(sciper = sciper, verified = true)
-                            } else null
+                          val certification =
+                              if (verificationState
+                                  is CertificationViewModel.VerificationState.Success) {
+                                EpflCertification(sciper = sciper, verified = true)
+                              } else null
 
-                        val newProfile =
-                            Profile(
-                                listProfilesViewModel.getNewUid(),
-                                token,
-                                googleUid,
-                                firstName.capitalizeFirstLetter(),
-                                lastName.capitalizeFirstLetter(),
-                                selectedCountry.code + phoneNumber,
-                                role,
-                                section.value!!,
-                                academicLevel.value!!,
-                                certification = certification)
-                        listProfilesViewModel.setCurrentProfile(newProfile)
+                          val uploadedPhotoUrl: Uri? =
+                              localPhotoUri?.let {
+                                try {
+                                  StorageManager.uploadProfilePhoto(it, uid, context)
+                                } catch (e: Exception) {
+                                  Toast.makeText(
+                                          context,
+                                          "Photo upload failed: ${e.message}",
+                                          Toast.LENGTH_SHORT)
+                                      .show()
+                                  null
+                                }
+                              }
 
-                        if (role == Role.TUTOR) {
-                          navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
-                        } else if (role == Role.STUDENT) {
-                          listProfilesViewModel.addProfile(newProfile)
-                          navigationActions.navigateTo(Screen.HOME)
+                          val newProfile =
+                              Profile(
+                                  uid = uid,
+                                  token = token,
+                                  googleUid = googleUid,
+                                  firstName = firstName.capitalizeFirstLetter(),
+                                  lastName = lastName.capitalizeFirstLetter(),
+                                  phoneNumber = selectedCountry.code + phoneNumber,
+                                  role = role,
+                                  section = section.value!!,
+                                  academicLevel = academicLevel.value!!,
+                                  certification = certification,
+                                  profilePhotoUrl = uploadedPhotoUrl)
+
+                          listProfilesViewModel.setCurrentProfile(newProfile)
+
+                          if (role == Role.TUTOR)
+                              navigationActions.navigateTo(Screen.CREATE_TUTOR_PROFILE)
+                          else if (role == Role.STUDENT) {
+                            listProfilesViewModel.addProfile(newProfile)
+                            navigationActions.navigateTo(Screen.HOME)
+                          }
+
+                          Toast.makeText(
+                                  context, "Profile created successfully!", Toast.LENGTH_SHORT)
+                              .show()
+                        } catch (e: Exception) {
+                          Toast.makeText(
+                                  context, "An error occurred: ${e.message}", Toast.LENGTH_SHORT)
+                              .show()
+                        } finally {
+                          isLoading = false
                         }
-                      } catch (e: Exception) {
-                        Toast.makeText(
-                                context,
-                                "An error occurred. Please check your inputs and try again.",
-                                Toast.LENGTH_SHORT)
-                            .show()
                       }
                     } else {
                       Toast.makeText(
@@ -263,12 +301,14 @@ fun CreateProfileScreen(
                           .show()
                     }
                   },
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .height(48.dp)
-                          .testTag("confirmButton"), // Test tag for confirm button
-                  shape = MaterialTheme.shapes.medium) {
-                    Text("Confirm your details")
+                  enabled = !isLoading, // Disable button when loading
+                  modifier = Modifier.fillMaxWidth().height(48.dp).testTag("confirmButton")) {
+                    if (isLoading) {
+                      CircularProgressIndicator(
+                          modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
+                    } else {
+                      Text("Confirm your details")
+                    }
                   }
             }
       }

@@ -1,6 +1,7 @@
 package com.github.se.project.model.profile
 
 import android.util.Log
+import androidx.core.net.toUri
 import com.github.se.project.model.certification.EpflCertification
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
@@ -122,7 +123,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
       val section = Section.valueOf(document.getString("section") ?: return null)
       val academicLevel = AcademicLevel.valueOf(document.getString("academicLevel") ?: return null)
       val description = document.getString("description") ?: ""
-
+      val profilePhotoData = document.getString("profilePhotoData")?.toUri()
       val favoriteTutors = document.get("favoriteTutors")?.let { it as List<String> } ?: emptyList()
 
       val languages =
@@ -131,7 +132,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
               try {
                 Language.valueOf(it.toString())
               } catch (e: IllegalArgumentException) {
-                Log.e("LessonRepositoryFirestore", "Invalid language in document: $it", e)
+                Log.e("ProfilesRepositoryFirestore", "Invalid language in document: $it", e)
                 null
               }
             }
@@ -143,7 +144,7 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
               try {
                 Subject.valueOf(it.toString())
               } catch (e: IllegalArgumentException) {
-                Log.e("LessonRepositoryFirestore", "Invalid subject in document: $it", e)
+                Log.e("ProfilesRepositoryFirestore", "Invalid subject in document: $it", e)
                 null
               }
             }
@@ -180,14 +181,14 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
           subjects,
           schedule,
           price,
-          certification)
+          certification,
+          profilePhotoData)
     } catch (e: Exception) {
       Log.e("ProfilesRepositoryFirestore", "Error converting document to Profile", e)
       null
     }
   }
 
-  /** Converts a Profile object to a Map for Firestore. */
   private fun profileToMap(profile: Profile): Map<String, Any> {
     val baseMap =
         mutableMapOf(
@@ -206,6 +207,8 @@ class ProfilesRepositoryFirestore(private val db: FirebaseFirestore) : ProfilesR
             "subjects" to profile.subjects.map { it.toString() },
             "schedule" to profile.schedule.flatten(),
             "price" to profile.price)
+
+    profile.profilePhotoUrl?.let { photoData -> baseMap["profilePhotoData"] = photoData }
 
     profile.certification?.let { cert ->
       baseMap["certification"] =

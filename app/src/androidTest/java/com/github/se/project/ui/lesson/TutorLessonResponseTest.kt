@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.lesson.Lesson
@@ -177,7 +178,7 @@ class TutorLessonResponseTest {
     composeTestRule.onNodeWithTag("lessonTime").assertIsDisplayed()
 
     // Assert the confirmation button is displayed
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -225,8 +226,9 @@ class TutorLessonResponseTest {
     // Assert the location is displayed is already tested in LessonLocationDisplayTest
 
     // Assert the confirmation and cancel button are displayed
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelButton").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -243,7 +245,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("confirmButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
@@ -276,7 +282,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("confirmButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
@@ -309,7 +319,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("confirmButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
@@ -333,7 +347,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("confirmButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("confirmDialog").assertIsDisplayed()
@@ -357,7 +375,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancelButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("declineDialog").assertIsDisplayed()
@@ -389,7 +411,11 @@ class TutorLessonResponseTest {
     composeTestRule.waitForIdle()
 
     // Confirm the lesson
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancelButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Verify the confirm dialog is displayed
     composeTestRule.onNodeWithTag("declineDialog").assertIsDisplayed()

@@ -3,10 +3,10 @@ package com.github.se.project.ui.overview
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation.NavHostController
 import androidx.test.rule.GrantPermissionRule
 import com.github.se.project.model.chat.ChatViewModel
@@ -226,7 +226,7 @@ class HomeScreenTest {
           navigationActions)
     }
     composeTestRule.onNodeWithTag("topBar").assertIsDisplayed()
-    composeTestRule.onNodeWithContentDescription("Profile Icon").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("profile_photo").performClick()
   }
 
   @Test
@@ -239,7 +239,7 @@ class HomeScreenTest {
           chatViewModel,
           navigationActions)
     }
-    composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
+    composeTestRule.onNodeWithTag("profile_photo").performClick()
     verify(navigationActions).navigateTo(anyString())
   }
 
@@ -372,7 +372,7 @@ class HomeScreenTest {
     }
     composeTestRule.onNodeWithText("Upcoming Lessons").assertIsDisplayed()
     composeTestRule.onNodeWithTag("section_CONFIRMED_expand").assertIsDisplayed().performClick()
-    composeTestRule.onNodeWithTag("noLessonsConfirmed").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noLessonsConfirmed").performScrollTo().assertIsDisplayed()
   }
 
   @Test

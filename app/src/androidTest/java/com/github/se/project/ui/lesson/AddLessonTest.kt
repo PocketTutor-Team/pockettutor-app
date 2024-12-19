@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isDisplayed
@@ -13,6 +14,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
@@ -160,6 +162,7 @@ class AddLessonTest {
   @Test
   fun confirmWithValidFieldsNavigatesToHome() {
     var testMapReady by mutableStateOf(false)
+    var mapVisible by mutableStateOf(false)
 
     composeTestRule.setContent {
       AddLessonScreen(
@@ -167,7 +170,10 @@ class AddLessonTest {
           mockProfiles,
           mockLessons,
           networkStatusViewModel,
-          onMapReadyChange = { testMapReady = it })
+          onMapReadyChange = {
+            testMapReady = it
+            mapVisible = true
+          })
     }
 
     // Fill in the required fields
@@ -183,26 +189,31 @@ class AddLessonTest {
     composeTestRule.onNodeWithText(okMessage).performClick()
 
     // Set Subject and Language
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performScrollTo().performClick()
 
-    // Select location
-    composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
+    // Improved map interaction
+    composeTestRule.onNodeWithTag("mapButton").performScrollTo().performClick()
 
-    // replace the following code with the composeTestRule equivalent as
-    // the Thread.sleep() method is not recommended and
-    // device.click() is not well supported in compose
-    composeTestRule.waitUntil(20000) {
-      // wait max 15 seconds for the map to load,
-      // as soon as the map is ready, the next line will be executed
-      testMapReady
-    }
-    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("googleMap").isDisplayed() }
+    // Wait for map container to be ready
+    composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("mapContainer").isDisplayed() }
 
-    // click in the middle of GoogleMap
-    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
+    // Wait for map to be fully loaded
+    composeTestRule.waitUntil(20000) { testMapReady && mapVisible }
+
+    // Additional verification before clicking
+    composeTestRule
+        .onNodeWithTag("googleMap")
+        .assertExists()
+        .assertIsDisplayed()
+        .assertIsEnabled()
+        .performTouchInput { click(center) }
+
+    // Add small delay after click to allow map to register
+    composeTestRule.mainClock.autoAdvance = false
+    composeTestRule.mainClock.advanceTimeBy(500)
+    composeTestRule.mainClock.autoAdvance = true
 
     composeTestRule.waitUntil(20000) {
       assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))

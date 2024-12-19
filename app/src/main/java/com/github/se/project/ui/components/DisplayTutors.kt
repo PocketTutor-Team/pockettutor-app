@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.se.project.R
 import com.github.se.project.model.profile.Profile
+import com.github.se.project.utils.capitalizeFirstLetter
 
 @Composable
 fun DisplayTutors(
@@ -64,16 +64,11 @@ fun DisplayTutors(
                           verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             // Profile Picture
                             Box(contentAlignment = Alignment.Center) {
-                              Surface(
-                                  modifier = Modifier.size(48.dp),
-                                  shape = CircleShape,
-                                  color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = null,
-                                        modifier = Modifier.padding(8.dp),
-                                        tint = MaterialTheme.colorScheme.secondary)
-                                  }
+                              ProfilePhoto(
+                                  photoUri = tutor.profilePhotoUrl,
+                                  size = 60.dp,
+                                  showPlaceholder = true,
+                                  modifier = Modifier.size(60.dp))
 
                               if (tutor.certification?.verified == true) {
                                 Surface(
@@ -149,7 +144,10 @@ fun DisplayTutors(
                                 }
 
                             Text(
-                                text = tutor.subjects.joinToString(", ") { it.name.lowercase() },
+                                text =
+                                    tutor.subjects.joinToString(", ") {
+                                      it.name.lowercase().capitalizeFirstLetter().replace("_", " ")
+                                    },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 overflow = TextOverflow.Ellipsis)

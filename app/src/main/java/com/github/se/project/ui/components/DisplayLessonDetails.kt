@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -82,16 +81,11 @@ private fun ProfileInfoSection(profile: Profile) {
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically) {
         Box(contentAlignment = Alignment.Center) {
-          Surface(
-              modifier = Modifier.size(48.dp),
-              shape = MaterialTheme.shapes.medium,
-              color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.padding(8.dp),
-                    tint = MaterialTheme.colorScheme.primary)
-              }
+          ProfilePhoto(
+              photoUri = profile.profilePhotoUrl,
+              size = 60.dp,
+              showPlaceholder = true,
+              modifier = Modifier.size(60.dp))
 
           if (profile.certification?.verified == true && profile.role == Role.TUTOR) {
             Surface(
