@@ -3,6 +3,7 @@ package com.github.se.project.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 import kotlinx.coroutines.tasks.await
@@ -12,64 +13,66 @@ object StorageManager {
   private val storage = FirebaseStorage.getInstance()
   private val storageRef = storage.reference
 
-  // Maximum file size: 5MB
   private const val MAX_FILE_SIZE = 5 * 1024 * 1024
 
   suspend fun uploadProfilePhoto(imageUri: Uri, userId: String, context: Context): Uri? {
     return try {
+      if (FirebaseAuth.getInstance().currentUser == null) {
+        Log.e("StorageManager", "User not authenticated")
+        return null
+      }
+
       validateImageSizeAndType(imageUri, context)
 
-      // Delete old photos first
       deleteOldPhotos(userId)
 
-      // Upload new photo
-      val fileName = "$PROFILE_PHOTOS_PATH/${generateFileName(userId)}"
+      val fileName = "$PROFILE_PHOTOS_PATH/$userId/${UUID.randomUUID()}.jpg"
       val photoRef = storageRef.child(fileName)
 
+      Log.d("StorageManager", "Starting upload for user $userId to path: $fileName")
+
       photoRef.putFile(imageUri).await()
-      val downloadUri = photoRef.downloadUrl.await()
-      Log.d("StorageManager", "Photo uploaded successfully: $downloadUri")
-      downloadUri
+      Log.d("StorageManager", "File uploaded successfully")
+
+      val downloadUrl = photoRef.downloadUrl.await()
+      Log.d("StorageManager", "Download URL obtained: $downloadUrl")
+
+      downloadUrl
     } catch (e: Exception) {
-      Log.e("StorageManager", "Error uploading image", e)
+      Log.e("StorageManager", "Error uploading image: ${e.message}", e)
       null
     }
   }
 
   suspend fun deleteOldPhotos(userId: String) {
     try {
-      val oldPhotos =
-          storageRef.child(PROFILE_PHOTOS_PATH).listAll().await().items.filter {
-            it.name.startsWith(userId)
-          }
+      val path = "$PROFILE_PHOTOS_PATH/$userId"
+      val folderRef = storageRef.child(path)
 
-      oldPhotos.forEach { photo ->
+      val result = folderRef.listAll().await()
+      result.items.forEach { item ->
         try {
-          photo.delete().await()
-          Log.d("StorageManager", "Deleted old photo: ${photo.name}")
+          item.delete().await()
+          Log.d("StorageManager", "Deleted: ${item.path}")
         } catch (e: Exception) {
-          Log.w("StorageManager", "Failed to delete old photo: ${photo.name}", e)
+          Log.w("StorageManager", "Failed to delete: ${item.path}", e)
         }
       }
     } catch (e: Exception) {
-      Log.e("StorageManager", "Error cleaning old photos", e)
+      Log.e("StorageManager", "Error listing/deleting old photos", e)
     }
   }
 
-  fun validateImageSizeAndType(imageUri: Uri, context: Context) {
+  private fun validateImageSizeAndType(imageUri: Uri, context: Context) {
     val fileSize = context.contentResolver.openInputStream(imageUri)?.use { it.available() } ?: 0
     if (fileSize > MAX_FILE_SIZE) {
-      throw IllegalArgumentException("File size exceeds 2MB limit")
+      throw IllegalArgumentException("File size exceeds 5MB limit")
     }
 
     val mimeType = context.contentResolver.getType(imageUri)
     if (!isValidImageType(mimeType)) {
-      throw IllegalArgumentException("Invalid file type. Please upload a JPG or PNG image")
+      throw IllegalArgumentException("Invalid file type. Please use JPG or PNG")
     }
-  }
-
-  private fun generateFileName(userId: String): String {
-    return "${userId}_${UUID.randomUUID()}.jpg"
   }
 
   private fun isValidImageType(mimeType: String?): Boolean {
