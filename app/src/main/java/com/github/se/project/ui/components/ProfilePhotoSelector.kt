@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -112,38 +113,40 @@ fun ProfilePhotoSelector(
   }
 
   // UI
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-    Box(
-        modifier =
-            Modifier.size(120.dp)
-                .clip(CircleShape)
-                .clickable(
-                    onClick = {
-                      if (!permissionGranted) {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                      } else {
-                        showBottomSheet = true
-                      }
-                      showBottomSheet = true
-                    })
-                .background(MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center) {
-          val imageUri = previewUri ?: currentPhotoUrl
-          if (imageUri != null) {
-            AsyncImage(
-                model = imageUri,
-                contentDescription = "Profile Photo",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop)
-          } else {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.add_picture),
-                contentDescription = "Add Photo",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(40.dp))
-          }
-        }
-  }
+  Column(
+      modifier = Modifier.fillMaxWidth().testTag("profilePhoto"),
+      horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier =
+                Modifier.size(120.dp)
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = {
+                          if (!permissionGranted) {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                          } else {
+                            showBottomSheet = true
+                          }
+                          showBottomSheet = true
+                        })
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center) {
+              val imageUri = previewUri ?: currentPhotoUrl
+              if (imageUri != null) {
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = "Profile Photo",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop)
+              } else {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.add_picture),
+                    contentDescription = "Add Photo",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(40.dp))
+              }
+            }
+      }
 
   if (showBottomSheet) {
     ModalBottomSheet(onDismissRequest = { showBottomSheet = false }) {

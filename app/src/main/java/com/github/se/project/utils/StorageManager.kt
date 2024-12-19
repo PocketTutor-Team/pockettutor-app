@@ -56,7 +56,7 @@ object StorageManager {
     }
   }
 
-  private fun validateImageSizeAndType(imageUri: Uri, context: Context) {
+  fun validateImageSizeAndType(imageUri: Uri, context: Context) {
     val fileSize = context.contentResolver.openInputStream(imageUri)?.use { it.available() } ?: 0
     if (fileSize > MAX_FILE_SIZE) {
       throw IllegalArgumentException("File size exceeds 2MB limit")

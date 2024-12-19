@@ -190,12 +190,12 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
-    composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
+    composeTestRule.onNodeWithTag("languageSelectorRow").performScrollTo().performClick()
 
     // Select location
-    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("mapButton").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
 
     // replace the following code with the composeTestRule equivalent as

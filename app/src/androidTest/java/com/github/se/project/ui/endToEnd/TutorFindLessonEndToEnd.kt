@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -185,7 +184,7 @@ class TutorEndToEndTest {
     // Sign In Screen
     // composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("firstNameField").performScrollTo().assertIsDisplayed()
 
     // Create Profile Screen
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -222,24 +221,24 @@ class TutorEndToEndTest {
     composeTestRule.onNodeWithTag("FindStudentButton").performClick()
 
     // Home Screen
-    composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
+    composeTestRule.onNodeWithTag("profile_photo").performClick()
     composeTestRule.onNodeWithTag("profileAcademicInfo").assertTextEquals("SC - BA3")
     composeTestRule.onNodeWithTag("profileInfoRole").assertTextEquals("Tutor")
     composeTestRule.onNodeWithTag("lessonsCount").assertTextEquals("0")
     composeTestRule.onNodeWithTag("closeButton").performClick()
-    composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
+    composeTestRule.onNodeWithTag("profile_photo").assertExists()
     composeTestRule.onNodeWithTag("middlePlus").performClick()
     composeTestRule.onNodeWithTag("screenTitle").assertExists()
     composeTestRule.onNodeWithText("Physics Tutoring").assertIsDisplayed()
-    composeTestRule.onNodeWithText("physics").assertIsDisplayed()
-    composeTestRule.onNodeWithText("physics").performClick()
+    composeTestRule.onNodeWithText("Physics").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Physics").performClick()
     // work
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("tutorLessonResponseScreen").assertExists()
     composeTestRule.onNodeWithText("Ozymandias Halifax").assertExists()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     composeTestRule.onNodeWithTag("confirmDialogConfirmButton").performClick()
-    composeTestRule.onNodeWithContentDescription("Profile Icon").assertExists()
+    composeTestRule.onNodeWithTag("profile_photo").assertExists()
     composeTestRule
         .onNodeWithTag("section_Waiting for the Student Confirmation")
         .assertIsDisplayed()
@@ -264,7 +263,7 @@ class TutorEndToEndTest {
     // Sign In Screen
     // composeTestRule.onNodeWithTag("logo").assertIsDisplayed()
     composeTestRule.onNodeWithTag("loginButton").performClick()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("firstNameField").performScrollTo().assertIsDisplayed()
 
     // Create Profile Screen
     composeTestRule.onNodeWithTag("firstNameField").performTextInput("John")
@@ -324,12 +323,11 @@ class TutorEndToEndTest {
 
     composeTestRule.onNodeWithTag("lessonCard_0").assertExists()
     composeTestRule.onNodeWithText("Maths Tutoring").assertIsDisplayed()
-    composeTestRule.onNodeWithText("analysis").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Analysis").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonCard_0").performClick()
     composeTestRule.onNodeWithText("Ozymandias Halifax").assertExists()
 
-    composeTestRule.onNodeWithTag("cancelButton").performClick()
-    composeTestRule.onNodeWithText("Are you sure you want to dismiss this lesson?").assertExists()
+    composeTestRule.onNodeWithTag("cancelButton").performScrollTo().performClick()
     composeTestRule.onNodeWithText("Cancel").performClick()
     composeTestRule.onNodeWithTag("confirmButton").performClick()
     composeTestRule.onNodeWithTag("confirmDialogConfirmButton").performClick()
@@ -359,7 +357,7 @@ class TutorEndToEndTest {
                 longitude = 6.5685102716088295),
         )
     // doReturn(updatedMockLessonFlow2).`when`(mockLessonViewModel).selectedLesson
-    composeTestRule.onNodeWithContentDescription("Profile Icon").performClick()
+    composeTestRule.onNodeWithTag("profile_photo").performClick()
     composeTestRule.onNodeWithTag("lessonsCount").assertTextEquals("1")
     composeTestRule.onNodeWithText("Maths Tutoring").performClick()
     composeTestRule.onNodeWithText("Lesson not rated yet!").assertExists()

@@ -203,8 +203,8 @@ class EndToEndStudentTest {
     composeTestRule.onNodeWithTag("TimeButton").performClick()
     composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithText("OK").isDisplayed() }
     composeTestRule.onNodeWithText("OK").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("dropdownAICC").performClick()
     composeTestRule.onNodeWithTag("mapButton").performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
@@ -280,16 +280,16 @@ class EndToEndStudentTest {
     composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA3").performClick()
 
     // Click the confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     composeTestRule.waitForIdle()
 
     composeTestRule.waitUntil(15000) {
-      composeTestRule.onNodeWithTag("Profile Icon", true).isDisplayed()
+      composeTestRule.onNodeWithTag("profile_photo", true).isDisplayed()
     }
 
     // Go to the profile viewing screen
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+    composeTestRule.onNodeWithTag("profile_photo", true).performClick()
 
     // Check if the correct profile info is displayed
     composeTestRule.onNodeWithText("Alice Dupont").assertIsDisplayed()
@@ -347,7 +347,7 @@ class EndToEndStudentTest {
             0.0)
 
     // Reload the home screen and accept the lesson
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+    composeTestRule.onNodeWithTag("profile_photo", true).performClick()
     composeTestRule.onNodeWithTag("closeButton").performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
     composeTestRule.onNodeWithTag("tutorCard_0").performClick()
@@ -377,7 +377,7 @@ class EndToEndStudentTest {
             0.0)
 
     // Go to the profile info screen and check it is displayed
-    composeTestRule.onNodeWithTag("Profile Icon", true).performClick()
+    composeTestRule.onNodeWithTag("profile_photo", true).performClick()
     composeTestRule.onNodeWithText("Help how do I write tests").assertIsDisplayed()
     composeTestRule.onNodeWithText("Help how do I write tests").performClick()
   }

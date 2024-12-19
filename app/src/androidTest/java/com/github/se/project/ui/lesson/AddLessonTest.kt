@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
@@ -183,12 +184,12 @@ class AddLessonTest {
     composeTestRule.onNodeWithText(okMessage).performClick()
 
     // Set Subject and Language
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
-    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performClick()
-    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("dropdown${Subject.AICC}").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("checkbox_ENGLISH").performScrollTo().performClick()
 
     // Select location
-    composeTestRule.onNodeWithTag("mapButton").performClick()
+    composeTestRule.onNodeWithTag("mapButton").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("mapContainer").performClick()
 
     // replace the following code with the composeTestRule equivalent as
