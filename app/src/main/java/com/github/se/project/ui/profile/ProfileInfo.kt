@@ -274,7 +274,8 @@ private fun ProfileCard(
                       Text(
                           text = profile.role.name.lowercase().capitalizeFirstLetter(),
                           style = MaterialTheme.typography.labelMedium,
-                          color = MaterialTheme.colorScheme.primary)
+                          color = MaterialTheme.colorScheme.primary,
+                          modifier = Modifier.testTag("profileInfoRole"))
                     }
                   }
 
