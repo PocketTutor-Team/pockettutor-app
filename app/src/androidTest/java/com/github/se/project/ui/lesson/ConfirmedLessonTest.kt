@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
@@ -167,8 +168,9 @@ class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("contactButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("contactButton").performScrollTo().assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("cancelButton").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -178,9 +180,11 @@ class ConfirmedLessonTest {
 
     composeTestRule.onNodeWithTag("confirmedLessonScreen").assertIsDisplayed()
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lessonTitle").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("cancelRequestButton").performScrollTo().performScrollTo()
+    composeTestRule.onNodeWithTag("cancelRequestButton").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -193,6 +197,9 @@ class ConfirmedLessonTest {
     composeTestRule.onNodeWithTag("backButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("lessonTitle").assertIsDisplayed()
     composeTestRule.onNodeWithTag("contactButton").assertIsNotDisplayed()
+
+    composeTestRule.onNodeWithTag("deleteButton").performScrollTo()
+
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed()
   }
 
@@ -238,12 +245,18 @@ class ConfirmedLessonTest {
   @Test
   fun confirmedLessonScreenCancellationButtonClicked() {
 
+    composeTestRule.onNodeWithTag("cancelButton").performScrollTo()
+
     composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("cancelButton").isDisplayed() }
 
     composeTestRule.waitForIdle()
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancelButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
@@ -261,7 +274,11 @@ class ConfirmedLessonTest {
     composeTestRule.waitForIdle()
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancelButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
@@ -278,7 +295,11 @@ class ConfirmedLessonTest {
     composeTestRule.waitForIdle()
 
     // Click on the "Cancel Lesson" button
-    composeTestRule.onNodeWithTag("cancelButton").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("cancelButton")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     composeTestRule.waitUntil(20000) { composeTestRule.onNodeWithTag("cancelDialog").isDisplayed() }
 
@@ -301,6 +322,8 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
+    composeTestRule.onNodeWithTag("cancelRequestButton").performScrollTo()
+
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("cancelRequestButton").assertIsDisplayed().performClick()
 
@@ -316,6 +339,7 @@ class ConfirmedLessonTest {
 
     composeTestRule.waitForIdle()
 
+    composeTestRule.onNodeWithTag("deleteButton").performScrollTo()
     // Click on the "Cancel Lesson" button
     composeTestRule.onNodeWithTag("deleteButton").assertIsDisplayed().performClick()
 

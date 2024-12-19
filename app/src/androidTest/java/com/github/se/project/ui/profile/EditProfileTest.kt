@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -93,7 +94,7 @@ class EditProfileTest {
     composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileLanguageText").assertIsDisplayed()
     composeTestRule.onNodeWithTag("editTutorProfileSubjectText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("editTutorProfilePriceText").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("editTutorProfilePriceText").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
   }
 
@@ -145,10 +146,14 @@ class EditProfileTest {
     composeTestRule.setContent { EditProfile(mockNavigationActions, mockViewModel) }
 
     // Open the subjects dropdown
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
 
     // Select a different subject (e.g., PHYSICS)
-    composeTestRule.onNodeWithTag("dropdownPHYSICS").assertIsDisplayed().performClick()
+    composeTestRule
+        .onNodeWithTag("dropdownPHYSICS")
+        .performScrollTo()
+        .assertIsDisplayed()
+        .performClick()
 
     // Confirm the changes
     composeTestRule.onNodeWithTag("confirmButton").performClick()

@@ -246,8 +246,8 @@ class LessonsRequestedScreenTest {
     }
 
     composeTestRule.onNodeWithTag("filterButton").performClick()
-    composeTestRule.onNodeWithText("Physics").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Physics chip").assertIsDisplayed()
     composeTestRule.onNodeWithText("Math Tutoring").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Physics").performClick()
+    composeTestRule.onNodeWithTag("Physics chip").performClick()
   }
 }

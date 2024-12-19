@@ -61,14 +61,14 @@ class CreateProfileScreenTest {
 
     // Assert all expected UI components are visible
     composeTestRule.onNodeWithTag("welcomeText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("firstNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("lastNameField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("roleSelection").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("firstNameField").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("lastNameField").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("roleSelection").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonStudent").assertIsDisplayed()
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("phoneNumberField").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
-    composeTestRule.onNodeWithTag("confirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("phoneNumberField").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performScrollTo()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().assertIsDisplayed()
   }
 
   @Test
@@ -82,7 +82,7 @@ class CreateProfileScreenTest {
     }
 
     // Click on the Confirm button with empty fields
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Ensure that the navigation has not been triggered
     Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
@@ -100,10 +100,10 @@ class CreateProfileScreenTest {
     }
 
     // Enter an invalid phone number
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123ABC")
+    composeTestRule.onNodeWithTag("phoneNumberField").performScrollTo().performTextInput("123ABC")
 
     // Click on the Confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify no navigation is triggered due to invalid phone number
     Mockito.verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
@@ -120,16 +120,16 @@ class CreateProfileScreenTest {
     }
 
     // Select "Student" role
-    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performScrollTo().performClick()
 
     // Check that the "Student" button is selected
-    composeTestRule.onNodeWithTag("roleButtonStudent").assertIsSelected()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performScrollTo().assertIsSelected()
 
     // Select "Tutor" role
-    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
+    composeTestRule.onNodeWithTag("roleButtonTutor").performScrollTo().performClick()
 
     // Check that the "Tutor" button is now selected
-    composeTestRule.onNodeWithTag("roleButtonTutor").assertIsSelected()
+    composeTestRule.onNodeWithTag("roleButtonTutor").performScrollTo().assertIsSelected()
   }
 
   @Test
@@ -143,7 +143,7 @@ class CreateProfileScreenTest {
     }
 
     // Click on the Tutor button
-    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
+    composeTestRule.onNodeWithTag("roleButtonTutor").performScrollTo().performClick()
 
     // Ensure "Tutor" role is selected and "Student" role is not selected
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsSelected()
@@ -195,7 +195,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123")
 
     // Click the confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify no navigation happens due to invalid phone number
     verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
@@ -212,7 +212,7 @@ class CreateProfileScreenTest {
     }
 
     // Leave fields empty and click the confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify that no navigation occurs due to empty fields
     verify(mockNavigationActions, Mockito.never()).navigateTo(Mockito.anyString())
@@ -233,23 +233,23 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
 
     // Select country code
-    composeTestRule.onNodeWithTag("countryCodeField").performClick()
+    composeTestRule.onNodeWithTag("countryCodeField").performScrollTo().performClick()
     // Wait for the dropdown to appear
     composeTestRule.waitForIdle()
 
-    composeTestRule.onNodeWithTag("country_plus41").performClick()
+    composeTestRule.onNodeWithTag("country_plus41").performScrollTo().performClick()
 
     // Enter phone number without country code
-    composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("34567890")
+    composeTestRule.onNodeWithTag("phoneNumberField").performScrollTo().performTextInput("34567890")
 
     // Select role as Tutor
-    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
+    composeTestRule.onNodeWithTag("roleButtonTutor").performScrollTo().performClick()
 
     // Select section and academic level
-    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdown").performClick()
-    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA6").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdown").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdown").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA6").performScrollTo().performClick()
 
     // Click the confirm button
     composeTestRule.onNodeWithTag("confirmButton").performScrollTo()
@@ -273,7 +273,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("123-456-7890")
 
     // Click on the Confirm button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify no navigation is triggered due to invalid phone number
     verify(mockNavigationActions, Mockito.never()).navigateTo(anyString())
@@ -294,7 +294,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
     composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
 
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     verify(mockNavigationActions, Mockito.never()).navigateTo(anyString())
   }
@@ -310,13 +310,13 @@ class CreateProfileScreenTest {
     }
 
     // Open section dropdown and select a section
-    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdown").assertTextEquals("SC")
+    composeTestRule.onNodeWithTag("sectionDropdown").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-SC").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("sectionDropdown").performScrollTo().assertTextEquals("SC")
 
     // Change the section
-    composeTestRule.onNodeWithTag("sectionDropdown").performClick()
-    composeTestRule.onNodeWithTag("sectionDropdownItem-IN").performClick()
+    composeTestRule.onNodeWithTag("sectionDropdown").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("sectionDropdownItem-IN").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("sectionDropdown").assertTextEquals("IN")
   }
 
@@ -331,15 +331,15 @@ class CreateProfileScreenTest {
     }
 
     // Select the Student role
-    composeTestRule.onNodeWithTag("roleButtonStudent").performClick()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("roleButtonStudent").assertIsSelected()
 
     // Change the role to Tutor
-    composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
+    composeTestRule.onNodeWithTag("roleButtonTutor").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("roleButtonTutor").assertIsSelected()
 
     // Verify Student is no longer selected
-    composeTestRule.onNodeWithTag("roleButtonStudent").assertIsNotSelected()
+    composeTestRule.onNodeWithTag("roleButtonStudent").performScrollTo().assertIsNotSelected()
   }
 
   @Test
@@ -356,7 +356,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("1234567890")
 
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     verify(mockNavigationActions, Mockito.never()).navigateTo(anyString())
   }
@@ -375,7 +375,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
     composeTestRule.onNodeWithTag("roleButtonTutor").performClick()
 
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     verify(mockNavigationActions, Mockito.never()).navigateTo(anyString())
   }
@@ -395,7 +395,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("lastNameField").performTextInput("Doe")
     composeTestRule.onNodeWithTag("phoneNumberField").performTextInput("0123456789")
     // Click the create profile button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify that the navigation action was not called
     verify(mockNavigationActions, Mockito.never()).navigateTo(Screen.HOME)
@@ -421,7 +421,7 @@ class CreateProfileScreenTest {
     composeTestRule.onNodeWithTag("academicLevelDropdownItem-BA6").performClick()
 
     // Click the create profile button
-    composeTestRule.onNodeWithTag("confirmButton").performClick()
+    composeTestRule.onNodeWithTag("confirmButton").performScrollTo().performClick()
 
     // Verify that the navigation action was not called
     verify(mockNavigationActions, Mockito.never()).navigateTo(Screen.HOME)

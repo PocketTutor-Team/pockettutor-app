@@ -190,25 +190,26 @@ class EditRequestedLessonTest {
     composeTestRule.onNodeWithText("OK").performClick()
 
     // Set Subject and Language
-    composeTestRule.onNodeWithTag("subjectButton").performClick()
+    composeTestRule.onNodeWithTag("subjectButton").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("dropdown${Subject.ANALYSIS}").performClick()
-    composeTestRule.onNodeWithTag("languageSelectorRow").performClick()
+    composeTestRule.onNodeWithTag("languageSelectorRow").performScrollTo().performClick()
 
-    // Select location
-    composeTestRule.onNodeWithTag("mapButton").performClick()
-    composeTestRule.onNodeWithTag("mapContainer").performClick()
+    // Select location with improved map handling
+    composeTestRule.onNodeWithTag("mapButton").performScrollTo().performClick()
 
-    // replace the following code with the composeTestRule equivalent as
-    // the Thread.sleep() method is not recommended and
-    // device.click() is not well supported in compose
-    composeTestRule.waitUntil(15000) {
-      // wait max 4 seconds for the map to load,
-      // as soon as the map is ready, the next line will be executed
-      testMapReady
+    // Wait for map to be ready
+    composeTestRule.waitUntil(15000) { testMapReady }
+
+    // Wait for map to be fully displayed
+    composeTestRule.waitUntil(15000) { composeTestRule.onNodeWithTag("googleMap").isDisplayed() }
+
+    // Perform map click with proper delay
+    composeTestRule.onNodeWithTag("googleMap").performTouchInput {
+      down(center)
+      up()
     }
 
-    composeTestRule.onNodeWithTag("googleMap").performTouchInput { click(center) }
-
+    // Wait for location confirmation button
     composeTestRule.waitUntil(15000) {
       assertEnabledToBoolean(composeTestRule.onNodeWithTag("confirmLocation"))
     }

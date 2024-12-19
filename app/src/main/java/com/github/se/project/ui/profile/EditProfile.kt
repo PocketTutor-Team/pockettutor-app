@@ -1,23 +1,29 @@
 package com.github.se.project.ui.profile
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,11 +35,14 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.project.R
@@ -47,12 +56,15 @@ import com.github.se.project.ui.components.AcademicSelector
 import com.github.se.project.ui.components.LanguageSelector
 import com.github.se.project.ui.components.PhoneNumberInput
 import com.github.se.project.ui.components.PriceSlider
+import com.github.se.project.ui.components.ProfilePhotoSelector
 import com.github.se.project.ui.components.SectionSelector
 import com.github.se.project.ui.components.SubjectSelector
 import com.github.se.project.ui.components.isPhoneNumberValid
 import com.github.se.project.ui.navigation.NavigationActions
 import com.github.se.project.ui.navigation.Screen
+import com.github.se.project.utils.StorageManager
 import com.github.se.project.utils.countries
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditProfile(
@@ -68,7 +80,11 @@ fun EditProfile(
 
   val profileLanguages = remember { mutableStateListOf<Language>() }
   val profileSubjects = remember { mutableStateListOf<Subject>() }
-
+  val coroutineScope = rememberCoroutineScope()
+  var localPhotoUri by remember { mutableStateOf<Uri?>(profile.profilePhotoUrl) }
+  var isLoading by remember { mutableStateOf(false) }
+  var description by remember { mutableStateOf(profile.description) }
+  var uploadedUrl by remember { mutableStateOf<Uri?>(profile.profilePhotoUrl) }
   LaunchedEffect(profile) {
     profileLanguages.clear()
     profileLanguages.addAll(profile.languages)
@@ -94,16 +110,23 @@ fun EditProfile(
 
   Scaffold(
       topBar = {
-        IconButton(
-            onClick = { navigationActions.goBack() },
-            modifier = Modifier.testTag("editTutorProfileCloseButton")) {
-              Icon(
-                  imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                  contentDescription = "Go Back")
-            }
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          IconButton(
+              onClick = { navigationActions.goBack() },
+              modifier = Modifier.testTag("editTutorProfileCloseButton")) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = "Go Back")
+              }
+          Text(
+              "Modify your profile information",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.testTag("editTutorProfileInstructionText"))
+        }
       },
       content = { paddingValues ->
         Column(
+            horizontalAlignment = Alignment.Start,
             modifier =
                 Modifier.fillMaxSize()
                     .padding(horizontal = 16.dp)
@@ -111,10 +134,10 @@ fun EditProfile(
                     .testTag("tutorInfoScreen")
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Text(
-                  "Modify your profile information:",
-                  style = MaterialTheme.typography.titleMedium,
-                  modifier = Modifier.testTag("editTutorProfileInstructionText"))
+              ProfilePhotoSelector(
+                  currentPhotoUrl = profile.profilePhotoUrl,
+                  onLocalPhotoSelected = { uri -> localPhotoUri = uri },
+              )
 
               Spacer(modifier = Modifier.height(6.dp))
 
@@ -127,6 +150,30 @@ fun EditProfile(
                   onPhoneNumberChange = { phoneNumber = it })
 
               if (profile.role == Role.TUTOR) {
+
+                Text(
+                    "Description:",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.testTag("editTutorProfileDescriptionText"))
+                // Description text field
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = {
+                      if (it.length <= context.resources.getInteger(R.integer.description)) {
+                        description = it
+                      }
+                    },
+                    modifier =
+                        Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("experienceField"),
+                    label = { Text("Write your experience as a tutor ?") },
+                    placeholder = {
+                      Text(
+                          "Share your previous tutoring experience, or if you don't have any, explain why you would be a great tutor.")
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    maxLines = 4,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
+
                 Text(
                     "Teaching languages:",
                     style = MaterialTheme.typography.titleSmall,
@@ -183,39 +230,71 @@ fun EditProfile(
             }
       },
       bottomBar = {
-        // Confirmation Button with Validation
+        // Confirmation Button with Loading State
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("confirmButton"),
             shape = MaterialTheme.shapes.medium,
+            enabled = !isLoading,
             onClick = {
-              if (profile.role == Role.TUTOR &&
-                  (profileLanguages.isEmpty() || profileSubjects.isEmpty())) {
-                showError.value = true
-                Toast.makeText(
-                        context,
-                        "Please select at least one language and one subject",
-                        Toast.LENGTH_SHORT)
-                    .show()
-              } else if (!isPhoneNumberValid(selectedCountry.code, phoneNumber)) {
-                showError.value = true
-                Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
-                    .show()
-              } else {
-                showError.value = false
-                profile.phoneNumber = selectedCountry.code + phoneNumber
-                profile.languages = profileLanguages
-                profile.subjects = profileSubjects
-                profile.price = priceSliderValue.floatValue.toInt()
-                profile.academicLevel = academicLevel.value!!
-                profile.section = section.value!!
+              coroutineScope.launch {
+                isLoading = true
+                try {
+                  if (profile.role == Role.TUTOR &&
+                      (profileLanguages.isEmpty() || profileSubjects.isEmpty())) {
+                    showError.value = true
+                    Toast.makeText(
+                            context,
+                            "Please select at least one language and one subject",
+                            Toast.LENGTH_SHORT)
+                        .show()
+                  } else if (!isPhoneNumberValid(selectedCountry.code, phoneNumber)) {
+                    showError.value = true
+                    Toast.makeText(context, "Please input a valid phone number", Toast.LENGTH_SHORT)
+                        .show()
+                  } else {
 
-                listProfilesViewModel.updateProfile(profile)
-                navigationActions.goBack()
+                    if (localPhotoUri != null &&
+                        localPhotoUri.toString() != profile.profilePhotoUrl.toString()) {
+                      uploadedUrl =
+                          StorageManager.uploadProfilePhoto(localPhotoUri!!, profile.uid, context)
+                    } else if (localPhotoUri == null && profile.profilePhotoUrl != null) {
+                      StorageManager.deleteOldPhotos(profile.uid)
+                      uploadedUrl = null
+                    }
 
-                Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                    showError.value = false
+                    profile.phoneNumber = selectedCountry.code + phoneNumber
+                    profile.languages = profileLanguages
+                    profile.subjects = profileSubjects
+                    profile.price = priceSliderValue.floatValue.toInt()
+                    profile.academicLevel = academicLevel.value!!
+                    profile.section = section.value!!
+                    profile.description = description
+                    profile.profilePhotoUrl = uploadedUrl
+
+                    listProfilesViewModel.updateProfile(profile)
+                    navigationActions.goBack()
+
+                    Toast.makeText(context, "Profile updated successfully!", Toast.LENGTH_SHORT)
+                        .show()
+                  }
+                } catch (e: Exception) {
+                  Toast.makeText(
+                          context, "An error occurred. Please try again.", Toast.LENGTH_SHORT)
+                      .show()
+                } finally {
+                  isLoading = false
+                }
               }
             }) {
-              Text(stringResource(id = R.string.update_profile))
+              if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp)
+              } else {
+                Text(stringResource(id = R.string.update_profile))
+              }
             }
       })
 }
